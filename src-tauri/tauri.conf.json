@@ -7,15 +7,30 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "amll-ttml-tool",
+    "productName": "AMLL TTML Tool",
     "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
       "all": false,
+      "clipboard": {
+        "all": false,
+        "writeText": true
+      },
+      "fs": {
+        "all": false,
+        "createDir": true,
+        "exists": true,
+        "writeFile": true
+      },
       "shell": {
         "all": false,
         "open": true
+      },
+      "dialog": {
+        "all": false,
+        "open": true,
+        "save": true
       },
       "http": {
         "all": true,
@@ -46,7 +61,7 @@
         "fullscreen": false,
         "resizable": true,
         "hiddenTitle": true,
-        "title": "amll-ttml-tool",
+        "title": "Apple Music-like lyric 插件 TTML 歌词工具",
         "width": 800,
         "height": 600
       }

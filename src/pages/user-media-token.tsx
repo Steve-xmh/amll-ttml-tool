@@ -45,7 +45,7 @@ export const UserMediaTokenPage: React.FC = () => {
 					fontSize: "24px",
 				}}
 			>
-				<div>初始化 Apple Music API (1/3)</div>
+				<div>初始化 Apple Music API (1/6)</div>
 			</div>
 			<div style={{ marginBottom: "14px" }}>
 				请输入来自 Web 版 Apple Music 的用户媒体令牌：

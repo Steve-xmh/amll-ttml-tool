@@ -1,29 +1,31 @@
 import { Client, getClient, ResponseType } from "@tauri-apps/api/http";
 import { P } from "@tauri-apps/api/http-81ecb07f";
 
+export interface PlaylistSong {
+	attributes: {
+		albumName: string;
+		artistName: string;
+		name: string;
+		hasLyrics: boolean;
+		artistUrl: string;
+		durationInMillis: number;
+		playParams: {
+			id: string;
+			catalogId: string;
+		};
+		artwork: {
+			url: string;
+		};
+	};
+	id: string;
+	type: "library-songs";
+	href: string;
+}
+
 export interface PlaylistData {
 	resources: {
 		"library-songs": {
-			[songId: string]: {
-				attributes: {
-					albumName: string;
-					artistName: string;
-					name: string;
-					hasLyrics: boolean;
-					artistUrl: string;
-					durationInMillis: number;
-					playParams: {
-						id: string;
-						catalogId: string;
-					};
-					artwork: {
-						url: string;
-					};
-				};
-				id: string;
-				type: "library-songs";
-				href: string;
-			};
+			[songId: string]: PlaylistSong;
 		};
 		songs: {
 			[songId: string]: {
@@ -88,7 +90,7 @@ export interface SyllableLyricData {
 		};
 		id: string;
 		type: "syllable-lyrics";
-	};
+	}[];
 }
 
 export class AppleMusicAPI {

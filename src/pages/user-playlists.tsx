@@ -2,19 +2,21 @@ import { useSetAtom } from "jotai";
 import { useLayoutEffect, useState } from "react";
 import { GroupBox } from "../components/appkit/group-box";
 import { Spinner } from "../components/appkit/spinner";
-import { currentPageAtom } from "../states";
+import { currentPageAtom, selectedPlaylistAtom } from "../states";
 import { globalAMAPI, PlaylistResource } from "../utils/am-api";
 
 export const PlaylistItem: React.FC<{ playlist: PlaylistResource }> = (
 	props,
 ) => {
 	const setCurrentPage = useSetAtom(currentPageAtom);
+	const setSelectedPlaylist = useSetAtom(selectedPlaylistAtom);
 
 	return (
 		<div
 			className="user-playlist-item"
 			onClick={() => {
-				setCurrentPage("lyrics-mixin");
+				setSelectedPlaylist(props.playlist);
+				setCurrentPage("select-songs");
 			}}
 			onKeyUp={() => {}}
 		>
@@ -58,7 +60,7 @@ export const UserPlaylistsPage: React.FC = () => {
 					padding: "5vh",
 				}}
 			>
-				<div>选择一个需要导出歌词的播放列表 (2/3)</div>
+				<div>选择一个需要导出歌词的播放列表 (2/6)</div>
 			</div>
 			{playlists ? (
 				<div className="user-playlists-list">
