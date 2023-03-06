@@ -1,0 +1,55 @@
+{
+  "build": {
+    "beforeDevCommand": "yarn dev",
+    "beforeBuildCommand": "yarn build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "amll-ttml-tool",
+    "version": "0.0.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["https://*.apple.com/*", "https://*.163.com/*"]
+      }
+    },
+    "bundle": {
+      "active": true,
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "net.stevexmh.amll-ttml-tool",
+      "targets": "all"
+    },
+    "security": {
+      "csp": "default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';  script-src * data: blob: 'unsafe-inline' 'unsafe-eval';  connect-src * data: blob: 'unsafe-inline';  img-src * data: blob: 'unsafe-inline';  frame-src * data: blob: ;  style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline'; frame-ancestors * data: blob: 'unsafe-inline';"
+    },
+    "updater": {
+      "active": false
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "hiddenTitle": true,
+        "title": "amll-ttml-tool",
+        "width": 800,
+        "height": 600
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+@import "./appkit.sass"
+
+:root
+    box-sizing: border-box
+    font-synthesis: none
+    text-rendering: optimizeLegibility
+    -webkit-font-smoothing: antialiased
+    -moz-osx-font-smoothing: grayscale
+    -webkit-text-size-adjust: 100%
+    @include apple-font()
+
+body
+    @include apple-font()
+    background: transparent
+    font-size: 13px
+    user-select: none
+    height: 100vh
+    width: 100vw
+    overflow: hidden
+    margin: 0
+
+.user-playlists-container
+    height: 100vh
+    display: flex
+    flex-direction: column
+    justify-content: stretch
+.user-playlists-list
+    margin: 5vh
+    position: relative
+    min-height: 0
+    flex: 1
+    > *
+        height: 100%
+        overflow: scroll
+        > *
+            padding: 16px
+            .user-playlist-item
+                cursor: pointer
+                display: flex
+                align-items: center
+                height: 32px
+                padding: 0 8px
+                margin-bottom: 8px
+                border-radius: 4px
+                &:hover
+                    background: #0001
+                &:nth-child(2n)
+                    background: #0001
+                    &:hover
+                        background: #0002
+    
+.user-media-token-container
+    height: 100vh
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    
