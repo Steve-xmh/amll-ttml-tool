@@ -48,7 +48,10 @@ export default function exportTTMLText(
 
 	ttRoot.setAttribute("xmlns", "http://www.w3.org/ns/ttml");
 	ttRoot.setAttribute("xmlns:ttm", "http://www.w3.org/ns/ttml#metadata");
-	ttRoot.setAttribute("xmlns:itunes", "http://music.apple.com/lyric-ttml-internal");
+	ttRoot.setAttribute(
+		"xmlns:itunes",
+		"http://music.apple.com/lyric-ttml-internal",
+	);
 
 	doc.appendChild(ttRoot);
 
@@ -117,7 +120,9 @@ export default function exportTTMLText(
 						bgLineSpan.appendChild(span);
 					}
 				} else {
-					bgLineSpan.appendChild(doc.createTextNode(bgLine.originalLyric.trim()));
+					bgLineSpan.appendChild(
+						doc.createTextNode(bgLine.originalLyric.trim()),
+					);
 				}
 
 				if (bgLine.translatedLyric) {

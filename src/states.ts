@@ -4,8 +4,12 @@ import { LyricLine } from "./utils/lyric-types";
 
 export const currentPageAtom = atom("user-media-token");
 export const selectedPlaylistAtom = atom<PlaylistResource | null>(null);
-export const selectedSongsAtom = atom<PlaylistSong[]>([])
+export const selectedSongsAtom = atom<PlaylistSong[]>([]);
 
-export type SongPairData = PlaylistSong & { ncmID: string; lyric: LyricLine[], mixinLyric: LyricLine[] };
+export type SongPairData = PlaylistSong & {
+	ncmID: string;
+	lyric: LyricLine[];
+	mixinLyric: LyricLine[];
+};
 
-export const pairSongsAtom = atom<SongPairData[]>([])
+export const pairSongsAtom = atom<SongPairData[]>([]);

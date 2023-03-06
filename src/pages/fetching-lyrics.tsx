@@ -2,7 +2,12 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useLayoutEffect, useState } from "react";
 import { Button } from "../components/appkit/button";
 import { Spinner } from "../components/appkit/spinner";
-import { currentPageAtom, pairSongsAtom, selectedSongsAtom, SongPairData } from "../states";
+import {
+	currentPageAtom,
+	pairSongsAtom,
+	selectedSongsAtom,
+	SongPairData,
+} from "../states";
 import { globalAMAPI } from "../utils/am-api";
 import { parseLyric } from "../utils/ttml-lyric-parser";
 
@@ -46,8 +51,8 @@ export const FetchingLyricsPage: React.FC = () => {
 					)
 				).filter((v) => !!v) as SongPairData[];
 				if (canceled) return;
-                setPairSongs(result);
-                setCurrentPage("pair-ncm-songs")
+				setPairSongs(result);
+				setCurrentPage("pair-ncm-songs");
 			} catch {}
 		})();
 		return () => {

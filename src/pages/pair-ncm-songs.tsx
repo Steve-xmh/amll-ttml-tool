@@ -28,7 +28,9 @@ export const SongItem: React.FC<{
 	useLayoutEffect(() => {
 		if (ncmID.trim().length === 0) {
 			setChecking("");
-			props.song.mixinLyric = JSON.parse(JSON.stringify(props.song.lyric)) as LyricLine[];
+			props.song.mixinLyric = JSON.parse(
+				JSON.stringify(props.song.lyric),
+			) as LyricLine[];
 			return;
 		}
 		let canceled = false;
@@ -69,8 +71,8 @@ export const SongItem: React.FC<{
 				if (lyricData.romalrc?.lyric)
 					mixinLyric(cloned, parsePureLyric(lyricData.romalrc.lyric), "roman");
 				console.log("已合并歌词", cloned);
-                props.song.ncmID = id;
-                props.song.mixinLyric = cloned;
+				props.song.ncmID = id;
+				props.song.mixinLyric = cloned;
 				setChecking("ok");
 			} catch (err) {
 				console.warn(err);
@@ -107,8 +109,6 @@ export const PairNCMSongsPage: React.FC = () => {
 	const pairSongs = useAtomValue(pairSongsAtom);
 	const setCurrentPage = useSetAtom(currentPageAtom);
 
-    
-    
 	return (
 		<div className="select-songs-container">
 			<div

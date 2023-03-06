@@ -2,10 +2,10 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useMemo } from "react";
 import { Button } from "../components/appkit/button";
 import { currentPageAtom, pairSongsAtom, SongPairData } from "../states";
-import { writeText } from "@tauri-apps/api/clipboard"
+import { writeText } from "@tauri-apps/api/clipboard";
 import { writeFile } from "@tauri-apps/api/fs";
-import { save, open } from "@tauri-apps/api/dialog"
-import { open as shellOpen } from "@tauri-apps/api/shell"
+import { save, open } from "@tauri-apps/api/dialog";
+import { open as shellOpen } from "@tauri-apps/api/shell";
 import exportTTMLText from "../utils/ttml-writer";
 
 export const SongItem: React.FC<{
@@ -25,10 +25,14 @@ export const SongItem: React.FC<{
 				{props.song.attributes.artistName} - {props.song.attributes.name}
 			</div>
 			<Button style={{ marginRight: "8px" }}>保存到文件</Button>
-			<Button onClick={() => {
-                const text = exportTTMLText(props.song.mixinLyric);
-                writeText(text)
-            }}>复制到剪切板</Button>
+			<Button
+				onClick={() => {
+					const text = exportTTMLText(props.song.mixinLyric);
+					writeText(text);
+				}}
+			>
+				复制到剪切板
+			</Button>
 		</div>
 	);
 };
@@ -88,25 +92,35 @@ export const ExportTTMLPage: React.FC = () => {
 				>
 					上一步
 				</Button>
-				<Button accent style={{ marginRight: "8px" }} onClick={async () => {
-                    const dir = await open({
-                        title: "选择需要导出到的文件夹...",
-                        directory: true,
-                    });
-                    if (typeof dir === "string") {
-                        console.log(dir);
-                        await Promise.all(pairSongs.map(async song => {
-                            const dest = `${dir}/${song.ncmID}.ttml`
-                            console.log("正在写出到", dest);
-                            await writeFile(dest, exportTTMLText(song.mixinLyric));
-                        }))
-                    }
-                }}>
+				<Button
+					accent
+					style={{ marginRight: "8px" }}
+					onClick={async () => {
+						const dir = await open({
+							title: "选择需要导出到的文件夹...",
+							directory: true,
+						});
+						if (typeof dir === "string") {
+							console.log(dir);
+							await Promise.all(
+								pairSongs.map(async (song) => {
+									const dest = `${dir}/${song.ncmID}.ttml`;
+									console.log("正在写出到", dest);
+									await writeFile(dest, exportTTMLText(song.mixinLyric));
+								}),
+							);
+						}
+					}}
+				>
 					导出到文件夹
 				</Button>
-				<Button onClick={() => {
-                    shellOpen("https://github.com/Steve-xmh/amll-ttml-db");
-                }}>我想提交到 Github 歌词数据库</Button>
+				<Button
+					onClick={() => {
+						shellOpen("https://github.com/Steve-xmh/amll-ttml-db");
+					}}
+				>
+					我想提交到 Github 歌词数据库
+				</Button>
 			</div>
 		</div>
 	);
