@@ -10,7 +10,6 @@ import { getNCMLyric } from "../utils/ncm-api";
 import { LyricLine } from "../utils/lyric-types";
 import { mixinLyric, parsePureLyric } from "../utils/lyric-parser";
 
-const songUrlReg = /^https\:\/\/music.163.com\/song\?id\=([0-9]+)$/;
 const numberReg = /^([0-9]+)$/;
 
 export const SongItem: React.FC<{
@@ -38,10 +37,13 @@ export const SongItem: React.FC<{
 		// https://music.163.com/song?id=1962165898
 		let id = ncmID.trim();
 
-		let match = songUrlReg.exec(id);
-		if (match) {
-			id = match[1];
-		}
+		try {
+			const url = new URL(id);
+			const paramId = url.searchParams.get("id");
+			if (paramId) {
+				id = paramId;
+			}
+		} catch {}
 
 		if (!numberReg.test(id)) {
 			setChecking("wrong-id");
