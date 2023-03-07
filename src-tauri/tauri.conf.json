@@ -60,7 +60,6 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "hiddenTitle": true,
         "title": "Apple Music-like lyric 插件 TTML 歌词工具",
         "width": 800,
         "height": 600
