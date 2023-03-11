@@ -30,7 +30,7 @@ export const FetchingLyricsPage: React.FC = () => {
 									v.attributes.playParams.catalogId,
 								);
 								if (canceled) return;
-								const lyric = parseLyric(lyricData.data[0].attributes.ttml);
+								const lyric = parseLyric(lyricData.data[0].attributes.ttml, true);
 								if (lyric.length === 0) {
 									throw new TypeError(
 										"解析到了空白歌词，可能是因为原歌词不是滚动歌词或逐词歌词",

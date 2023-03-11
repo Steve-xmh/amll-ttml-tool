@@ -138,6 +138,8 @@ export class AppleMusicAPI {
 
 		if (playListRes.status < 200 || playListRes.status >= 400)
 			throw new TypeError("请求失败");
+		
+		console.log(url, playListRes)
 
 		return playListRes;
 	}

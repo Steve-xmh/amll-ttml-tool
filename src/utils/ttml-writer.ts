@@ -112,7 +112,7 @@ export default function exportTTMLText(
 					const span = doc.createElement("span");
 					span.setAttribute("begin", msToTimestamp(word.time));
 					span.setAttribute("end", msToTimestamp(word.time + word.duration));
-					span.appendChild(doc.createTextNode(word.word.trim()));
+					span.appendChild(doc.createTextNode(word.word));
 					lineP.appendChild(span);
 				}
 			} else {
@@ -128,13 +128,14 @@ export default function exportTTMLText(
 					bgLine.shouldAlignRight ? "v2" : "v1",
 				);
 				bgLineSpan.setAttribute("itunes:key", `L${++i}`);
+				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
 				if (bgLine.dynamicLyric && bgLine.dynamicLyricTime !== undefined) {
 					for (const word of bgLine.dynamicLyric) {
 						const span = doc.createElement("span");
 						span.setAttribute("begin", msToTimestamp(word.time));
 						span.setAttribute("end", msToTimestamp(word.time + word.duration));
-						span.appendChild(doc.createTextNode(word.word.trim()));
+						span.appendChild(doc.createTextNode(word.word));
 						bgLineSpan.appendChild(span);
 					}
 				} else {
