@@ -355,6 +355,14 @@ export function mixinLyric(
 				) {
 					target = v;
 				}
+				if (v.backgroundLyric) {
+					if (
+						Math.abs(target.beginTime - line.time) >
+						Math.abs(v.beginTime - line.time)
+					) {
+						target = v.backgroundLyric;
+					}
+				}
 			} else {
 				target = v;
 			}
