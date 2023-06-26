@@ -385,4 +385,4 @@ export function mixinLyric(
 	});
 }
 
-export { LyricLine };
+export type { LyricLine };

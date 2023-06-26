@@ -1,5 +1,4 @@
 import { Client, getClient, ResponseType } from "@tauri-apps/api/http";
-import { P } from "@tauri-apps/api/http-81ecb07f";
 
 export interface PlaylistSong {
 	attributes: {

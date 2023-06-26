@@ -5,8 +5,7 @@
  * @see https://www.w3.org/TR/2018/REC-ttml1-20181108/
  */
 
-import { processLyric } from "./lyric-parser";
-import { DynamicLyricWord, LyricLine } from "./lyric-types";
+import type { DynamicLyricWord, LyricLine } from "./lyric-types";
 
 const timeRegexp =
 	/^(((?<hour>[0-9]+):)?(?<min>[0-9]+):)?(?<sec>[0-9]+([\.:]([0-9]+))?)/;
@@ -256,5 +255,5 @@ export function parseLyric(ttmlText: string, strictMode = false): LyricLine[] {
 
 	console.log(result);
 
-	return processLyric(result);
+	return result;
 }
