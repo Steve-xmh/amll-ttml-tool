@@ -17,5 +17,6 @@
     "jsx": "react-jsx"
   },
   "include": ["src"],
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
   "references": [{ "path": "./tsconfig.node.json" }]
 }
