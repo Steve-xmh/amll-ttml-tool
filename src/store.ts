@@ -2,14 +2,18 @@ import { defineStore } from "pinia";
 import { parseLyric } from "./utils/ttml-lyric-parser";
 
 export interface LyricWord {
-	time: number;
+	startTime: number;
+	endTime: number;
 	word: string;
 }
 
 export interface LyricLine {
 	words: LyricWord[];
+	translatedLyric: string;
+	romanLyric: string;
 	isBackground: boolean;
 	isDuet: boolean;
+	selected: boolean;
 }
 
 export const useEditingLyric = defineStore("editing-lyric", {
@@ -27,26 +31,46 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			this.artists = [];
 			this.lyrics = lyricLines.map((line) => ({
 				words: line.dynamicLyric?.map((w) => ({
-					time: w.time,
+					startTime: w.time,
+					endTime: w.time + w.duration,
 					word: w.word,
 				})) ?? [
 					{
 						word: line.originalLyric,
-						time: line.beginTime,
+						startTime: line.beginTime,
+						endTime: line.duration,
 					},
 				],
+				translatedLyric: line.translatedLyric ?? "",
+				romanLyric: line.romanLyric ?? "",
 				isBackground: !!line.isBackgroundLyric,
 				isDuet: !!line.shouldAlignRight,
+				selected: false,
 			}));
 			this.record();
 		},
 		addNewLine() {
 			this.lyrics.push({
 				words: [],
+				translatedLyric: "",
+				romanLyric: "",
 				isBackground: false,
 				isDuet: false,
+				selected: false,
 			});
 			this.record();
+		},
+		selectLine(lineIndex: number) {
+			if (this.lyrics[lineIndex]) this.lyrics[lineIndex].selected = true;
+		},
+		selectAllLine() {
+			this.lyrics.forEach((line) => (line.selected = true));
+		},
+		unselectAllLine() {
+			this.lyrics.forEach((line) => (line.selected = false));
+		},
+		invertSelectAllLine() {
+			this.lyrics.forEach((line) => (line.selected = !line.selected));
 		},
 		removeLine(lineIndex: number) {
 			if (this.lyrics[lineIndex]) {
@@ -57,7 +81,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		addNewWord(lineIndex: number, word: string) {
 			if (this.lyrics[lineIndex]) {
 				this.lyrics[lineIndex].words.push({
-					time: 0,
+					startTime: 0,
 					word,
 				});
 				this.record();
@@ -69,6 +93,18 @@ export const useEditingLyric = defineStore("editing-lyric", {
 					this.lyrics[lineIndex].words[wordIndex].word = newWord;
 					this.record();
 				}
+			}
+		},
+		modifyTranslatedLine(lineIndex: number, text: string) {
+			if (this.lyrics[lineIndex]) {
+				this.lyrics[lineIndex].translatedLyric = text;
+				this.record();
+			}
+		},
+		modifyRomanLine(lineIndex: number, text: string) {
+			if (this.lyrics[lineIndex]) {
+				this.lyrics[lineIndex].romanLyric = text;
+				this.record();
 			}
 		},
 		removeWord(lineIndex: number, wordIndex: number) {
@@ -105,4 +141,12 @@ export const useRightClickLyricLine = defineStore("right-click-lyric-line", {
 			this.y = y;
 		},
 	},
+});
+
+export const useSettings = defineStore("settings", {
+	state: () => ({
+		showTranslateLine: false,
+		showRomanLine: false,
+	}),
+	persist: true,
 });
