@@ -21,27 +21,40 @@
                     <NDropdown trigger="click" @select="onSelectMenu" :options="[
                         { label: '撤销', key: 'undo' },
                         { label: '重做', key: 'redo' },
+                        { label: '选中所有歌词行', key: 'select-all' },
+                        { label: '取消选中所有歌词行', key: 'unselect-all' },
+                        { label: '反选所有歌词行', key: 'invert-select-all' },
                     ]">
                         <NButton quaternary>编辑</NButton>
                     </NDropdown>
                     <NDropdown trigger="click" @select="onSelectMenu" :options="[
-                        { label: '生成日语音译歌词', key: 'undo' },
-                        { label: '生成粤语音译歌词', key: 'redo' },
+                        { label: '显示翻译歌词', key: 'show-tran' },
+                        { label: '显示音译歌词', key: 'show-roman' },
+                    ]">
+                        <NButton quaternary>查看</NButton>
+                    </NDropdown>
+                    <NDropdown trigger="click" @select="onSelectMenu" :options="[
+                        { label: '简繁转换', key: 'trad-to-simp' },
+                        { label: '生成日语音译歌词', key: 'gen-jpn' },
+                        { label: '生成粤语音译歌词', key: 'gen-cat' },
                     ]">
                         <NButton quaternary>工具</NButton>
                     </NDropdown>
                     <NDivider vertical />
                 </div>
-                <div style="display: flex; justify-content: center">
-                    <NButton quaternary type="primary">编辑模式</NButton>
-                    <NButton quaternary>打轴模式</NButton>
+                <div style="display: flex; justify-content: center; gap: 8px">
+                    <NButton :quaternary="edit.editMode !== 'edit'" :type="edit.editMode === 'edit' ? 'primary' : 'default'"
+                        @click="edit.editMode = 'edit'">编辑模式</NButton>
+                    <NButton :quaternary="edit.editMode !== 'sync'" :type="edit.editMode === 'sync' ? 'primary' : 'default'"
+                        @click="edit.editMode = 'sync'">打轴模式</NButton>
                 </div>
                 <div style="flex: 1; text-align: right">
                     Apple Music-like Lyrics TTML Tool
                 </div>
             </NLayoutHeader>
             <NLayoutContent style="flex: 1">
-                <LyricEditor />
+                <LyricEditor v-show="edit.editMode === 'edit'" />
+                <LyricSyncEditor v-show="edit.editMode === 'sync'" />
             </NLayoutContent>
             <audio :src="curFile?.url ?? ''" ref="globalAudio"></audio>
             <NLayoutFooter bordered style="padding: 16px; gap: 16px; display: flex; align-items: center">
@@ -70,6 +83,10 @@
             placement="bottom-start" :options="[
                 { label: '删除选定歌词行', key: 'new' },
                 { label: '复制选定歌词行', key: 'open' },
+                { type: 'divider' },
+                { label: '编辑翻译歌词', key: 'edit-tran' },
+                { label: '编辑音译歌词', key: 'edit-roman' },
+                { type: 'divider' },
                 {
                     label: '对选定行生成音译歌词',
                     key: 'gen-roman',
@@ -100,9 +117,10 @@ import {
 } from "naive-ui";
 import { Play48Filled, Pause48Filled, Speaker248Filled } from "@vicons/fluent";
 import { ref, reactive, onUnmounted } from "vue";
-import { useEditingLyric, useRightClickLyricLine } from "./store";
+import { useEditingLyric, useRightClickLyricLine, useSettings } from "./store";
 import LyricEditor from "./components/LyricEditor.vue";
 import { parseLyric } from "./utils/ttml-lyric-parser";
+import LyricSyncEditor from "./components/LyricSyncEditor.vue";
 
 const curFile = ref<UploadFileInfo>();
 const audio = ref(new Audio());
@@ -113,8 +131,12 @@ const playState = reactive({
     canPlay: false,
     volume: 0.5,
 });
+const edit = reactive({
+    editMode: "edit"
+});
 const lyric = useEditingLyric();
 const lyricLineMenu = useRightClickLyricLine();
+const settings = useSettings();
 let curAudioURL = "";
 
 function toDuration(duration: number) {
@@ -154,6 +176,26 @@ function onSelectMenu(key: string) {
         }
         case "redo": {
             lyric.redo();
+            break;
+        }
+        case "show-tran": {
+            settings.showTranslateLine = !settings.showTranslateLine;
+            break;
+        }
+        case "show-roman": {
+            settings.showRomanLine = !settings.showRomanLine;
+            break;
+        }
+        case "select-all": {
+            lyric.selectAllLine();
+            break;
+        }
+        case "unselect-all": {
+            lyric.unselectAllLine();
+            break;
+        }
+        case "invert-select-all": {
+            lyric.invertSelectAllLine();
             break;
         }
     }
