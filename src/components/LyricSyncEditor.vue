@@ -1,10 +1,12 @@
 <template>
     <div class="lyric-sync-editor">
-        <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]">
-            <div v-for="(word, i) in lyric.lyrics[currentWord.lineIndex].words" :key="i">
+        <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]" ref="syncEditor">
+            <div v-for="(word, i) in lyric.lyrics[currentWord.lineIndex].words" v-show="word.word.trim().length > 0"
+                :key="i" @click="currentWord.wordIndex = i">
                 <div>{{ word.word }}</div>
                 <div>{{ toTimestamp(word.startTime ?? 0) }}</div>
                 <div>{{ toTimestamp(word.endTime ?? 0) }}</div>
+                <div v-show="i === currentWord.wordIndex">{{ toTimestamp(audio.currentTime) }}</div>
             </div>
         </div>
         <div class="lyric-line-sync-editor-no-selected" v-else>
@@ -17,11 +19,13 @@
             <NList>
                 <NListItem v-for="(line, i) in lyric.lyrics"
                     :class="{ 'lyric-line-item': true, 'lyric-line-item-selected': i === currentWord.lineIndex }" :key="i"
-                    @click="currentWord.lineIndex = i">
+                    @click="currentWord.lineIndex = i; currentWord.wordIndex = 0;">
                     <div class="lyric-line-item-inner">
-                        <div>{{ toTimestamp(line.words?.[0].startTime ?? 0) }}</div>
+                        <div>{{ toTimestamp(line.words?.[0]?.startTime ?? 0) }}</div>
                         <div>
-                            <div><span v-for="word, i in line.words" :key="i">{{ word.word }}</span></div>
+                            <div><span v-for="word, wi in line.words" :key="wi"
+                                    :class="i === currentWord.lineIndex && wi === currentWord.wordIndex ? 'current-word' : ''">{{
+                                        word.word }}</span></div>
                             <div v-show="settings.showTranslateLine">{{ line.translatedLyric }}</div>
                             <div v-show="settings.showRomanLine">{{ line.romanLyric }}</div>
                         </div>
@@ -33,16 +37,27 @@
 </template>
 
 <script setup lang="ts">
-import { NButton, NIcon, NList, NListItem } from "naive-ui";
-import { useEditingLyric, useSettings } from "../store";
-import { reactive } from "vue";
+import { NList, NListItem } from "naive-ui";
+import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../store";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 
-const currentWord = reactive({
-    lineIndex: -1,
-    wordIndex: -1,
-});
+const currentWord = useCurrentSyncWord();
+
+const audio = useAudio();
 
 const settings = useSettings();
+
+const syncEditor = ref<HTMLDivElement>();
+
+currentWord.$subscribe(() => {
+    if (syncEditor.value) {
+        syncEditor.value.children.item(currentWord.wordIndex)?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+        });
+    }
+}, { flush: "post" });
 
 function toTimestamp(duration: number) {
     const isRemainTime = duration < 0;
@@ -57,6 +72,52 @@ function toTimestamp(duration: number) {
 }
 
 const lyric = useEditingLyric();
+
+function moveRight() {
+    do {
+        if (currentWord.wordIndex < lyric.lyrics[currentWord.lineIndex].words.length - 1) {
+            currentWord.wordIndex++;
+        } else if (currentWord.lineIndex < lyric.lyrics.length - 1) {
+            currentWord.wordIndex = 0;
+            currentWord.lineIndex++;
+        }
+    } while (lyric.lyrics[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
+}
+
+function moveLeft() {
+    do {
+        if (currentWord.wordIndex > 0) {
+            currentWord.wordIndex--;
+        } else if (currentWord.lineIndex > 0) {
+            currentWord.wordIndex = lyric.lyrics[--currentWord.lineIndex].words.length - 1;
+        }
+    } while (lyric.lyrics[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
+}
+
+function onKeyPress(e: KeyboardEvent) {
+    console.log(e)
+    switch (e.code) {
+        case "KeyD":
+            moveRight();
+            e.preventDefault();
+            e.stopPropagation();
+            break;
+        case "KeyA":
+            moveLeft();
+            e.preventDefault();
+            e.stopPropagation();
+            break;
+    }
+}
+
+onMounted(() => {
+    document.body.addEventListener("keypress", onKeyPress);
+});
+
+onUnmounted(() => {
+    document.body.removeEventListener("keypress", onKeyPress);
+});
+
 </script>
 
 <style lang="sass">
@@ -83,12 +144,14 @@ const lyric = useEditingLyric();
     max-width: 100%
     min-height: 128px
     display: flex
-    align-items: center
+    align-items: stretch
     padding: 0 32px
+    white-space: nowrap
     > *
         display: grid
-        grid-template: "word word" "startTime endTime"
+        grid-template: "selectMark selectMark" "word word" "startTime endTime"
         gap: 8px
+        align-content: center
         border-left: 1px solid #AAA4
         padding: 0 12px
         user-select: none
@@ -107,6 +170,14 @@ const lyric = useEditingLyric();
             grid-area: endTime
             font-size: 12px
             text-align: right
+        > *:nth-child(4)
+            grid-area: selectMark
+            font-size: 12px
+            text-align: center
+            color: #63e2b7
+            font-weight: bold
+.word-selected
+    grid-area: selectMark
 .lyric-line-viewer
     flex: 5
     position: relative
@@ -121,6 +192,9 @@ const lyric = useEditingLyric();
     &:hover
         background: var(--n-color-hover)
         color: var(--n-text-color-hover)
+.current-word
+    color: #63e2b7
+    font-weight: bold
 .lyric-line-item-inner
     display: flex
     align-items: center
