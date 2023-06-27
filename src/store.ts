@@ -117,10 +117,8 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			}
 		},
 		async splitLineByJieba() {
-			console.log(cut);
 			this.lyrics = this.lyrics.map((line) => {
 				if (!line.selected) return line;
-
 				const newWords = toRaw(line.words).flatMap((w) => {
 					const splited: string[] = cut(w.word, true);
 					const charDuration = (w.endTime - w.startTime) / w.word.length;
@@ -179,4 +177,18 @@ export const useSettings = defineStore("settings", {
 		showRomanLine: false,
 	}),
 	persist: true,
+});
+
+export const useAudio = defineStore("audio", {
+	state: () => ({
+		playing: false,
+		currentTime: 0,
+	}),
+});
+
+export const useCurrentSyncWord = defineStore("current-sync-word", {
+	state: () => ({
+		lineIndex: -1,
+		wordIndex: -1,
+	}),
 });

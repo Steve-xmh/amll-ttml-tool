@@ -118,7 +118,7 @@ import {
 } from "naive-ui";
 import { Play48Filled, Pause48Filled, Speaker248Filled } from "@vicons/fluent";
 import { ref, reactive, onUnmounted } from "vue";
-import { useEditingLyric, useRightClickLyricLine, useSettings } from "./store";
+import { useAudio, useEditingLyric, useRightClickLyricLine, useSettings } from "./store";
 import LyricEditor from "./components/LyricEditor.vue";
 import { parseLyric } from "./utils/ttml-lyric-parser";
 import LyricSyncEditor from "./components/LyricSyncEditor.vue";
@@ -138,6 +138,7 @@ const edit = reactive({
 const lyric = useEditingLyric();
 const lyricLineMenu = useRightClickLyricLine();
 const settings = useSettings();
+const audioStore = useAudio();
 let curAudioURL = "";
 
 function toDuration(duration: number) {
@@ -215,16 +216,30 @@ audio.value.addEventListener("canplay", () => {
     playState.totalTime = audio.value.duration;
 });
 
+let frameCb = ref(0);
 audio.value.addEventListener("timeupdate", () => {
     playState.curPos = audio.value.currentTime;
+    audioStore.currentTime = audio.value.currentTime * 1000;
+    if (frameCb.value) {
+        cancelAnimationFrame(frameCb.value);
+    }
+    const onFrame = () => {
+        if (audioStore.playing) {
+            audioStore.currentTime = audio.value.currentTime * 1000;
+            frameCb.value = requestAnimationFrame(onFrame);
+        }
+    }
+    frameCb.value = requestAnimationFrame(onFrame)
 });
 
 audio.value.addEventListener("play", () => {
     playState.isPlaying = true;
+    audioStore.playing = true;
 });
 
 audio.value.addEventListener("pause", () => {
     playState.isPlaying = false;
+    audioStore.playing = true;
 });
 
 function onUploadMusic(options: {

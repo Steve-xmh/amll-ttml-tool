@@ -19,7 +19,7 @@
 import { NButton, NIcon, NInput, type InputInst } from "naive-ui";
 import { Dismiss12Filled } from "@vicons/fluent";
 import { useEditingLyric } from "../store";
-import { nextTick, reactive, ref } from "vue";
+import { nextTick, reactive, ref, computed } from "vue";
 
 const inputRef = ref<InputInst | null>(null);
 const props = defineProps<{
@@ -28,10 +28,7 @@ const props = defineProps<{
     word: string;
 }>();
 const lyric = useEditingLyric();
-const word = lyric.lyrics[props.lineIndex].words[props.wordIndex] ?? {
-    word: "",
-    startTime: 0,
-};
+
 const edit = reactive({
     enable: false,
     value: "",
