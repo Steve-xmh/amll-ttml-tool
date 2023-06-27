@@ -34,6 +34,7 @@
                         <NButton quaternary>查看</NButton>
                     </NDropdown>
                     <NDropdown trigger="click" @select="onSelectMenu" :options="[
+                        { label: '使用 JieBa 对歌词行分词', key: 'split-words-jieba' },
                         { label: '简繁转换', key: 'trad-to-simp' },
                         { label: '生成日语音译歌词', key: 'gen-jpn' },
                         { label: '生成粤语音译歌词', key: 'gen-cat' },
@@ -196,6 +197,10 @@ function onSelectMenu(key: string) {
         }
         case "invert-select-all": {
             lyric.invertSelectAllLine();
+            break;
+        }
+        case "split-words-jieba": {
+            lyric.splitLineByJieba();
             break;
         }
     }

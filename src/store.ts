@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { parseLyric } from "./utils/ttml-lyric-parser";
+import { cut } from "./libs/jieba-wasm";
+import { toRaw } from "vue";
 
 export interface LyricWord {
 	startTime: number;
@@ -82,6 +84,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			if (this.lyrics[lineIndex]) {
 				this.lyrics[lineIndex].words.push({
 					startTime: 0,
+					endTime: 0,
 					word,
 				});
 				this.record();
@@ -112,6 +115,33 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				this.lyrics[lineIndex].words.splice(wordIndex, 1);
 				this.record();
 			}
+		},
+		async splitLineByJieba() {
+			console.log(cut);
+			this.lyrics = this.lyrics.map((line) => {
+				if (!line.selected) return line;
+
+				const newWords = toRaw(line.words).flatMap((w) => {
+					const splited: string[] = cut(w.word, true);
+					const charDuration = (w.endTime - w.startTime) / w.word.length;
+					const result: LyricWord[] = [];
+					let i = 0;
+					for (const split of splited) {
+						result.push({
+							startTime: w.startTime + i * charDuration,
+							endTime: w.startTime + (i + split.length) * charDuration,
+							word: split,
+						});
+						i += split.length;
+					}
+					return result;
+				});
+
+				line.words = newWords;
+
+				return line;
+			});
+			this.record();
 		},
 	},
 	undo: {
