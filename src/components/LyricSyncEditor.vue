@@ -7,6 +7,12 @@
                 <div>{{ toTimestamp(word.endTime ?? 0) }}</div>
             </div>
         </div>
+        <div class="lyric-line-sync-editor-no-selected" v-else>
+            <div>
+                <div>尚未选中歌词</div>
+                <div>点击下方的歌词行以选中歌词开始打轴</div>
+            </div>
+        </div>
         <div class="lyric-line-viewer">
             <NList>
                 <NListItem v-for="(line, i) in lyric.lyrics"
@@ -60,6 +66,16 @@ const lyric = useEditingLyric();
     height: 100%
     max-height: 100%
     overflow: hidden
+.lyric-line-sync-editor-no-selected
+    flex: 1
+    align-self: center
+    justify-content: center
+    align-items: center
+    overflow: hidden
+    max-width: 100%
+    min-height: 128px
+    display: flex
+    text-align: center
 .lyric-line-sync-editor
     flex: 1
     align-self: center

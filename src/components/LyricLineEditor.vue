@@ -26,7 +26,13 @@
                     @change="lyric.modifyRomanLine(props.index, editState.romanLine)" style="min-width: 100px" />
             </div>
         </div>
-        <NButton quaternary size="tiny" circle style="margin-left: 4px" @click="lyric.removeLine(props.index)">
+        <NIcon size="24" v-if="lyric.lyrics[props.index].isBackground" color="#1166FF">
+            <VideoBackgroundEffect24Filled />
+        </NIcon>
+        <NIcon size="24" v-if="lyric.lyrics[props.index].isDuet" color="#63e2b7">
+            <TextAlignRight24Filled />
+        </NIcon>
+        <NButton quaternary circle style="margin-left: 4px" @click="lyric.removeLine(props.index)">
             <NIcon>
                 <Dismiss12Filled />
             </NIcon>
@@ -38,7 +44,7 @@
 import { NInput, NCheckbox, NButton, NIcon, type InputInst } from "naive-ui";
 import { useEditingLyric, useRightClickLyricLine, useSettings } from "../store";
 import { nextTick, onMounted, reactive, ref } from "vue";
-import { Dismiss12Filled } from "@vicons/fluent";
+import { Dismiss12Filled, TextAlignRight24Filled, VideoBackgroundEffect24Filled } from "@vicons/fluent";
 import LyricWordEditor from "./LyricWordEditor.vue";
 
 const props = defineProps<{

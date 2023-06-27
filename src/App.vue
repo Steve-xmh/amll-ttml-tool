@@ -49,7 +49,7 @@
                     <NButton :quaternary="edit.editMode !== 'sync'" :type="edit.editMode === 'sync' ? 'primary' : 'default'"
                         @click="edit.editMode = 'sync'">打轴模式</NButton>
                 </div>
-                <div style="flex: 1; text-align: right">
+                <div style="flex: 1; text-align: right" class="app-name">
                     Apple Music-like Lyrics TTML Tool
                 </div>
             </NLayoutHeader>
@@ -253,4 +253,8 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="sass"></style>
+<style lang="sass">
+.app-name
+    @media screen and (max-width: 768px)
+        display: none
+</style>
