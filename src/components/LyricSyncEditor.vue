@@ -7,6 +7,7 @@
                 <div>{{ toTimestamp(word.startTime ?? 0) }}</div>
                 <div>{{ toTimestamp(word.endTime ?? 0) }}</div>
                 <div v-show="i === currentWord.wordIndex">{{ toTimestamp(audio.currentTime) }}</div>
+                <div v-show="i === currentWord.wordIndex" />
             </div>
         </div>
         <div class="lyric-line-sync-editor-no-selected" v-else>
@@ -17,40 +18,27 @@
         </div>
         <div class="lyric-line-viewer">
             <NList>
-                <NListItem v-for="(line, i) in lyric.lyrics"
-                    :class="{ 'lyric-line-item': true, 'lyric-line-item-selected': i === currentWord.lineIndex }" :key="i"
-                    @click="currentWord.lineIndex = i; currentWord.wordIndex = 0;">
-                    <div class="lyric-line-item-inner">
-                        <div>{{ toTimestamp(line.words?.[0]?.startTime ?? 0) }}</div>
-                        <div>
-                            <div><span v-for="word, wi in line.words" :key="wi"
-                                    :class="i === currentWord.lineIndex && wi === currentWord.wordIndex ? 'current-word' : ''">{{
-                                        word.word }}</span></div>
-                            <div v-show="settings.showTranslateLine">{{ line.translatedLyric }}</div>
-                            <div v-show="settings.showRomanLine">{{ line.romanLyric }}</div>
-                        </div>
-                    </div>
-                </NListItem>
+                <LyricSyncLine v-for="(line, i) in lyric.lyrics" :key="i" :index="i" />
             </NList>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { NList, NListItem } from "naive-ui";
+import { NList } from "naive-ui";
 import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../store";
-import { onMounted, onUnmounted, reactive, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
+import LyricSyncLine from "./LyricSyncLine.vue";
 
 const currentWord = useCurrentSyncWord();
-
 const audio = useAudio();
-
 const settings = useSettings();
 
 const syncEditor = ref<HTMLDivElement>();
 
-currentWord.$subscribe(() => {
-    if (syncEditor.value) {
+currentWord.$subscribe((mut) => {
+    const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
+    if (evt.key === "wordIndex" && syncEditor.value) {
         syncEditor.value.children.item(currentWord.wordIndex)?.scrollIntoView({
             behavior: "smooth",
             block: "center",
@@ -94,8 +82,8 @@ function moveLeft() {
     } while (lyric.lyrics[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
 }
 
+let noLast = false;
 function onKeyPress(e: KeyboardEvent) {
-    console.log(e)
     switch (e.code) {
         case "KeyD":
             moveRight();
@@ -104,6 +92,24 @@ function onKeyPress(e: KeyboardEvent) {
             break;
         case "KeyA":
             moveLeft();
+            e.preventDefault();
+            e.stopPropagation();
+            break;
+        case "KeyF":
+            if (noLast) {
+                lyric.setWordTimeNoLast(currentWord.lineIndex, currentWord.wordIndex, audio.currentTime);
+            } else {
+                lyric.setWordTime(currentWord.lineIndex, currentWord.wordIndex, audio.currentTime);
+            }
+            moveRight();
+            noLast = true;
+            e.preventDefault();
+            e.stopPropagation();
+            break;
+        case "KeyG":
+            lyric.setWordEndTime(currentWord.lineIndex, currentWord.wordIndex, audio.currentTime);
+            moveRight();
+            noLast = false;
             e.preventDefault();
             e.stopPropagation();
             break;
@@ -149,8 +155,7 @@ onUnmounted(() => {
     white-space: nowrap
     > *
         display: grid
-        grid-template: "selectMark selectMark" "word word" "startTime endTime"
-        gap: 8px
+        grid-template: "selectMark selectMark" "selectArrow selectArrow" "word word" "startTime endTime"
         align-content: center
         border-left: 1px solid #AAA4
         padding: 0 12px
@@ -168,6 +173,7 @@ onUnmounted(() => {
             text-align: left
         > *:nth-child(3)
             grid-area: endTime
+            margin-left: 8px
             font-size: 12px
             text-align: right
         > *:nth-child(4)
@@ -176,6 +182,16 @@ onUnmounted(() => {
             text-align: center
             color: #63e2b7
             font-weight: bold
+        > *:nth-child(5)
+            grid-area: selectArrow
+            align-self: center
+            justify-self: center
+            content: ""
+            width: 0
+            height: 0
+            border-left: 4px solid transparent
+            border-right: 4px solid transparent
+            border-top: 4px solid #63e2b7
 .word-selected
     grid-area: selectMark
 .lyric-line-viewer
@@ -184,22 +200,4 @@ onUnmounted(() => {
     align-self: stretch
     min-height: 0
     overflow: hidden auto
-.lyric-line-item
-    cursor: pointer
-    outline-offset: -4px
-    &.lyric-line-item-selected
-        outline: 3px solid #63e2b7
-    &:hover
-        background: var(--n-color-hover)
-        color: var(--n-text-color-hover)
-.current-word
-    color: #63e2b7
-    font-weight: bold
-.lyric-line-item-inner
-    display: flex
-    align-items: center
-    margin: 0 12px
-    gap: 12px
-    > *:nth-child(2)
-        font-size: 18px
 </style>
