@@ -17,11 +17,11 @@
                 <NInput class="new-word" round autosize ref="inputRef" placeholder="新单词" :value="editState.newWord"
                     @input="editState.newWord = $event" @change="onAddNewWord" style="min-width: 100px" />
             </div>
-            <div v-show="settings.showTranslateLine">
+            <div v-if="settings.showTranslateLine">
                 <NInput round placeholder="翻译歌词" :value="editState.translateLine" @input="editState.translateLine = $event"
                     @change="lyric.modifyTranslatedLine(props.index, editState.translateLine)" style="min-width: 100px" />
             </div>
-            <div v-show="settings.showRomanLine">
+            <div v-if="settings.showRomanLine">
                 <NInput round placeholder="音译歌词" :value="editState.romanLine" @input="editState.romanLine = $event"
                     @change="lyric.modifyRomanLine(props.index, editState.romanLine)" style="min-width: 100px" />
             </div>

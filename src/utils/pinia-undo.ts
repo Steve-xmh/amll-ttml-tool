@@ -1,14 +1,33 @@
 // 修改自 https://github.com/wobsoriano/pinia-undo
 // 因为目前那个 pinia-undo 那个库对深拷贝操作会发生异常
-// 所以自己修改了一个版本，使得可以手动记录快照，并正确撤销和重做
+// 所以自己修改了一个版本，使得可以手动记录快照，限制最高撤销次数，并正确撤销和重做
 
 import type { PiniaPluginContext } from "pinia";
 import structuredClone from "@ungap/structured-clone";
-import createStack from "undo-stacker";
 import { toRaw } from "vue";
 
 type Store = PiniaPluginContext["store"];
 type Options = PiniaPluginContext["options"];
+
+class UndoStack<T> {
+	private stack: T[] = [];
+	private stackPos = 0;
+	constructor(firstValue: T, private limit = 50) {
+		this.stack.push(firstValue);
+	}
+	push(value: T) {
+		this.stack.splice(this.stackPos++, 0, value);
+		if (this.stackPos >= this.limit) this.stack.shift();
+	}
+	undo() {
+		this.stackPos = Math.max(0, this.stackPos - 1);
+		return this.stack[this.stackPos--];
+	}
+	redo() {
+		this.stackPos = Math.min(this.stack.length - 1, this.stackPos + 1);
+		return this.stack[this.stackPos];
+	}
+}
 
 /**
  * Removes properties from the store state.
@@ -42,7 +61,7 @@ function removeOmittedKeys(options: Options, store: Store): Store["$state"] {
  */
 export function PiniaUndo({ store, options }: PiniaPluginContext) {
 	if (!options.undo?.enable) return;
-	const stack = createStack(removeOmittedKeys(options, store));
+	const stack = new UndoStack(removeOmittedKeys(options, store));
 	store.undo = () => {
 		const undeStore = structuredClone(stack.undo()); // 如果不做深拷贝，深度对象会导致传入 Store 后被二次修改，导致异常
 		store.$patch(undeStore);

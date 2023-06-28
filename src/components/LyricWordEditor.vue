@@ -1,7 +1,7 @@
 <template>
-    <NInput ref="inputRef" v-show="edit.enable" :value="edit.value" @input="edit.value = $event" @change="onFinishEditWord"
+    <NInput ref="inputRef" v-if="edit.enable" :value="edit.value" @input="edit.value = $event" @change="onFinishEditWord"
         @blur="onFinishEditWord" round autosize style="min-width: 100px" />
-    <NButton v-show="!edit.enable" round style="margin-right: 8px; padding-right: 8px" @click="onEditWord">
+    <NButton v-else round style="margin-right: 8px; padding-right: 8px" @click="onEditWord">
         {{ props.word.trim() }}
         <span v-if="props.word.length === 0" style="opacity: 0.5"> 空白 </span>
         <span v-else-if="props.word.trim().length === 0" style="opacity: 0.5">
@@ -27,7 +27,7 @@ const props = defineProps<{
     wordIndex: number;
     word: string;
 }>();
-const lyric = useEditingLyric();
+const { modifyWord, removeWord } = useEditingLyric();
 
 const edit = reactive({
     enable: false,
@@ -43,10 +43,10 @@ function onEditWord() {
 function onFinishEditWord() {
     edit.enable = false;
     if (edit.value !== props.word)
-        lyric.modifyWord(props.lineIndex, props.wordIndex, edit.value);
+        modifyWord(props.lineIndex, props.wordIndex, edit.value);
 }
 
 function onDeleteWord() {
-    lyric.removeWord(props.lineIndex, props.wordIndex);
+    removeWord(props.lineIndex, props.wordIndex);
 }
 </script>

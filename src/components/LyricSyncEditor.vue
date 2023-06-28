@@ -6,8 +6,8 @@
                 <div>{{ word.word }}</div>
                 <div>{{ toTimestamp(word.startTime ?? 0) }}</div>
                 <div>{{ toTimestamp(word.endTime ?? 0) }}</div>
-                <div v-show="i === currentWord.wordIndex">{{ toTimestamp(audio.currentTime) }}</div>
-                <div v-show="i === currentWord.wordIndex" />
+                <div v-if="i === currentWord.wordIndex">{{ toTimestamp(currentTime) }}</div>
+                <div v-if="i === currentWord.wordIndex" />
             </div>
         </div>
         <div class="lyric-line-sync-editor-no-selected" v-else>
@@ -28,10 +28,11 @@
 import { NList } from "naive-ui";
 import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../store";
 import { onMounted, onUnmounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import LyricSyncLine from "./LyricSyncLine.vue";
 
 const currentWord = useCurrentSyncWord();
-const audio = useAudio();
+const { currentTime } = storeToRefs(useAudio());
 const settings = useSettings();
 
 const syncEditor = ref<HTMLDivElement>();
@@ -60,16 +61,17 @@ function toTimestamp(duration: number) {
 }
 
 const lyric = useEditingLyric();
+const lyricRef = storeToRefs(lyric);
 
 function moveRight() {
     do {
-        if (currentWord.wordIndex < lyric.lyrics[currentWord.lineIndex].words.length - 1) {
+        if (currentWord.wordIndex < lyricRef.lyrics.value[currentWord.lineIndex].words.length - 1) {
             currentWord.wordIndex++;
-        } else if (currentWord.lineIndex < lyric.lyrics.length - 1) {
+        } else if (currentWord.lineIndex < lyricRef.lyrics.value.length - 1) {
             currentWord.wordIndex = 0;
             currentWord.lineIndex++;
         }
-    } while (lyric.lyrics[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
+    } while (lyricRef.lyrics.value[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
 }
 
 function moveLeft() {
@@ -77,9 +79,9 @@ function moveLeft() {
         if (currentWord.wordIndex > 0) {
             currentWord.wordIndex--;
         } else if (currentWord.lineIndex > 0) {
-            currentWord.wordIndex = lyric.lyrics[--currentWord.lineIndex].words.length - 1;
+            currentWord.wordIndex = lyricRef.lyrics.value[--currentWord.lineIndex].words.length - 1;
         }
-    } while (lyric.lyrics[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
+    } while (lyricRef.lyrics.value[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
 }
 
 let noLast = false;
@@ -97,19 +99,19 @@ function onKeyPress(e: KeyboardEvent) {
             break;
         case "KeyF":
             if (noLast) {
-                lyric.setWordTimeNoLast(currentWord.lineIndex, currentWord.wordIndex, audio.currentTime);
+                lyric.setWordTimeNoLast(currentWord.lineIndex, currentWord.wordIndex, currentTime.value);
             } else {
-                lyric.setWordTime(currentWord.lineIndex, currentWord.wordIndex, audio.currentTime);
+                lyric.setWordTime(currentWord.lineIndex, currentWord.wordIndex, currentTime.value);
             }
             moveRight();
-            noLast = true;
+            noLast = false;
             e.preventDefault();
             e.stopPropagation();
             break;
         case "KeyG":
-            lyric.setWordEndTime(currentWord.lineIndex, currentWord.wordIndex, audio.currentTime);
+            lyric.setWordEndTime(currentWord.lineIndex, currentWord.wordIndex, currentTime.value);
             moveRight();
-            noLast = false;
+            noLast = true;
             e.preventDefault();
             e.stopPropagation();
             break;
