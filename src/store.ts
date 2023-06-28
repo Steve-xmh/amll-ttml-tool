@@ -42,7 +42,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 					{
 						word: line.originalLyric,
 						startTime: line.beginTime,
-						endTime: line.duration,
+						endTime: line.beginTime + line.duration,
 					},
 				],
 				translatedLyric: line.translatedLyric ?? "",

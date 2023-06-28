@@ -2,9 +2,7 @@
     <NLayoutFooter bordered style="padding: 16px; gap: 16px; display: flex; align-items: center">
         <NUpload :default-upload="false" :multiple="false" :show-file-list="false" style="width: unset"
             @change="onUploadMusic">
-            <NButton v-if="!curFile">{{
-                "加载音乐"
-            }}</NButton>
+            <NButton v-if="!curFile">{{ "加载音乐" }}</NButton>
             <NButton v-else quaternary circle>
                 <NIcon size="18">
                     <MusicNote224Filled />
@@ -20,19 +18,26 @@
         </NButton>
         <div>{{ toDuration(audio.currentTime / 1000) }}</div>
         <NSlider :disabled="!audio.canPlay" :max="audioPlayer.duration" :value="Math.floor(audio.currentTime / 1000)"
-            :format-tooltip="v => toDuration(v)"
-            @update:value="audioPlayer.currentTime = $event; audio.currentTime = $event" />
+            :format-tooltip="(v) => toDuration(v)" @update:value="
+                audioPlayer.currentTime = $event;
+            audio.currentTime = $event;
+            " />
         <div>{{ toDuration((audio.currentTime - audio.duration) / 1000) }}</div>
         <NIcon size="18">
             <TopSpeed24Regular />
         </NIcon>
-        <NSlider :min="0.25" :max="4" :step="0.25" :value="settings.speed" :format-tooltip="v => `${v.toFixed(2)}x`"
-            @update:value="settings.speed = $event; audioPlayer.playbackRate = $event" style="max-width: 100px" />
+        <NSlider :min="0.25" :max="4" :step="0.25" :value="settings.speed" :format-tooltip="(v) => `${v.toFixed(2)}x`"
+            @update:value="
+                settings.speed = $event;
+            audioPlayer.playbackRate = $event;
+            " style="max-width: 100px" />
         <NIcon size="18">
             <Speaker248Filled />
         </NIcon>
-        <NSlider :max="1" :step="0.01" :value="settings.volume" :format-tooltip="v => `${(v * 100) | 0}%`"
-            @update:value="settings.volume = $event; audioPlayer.volume = $event" :min="0" style="max-width: 100px" />
+        <NSlider :max="1" :step="0.01" :value="settings.volume" :format-tooltip="(v) => `${(v * 100) | 0}%`" @update:value="
+            settings.volume = $event;
+        audioPlayer.volume = $event;
+        " :min="0" style="max-width: 100px" />
     </NLayoutFooter>
 </template>
 
@@ -45,7 +50,13 @@ import {
     NUpload,
     type UploadFileInfo,
 } from "naive-ui";
-import { Play48Filled, Pause48Filled, Speaker248Filled, MusicNote224Filled, TopSpeed24Regular } from "@vicons/fluent";
+import {
+    Play48Filled,
+    Pause48Filled,
+    Speaker248Filled,
+    MusicNote224Filled,
+    TopSpeed24Regular,
+} from "@vicons/fluent";
 import { ref, reactive, onUnmounted, onMounted } from "vue";
 import { useAudio, useSettings } from "../store";
 
@@ -54,12 +65,18 @@ const audioPlayer = ref(new Audio());
 const settings = useSettings();
 const audio = useAudio();
 
-settings.$subscribe(() => {
-    audioPlayer.value.playbackRate = Math.max(0.25, Math.min(4, settings.speed));
-    audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
-}, {
-    flush: "post",
-})
+settings.$subscribe(
+    () => {
+        audioPlayer.value.playbackRate = Math.max(
+            0.25,
+            Math.min(4, settings.speed)
+        );
+        audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
+    },
+    {
+        flush: "post",
+    }
+);
 
 function toDuration(duration: number) {
     const isRemainTime = duration < 0;
@@ -91,10 +108,16 @@ function onUploadMusic(options: {
 
 onMounted(() => {
     audioPlayer.value.addEventListener("canplay", () => {
-        audio.playing = false;
         audio.canPlay = true;
-        audioPlayer.value.playbackRate = Math.max(0.25, Math.min(4, settings.speed));
+        audioPlayer.value.playbackRate = Math.max(
+            0.25,
+            Math.min(4, settings.speed)
+        );
         audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
+    });
+
+    audioPlayer.value.addEventListener("seeked", () => {
+        audio.playing = true;
     });
 
     audioPlayer.value.addEventListener("play", () => {
@@ -116,18 +139,19 @@ onMounted(() => {
                 audio.currentTime = audioPlayer.value.currentTime * 1000;
                 frameCb.value = requestAnimationFrame(onFrame);
             }
-        }
-        frameCb.value = requestAnimationFrame(onFrame)
+        };
+        frameCb.value = requestAnimationFrame(onFrame);
     });
 
     audioPlayer.value.playbackRate = Math.max(0.25, Math.min(4, settings.speed));
     audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
-})
+});
 
 onUnmounted(() => {
     if (audio.audioURL.length > 0) {
         URL.revokeObjectURL(audio.audioURL);
     }
-})
-
+    audioPlayer.value.pause();
+    audioPlayer.value.remove();
+});
 </script>

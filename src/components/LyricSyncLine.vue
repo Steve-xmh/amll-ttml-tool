@@ -1,17 +1,28 @@
 <template>
-    <NListItem :class="{ 'lyric-line-item': true, 'lyric-line-item-selected': currentWord.lineIndex === props.index }"
-        @click="currentWord.lineIndex = props.index; currentWord.wordIndex = 0;" ref="itemRef">
+    <NListItem :class="{
+        'lyric-line-item': true,
+        'lyric-line-item-selected': currentWord.lineIndex === props.index,
+    }" @click="
+    currentWord.lineIndex = props.index;
+currentWord.wordIndex = 0;
+" ref="itemRef">
         <div class="lyric-line-item-inner">
             <div>{{ toTimestamp(line.words?.[0]?.startTime ?? 0) }}</div>
             <div>
                 <div :class="{
-                    'hot-line': line.words.length > 0 && line.words[0].startTime <= currentTime && line.words[line.words.length - 1].endTime > currentTime
-                }"><span v-for="word, wi in line.words" :key="wi"
-                        :class="{
-                            'current-word': props.index === currentWord.lineIndex && wi === currentWord.wordIndex,
-                            'hot-word': word.startTime <= currentTime && word.endTime > currentTime
-                        }">{{
-                            word.word }}</span></div>
+                    'hot-line':
+                        line.words.length > 0 &&
+                        line.words[0].startTime <= currentTime &&
+                        line.words[line.words.length - 1].endTime > currentTime,
+                }">
+                    <span v-for="(word, wi) in line.words" :key="wi" :class="{
+                        'current-word':
+                            props.index === currentWord.lineIndex &&
+                            wi === currentWord.wordIndex,
+                        'hot-word':
+                            word.startTime <= currentTime && word.endTime > currentTime,
+                    }">{{ word.word }}</span>
+                </div>
                 <div v-if="settings.showTranslateLine">{{ line.translatedLyric }}</div>
                 <div v-if="settings.showRomanLine">{{ line.romanLyric }}</div>
             </div>
@@ -21,11 +32,16 @@
 
 <script setup lang="ts">
 import { NListItem } from "naive-ui";
-import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../store";
+import {
+    useEditingLyric,
+    useSettings,
+    useAudio,
+    useCurrentSyncWord,
+} from "../store";
 import { storeToRefs } from "pinia";
-import { ref } from "vue"
+import { ref } from "vue";
 const itemRef = ref<{
-    $el?: HTMLLIElement
+    $el?: HTMLLIElement;
 }>();
 
 const { currentTime } = storeToRefs(useAudio());
@@ -33,21 +49,28 @@ const currentWord = useCurrentSyncWord();
 const settings = useSettings();
 
 const props = defineProps<{
-    index: number
+    index: number;
 }>();
 const lyric = storeToRefs(useEditingLyric());
 const line = lyric.lyrics.value[props.index];
 
-currentWord.$subscribe((mut) => {
-    const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
-    if (evt.key === "lineIndex" && itemRef.value && currentWord.lineIndex === props.index) {
-        itemRef.value.$el?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-            inline: "center",
-        });
-    }
-}, { flush: "post" });
+currentWord.$subscribe(
+    (mut) => {
+        const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
+        if (
+            evt.key === "lineIndex" &&
+            itemRef.value &&
+            currentWord.lineIndex === props.index
+        ) {
+            itemRef.value.$el?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "center",
+            });
+        }
+    },
+    { flush: "post" }
+);
 
 function toTimestamp(duration: number) {
     const isRemainTime = duration < 0;
@@ -60,7 +83,6 @@ function toTimestamp(duration: number) {
 
     return `${isRemainTime ? "-" : ""}${min}:${secText}`;
 }
-
 </script>
 
 <style lang="sass">
