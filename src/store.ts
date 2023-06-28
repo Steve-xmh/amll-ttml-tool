@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { parseLyric } from "./utils/ttml-lyric-parser";
 import { cut } from "./libs/jieba-wasm";
 import { toRaw } from "vue";
+import exportTTMLText from "./utils/ttml-writer";
+import type { LyricLine as RawLyricLine } from "./utils/lyric-types";
 
 export interface LyricWord {
 	startTime: number;
@@ -110,11 +112,118 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				this.record();
 			}
 		},
+		toggleSelectedLineBackground() {
+			const hasNoBg =
+				this.lyrics.filter((line) => line.selected && !line.isBackground)
+					.length > 0;
+			this.lyrics.forEach((line) => {
+				if (line.selected) line.isBackground = hasNoBg;
+			});
+		},
+		toggleSelectedLineDuet() {
+			const hasNoDuet =
+				this.lyrics.filter((line) => line.selected && !line.isDuet).length > 0;
+			this.lyrics.forEach((line) => {
+				if (line.selected) line.isDuet = hasNoDuet;
+			});
+		},
 		removeWord(lineIndex: number, wordIndex: number) {
 			if (this.lyrics[lineIndex]) {
 				this.lyrics[lineIndex].words.splice(wordIndex, 1);
 				this.record();
 			}
+		},
+		setWordTime(lineIndex: number, wordIndex: number, time: number) {
+			if (this.lyrics?.[lineIndex]?.words?.[wordIndex]) {
+				this.lyrics[lineIndex].words[wordIndex].startTime = time;
+				if (wordIndex > 0) {
+					this.lyrics[lineIndex].words[wordIndex - 1].endTime = time;
+				}
+				let lastLineIndex = lineIndex;
+				let lastWordIndex = wordIndex;
+				do {
+					if (lastWordIndex > 0) {
+						lastWordIndex--;
+					} else if (lastLineIndex > 0) {
+						lastWordIndex = this.lyrics[--lastLineIndex].words.length - 1;
+					}
+				} while (
+					this.lyrics[lastLineIndex].words[lastWordIndex].word.trim().length ===
+					0
+				);
+				if (lastLineIndex !== lineIndex || lastWordIndex !== wordIndex) {
+					this.lyrics[lastLineIndex].words[lastWordIndex].endTime = time;
+				}
+				this.record();
+			}
+		},
+		setWordEndTime(lineIndex: number, wordIndex: number, time: number) {
+			if (this.lyrics?.[lineIndex]?.words?.[wordIndex]) {
+				this.lyrics[lineIndex].words[wordIndex].endTime = time;
+				this.record();
+			}
+		},
+		setWordTimeNoLast(lineIndex: number, wordIndex: number, time: number) {
+			if (this.lyrics?.[lineIndex]?.words?.[wordIndex]) {
+				this.lyrics[lineIndex].words[wordIndex].startTime = time;
+				this.record();
+			}
+		},
+		toRawLine(lineIndex: number): RawLyricLine {
+			const line = this.lyrics[lineIndex];
+			if (line) {
+				if (line.words.length === 1) {
+					return {
+						originalLyric: line.words[0].word,
+						beginTime: line.words[0].startTime,
+						duration: line.words[0].endTime - line.words[0].startTime,
+						translatedLyric: line.translatedLyric,
+						romanLyric: line.romanLyric,
+						shouldAlignRight: line.isDuet,
+					};
+				} else {
+					return {
+						originalLyric: line.words.map((w) => w.word).join(""),
+						beginTime: line.words[0].startTime,
+						duration:
+							line.words[line.words.length - 1].endTime -
+							line.words[0].startTime,
+						dynamicLyricTime: line.words[0].startTime,
+						shouldAlignRight: line.isDuet,
+						translatedLyric: line.translatedLyric,
+						romanLyric: line.romanLyric,
+						dynamicLyric: line.words.map((w) => ({
+							word: w.word,
+							time: w.startTime,
+							duration: w.endTime - w.startTime,
+							flag: 0,
+						})),
+					};
+				}
+			} else {
+				throw new TypeError(`第 ${lineIndex} 行歌词不存在`);
+			}
+		},
+		toTTML() {
+			const transformed: RawLyricLine[] = [];
+
+			for (let i = 0; i < this.lyrics.length; i++) {
+				const line = this.lyrics[i];
+				if (line.isBackground) {
+					const lastLine = transformed[transformed.length - 1];
+					if (lastLine && lastLine.backgroundLyric === undefined) {
+						lastLine.backgroundLyric = this.toRawLine(i);
+					} else {
+						throw new TypeError(
+							`第 ${i} 行背景人声歌词重复，每行普通歌词只能拥有一个背景人声歌词`,
+						);
+					}
+				} else {
+					transformed.push(this.toRawLine(i));
+				}
+			}
+
+			return exportTTMLText(transformed);
 		},
 		async splitLineByJieba() {
 			this.lyrics = this.lyrics.map((line) => {
@@ -175,6 +284,7 @@ export const useSettings = defineStore("settings", {
 	state: () => ({
 		showTranslateLine: false,
 		showRomanLine: false,
+		volume: 0,
 	}),
 	persist: true,
 });
@@ -182,7 +292,10 @@ export const useSettings = defineStore("settings", {
 export const useAudio = defineStore("audio", {
 	state: () => ({
 		playing: false,
+		canPlay: false,
+		audioURL: "",
 		currentTime: 0,
+		duration: 0,
 	}),
 });
 

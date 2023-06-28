@@ -8,12 +8,12 @@
                         { label: '打开歌词', key: 'open' },
                         { type: 'divider' },
                         { label: '保存歌词', key: 'save' },
-                        { label: '另存为歌词', key: 'save-as' },
+                        // { label: '另存为歌词', key: 'save-as' },
+                        // { type: 'divider' },
+                        // { label: '导入歌词', key: 'import' },
+                        // { label: '导出歌词', key: 'export' },
                         { type: 'divider' },
-                        { label: '导入歌词', key: 'import' },
-                        { label: '导出歌词', key: 'export' },
-                        { type: 'divider' },
-                        { label: '设置', key: 'setting' },
+                        // { label: '设置', key: 'setting' },
                         { label: '关于', key: 'about' },
                     ]">
                         <NButton quaternary>文件</NButton>
@@ -24,6 +24,9 @@
                         { label: '选中所有歌词行', key: 'select-all' },
                         { label: '取消选中所有歌词行', key: 'unselect-all' },
                         { label: '反选所有歌词行', key: 'invert-select-all' },
+                        { type: 'divider' },
+                        { label: '切换所选歌词行为背景人声', key: 'toggle-bg' },
+                        { label: '切换所选歌词行为对唱人声', key: 'toggle-duet' },
                     ]">
                         <NButton quaternary>编辑</NButton>
                     </NDropdown>
@@ -35,9 +38,9 @@
                     </NDropdown>
                     <NDropdown trigger="click" @select="onSelectMenu" :options="[
                         { label: '使用 JieBa 对歌词行分词', key: 'split-words-jieba' },
-                        { label: '简繁转换', key: 'trad-to-simp' },
-                        { label: '生成日语音译歌词', key: 'gen-jpn' },
-                        { label: '生成粤语音译歌词', key: 'gen-cat' },
+                        // { label: '简繁转换', key: 'trad-to-simp' },
+                        // { label: '生成日语音译歌词', key: 'gen-jpn' },
+                        // { label: '生成粤语音译歌词', key: 'gen-cat' },
                     ]">
                         <NButton quaternary>工具</NButton>
                     </NDropdown>
@@ -57,28 +60,7 @@
                 <LyricEditor v-show="edit.editMode === 'edit'" />
                 <LyricSyncEditor v-show="edit.editMode === 'sync'" />
             </NLayoutContent>
-            <audio :src="curFile?.url ?? ''" ref="globalAudio"></audio>
-            <NLayoutFooter bordered style="padding: 16px; gap: 16px; display: flex; align-items: center">
-                <NUpload :default-upload="false" :multiple="false" :show-file-list="false" style="width: unset"
-                    @change="onUploadMusic">
-                    <NButton :quaternary="!!curFile">{{
-                        curFile?.name ?? "加载音乐"
-                    }}</NButton>
-                </NUpload>
-                <NButton text :disabled="!playState.canPlay" @click="playState.isPlaying ? audio.pause() : audio.play()">
-                    <NIcon>
-                        <Pause48Filled v-if="playState.isPlaying" />
-                        <Play48Filled v-else />
-                    </NIcon>
-                </NButton>
-                <div>{{ toDuration(playState.curPos) }}</div>
-                <NSlider :max="playState.totalTime" :value="playState.curPos" />
-                <div>{{ toDuration(playState.curPos - playState.totalTime) }}</div>
-                <NIcon>
-                    <Speaker248Filled />
-                </NIcon>
-                <NSlider :max="1" :step="0.01" :value="playState.volume" :min="0" style="max-width: 100px" />
-            </NLayoutFooter>
+            <AudioPlayerBar />
         </NLayout>
         <NDropdown trigger="manual" :show="lyricLineMenu.show" :x="lyricLineMenu.x" :y="lyricLineMenu.y"
             placement="bottom-start" :options="[
@@ -97,6 +79,13 @@
                     ],
                 },
             ]" @clickoutside="lyricLineMenu.show = false" />
+        <NModal v-model:show="aboutModalOpened" preset="card" style="max-width: 600px;"
+            title="Apple Music-like Lyrics TTML Tool">
+            <div>一个用于 Apple Music 的逐词歌词 TTML 编辑和时间轴工具</div>
+            <div>
+                <NButton @click="goToRepo">Github</NButton>
+            </div>
+        </NModal>
     </NConfigProvider>
 </template>
 
@@ -105,41 +94,33 @@ import {
     NLayout,
     NLayoutHeader,
     NLayoutContent,
-    NLayoutFooter,
     NDropdown,
-    NSlider,
-    NIcon,
     NConfigProvider,
     NButton,
     NDivider,
-    NUpload,
     darkTheme,
-    type UploadFileInfo,
+    NModal,
 } from "naive-ui";
-import { Play48Filled, Pause48Filled, Speaker248Filled } from "@vicons/fluent";
-import { ref, reactive, onUnmounted } from "vue";
-import { useAudio, useEditingLyric, useRightClickLyricLine, useSettings } from "./store";
+import { ref, reactive, onMounted } from "vue";
+import saveFile from 'save-file';
+import { useEditingLyric, useRightClickLyricLine, useSettings } from "./store";
 import LyricEditor from "./components/LyricEditor.vue";
 import { parseLyric } from "./utils/ttml-lyric-parser";
 import LyricSyncEditor from "./components/LyricSyncEditor.vue";
+import AudioPlayerBar from "./components/AudioPlayerBar.vue";
 
-const curFile = ref<UploadFileInfo>();
-const audio = ref(new Audio());
-const playState = reactive({
-    curPos: 0,
-    totalTime: 0,
-    isPlaying: false,
-    canPlay: false,
-    volume: 0.5,
-});
+const aboutModalOpened = ref(false);
 const edit = reactive({
     editMode: "edit"
 });
 const lyric = useEditingLyric();
 const lyricLineMenu = useRightClickLyricLine();
 const settings = useSettings();
-const audioStore = useAudio();
 let curAudioURL = "";
+
+function goToRepo() {
+    open("https://github.com/Steve-xmh/amll-ttml-tool");
+}
 
 function toDuration(duration: number) {
     const isRemainTime = duration < 0;
@@ -170,6 +151,16 @@ function onSelectMenu(key: string) {
                     lyric.loadLyric(result);
                 }
             });
+            fileDialog.remove();
+            break;
+        }
+        case "save": {
+            const output = lyric.toTTML();
+            saveFile(new TextEncoder().encode(output), "lyric.ttml");
+            break;
+        }
+        case "about": {
+            aboutModalOpened.value = true;
             break;
         }
         case "undo": {
@@ -204,67 +195,22 @@ function onSelectMenu(key: string) {
             lyric.splitLineByJieba();
             break;
         }
-    }
-}
-
-audio.value.volume = playState.volume;
-
-audio.value.addEventListener("canplay", () => {
-    playState.isPlaying = false;
-    playState.canPlay = true;
-    playState.curPos = audio.value.currentTime;
-    playState.totalTime = audio.value.duration;
-});
-
-let frameCb = ref(0);
-audio.value.addEventListener("timeupdate", () => {
-    playState.curPos = audio.value.currentTime;
-    audioStore.currentTime = audio.value.currentTime * 1000;
-    if (frameCb.value) {
-        cancelAnimationFrame(frameCb.value);
-    }
-    const onFrame = () => {
-        if (audioStore.playing) {
-            audioStore.currentTime = audio.value.currentTime * 1000;
-            frameCb.value = requestAnimationFrame(onFrame);
+        case "toggle-bg": {
+            lyric.toggleSelectedLineBackground();
+            break;
+        }
+        case "toggle-duet": {
+            lyric.toggleSelectedLineDuet();
+            break;
         }
     }
-    frameCb.value = requestAnimationFrame(onFrame)
-});
-
-audio.value.addEventListener("play", () => {
-    playState.isPlaying = true;
-    audioStore.playing = true;
-});
-
-audio.value.addEventListener("pause", () => {
-    playState.isPlaying = false;
-    audioStore.playing = true;
-});
-
-function onUploadMusic(options: {
-    file: UploadFileInfo;
-    fileList: Array<UploadFileInfo>;
-    event?: Event;
-}) {
-    if (curAudioURL) {
-        URL.revokeObjectURL(curAudioURL);
-    }
-    playState.canPlay = false;
-    if (options.file.file) {
-        curFile.value = options.file;
-        console.log("音乐上传", options);
-        curAudioURL = URL.createObjectURL(options.file.file);
-        audio.value.src = curAudioURL;
-    }
 }
-
-onUnmounted(() => {
-    if (curAudioURL) {
-        URL.revokeObjectURL(curAudioURL);
-    }
-    audio.value.pause();
-    audio.value.remove();
+onMounted(() => {
+    // ask before page close
+    window.addEventListener("beforeunload", evt => {
+        evt.preventDefault();
+        return evt.returnValue = "";
+    })
 });
 </script>
 
