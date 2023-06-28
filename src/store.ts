@@ -284,7 +284,8 @@ export const useSettings = defineStore("settings", {
 	state: () => ({
 		showTranslateLine: false,
 		showRomanLine: false,
-		volume: 0,
+		volume: 0.5,
+		speed: 1,
 	}),
 	persist: true,
 });

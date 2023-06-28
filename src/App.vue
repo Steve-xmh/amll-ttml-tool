@@ -57,8 +57,8 @@
                 </div>
             </NLayoutHeader>
             <NLayoutContent style="flex: 1">
-                <LyricEditor v-show="edit.editMode === 'edit'" />
-                <LyricSyncEditor v-show="edit.editMode === 'sync'" />
+                <LyricEditor v-if="edit.editMode === 'edit'" />
+                <LyricSyncEditor v-else-if="edit.editMode === 'sync'" />
             </NLayoutContent>
             <AudioPlayerBar />
         </NLayout>

@@ -4,11 +4,16 @@
         <div class="lyric-line-item-inner">
             <div>{{ toTimestamp(line.words?.[0]?.startTime ?? 0) }}</div>
             <div>
-                <div class="sync-line"><span v-for="word, wi in line.words" :key="wi"
-                        :class="props.index === currentWord.lineIndex && wi === currentWord.wordIndex ? 'current-word' : ''">{{
+                <div :class="{
+                    'hot-line': line.words.length > 0 && line.words[0].startTime <= currentTime && line.words[line.words.length - 1].endTime > currentTime
+                }"><span v-for="word, wi in line.words" :key="wi"
+                        :class="{
+                            'current-word': props.index === currentWord.lineIndex && wi === currentWord.wordIndex,
+                            'hot-word': word.startTime <= currentTime && word.endTime > currentTime
+                        }">{{
                             word.word }}</span></div>
-                <div v-show="settings.showTranslateLine">{{ line.translatedLyric }}</div>
-                <div v-show="settings.showRomanLine">{{ line.romanLyric }}</div>
+                <div v-if="settings.showTranslateLine">{{ line.translatedLyric }}</div>
+                <div v-if="settings.showRomanLine">{{ line.romanLyric }}</div>
             </div>
         </div>
     </NListItem>
@@ -16,20 +21,22 @@
 
 <script setup lang="ts">
 import { NListItem } from "naive-ui";
-import { useEditingLyric, useSettings, useCurrentSyncWord } from "../store";
+import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../store";
+import { storeToRefs } from "pinia";
 import { ref } from "vue"
 const itemRef = ref<{
     $el?: HTMLLIElement
 }>();
 
+const { currentTime } = storeToRefs(useAudio());
 const currentWord = useCurrentSyncWord();
 const settings = useSettings();
 
 const props = defineProps<{
     index: number
 }>();
-const lyric = useEditingLyric();
-const line = lyric.lyrics[props.index];
+const lyric = storeToRefs(useEditingLyric());
+const line = lyric.lyrics.value[props.index];
 
 currentWord.$subscribe((mut) => {
     const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
@@ -67,6 +74,10 @@ function toTimestamp(duration: number) {
     &:hover
         background: var(--n-color-hover)
         color: var(--n-text-color-hover)
+.hot-line
+    color: #63e2b766
+.hot-word
+    color: #63e2b7AA
 .current-word
     color: #63e2b7
     font-weight: bold
