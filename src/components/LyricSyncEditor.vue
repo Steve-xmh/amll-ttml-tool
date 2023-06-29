@@ -1,5 +1,9 @@
 <template>
-    <div class="lyric-sync-editor">
+    <div class="lyric-sync-editor" :style="{
+        '--n-theme-color': themeVars.primaryColorSuppl,
+        '--n-theme-color-hover': themeVars.primaryColorHover,
+        '--n-theme-color-pressed': themeVars.primaryColorPressed,
+    }">
         <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]" ref="syncEditor">
             <div v-for="(word, i) in lyric.lyrics[currentWord.lineIndex].words" v-show="word.word.trim().length > 0"
                 :key="i" @click="currentWord.wordIndex = i">
@@ -25,26 +29,30 @@
 </template>
 
 <script setup lang="ts">
-import { NList } from "naive-ui";
+import { NList, useThemeVars } from "naive-ui";
 import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../store";
-import { onMounted, onUnmounted, ref } from "vue";
+import { nextTick, onMounted, onUnmounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import LyricSyncLine from "./LyricSyncLine.vue";
 
 const currentWord = useCurrentSyncWord();
 const { currentTime } = storeToRefs(useAudio());
 const settings = useSettings();
+const themeVars = useThemeVars();
 
 const syncEditor = ref<HTMLDivElement>();
 
 currentWord.$subscribe((mut) => {
     const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
     if (evt.key === "wordIndex" && syncEditor.value) {
-        syncEditor.value.children.item(currentWord.wordIndex)?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-            inline: "center",
-        });
+        const el = syncEditor.value.children.item(currentWord.wordIndex)
+        nextTick(() => {
+            el?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "center",
+            });
+        })
     }
 }, { flush: "post" });
 
@@ -182,7 +190,7 @@ onUnmounted(() => {
             grid-area: selectMark
             font-size: 12px
             text-align: center
-            color: #63e2b7
+            color: var(--n-theme-color)
             font-weight: bold
         > *:nth-child(5)
             grid-area: selectArrow
@@ -193,7 +201,7 @@ onUnmounted(() => {
             height: 0
             border-left: 4px solid transparent
             border-right: 4px solid transparent
-            border-top: 4px solid #63e2b7
+            border-top: 4px solid var(--n-theme-color)
 .word-selected
     grid-area: selectMark
 .lyric-line-viewer

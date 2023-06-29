@@ -109,6 +109,7 @@ function onUploadMusic(options: {
 onMounted(() => {
     audioPlayer.value.addEventListener("canplay", () => {
         audio.canPlay = true;
+        audio.duration = audioPlayer.value.duration * 1000;
         audioPlayer.value.playbackRate = Math.max(
             0.25,
             Math.min(4, settings.speed)

@@ -2,11 +2,7 @@
     <NInput ref="inputRef" v-if="edit.enable" :value="edit.value" @input="edit.value = $event" @change="onFinishEditWord"
         @blur="onFinishEditWord" round autosize style="min-width: 100px" />
     <NButton v-else round style="margin-right: 8px; padding-right: 8px" @click="onEditWord">
-        {{ props.word.trim() }}
-        <span v-if="props.word.length === 0" style="opacity: 0.5"> 空白 </span>
-        <span v-else-if="props.word.trim().length === 0" style="opacity: 0.5">
-            空格x{{ props.word.length }}
-        </span>
+        {{ displayWord }}
         <NButton quaternary size="tiny" circle style="margin-left: 4px" @click.stop="onDeleteWord">
             <NIcon>
                 <Dismiss12Filled />
@@ -28,6 +24,16 @@ const props = defineProps<{
     word: string;
 }>();
 const { modifyWord, removeWord } = useEditingLyric();
+
+const displayWord = computed(() => {
+    if (props.word.length === 0) {
+        return "空白"
+    } else if (props.word.trim().length === 0) {
+        return "空格x" + props.word.length
+    } else {
+        return props.word
+    }
+})
 
 const edit = reactive({
     enable: false,

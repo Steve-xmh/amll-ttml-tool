@@ -1,5 +1,6 @@
 <template>
-    <NConfigProvider :theme="darkTheme">
+    <NConfigProvider useOsTheme>
+        <NGlobalStyle />
         <NLayout position="absolute" content-style="display: flex; flex-direction: column;">
             <NLayoutHeader bordered style="padding: 16px; display: flex; align-items: center">
                 <div style="flex: 1">
@@ -100,6 +101,7 @@ import {
     NDivider,
     darkTheme,
     NModal,
+NGlobalStyle,
 } from "naive-ui";
 import { ref, reactive, onMounted } from "vue";
 import saveFile from 'save-file';

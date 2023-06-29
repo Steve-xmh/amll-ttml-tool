@@ -39,7 +39,7 @@ import {
     useCurrentSyncWord,
 } from "../store";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 const itemRef = ref<{
     $el?: HTMLLIElement;
 }>();
@@ -62,11 +62,14 @@ currentWord.$subscribe(
             itemRef.value &&
             currentWord.lineIndex === props.index
         ) {
-            itemRef.value.$el?.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-                inline: "center",
-            });
+            const el = itemRef.value.$el;
+            nextTick(() => {
+                el?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                    inline: "center",
+                });
+            })
         }
     },
     { flush: "post" }
@@ -92,16 +95,17 @@ function toTimestamp(duration: number) {
     cursor: pointer
     outline-offset: -4px
     &.lyric-line-item-selected
-        outline: 3px solid #63e2b7
+        outline: 3px solid var(--n-theme-color) //#63e2b7
     &:hover
         background: var(--n-color-hover)
         color: var(--n-text-color-hover)
 .hot-line
-    color: #63e2b766
+    color: var(--n-theme-color-hover)
+    opacity: 0.7
 .hot-word
-    color: #63e2b7AA
+    color: var(--n-theme-color-pressed)
 .current-word
-    color: #63e2b7
+    color: var(--n-theme-color)
     font-weight: bold
 .lyric-line-item-inner
     display: flex
