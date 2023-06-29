@@ -1,5 +1,5 @@
 <template>
-    <NLayoutFooter bordered style="padding: 16px; gap: 16px; display: flex; align-items: center">
+    <NLayoutFooter bordered class="audio-player-bar">
         <NUpload :default-upload="false" :multiple="false" :show-file-list="false" style="width: unset"
             @change="onUploadMusic">
             <NButton v-if="!curFile">{{ "加载音乐" }}</NButton>
@@ -22,19 +22,19 @@
                 audioPlayer.currentTime = $event;
             audio.currentTime = $event;
             " />
-        <div>{{ toDuration((audio.currentTime - audio.duration) / 1000) }}</div>
-        <NIcon size="18">
+        <div class="hide-if-small">{{ toDuration((audio.currentTime - audio.duration) / 1000) }}</div>
+        <NIcon class="hide-if-small" size="18">
             <TopSpeed24Regular />
         </NIcon>
-        <NSlider :min="0.25" :max="4" :step="0.25" :value="settings.speed" :format-tooltip="(v) => `${v.toFixed(2)}x`"
+        <NSlider class="hide-if-small" :min="0.25" :max="4" :step="0.25" :value="settings.speed" :format-tooltip="(v) => `${v.toFixed(2)}x`"
             @update:value="
                 settings.speed = $event;
             audioPlayer.playbackRate = $event;
             " style="max-width: 100px" />
-        <NIcon size="18">
+        <NIcon class="hide-if-small" size="18">
             <Speaker248Filled />
         </NIcon>
-        <NSlider :max="1" :step="0.01" :value="settings.volume" :format-tooltip="(v) => `${(v * 100) | 0}%`" @update:value="
+        <NSlider class="hide-if-small" :max="1" :step="0.01" :value="settings.volume" :format-tooltip="(v) => `${(v * 100) | 0}%`" @update:value="
             settings.volume = $event;
         audioPlayer.volume = $event;
         " :min="0" style="max-width: 100px" />
@@ -156,3 +156,16 @@ onUnmounted(() => {
     audioPlayer.value.remove();
 });
 </script>
+
+<style lang="sass">
+.audio-player-bar
+    padding: 16px
+    gap: 16px
+    display: flex
+    align-items: center
+    @media screen and (max-width: 768px)
+        gap: 4px
+.hide-if-small
+    @media screen and (max-width: 768px)
+        display: none
+</style>

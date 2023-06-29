@@ -1,20 +1,26 @@
 <template>
-    <NInput ref="inputRef" v-if="edit.enable" :value="edit.value" @input="edit.value = $event" @change="onFinishEditWord"
-        @blur="onFinishEditWord" round autosize style="min-width: 100px" />
-    <NButton v-else round style="margin-right: 8px; padding-right: 8px" @click="onEditWord">
+    <input v-if="edit.enable" class="word" ref="inputRef" :value="edit.value"
+        @input="edit.value = ($event.target as HTMLInputElement).value" @change="onFinishEditWord"
+        @blur="onFinishEditWord" />
+    <button v-else :class="{
+        word: true,
+        'white-space': isWhiteSpace,
+    }" @click="onEditWord" @contextmenu.prevent="
+    showMenuForLyric(
+        props.lineIndex,
+        props.wordIndex,
+        $event.clientX,
+        $event.clientY
+    )
+    ">
         {{ displayWord }}
-        <NButton quaternary size="tiny" circle style="margin-left: 4px" @click.stop="onDeleteWord">
-            <NIcon>
-                <Dismiss12Filled />
-            </NIcon>
-        </NButton>
-    </NButton>
+    </button>
 </template>
 
 <script setup lang="tsx">
 import { NButton, NIcon, NInput, type InputInst } from "naive-ui";
 import { Dismiss12Filled } from "@vicons/fluent";
-import { useEditingLyric } from "../store";
+import { useEditingLyric, useRightClickLyricLine } from "../store";
 import { nextTick, reactive, ref, computed } from "vue";
 
 const inputRef = ref<InputInst | null>(null);
@@ -24,7 +30,11 @@ const props = defineProps<{
     word: string;
 }>();
 const { modifyWord, removeWord } = useEditingLyric();
+const { showMenuForLyric } = useRightClickLyricLine();
 
+const isWhiteSpace = computed(() =>
+    props.word.trim().length === 0
+)
 const displayWord = computed(() => {
     if (props.word.length === 0) {
         return "空白"
@@ -56,3 +66,20 @@ function onDeleteWord() {
     removeWord(props.lineIndex, props.wordIndex);
 }
 </script>
+
+<style lang="sass">
+.word
+    margin-right: 8px
+    padding: 4px 12px
+    border: 1px solid var(--att-border-color)
+    cursor: pointer
+    background: transparent
+    border-radius: calc(var(--att-height-medium) / 2)
+    height: var(--att-height-medium)
+    &.white-space
+        opacity: 0.5
+input.word
+    cursor: unset
+button.word:hover
+    border: 1px solid var(--att-theme-color)
+</style>

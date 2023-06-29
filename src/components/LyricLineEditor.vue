@@ -81,6 +81,8 @@ function onAddNewWord() {
     transition: opacity 0.2s
     &:has(:focus)
         opacity: 1
+    @media screen and (max-width: 768px)
+        opacity: 1
 .line:hover .new-word
     opacity: 1
 </style>

@@ -1,9 +1,5 @@
 <template>
-    <div class="lyric-sync-editor" :style="{
-        '--n-theme-color': themeVars.primaryColorSuppl,
-        '--n-theme-color-hover': themeVars.primaryColorHover,
-        '--n-theme-color-pressed': themeVars.primaryColorPressed,
-    }">
+    <div class="lyric-sync-editor">
         <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]" ref="syncEditor">
             <div v-for="(word, i) in lyric.lyrics[currentWord.lineIndex].words" v-show="word.word.trim().length > 0"
                 :key="i" @click="currentWord.wordIndex = i">
@@ -190,7 +186,7 @@ onUnmounted(() => {
             grid-area: selectMark
             font-size: 12px
             text-align: center
-            color: var(--n-theme-color)
+            color: var(--att-theme-color)
             font-weight: bold
         > *:nth-child(5)
             grid-area: selectArrow
@@ -201,7 +197,7 @@ onUnmounted(() => {
             height: 0
             border-left: 4px solid transparent
             border-right: 4px solid transparent
-            border-top: 4px solid var(--n-theme-color)
+            border-top: 4px solid var(--att-theme-color)
 .word-selected
     grid-area: selectMark
 .lyric-line-viewer

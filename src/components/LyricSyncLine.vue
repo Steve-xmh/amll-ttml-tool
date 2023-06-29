@@ -95,17 +95,17 @@ function toTimestamp(duration: number) {
     cursor: pointer
     outline-offset: -4px
     &.lyric-line-item-selected
-        outline: 3px solid var(--n-theme-color) //#63e2b7
+        outline: 3px solid var(--att-theme-color) //#63e2b7
     &:hover
-        background: var(--n-color-hover)
-        color: var(--n-text-color-hover)
+        background: var(--att-color-hover)
+        color: var(--att-text-color-hover)
 .hot-line
-    color: var(--n-theme-color-hover)
+    color: var(--att-theme-color-hover)
     opacity: 0.7
 .hot-word
-    color: var(--n-theme-color-pressed)
+    color: var(--att-theme-color-pressed)
 .current-word
-    color: var(--n-theme-color)
+    color: var(--att-theme-color)
     font-weight: bold
 .lyric-line-item-inner
     display: flex
