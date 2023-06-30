@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { parseLyric } from "./utils/ttml-lyric-parser";
-import { cut } from "./libs/jieba-wasm";
+import { parseLyric } from "../utils/ttml-lyric-parser";
+import { cut } from "../libs/jieba-wasm";
 import { toRaw } from "vue";
-import exportTTMLText from "./utils/ttml-writer";
-import type { LyricLine as RawLyricLine } from "./utils/lyric-types";
+import exportTTMLText from "../utils/ttml-writer";
+import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
 
 export interface LyricWord {
 	startTime: number;

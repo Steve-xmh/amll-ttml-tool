@@ -12,7 +12,7 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.22.5.tgz#721fd042f3ce1896238cf1b341c77eb7dee7dbea"
   integrity sha512-DFZMC9LJUG9PLOclRC32G63UXwzqS2koQC8dkx+PLdmt1xSePYpbT/NbsrJy8Q/muXz7o/h/d4A7Fuyixm559Q==
 
-"@babel/runtime@^7.21.0":
+"@babel/runtime@^7.14.0", "@babel/runtime@^7.21.0":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.22.5.tgz#8564dd588182ce0047d55d7a75e93921107b57ec"
   integrity sha512-ecjvYlnAaZ/KVneE/OdKYBYfgXV3Ptu6zQWmgEF7vwKhQnvVS6bjMD2XYgj+SNvQ1GfK/pjgokfPkC/2CO8CuA==
@@ -840,6 +840,13 @@ jieba-wasm@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/jieba-wasm/-/jieba-wasm-0.0.2.tgz#5ae9033c04d4c96c83b2c627610996760b0d185e"
   integrity sha512-CPmS+U/klii3LWKrccDqm/BvWmgBB3x4HV/WBxC/l7GsitVfzCzsZ8cWz+vh2riv6M5P8rvHJzCz4xsoFA79cw==
+
+kuroshiro@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/kuroshiro/-/kuroshiro-1.2.0.tgz#c393795b1959f776e37ceab2fa9e32a88a7e1dfa"
+  integrity sha512-yBGCK9oDOY3LGZ/KXaN9m7ADcAuSczOR2FoMRYwHLUlis3/o/uxdMVROAjENFO0NQJgALhIdWxI/vIBVrMCk9w==
+  dependencies:
+    "@babel/runtime" "^7.14.0"
 
 lodash-es@^4.17.21:
   version "4.17.21"
