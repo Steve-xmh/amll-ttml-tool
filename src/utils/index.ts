@@ -17,3 +17,6 @@ export function classname(
 	}
 	return result.join(" ");
 }
+
+export const waitNextTick = () =>
+	new Promise((resolve) => requestAnimationFrame(resolve));

@@ -19,25 +19,25 @@
         <div>{{ toDuration(audio.currentTime / 1000) }}</div>
         <NSlider :disabled="!audio.canPlay" :max="audioPlayer.duration" :value="Math.floor(audio.currentTime / 1000)"
             :format-tooltip="(v) => toDuration(v)" @update:value="
-                audioPlayer.currentTime = $event;
-            audio.currentTime = $event;
+                audio.currentTime = $event * 1000;
             " />
         <div class="hide-if-small">{{ toDuration((audio.currentTime - audio.duration) / 1000) }}</div>
         <NIcon class="hide-if-small" size="18">
             <TopSpeed24Regular />
         </NIcon>
-        <NSlider class="hide-if-small" :min="0.25" :max="4" :step="0.25" :value="settings.speed" :format-tooltip="(v) => `${v.toFixed(2)}x`"
-            @update:value="
+        <NSlider class="hide-if-small" :min="0.25" :max="4" :step="0.25" :value="settings.speed"
+            :format-tooltip="(v) => `${v.toFixed(2)}x`" @update:value="
                 settings.speed = $event;
             audioPlayer.playbackRate = $event;
             " style="max-width: 100px" />
         <NIcon class="hide-if-small" size="18">
             <Speaker248Filled />
         </NIcon>
-        <NSlider class="hide-if-small" :max="1" :step="0.01" :value="settings.volume" :format-tooltip="(v) => `${(v * 100) | 0}%`" @update:value="
-            settings.volume = $event;
-        audioPlayer.volume = $event;
-        " :min="0" style="max-width: 100px" />
+        <NSlider class="hide-if-small" :max="1" :step="0.01" :value="settings.volume"
+            :format-tooltip="(v) => `${(v * 100) | 0}%`" @update:value="
+                settings.volume = $event;
+            audioPlayer.volume = $event;
+            " :min="0" style="max-width: 100px" />
     </NLayoutFooter>
 </template>
 
@@ -65,8 +65,14 @@ const audioPlayer = ref(new Audio());
 const settings = useSettings();
 const audio = useAudio();
 
+audio.$onAction((e) => {
+    if (e.name === "setCurrentTime") {
+        audioPlayer.value.currentTime = e.args[0] / 1000;
+    }
+});
+
 settings.$subscribe(
-    () => {
+    (mut) => {
         audioPlayer.value.playbackRate = Math.max(
             0.25,
             Math.min(4, settings.speed)
@@ -117,10 +123,6 @@ onMounted(() => {
         audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
     });
 
-    audioPlayer.value.addEventListener("seeked", () => {
-        audio.playing = true;
-    });
-
     audioPlayer.value.addEventListener("play", () => {
         audio.playing = true;
     });
@@ -148,12 +150,69 @@ onMounted(() => {
     audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
 });
 
+function onKeyPress(e: KeyboardEvent) {
+    let collected = false;
+    switch (e.code) {
+        case "Space":
+            if (audioPlayer.value.paused) {
+                audioPlayer.value.play();
+            } else {
+                audioPlayer.value.pause();
+            }
+            collected = true;
+            break;
+        case "ArrowUp":
+            settings.volume = Math.min(1, Math.max(0, settings.volume + 0.1));
+            collected = true;
+            break;
+        case "ArrowDown":
+            settings.volume = Math.min(1, Math.max(0, settings.volume - 0.1));
+            collected = true;
+            break;
+        case "ArrowLeft":
+            if (audioPlayer.value.seekable) {
+                audioPlayer.value.currentTime = Math.max(
+                    0,
+                    audioPlayer.value.currentTime - 5
+                )
+            }
+            collected = true;
+            break;
+        case "ArrowRight":
+            if (audioPlayer.value.seekable) {
+                audioPlayer.value.currentTime = Math.min(
+                    audioPlayer.value.duration,
+                    audioPlayer.value.currentTime + 5
+                )
+            }
+            collected = true;
+            break;
+        case "BracketLeft":
+            settings.speed = Math.max(0.25, Math.min(4, settings.speed - 0.25));
+            collected = true;
+            break;
+        case "BracketRight":
+            settings.speed = Math.max(0.25, Math.min(4, settings.speed + 0.25));
+            collected = true;
+            break;
+    }
+    if (collected) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener("keyup", onKeyPress);
+});
+
 onUnmounted(() => {
     if (audio.audioURL.length > 0) {
         URL.revokeObjectURL(audio.audioURL);
     }
     audioPlayer.value.pause();
     audioPlayer.value.remove();
+    window.removeEventListener("keyup", onKeyPress);
 });
 </script>
 

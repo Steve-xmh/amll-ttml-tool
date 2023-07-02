@@ -30,11 +30,12 @@ import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../s
 import { nextTick, onMounted, onUnmounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import LyricSyncLine from "./LyricSyncLine.vue";
+import type { LyricWord } from "../store/lyric";
 
 const currentWord = useCurrentSyncWord();
-const { currentTime } = storeToRefs(useAudio());
-const settings = useSettings();
-const themeVars = useThemeVars();
+const audio = useAudio();
+const { setCurrentTime } = audio;
+const { currentTime } = storeToRefs(audio);
 
 const syncEditor = ref<HTMLDivElement>();
 
@@ -67,6 +68,14 @@ function toTimestamp(duration: number) {
 const lyric = useEditingLyric();
 const lyricRef = storeToRefs(lyric);
 
+function isBlankWord() {
+    return (lyricRef.lyrics.value[currentWord.lineIndex]?.words?.[currentWord.wordIndex]?.word?.trim()?.length ?? 0) === 0;
+}
+
+function getCurrentWord(): LyricWord | undefined {
+    return lyricRef.lyrics.value?.[currentWord.lineIndex]?.words?.[currentWord.wordIndex];
+}
+
 function moveRight() {
     do {
         if (currentWord.wordIndex < lyricRef.lyrics.value[currentWord.lineIndex].words.length - 1) {
@@ -75,7 +84,7 @@ function moveRight() {
             currentWord.wordIndex = 0;
             currentWord.lineIndex++;
         }
-    } while (lyricRef.lyrics.value[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
+    } while (isBlankWord());
 }
 
 function moveLeft() {
@@ -85,40 +94,90 @@ function moveLeft() {
         } else if (currentWord.lineIndex > 0) {
             currentWord.wordIndex = lyricRef.lyrics.value[--currentWord.lineIndex].words.length - 1;
         }
-    } while (lyricRef.lyrics.value[currentWord.lineIndex].words[currentWord.wordIndex].word.trim().length === 0);
+    } while (isBlankWord());
 }
 
-let noLast = false;
+function moveUp() {
+    do {
+        if (currentWord.lineIndex > 0) {
+            currentWord.lineIndex--;
+            currentWord.wordIndex = 0;
+        } else {
+            break;
+        }
+    } while (isBlankWord());
+}
+
+function moveDown() {
+    do {
+        if (currentWord.lineIndex < lyricRef.lyrics.value.length - 1) {
+            currentWord.lineIndex++;
+            currentWord.wordIndex = 0;
+        } else {
+            break;
+        }
+    } while (isBlankWord());
+}
+
 function onKeyPress(e: KeyboardEvent) {
+    let collected = false;
     switch (e.code) {
-        case "KeyD":
-            moveRight();
-            e.preventDefault();
-            e.stopPropagation();
-            break;
-        case "KeyA":
+        case "KeyA": // 移动到上一个单词
             moveLeft();
-            e.preventDefault();
-            e.stopPropagation();
+            collected = true;
             break;
-        case "KeyF":
-            if (noLast) {
-                lyric.setWordTimeNoLast(currentWord.lineIndex, currentWord.wordIndex, currentTime.value);
-            } else {
-                lyric.setWordTime(currentWord.lineIndex, currentWord.wordIndex, currentTime.value);
-            }
+        case "KeyD": // 移动到下一个单词
             moveRight();
-            noLast = false;
-            e.preventDefault();
-            e.stopPropagation();
+            collected = true;
             break;
-        case "KeyG":
-            lyric.setWordEndTime(currentWord.lineIndex, currentWord.wordIndex, currentTime.value);
+        case "KeyW": // 移动到上一行歌词的第一个单词
+            moveUp();
+            collected = true;
+            break;
+        case "KeyS": // 移动到下一个单词的第一个单词
+            moveDown();
+            collected = true;
+            break;
+        case "KeyR": { // 移动到上一个单词，并设置播放位置为目标单词的​起始时间
+            moveLeft();
+            const curWord = getCurrentWord();
+            if (curWord) setCurrentTime(curWord.startTime);
+            collected = true;
+            break;
+        }
+        case "KeyY": { // 移动到下一个单词，并设置播放位置为目标单词的​起始时间
             moveRight();
-            noLast = true;
-            e.preventDefault();
-            e.stopPropagation();
+            const curWord = getCurrentWord();
+            if (curWord) setCurrentTime(curWord.startTime);
+            collected = true;
             break;
+        }
+        case "KeyF": { // 记录当前时间为当前单词的起始时间
+            const curWord = getCurrentWord();
+            if (curWord) curWord.startTime = currentTime.value;
+            collected = true;
+            break;
+        }
+        case "KeyG": { // 记录当前时间为当前单词的结束时间和下一个单词的起始时间，并移动到下一个单词
+            const curWord = getCurrentWord();
+            if (curWord) curWord.endTime = currentTime.value;
+            moveRight();
+            const nextWord = getCurrentWord();
+            if (nextWord) nextWord.startTime = currentTime.value;
+            collected = true;
+            break;
+        }
+        case "KeyH": { // 记录当前时间为当前单词的结束时间，并移动到下一个单词（用于空出间奏时间）
+            const curWord = getCurrentWord();
+            if (curWord) curWord.endTime = currentTime.value;
+            moveRight();
+            collected = true;
+            break;
+        }
+    }
+    if (collected) {
+        e.preventDefault();
+        e.stopPropagation();
     }
 }
 

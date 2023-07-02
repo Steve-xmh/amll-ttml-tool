@@ -5,7 +5,7 @@
     <button v-else :class="{
         word: true,
         'white-space': isWhiteSpace,
-    }" @click="onEditWord" @contextmenu.prevent="
+    }" @click="onEditWord" @contextmenu.stop.prevent="
     showMenuForLyric(
         props.lineIndex,
         props.wordIndex,

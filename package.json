@@ -18,7 +18,6 @@
     "@vicons/fluent": "^0.12.0",
     "@vue/tsconfig": "^0.4.0",
     "jieba-wasm": "^0.0.2",
-    "kuroshiro": "^1.2.0",
     "naive-ui": "^2.34.4",
     "pangu": "^4.0.7",
     "pinia": "^2.1.4",
