@@ -21,6 +21,8 @@ jobs:
           version: latest
       - name: 安装前端依赖
         run: yarn
+      - name: 构建 WASM 部分
+        run: wasm-pack build --target bundler --release ./src-wasm/
       - name: 构建网页版本
         run: yarn build
       - name: 部署到 Github Pages

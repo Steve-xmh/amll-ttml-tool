@@ -6,6 +6,9 @@ import exportTTMLText from "../utils/ttml-writer";
 import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
 import { waitNextTick } from "../utils";
 import { useProgress } from "./progress";
+import { parseLrc, set_panic_hook } from "../../src-wasm/pkg";
+
+set_panic_hook();
 
 export interface LyricWord {
 	startTime: number;
@@ -15,6 +18,7 @@ export interface LyricWord {
 
 export interface LyricLine {
 	words: LyricWord[];
+	id: symbol;
 	translatedLyric: string;
 	romanLyric: string;
 	isBackground: boolean;
@@ -52,6 +56,24 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: !!line.isBackgroundLyric,
 				isDuet: !!line.shouldAlignRight,
 				selected: false,
+				id: Symbol(),
+			}));
+			this.record();
+		},
+		loadLRC(lyric: string) {
+			this.artists = [];
+			this.lyrics = parseLrc(lyric).map((line) => ({
+				words: line.words.map((w) => ({
+					startTime: w.startTime,
+					endTime: w.endTime,
+					word: w.word,
+				})),
+				translatedLyric: "",
+				romanLyric: "",
+				isBackground: false,
+				isDuet: false,
+				selected: false,
+				id: Symbol(),
 			}));
 			this.record();
 		},
@@ -63,6 +85,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: false,
 				isDuet: false,
 				selected: false,
+				id: Symbol(),
 			});
 			this.record();
 		},

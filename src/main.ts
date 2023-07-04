@@ -1,3 +1,4 @@
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import { createApp } from "vue";
 import { PiniaUndo } from "./utils/pinia-undo";
 import { createPinia } from "pinia";

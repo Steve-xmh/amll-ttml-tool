@@ -11,6 +11,6 @@ export const useAudio = defineStore("audio", {
 	actions: {
 		setCurrentTime(currentTime: number) {
 			this.currentTime = currentTime;
-		}
-	}
+		},
+	},
 });

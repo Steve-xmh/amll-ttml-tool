@@ -62,8 +62,10 @@ const settings = useSettings();
 const inputRef = ref<InputInst | null>(null);
 
 lyric.$subscribe(() => {
-    editState.translateLine = curLine.value.translatedLyric;
-    editState.romanLine = curLine.value.romanLyric;
+    if (curLine.value) {
+        editState.translateLine = curLine.value.translatedLyric;
+        editState.romanLine = curLine.value.romanLyric;
+    }
 }, {
     flush: "post",
 });

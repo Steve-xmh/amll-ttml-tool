@@ -33,6 +33,7 @@ function onSelectMenu(key: string) {
         content: "请静候作者爆肝实现吧~",
         duration: 4000,
     });
+    lyricLineMenu.show = false;
 }
 
 onMounted(() => {

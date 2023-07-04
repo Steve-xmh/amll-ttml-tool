@@ -79,6 +79,8 @@ import { parseLyric } from "../utils/ttml-lyric-parser";
 import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
 import { Home24Regular } from "@vicons/fluent";
 import { useEditMode, useRightClickLyricLine, useEditingLyric, useSettings } from "../store";
+import { parseLrc } from "../../src-wasm/pkg";
+import type { LyricLine } from "../store/lyric";
 
 const edit = useEditMode();
 const lyric = useEditingLyric();
@@ -161,6 +163,18 @@ function onSelectMenu(key: string) {
                     const result = parseLyric(text);
                     lyric.loadLyric(result);
                 }
+            });
+            fileDialog.remove();
+            break;
+        }
+        case "import-from-lrc": {
+            const fileDialog = document.createElement("input");
+            fileDialog.type = "file";
+            fileDialog.accept = ".lrc, */*";
+            fileDialog.click();
+            fileDialog.addEventListener("input", async () => {
+                const text = await fileDialog.files?.[0].text();
+                if (text) lyric.loadLRC(text);
             });
             fileDialog.remove();
             break;

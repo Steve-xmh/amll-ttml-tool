@@ -6,7 +6,7 @@ export const useSettings = defineStore("settings", {
 		showRomanLine: false,
 		volume: 0.5,
 		speed: 1,
-		
+
 		showingTutorial: true,
 	}),
 	persist: true,

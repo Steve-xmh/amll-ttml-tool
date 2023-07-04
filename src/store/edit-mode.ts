@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 
 export interface EditModeStore {
-    editMode: "edit" | "sync"
+	editMode: "edit" | "sync";
 }
 
 export const useEditMode = defineStore("current-sync-word", {
-	state: () => ({
-        editMode: "edit"
-	}) as EditModeStore,
+	state: () =>
+		({
+			editMode: "edit",
+		}) as EditModeStore,
 });

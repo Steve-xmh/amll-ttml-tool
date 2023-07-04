@@ -1,5 +1,5 @@
 <template>
-    <NListItem :class="{
+    <div :class="{
         'lyric-line-item': true,
         'lyric-line-item-selected': currentWord.lineIndex === props.index,
     }" @click="
@@ -27,7 +27,7 @@ currentWord.wordIndex = 0;
                 <div v-if="settings.showRomanLine">{{ line.romanLyric }}</div>
             </div>
         </div>
-    </NListItem>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -94,6 +94,8 @@ function toTimestamp(duration: number) {
 .lyric-line-item
     cursor: pointer
     outline-offset: -4px
+    padding: 4px
+    border-bottom: 1px solid var(--att-border-color)
     &.lyric-line-item-selected
         outline: 3px solid var(--att-theme-color) //#63e2b7
     &:hover

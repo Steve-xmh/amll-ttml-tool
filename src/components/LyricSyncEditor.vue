@@ -17,27 +17,45 @@
             </div>
         </div>
         <div class="lyric-line-viewer">
-            <NList>
-                <LyricSyncLine v-for="(line, i) in lyric.lyrics" :key="i" :index="i" />
-            </NList>
+            <DynamicScroller :items="lines" :min-item-size="lineMinHeight"
+                style="width: 100%; position: relative; min-height: fit-content; height: 100%;" key-field="lineIndex"
+                v-slot="{ item, active }">
+                <DynamicScrollerItem :item="item" :active="active" watch-data>
+                    <LyricSyncLine :index="item.lineIndex" />
+                </DynamicScrollerItem>
+            </DynamicScroller>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { NList, useThemeVars } from "naive-ui";
-import { useEditingLyric, useSettings, useAudio, useCurrentSyncWord } from "../store";
-import { nextTick, onMounted, onUnmounted, ref } from "vue";
+import { useEditingLyric, useAudio, useCurrentSyncWord, useSettings } from "../store";
+import { nextTick, onMounted, onUnmounted, ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 import LyricSyncLine from "./LyricSyncLine.vue";
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
 import type { LyricWord } from "../store/lyric";
 
 const currentWord = useCurrentSyncWord();
 const audio = useAudio();
+const settings = useSettings();
 const { setCurrentTime } = audio;
 const { currentTime } = storeToRefs(audio);
-
 const syncEditor = ref<HTMLDivElement>();
+const lyric = useEditingLyric();
+const lyricRef = storeToRefs(lyric);
+const lines = computed(() => lyricRef.lyrics.value.map((w, i) => { return { lineIndex: i, words: w.words } }));
+const lineMinHeight = computed(getMinHeight);
+
+function getMinHeight() {
+    if (settings.showTranslateLine && settings.showRomanLine) {
+        return 95;
+    } else if (settings.showTranslateLine || settings.showRomanLine) {
+        return 66
+    } else {
+        return 37;
+    }
+}
 
 currentWord.$subscribe((mut) => {
     const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
@@ -64,9 +82,6 @@ function toTimestamp(duration: number) {
 
     return `${isRemainTime ? "-" : ""}${min}:${secText}`;
 }
-
-const lyric = useEditingLyric();
-const lyricRef = storeToRefs(lyric);
 
 function isBlankWord() {
     return (lyricRef.lyrics.value[currentWord.lineIndex]?.words?.[currentWord.wordIndex]?.word?.trim()?.length ?? 0) === 0;
