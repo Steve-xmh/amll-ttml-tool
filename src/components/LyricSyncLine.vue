@@ -31,7 +31,6 @@ currentWord.wordIndex = 0;
 </template>
 
 <script setup lang="ts">
-import { NListItem } from "naive-ui";
 import {
     useEditingLyric,
     useSettings,
@@ -39,7 +38,7 @@ import {
     useCurrentSyncWord,
 } from "../store";
 import { storeToRefs } from "pinia";
-import { nextTick, ref } from "vue";
+import { nextTick, ref, computed } from "vue";
 const itemRef = ref<{
     $el?: HTMLLIElement;
 }>();
@@ -52,7 +51,7 @@ const props = defineProps<{
     index: number;
 }>();
 const lyric = storeToRefs(useEditingLyric());
-const line = lyric.lyrics.value[props.index];
+const line = computed(() => lyric.lyrics.value[props.index]);
 
 currentWord.$subscribe(
     (mut) => {

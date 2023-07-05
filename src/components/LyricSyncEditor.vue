@@ -19,9 +19,9 @@
         <div class="lyric-line-viewer">
             <DynamicScroller :items="lines" :min-item-size="lineMinHeight"
                 style="width: 100%; position: relative; min-height: fit-content; height: 100%;" key-field="lineIndex"
-                v-slot="{ item, active }">
+                v-slot="{ item, index, active }">
                 <DynamicScrollerItem :item="item" :active="active" watch-data>
-                    <LyricSyncLine :index="item.lineIndex" />
+                    <LyricSyncLine :index="index" />
                 </DynamicScrollerItem>
             </DynamicScroller>
         </div>
