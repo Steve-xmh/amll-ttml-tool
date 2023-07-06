@@ -6,7 +6,7 @@ import exportTTMLText from "../utils/ttml-writer";
 import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
 import { waitNextTick } from "../utils";
 import { useProgress } from "./progress";
-import { parseLrc, set_panic_hook } from "../../src-wasm/pkg";
+import { parseLrc, parseYrc, parseQrc, set_panic_hook, stringifyLrc, stringifyYrc, stringifyQrc } from "../../src-wasm/pkg";
 
 set_panic_hook();
 
@@ -63,6 +63,40 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		loadLRC(lyric: string) {
 			this.artists = [];
 			this.lyrics = parseLrc(lyric).map((line) => ({
+				words: line.words.map((w) => ({
+					startTime: w.startTime,
+					endTime: w.endTime,
+					word: w.word,
+				})),
+				translatedLyric: "",
+				romanLyric: "",
+				isBackground: false,
+				isDuet: false,
+				selected: false,
+				id: Symbol(),
+			}));
+			this.record();
+		},
+		loadYRC(lyric: string) {
+			this.artists = [];
+			this.lyrics = parseYrc(lyric).map((line) => ({
+				words: line.words.map((w) => ({
+					startTime: w.startTime,
+					endTime: w.endTime,
+					word: w.word,
+				})),
+				translatedLyric: "",
+				romanLyric: "",
+				isBackground: false,
+				isDuet: false,
+				selected: false,
+				id: Symbol(),
+			}));
+			this.record();
+		},
+		loadQRC(lyric: string) {
+			this.artists = [];
+			this.lyrics = parseQrc(lyric).map((line) => ({
 				words: line.words.map((w) => ({
 					startTime: w.startTime,
 					endTime: w.endTime,
@@ -267,6 +301,18 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			}
 
 			return exportTTMLText(transformed);
+		},
+		toLRC() {
+			const lines = toRaw(this.lyrics);
+			return stringifyLrc(lines);
+		},
+		toYRC() {
+			const lines = toRaw(this.lyrics);
+			return stringifyYrc(lines);
+		},
+		toQRC() {
+			const lines = toRaw(this.lyrics);
+			return stringifyQrc(lines);
 		},
 		async splitLineByJieba() {
 			const progress = useProgress();

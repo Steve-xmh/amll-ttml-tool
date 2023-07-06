@@ -179,9 +179,48 @@ function onSelectMenu(key: string) {
             fileDialog.remove();
             break;
         }
+        case "import-from-yrc": {
+            const fileDialog = document.createElement("input");
+            fileDialog.type = "file";
+            fileDialog.accept = ".yrc, */*";
+            fileDialog.click();
+            fileDialog.addEventListener("input", async () => {
+                const text = await fileDialog.files?.[0].text();
+                if (text) lyric.loadYRC(text);
+            });
+            fileDialog.remove();
+            break;
+        }
+        case "import-from-qrc": {
+            const fileDialog = document.createElement("input");
+            fileDialog.type = "file";
+            fileDialog.accept = ".qrc, */*";
+            fileDialog.click();
+            fileDialog.addEventListener("input", async () => {
+                const text = await fileDialog.files?.[0].text();
+                if (text) lyric.loadQRC(text);
+            });
+            fileDialog.remove();
+            break;
+        }
         case "save": {
             const output = lyric.toTTML();
             saveFile(new TextEncoder().encode(output), "lyric.ttml");
+            break;
+        }
+        case "export-to-lrc": {
+            const output = lyric.toLRC();
+            saveFile(new TextEncoder().encode(output), "lyric.lrc");
+            break;
+        }
+        case "export-to-yrc": {
+            const output = lyric.toYRC();
+            saveFile(new TextEncoder().encode(output), "lyric.yrc");
+            break;
+        }
+        case "export-to-qrc": {
+            const output = lyric.toQRC();
+            saveFile(new TextEncoder().encode(output), "lyric.qrc");
             break;
         }
         case "about": {

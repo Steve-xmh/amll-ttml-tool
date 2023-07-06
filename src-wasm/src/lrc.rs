@@ -1,8 +1,9 @@
 use wasm_bindgen::prelude::*;
 
-use crate::{JSLyricLine, LyricLine, LyricWord};
+use crate::{utils::process_lyrics, LyricLine, LyricWord};
 
-use std::str::FromStr;
+use std::fmt::Write;
+use std::{borrow::Cow, str::FromStr};
 
 use nom::{bytes::complete::*, combinator::opt, multi::many1};
 use nom::{character::complete::line_ending, IResult};
@@ -54,7 +55,7 @@ pub fn parse_line(src: &str) -> IResult<&str, Vec<LyricLine<'_>>> {
                         words: vec![LyricWord {
                             start_time: t,
                             end_time: 0,
-                            word: line,
+                            word: Cow::Borrowed(line),
                         }],
                     })
                     .collect(),
@@ -71,7 +72,7 @@ pub fn parse_line(src: &str) -> IResult<&str, Vec<LyricLine<'_>>> {
                     words: vec![LyricWord {
                         start_time: t,
                         end_time: 0,
-                        word: input,
+                        word: Cow::Borrowed(input),
                     }],
                 })
                 .collect(),
@@ -90,7 +91,7 @@ fn lyric_line_test() {
                 words: vec![LyricWord {
                     start_time: 1120,
                     end_time: 0,
-                    word: " test LyRiC"
+                    word: Cow::Borrowed(" test LyRiC")
                 }]
             }]
         ))
@@ -104,14 +105,14 @@ fn lyric_line_test() {
                     words: vec![LyricWord {
                         start_time: 10254,
                         end_time: 0,
-                        word: " sssxxx"
+                        word: Cow::Borrowed(" sssxxx")
                     }]
                 },
                 LyricLine {
                     words: vec![LyricWord {
                         start_time: 10254,
                         end_time: 0,
-                        word: " sssxxx"
+                        word: Cow::Borrowed(" sssxxx")
                     }]
                 }
             ]
@@ -125,7 +126,7 @@ fn lyric_line_test() {
                 words: vec![LyricWord {
                     start_time: 70100,
                     end_time: 0,
-                    word: ""
+                    word: Cow::Borrowed("")
                 }]
             }]
         ))
@@ -142,32 +143,59 @@ pub fn parse_lrc(src: &str) -> Vec<LyricLine> {
             result.extend_from_slice(&line);
         }
     }
-    result.sort_by(|a, b| {
-        a.words
-            .first()
-            .unwrap()
-            .start_time
-            .cmp(&b.words.first().unwrap().start_time)
-    });
 
-    for i in (0..result.len()).rev() {
-        if i == result.len() - 1 {
-            result[i].words[0].end_time = result[i].words[0].start_time;
-        } else {
-            result[i].words[0].end_time = result[i + 1].words[0].start_time;
+    process_lyrics(&mut result);
+
+    result
+}
+
+fn write_timestamp(result: &mut String, time: usize) {
+    let ms = time % 1000;
+    let sec = (time - ms) / 1000;
+    let min = (sec - sec % 60) / 60;
+
+    write!(result, "[{:02}:{:02}.{:03}]", min, sec % 60, ms).unwrap()
+}
+
+#[inline]
+pub fn stringify_lrc(lines: &[LyricLine]) -> String {
+    let capacity: usize = lines
+        .iter()
+        .map(|x| x.words.iter().map(|y| y.word.len()).sum::<usize>() + 13)
+        .sum();
+    let mut result = String::with_capacity(capacity);
+
+    for line in lines {
+        if !line.words.is_empty() {
+            write_timestamp(&mut result, line.words[0].start_time);
+            for word in line.words.iter() {
+                result.push_str(&word.word);
+            }
+            result.push('\n');
         }
     }
 
     result
 }
 
+#[test]
+fn stringify_lrc_test() {
+    let lrc = parse_lrc("[00:01.12] test LyRiC\n[00:10.254] sssxxx");
+    assert_eq!(
+        stringify_lrc(&lrc),
+        "[00:01.120] test LyRiC\n[00:10.254] sssxxx\n"
+    );
+}
+
 #[wasm_bindgen(js_name = "parseLrc", skip_typescript)]
-pub fn parse_lrc_js(src: &str) -> js_sys::Array {
-    parse_lrc(src)
-        .into_iter()
-        .map(JSLyricLine::from)
-        .map(JsValue::from)
-        .collect()
+pub fn parse_lrc_js(src: &str) -> JsValue {
+    serde_wasm_bindgen::to_value(&parse_lrc(src)).unwrap()
+}
+
+#[wasm_bindgen(js_name = "stringifyLrc", skip_typescript)]
+pub fn stringify_lrc_js(lrc: JsValue) -> String {
+    let lines: Vec<LyricLine> = serde_wasm_bindgen::from_value(lrc).unwrap();
+    stringify_lrc(&lines)
 }
 
 #[test]
