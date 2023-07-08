@@ -104,6 +104,8 @@ const MENU = ref({
                 label: '从 YRC 歌词导入', key: 'import-from-yrc',
             }, {
                 label: '从 QRC 歌词导入', key: 'import-from-qrc',
+            }, {
+                label: '从 Lyricify Syllable 歌词导入', key: 'import-from-lys',
             }]
         },
         {
@@ -113,6 +115,8 @@ const MENU = ref({
                 label: '导出 YRC 歌词', key: 'export-to-yrc',
             }, {
                 label: '导出 QRC 歌词', key: 'export-to-qrc',
+            }, {
+                label: '导出 Lyricify Syllable 歌词', key: 'export-to-lys',
             }]
         },
         { type: 'divider' },
@@ -203,6 +207,18 @@ function onSelectMenu(key: string) {
             fileDialog.remove();
             break;
         }
+        case "import-from-lys": {
+            const fileDialog = document.createElement("input");
+            fileDialog.type = "file";
+            fileDialog.accept = ".lys, */*";
+            fileDialog.click();
+            fileDialog.addEventListener("input", async () => {
+                const text = await fileDialog.files?.[0].text();
+                if (text) lyric.loadLYS(text);
+            });
+            fileDialog.remove();
+            break;
+        }
         case "save": {
             const output = lyric.toTTML();
             saveFile(new TextEncoder().encode(output), "lyric.ttml");
@@ -221,6 +237,11 @@ function onSelectMenu(key: string) {
         case "export-to-qrc": {
             const output = lyric.toQRC();
             saveFile(new TextEncoder().encode(output), "lyric.qrc");
+            break;
+        }
+        case "export-to-lys": {
+            const output = lyric.toLYS();
+            saveFile(new TextEncoder().encode(output), "lyric.lys");
             break;
         }
         case "about": {

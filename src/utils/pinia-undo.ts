@@ -16,12 +16,12 @@ class UndoStack<T> {
 		this.stack.push(firstValue);
 	}
 	push(value: T) {
-		this.stack.splice(this.stackPos++, 0, value);
+		this.stack.splice(++this.stackPos, 0, value);
 		if (this.stackPos >= this.limit) this.stack.shift();
 	}
 	undo() {
 		this.stackPos = Math.max(0, this.stackPos - 1);
-		return this.stack[this.stackPos--];
+		return this.stack[this.stackPos];
 	}
 	redo() {
 		this.stackPos = Math.min(this.stack.length - 1, this.stackPos + 1);

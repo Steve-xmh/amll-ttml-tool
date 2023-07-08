@@ -17,11 +17,11 @@
             </div>
         </div>
         <div class="lyric-line-viewer">
-            <DynamicScroller :items="lines" :min-item-size="lineMinHeight"
-                style="width: 100%; position: relative; min-height: fit-content; height: 100%;" key-field="lineIndex"
+            <DynamicScroller :items="lyric.lineWithIds" :min-item-size="lineMinHeight"
+                style="width: 100%; position: relative; min-height: fit-content; height: 100%;" key-field="id"
                 v-slot="{ item, index, active }">
                 <DynamicScrollerItem :item="item" :active="active" watch-data>
-                    <LyricSyncLine :index="index" />
+                    <LyricSyncLine v-if="active" :line="item" />
                 </DynamicScrollerItem>
             </DynamicScroller>
         </div>
@@ -43,8 +43,6 @@ const { setCurrentTime } = audio;
 const { currentTime } = storeToRefs(audio);
 const syncEditor = ref<HTMLDivElement>();
 const lyric = useEditingLyric();
-const lyricRef = storeToRefs(lyric);
-const lines = computed(() => lyricRef.lyrics.value.map((w, i) => { return { lineIndex: i, words: w.words } }));
 const lineMinHeight = computed(getMinHeight);
 
 function getMinHeight() {
@@ -84,18 +82,18 @@ function toTimestamp(duration: number) {
 }
 
 function isBlankWord() {
-    return (lyricRef.lyrics.value[currentWord.lineIndex]?.words?.[currentWord.wordIndex]?.word?.trim()?.length ?? 0) === 0;
+    return (lyric.lineWithIds[currentWord.lineIndex]?.words?.[currentWord.wordIndex]?.word?.trim()?.length ?? 0) === 0;
 }
 
 function getCurrentWord(): LyricWord | undefined {
-    return lyricRef.lyrics.value?.[currentWord.lineIndex]?.words?.[currentWord.wordIndex];
+    return lyric.lineWithIds[currentWord.lineIndex]?.words?.[currentWord.wordIndex];
 }
 
 function moveRight() {
     do {
-        if (currentWord.wordIndex < lyricRef.lyrics.value[currentWord.lineIndex].words.length - 1) {
+        if (currentWord.wordIndex < lyric.lineWithIds[currentWord.lineIndex].words.length - 1) {
             currentWord.wordIndex++;
-        } else if (currentWord.lineIndex < lyricRef.lyrics.value.length - 1) {
+        } else if (currentWord.lineIndex < lyric.lineWithIds.length - 1) {
             currentWord.wordIndex = 0;
             currentWord.lineIndex++;
         }
@@ -107,7 +105,7 @@ function moveLeft() {
         if (currentWord.wordIndex > 0) {
             currentWord.wordIndex--;
         } else if (currentWord.lineIndex > 0) {
-            currentWord.wordIndex = lyricRef.lyrics.value[--currentWord.lineIndex].words.length - 1;
+            currentWord.wordIndex = lyric.lineWithIds[--currentWord.lineIndex].words.length - 1;
         }
     } while (isBlankWord());
 }
@@ -125,7 +123,7 @@ function moveUp() {
 
 function moveDown() {
     do {
-        if (currentWord.lineIndex < lyricRef.lyrics.value.length - 1) {
+        if (currentWord.lineIndex < lyric.lineWithIds.length - 1) {
             currentWord.lineIndex++;
             currentWord.wordIndex = 0;
         } else {

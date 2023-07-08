@@ -9,7 +9,7 @@
                     <NStep title="加载歌词">
                         <NSpace vertical>
                             <div>您可以通过左上角的菜单 - 文件 - 打开歌词来加载歌词哦！</div>
-                            <div>如果您的歌词不是 TTML 格式也没有关系，歌词工具支持从 LRC/YRC/QRC 格式导入歌词哦！</div>
+                            <div>如果您的歌词不是 TTML 格式也没有关系，歌词工具支持从 LRC/YRC/QRC/Lyricify Syllable 格式导入歌词哦！</div>
                         </NSpace>
                     </NStep>
                     <NStep title="编辑歌词">
@@ -117,7 +117,7 @@
                     <NStep title="保存歌词">
                         <NSpace vertical>
                             <div>和加载歌词类似，您可以将歌词保存为 TTML 格式，也可以导出到其他主流歌词格式。</div>
-                            <div>但是导出成 LRC 格式会丢失逐词歌词的单词信息和歌词行属性信息，而导出成 YRC/QRC 格式会丢失歌词行的属性信息，要留意哦！</div>
+                            <div>但是目前只有 Lyricify Syllable 格式可以保留所有信息，导出成 LRC 格式会丢失逐词歌词的单词信息和歌词行属性信息，而导出成 YRC/QRC 格式会丢失歌词行的属性信息，要留意哦！</div>
                         </NSpace>
                     </NStep>
                     <NStep title="使用歌词">

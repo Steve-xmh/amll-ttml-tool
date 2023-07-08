@@ -1,9 +1,9 @@
 <template>
     <div :class="{
         'lyric-line-item': true,
-        'lyric-line-item-selected': currentWord.lineIndex === props.index,
+        'lyric-line-item-selected': currentWord.lineIndex === props.line.id,
     }" @click="
-    currentWord.lineIndex = props.index;
+    currentWord.lineIndex = props.line.id;
 currentWord.wordIndex = 0;
 " ref="itemRef">
         <div class="lyric-line-item-inner">
@@ -15,10 +15,10 @@ currentWord.wordIndex = 0;
                         line.words[0].startTime <= currentTime &&
                         line.words[line.words.length - 1].endTime > currentTime,
                 }">
-                    <span v-for="(word, wi) in line.words" :key="wi" :class="{
+                    <span v-for="word in line.words" :key="word.id" :class="{
                         'current-word':
-                            props.index === currentWord.lineIndex &&
-                            wi === currentWord.wordIndex,
+                        word.lineIndex === currentWord.lineIndex &&
+                        word.id === currentWord.wordIndex,
                         'hot-word':
                             word.startTime <= currentTime && word.endTime > currentTime,
                     }">{{ word.word }}</span>
@@ -39,6 +39,7 @@ import {
 } from "../store";
 import { storeToRefs } from "pinia";
 import { nextTick, ref, computed } from "vue";
+import type { LyricLineWithId } from "../store/lyric";
 const itemRef = ref<{
     $el?: HTMLLIElement;
 }>();
@@ -48,10 +49,8 @@ const currentWord = useCurrentSyncWord();
 const settings = useSettings();
 
 const props = defineProps<{
-    index: number;
+    line: LyricLineWithId;
 }>();
-const lyric = storeToRefs(useEditingLyric());
-const line = computed(() => lyric.lyrics.value[props.index]);
 
 currentWord.$subscribe(
     (mut) => {
@@ -59,7 +58,7 @@ currentWord.$subscribe(
         if (
             evt.key === "lineIndex" &&
             itemRef.value &&
-            currentWord.lineIndex === props.index
+            currentWord.lineIndex === props.line.id
         ) {
             const el = itemRef.value.$el;
             nextTick(() => {

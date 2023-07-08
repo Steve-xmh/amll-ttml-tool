@@ -1,20 +1,20 @@
 <template>
     <div class="lyric-editor">
         <div style="overflow: hidden;">
-            <DynamicScroller :items="lines" :min-item-size="getMinHeight()"
-                style="width: 100%; position: relative; min-height: fit-content; height: 100%;" key-field="lineIndex"
+            <DynamicScroller :items="lyric.lineWithIds" :min-item-size="getMinHeight()"
+                style="width: 100%; position: relative; min-height: fit-content; height: 100%;"
                 v-slot="{ item, index, active }">
                 <DynamicScrollerItem :item="item" :active="active" watch-data>
-                    <div class="line-item" style="padding: 12px" @contextmenu.prevent="
+                    <div v-if="active" class="line-item" style="padding: 12px" @contextmenu.prevent="
                         lyricMenu.showMenuForLyric(index, -1, $event.clientX, $event.clientY)
                         ">
-                        <LyricLineEditor :index="index" />
+                        <LyricLineEditor :line="item" />
                     </div>
                 </DynamicScrollerItem>
             </DynamicScroller>
         </div>
         <div style="margin: 12px">
-            <NButton :dashed="lines.length > 0" block :type="lines.length === 0 ? 'primary' : 'default'"
+            <NButton :dashed="lyric.lineWithIds.length > 0" block :type="lyric.lineWithIds.length === 0 ? 'primary' : 'default'"
                 @click="onAddNewLine"> 增加一行歌词 </NButton>
         </div>
     </div>
@@ -41,8 +41,6 @@ function getMinHeight() {
 }
 
 const lyric = useEditingLyric();
-const lyricRef = storeToRefs(lyric);
-const lines = computed(() => lyricRef.lyrics.value.map((w, i) => { return { lineIndex: i, words: w.words } }));
 const { addNewLine } = lyric;
 const lyricMenu = useRightClickLyricLine();
 

@@ -2,6 +2,7 @@ mod lrc;
 mod qrc;
 mod utils;
 mod yrc;
+mod lys;
 
 use std::borrow::Cow;
 
@@ -27,9 +28,14 @@ pub struct LyricWord<'a> {
     pub word: Cow<'a, str>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct LyricLine<'a> {
     pub words: Vec<LyricWord<'a>>,
+    #[serde(default, rename = "isBG")]
+    pub is_bg: bool,
+    #[serde(default)]
+    pub is_duet: bool,
 }
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -78,6 +84,20 @@ export function parseQrc(src: string): LyricLine[];
 export function stringifyQrc(lines: LyricLine[]): string;
 
 /**
+ * 解析 Lyricify Syllable 格式的歌词字符串
+ * @param src 歌词字符串
+ * @returns 成功解析出来的歌词
+ */
+export function parseLys(src: string): LyricLine[];
+
+/**
+ * 将歌词数组转换为 Lyricify Syllable 格式的字符串
+ * @param lines 歌词数组
+ * @returns Lyricify Syllable 格式的字符串
+ */
+export function stringifyLys(lines: LyricLine[]): string;
+
+/**
  * 一个歌词单词
  */
 export interface LyricWord {
@@ -99,6 +119,16 @@ export interface LyricLine {
      * 如果是 LyRiC 等只能表达一行歌词的格式，这里就只会有一个单词
      */
     words: LyricWord[];
+    /**
+     * 该行是否为背景歌词行
+     * 此选项只有作为 Lyricify Syllable 文件格式导入导出时才有意义
+     */
+    isBG?: boolean;
+    /**
+     * 该行是否为对唱歌词行（即歌词行靠右对齐）
+     * 此选项只有作为 Lyricify Syllable 文件格式导入导出时才有意义
+     */
+    isDuet?: boolean;
 };
 
 "###;

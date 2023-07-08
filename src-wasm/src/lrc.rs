@@ -57,6 +57,7 @@ pub fn parse_line(src: &str) -> IResult<&str, Vec<LyricLine<'_>>> {
                             end_time: 0,
                             word: Cow::Borrowed(line),
                         }],
+                        ..Default::default()
                     })
                     .collect(),
             ))
@@ -74,6 +75,7 @@ pub fn parse_line(src: &str) -> IResult<&str, Vec<LyricLine<'_>>> {
                         end_time: 0,
                         word: Cow::Borrowed(input),
                     }],
+                    ..Default::default()
                 })
                 .collect(),
         )),
@@ -92,7 +94,8 @@ fn lyric_line_test() {
                     start_time: 1120,
                     end_time: 0,
                     word: Cow::Borrowed(" test LyRiC")
-                }]
+                }],
+                ..Default::default()
             }]
         ))
     );
@@ -106,14 +109,16 @@ fn lyric_line_test() {
                         start_time: 10254,
                         end_time: 0,
                         word: Cow::Borrowed(" sssxxx")
-                    }]
+                    }],
+                    ..Default::default()
                 },
                 LyricLine {
                     words: vec![LyricWord {
                         start_time: 10254,
                         end_time: 0,
                         word: Cow::Borrowed(" sssxxx")
-                    }]
+                    }],
+                    ..Default::default()
                 }
             ]
         ))
@@ -127,7 +132,8 @@ fn lyric_line_test() {
                     start_time: 70100,
                     end_time: 0,
                     word: Cow::Borrowed("")
-                }]
+                }],
+                ..Default::default()
             }]
         ))
     );

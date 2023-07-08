@@ -1,3 +1,5 @@
+/// Lyricify Syllable 歌词格式
+///
 use wasm_bindgen::prelude::*;
 
 use crate::{utils::process_lyrics, LyricLine, LyricWord};
@@ -33,14 +35,28 @@ fn process_time<'a>(
     Ok((src, (start_time, duration)))
 }
 
-pub fn parse_time(src: &str) -> IResult<&str, (usize, usize)> {
+pub fn parse_property(src: &str) -> IResult<&str, (bool, bool)> {
     let (src, _) = tag("[")(src)?;
-    let (src, start_time) = nom::character::complete::digit1(src)?;
-    let (src, _) = tag(",")(src)?;
-    let (src, duration) = nom::character::complete::digit1(src)?;
+    let (src, prop) = nom::character::complete::digit1(src)?;
     let (src, _) = tag("]")(src)?;
 
-    process_time(src, start_time, duration)
+    let prop = prop.parse::<u8>().unwrap();
+
+    Ok((
+        src,
+        match prop {
+            0 => (false, false),
+            1 => (false, false),
+            2 => (false, true),
+            3 => (false, false),
+            4 => (false, false),
+            5 => (false, true),
+            6 => (true, false),
+            7 => (true, false),
+            8 => (true, true),
+            _ => (false, false),
+        },
+    ))
 }
 
 #[inline]
@@ -86,26 +102,40 @@ pub fn parse_words(src: &str) -> IResult<&str, Vec<LyricWord<'_>>> {
 
 #[inline]
 pub fn parse_line(src: &str) -> IResult<&str, LyricLine<'_>> {
-    let (src, _) = parse_time(src)?;
+    let (src, (is_bg, is_duet)) = parse_property(src)?;
     match is_not("\r\n")(src) {
         Ok((src, line)) => {
             let (src, _) = opt(line_ending)(src)?;
             let (_, words) = parse_words(line)?;
-            Ok((src, LyricLine { words, ..Default::default() }))
+            Ok((
+                src,
+                LyricLine {
+                    words,
+                    is_bg,
+                    is_duet,
+                },
+            ))
         }
         Err(nom::Err::Error(nom::error::Error {
             code: nom::error::ErrorKind::IsNot,
             ..
         })) => {
             let (src, words) = parse_words(src)?;
-            Ok((src, LyricLine { words, ..Default::default() }))
+            Ok((
+                src,
+                LyricLine {
+                    words,
+                    is_bg,
+                    is_duet,
+                },
+            ))
         }
         Err(e) => Err(e),
     }
 }
 
 #[inline]
-pub fn parse_qrc(src: &str) -> Vec<LyricLine> {
+pub fn parse_lys(src: &str) -> Vec<LyricLine> {
     let lines = src.lines();
     let mut result = Vec::with_capacity(lines.size_hint().1.unwrap_or(1024).min(1024));
 
@@ -121,7 +151,7 @@ pub fn parse_qrc(src: &str) -> Vec<LyricLine> {
 }
 
 #[inline]
-pub fn stringify_qrc(lines: &[LyricLine]) -> String {
+pub fn stringify_lys(lines: &[LyricLine]) -> String {
     let capacity: usize = lines
         .iter()
         .map(|x| x.words.iter().map(|y| y.word.len()).sum::<usize>() + 32)
@@ -130,9 +160,13 @@ pub fn stringify_qrc(lines: &[LyricLine]) -> String {
 
     for line in lines {
         if !line.words.is_empty() {
-            let start_time = line.words[0].start_time;
-            let duration: usize = line.words.iter().map(|x| x.end_time - x.start_time).sum();
-            write!(result, "[{start_time},{duration}]").unwrap();
+            let prop = match (line.is_bg, line.is_duet) {
+                (false, false) => "[0]",
+                (false, true) => "[2]",
+                (true, false) => "[6]",
+                (true, true) => "[8]",
+            };
+            write!(result, "{prop}").unwrap();
             for word in line.words.iter() {
                 let start_time = word.start_time;
                 let duration = word.end_time - word.start_time;
@@ -146,13 +180,30 @@ pub fn stringify_qrc(lines: &[LyricLine]) -> String {
     result
 }
 
-#[wasm_bindgen(js_name = "parseQrc", skip_typescript)]
-pub fn parse_qrc_js(src: &str) -> JsValue {
-    serde_wasm_bindgen::to_value(&parse_qrc(src)).unwrap()
+#[wasm_bindgen(js_name = "parseLys", skip_typescript)]
+pub fn parse_lys_js(src: &str) -> JsValue {
+    serde_wasm_bindgen::to_value(&parse_lys(src)).unwrap()
 }
 
-#[wasm_bindgen(js_name = "stringifyQrc", skip_typescript)]
-pub fn stringify_qrc_js(lrc: JsValue) -> String {
+#[wasm_bindgen(js_name = "stringifyLys", skip_typescript)]
+pub fn stringify_lys_js(lrc: JsValue) -> String {
     let lines: Vec<LyricLine> = serde_wasm_bindgen::from_value(lrc).unwrap();
-    stringify_qrc(&lines)
+    stringify_lys(&lines)
+}
+
+#[test]
+fn test_props() {
+    let line = parse_line("[0]Test(1234,567)").unwrap().1;
+    assert!(!line.is_bg);
+    assert!(!line.is_duet);
+    let line = parse_line("[1]Test(1234,567)").unwrap().1;
+    assert!(!line.is_bg);
+    assert!(!line.is_duet);
+    let line = parse_line("[2]Test(1234,567)").unwrap().1;
+    assert!(!line.is_bg);
+    assert!(line.is_duet);
+    let line = parse_line("[8]Test(1234,567)").unwrap().1;
+    assert!(line.is_bg);
+    assert!(line.is_duet);
+    assert_eq!("[8]Test(1234,567)\n", stringify_lys(&parse_lys("[8]Test(1234,567)")));
 }

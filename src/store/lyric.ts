@@ -6,7 +6,17 @@ import exportTTMLText from "../utils/ttml-writer";
 import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
 import { waitNextTick } from "../utils";
 import { useProgress } from "./progress";
-import { parseLrc, parseYrc, parseQrc, set_panic_hook, stringifyLrc, stringifyYrc, stringifyQrc } from "../../src-wasm/pkg";
+import {
+	parseLrc,
+	parseYrc,
+	parseQrc,
+	parseLys,
+	set_panic_hook,
+	stringifyLrc,
+	stringifyYrc,
+	stringifyQrc,
+	stringifyLys,
+} from "../../src-wasm/pkg";
 
 set_panic_hook();
 
@@ -18,7 +28,6 @@ export interface LyricWord {
 
 export interface LyricLine {
 	words: LyricWord[];
-	id: symbol;
 	translatedLyric: string;
 	romanLyric: string;
 	isBackground: boolean;
@@ -26,15 +35,37 @@ export interface LyricLine {
 	selected: boolean;
 }
 
+export type LyricWordWithId = LyricWord & {
+	lineIndex: number;
+	id: number;
+};
+
+export type LyricLineWithId = LyricLine & {
+	words: LyricWordWithId[];
+	id: number;
+};
+
 export const useEditingLyric = defineStore("editing-lyric", {
 	state: () => ({
 		artists: [] as string[],
 		lyrics: [] as LyricLine[],
 	}),
+	getters: {
+		lineWithIds: (state): LyricLineWithId[] =>
+			state.lyrics.map((l, lid) => ({
+				...l,
+				words: l.words.map((w, wid) => ({
+					...w,
+					lineIndex: lid,
+					id: wid,
+				})),
+				id: lid,
+			})),
+	},
 	actions: {
 		reset() {
-			this.artists = [];
-			this.lyrics = [];
+			this.artists.splice(0, this.artists.length);
+			this.lyrics.splice(0, this.lyrics.length);
 			this.record();
 		},
 		loadLyric(lyricLines: ReturnType<typeof parseLyric>) {
@@ -56,7 +87,6 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: !!line.isBackgroundLyric,
 				isDuet: !!line.shouldAlignRight,
 				selected: false,
-				id: Symbol(),
 			}));
 			this.record();
 		},
@@ -73,7 +103,6 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: false,
 				isDuet: false,
 				selected: false,
-				id: Symbol(),
 			}));
 			this.record();
 		},
@@ -90,7 +119,6 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: false,
 				isDuet: false,
 				selected: false,
-				id: Symbol(),
 			}));
 			this.record();
 		},
@@ -107,7 +135,22 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: false,
 				isDuet: false,
 				selected: false,
-				id: Symbol(),
+			}));
+			this.record();
+		},
+		loadLYS(lyric: string) {
+			this.artists = [];
+			this.lyrics = parseLys(lyric).map((line) => ({
+				words: line.words.map((w) => ({
+					startTime: w.startTime,
+					endTime: w.endTime,
+					word: w.word,
+				})),
+				translatedLyric: "",
+				romanLyric: "",
+				isBackground: !!line.isBG,
+				isDuet: !!line.isDuet,
+				selected: false,
 			}));
 			this.record();
 		},
@@ -119,7 +162,6 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: false,
 				isDuet: false,
 				selected: false,
-				id: Symbol(),
 			});
 			this.record();
 		},
@@ -313,6 +355,10 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		toQRC() {
 			const lines = toRaw(this.lyrics);
 			return stringifyQrc(lines);
+		},
+		toLYS() {
+			const lines = toRaw(this.lyrics);
+			return stringifyLys(lines);
 		},
 		async splitLineByJieba() {
 			const progress = useProgress();
