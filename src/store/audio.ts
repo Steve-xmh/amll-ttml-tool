@@ -8,6 +8,11 @@ export const useAudio = defineStore("audio", {
 		currentTime: 0,
 		duration: 0,
 	}),
+	getters: {
+		currentTimeMS: (state) => {
+			return Math.floor(state.currentTime);
+		},
+	},
 	actions: {
 		setCurrentTime(currentTime: number) {
 			this.currentTime = currentTime;

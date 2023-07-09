@@ -19,7 +19,7 @@
         <div>{{ toDuration(audio.currentTime / 1000) }}</div>
         <NSlider :disabled="!audio.canPlay" :max="audioPlayer.duration" :value="Math.floor(audio.currentTime / 1000)"
             :format-tooltip="(v) => toDuration(v)" @update:value="
-                audio.currentTime = $event * 1000;
+                audio.setCurrentTime($event * 1000);
             " />
         <div class="hide-if-small">{{ toDuration((audio.currentTime - audio.duration) / 1000) }}</div>
         <NIcon class="hide-if-small" size="18">

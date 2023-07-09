@@ -1,0 +1,125 @@
+diff --git a/build/kuromoji.js b/build/kuromoji.js
+index f0f4ae9183ff8965fda64a2042f29936f76506d1..47e1539c3d72834fc2bb3d87040809449a95d95a 100644
+--- a/build/kuromoji.js
++++ b/build/kuromoji.js
+@@ -8124,9 +8124,7 @@ BrowserDictionaryLoader.prototype.loadArrayBuffer = function (url, callback) {
+         }
+         var arraybuffer = this.response;
+ 
+-        var gz = new zlib.Zlib.Gunzip(new Uint8Array(arraybuffer));
+-        var typed_array = gz.decompress();
+-        callback(null, typed_array.buffer);
++        callback(null, arraybuffer);
+     };
+     xhr.onerror = function (err) {
+         callback(err, null);
+@@ -8193,7 +8191,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+     async.parallel([
+         // Trie
+         function (callback) {
+-            async.map([ "base.dat.gz", "check.dat.gz" ], function (filename, _callback) {
++            async.map([ "base.dat", "check.dat" ], function (filename, _callback) {
+                 loadArrayBuffer(path.join(dic_path, filename), function (err, buffer) {
+                     if(err) {
+                         return _callback(err);
+@@ -8213,7 +8211,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+         },
+         // Token info dictionaries
+         function (callback) {
+-            async.map([ "tid.dat.gz", "tid_pos.dat.gz", "tid_map.dat.gz" ], function (filename, _callback) {
++            async.map([ "tid.dat", "tid_pos.dat", "tid_map.dat" ], function (filename, _callback) {
+                 loadArrayBuffer(path.join(dic_path, filename), function (err, buffer) {
+                     if(err) {
+                         return _callback(err);
+@@ -8234,7 +8232,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+         },
+         // Connection cost matrix
+         function (callback) {
+-            loadArrayBuffer(path.join(dic_path, "cc.dat.gz"), function (err, buffer) {
++            loadArrayBuffer(path.join(dic_path, "cc.dat"), function (err, buffer) {
+                 if(err) {
+                     return callback(err);
+                 }
+@@ -8245,7 +8243,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+         },
+         // Unknown dictionaries
+         function (callback) {
+-            async.map([ "unk.dat.gz", "unk_pos.dat.gz", "unk_map.dat.gz", "unk_char.dat.gz", "unk_compat.dat.gz", "unk_invoke.dat.gz" ], function (filename, _callback) {
++            async.map([ "unk.dat", "unk_pos.dat", "unk_map.dat", "unk_char.dat", "unk_compat.dat", "unk_invoke.dat" ], function (filename, _callback) {
+                 loadArrayBuffer(path.join(dic_path, filename), function (err, buffer) {
+                     if(err) {
+                         return _callback(err);
+diff --git a/src/loader/BrowserDictionaryLoader.js b/src/loader/BrowserDictionaryLoader.js
+index 04bfdcd1c16b66960b3377152afb357e268ea872..2f9a8b59d7a4183a5aa229805a11001efc7fcbd6 100644
+--- a/src/loader/BrowserDictionaryLoader.js
++++ b/src/loader/BrowserDictionaryLoader.js
+@@ -47,9 +47,7 @@ BrowserDictionaryLoader.prototype.loadArrayBuffer = function (url, callback) {
+         }
+         var arraybuffer = this.response;
+ 
+-        var gz = new zlib.Zlib.Gunzip(new Uint8Array(arraybuffer));
+-        var typed_array = gz.decompress();
+-        callback(null, typed_array.buffer);
++        callback(null, arraybuffer);
+     };
+     xhr.onerror = function (err) {
+         callback(err, null);
+diff --git a/src/loader/DictionaryLoader.js b/src/loader/DictionaryLoader.js
+index 5f88c0b7f9a786dd8c072a7b84ae86a6f31412cb..51ab5d52ad697cf5aa514a56de3f417c4fd15ec3 100644
+--- a/src/loader/DictionaryLoader.js
++++ b/src/loader/DictionaryLoader.js
+@@ -47,7 +47,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+     async.parallel([
+         // Trie
+         function (callback) {
+-            async.map([ "base.dat.gz", "check.dat.gz" ], function (filename, _callback) {
++            async.map([ "base.dat", "check.dat" ], function (filename, _callback) {
+                 loadArrayBuffer(path.join(dic_path, filename), function (err, buffer) {
+                     if(err) {
+                         return _callback(err);
+@@ -67,7 +67,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+         },
+         // Token info dictionaries
+         function (callback) {
+-            async.map([ "tid.dat.gz", "tid_pos.dat.gz", "tid_map.dat.gz" ], function (filename, _callback) {
++            async.map([ "tid.dat", "tid_pos.dat", "tid_map.dat" ], function (filename, _callback) {
+                 loadArrayBuffer(path.join(dic_path, filename), function (err, buffer) {
+                     if(err) {
+                         return _callback(err);
+@@ -88,7 +88,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+         },
+         // Connection cost matrix
+         function (callback) {
+-            loadArrayBuffer(path.join(dic_path, "cc.dat.gz"), function (err, buffer) {
++            loadArrayBuffer(path.join(dic_path, "cc.dat"), function (err, buffer) {
+                 if(err) {
+                     return callback(err);
+                 }
+@@ -99,7 +99,7 @@ DictionaryLoader.prototype.load = function (load_callback) {
+         },
+         // Unknown dictionaries
+         function (callback) {
+-            async.map([ "unk.dat.gz", "unk_pos.dat.gz", "unk_map.dat.gz", "unk_char.dat.gz", "unk_compat.dat.gz", "unk_invoke.dat.gz" ], function (filename, _callback) {
++            async.map([ "unk.dat", "unk_pos.dat", "unk_map.dat", "unk_char.dat", "unk_compat.dat", "unk_invoke.dat" ], function (filename, _callback) {
+                 loadArrayBuffer(path.join(dic_path, filename), function (err, buffer) {
+                     if(err) {
+                         return _callback(err);
+diff --git a/src/loader/NodeDictionaryLoader.js b/src/loader/NodeDictionaryLoader.js
+index 26eb79249121efe39bd5ae77c17e1caa197fb4ce..8d724cd87b1a1f287727ffba6806e88d5e476c87 100644
+--- a/src/loader/NodeDictionaryLoader.js
++++ b/src/loader/NodeDictionaryLoader.js
+@@ -42,13 +42,7 @@ NodeDictionaryLoader.prototype.loadArrayBuffer = function (file, callback) {
+         if(err) {
+             return callback(err);
+         }
+-        node_zlib.gunzip(buffer, function (err2, decompressed) {
+-            if(err2) {
+-                return callback(err2);
+-            }
+-            var typed_array = new Uint8Array(decompressed);
+-            callback(null, typed_array.buffer);
+-        });
++        callback(null, buffer);
+     });
+ };
+ 

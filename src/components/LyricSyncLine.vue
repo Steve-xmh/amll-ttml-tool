@@ -17,8 +17,8 @@ currentWord.wordIndex = 0;
                 }">
                     <span v-for="word in line.words" :key="word.id" :class="{
                         'current-word':
-                        word.lineIndex === currentWord.lineIndex &&
-                        word.id === currentWord.wordIndex,
+                            word.lineIndex === currentWord.lineIndex &&
+                            word.id === currentWord.wordIndex,
                         'hot-word':
                             word.startTime <= currentTime && word.endTime > currentTime,
                     }">{{ word.word }}</span>

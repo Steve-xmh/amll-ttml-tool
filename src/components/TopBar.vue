@@ -1,16 +1,16 @@
 <template>
     <NLayoutHeader bordered style="padding: 16px; display: flex; align-items: center">
         <div class="menu-full">
-            <NDropdown trigger="click" @select="onSelectMenu" :options="MENU.file">
+            <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.file">
                 <NButton quaternary>文件</NButton>
             </NDropdown>
-            <NDropdown trigger="click" @select="onSelectMenu" :options="MENU.edit">
+            <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.edit">
                 <NButton quaternary>编辑</NButton>
             </NDropdown>
-            <NDropdown trigger="click" @select="onSelectMenu" :options="MENU.view">
+            <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.view">
                 <NButton quaternary>查看</NButton>
             </NDropdown>
-            <NDropdown trigger="click" @select="onSelectMenu" :options="MENU.tool">
+            <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.tool">
                 <NButton quaternary>工具</NButton>
             </NDropdown>
             <NDivider vertical />
@@ -136,6 +136,7 @@ const MENU = ref({
     view: [
         { label: '显示翻译歌词', key: 'show-tran' },
         { label: '显示音译歌词', key: 'show-roman' },
+        { label: '显示日语参考罗马字注音（实验性）', key: 'show-jpn-romaji' },
     ],
     tool: [
         { label: '使用 JieBa 对歌词行分词', key: 'split-words-jieba' },
@@ -262,6 +263,10 @@ function onSelectMenu(key: string) {
         }
         case "show-roman": {
             settings.showRomanLine = !settings.showRomanLine;
+            break;
+        }
+        case "show-jpn-romaji": {
+            settings.showJpnRomaji = !settings.showJpnRomaji;
             break;
         }
         case "select-all": {

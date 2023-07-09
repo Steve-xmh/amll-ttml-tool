@@ -4,6 +4,7 @@ export const useSettings = defineStore("settings", {
 	state: () => ({
 		showTranslateLine: false,
 		showRomanLine: false,
+		showJpnRomaji: false,
 		volume: 0.5,
 		speed: 1,
 

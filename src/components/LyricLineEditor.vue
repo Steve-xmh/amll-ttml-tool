@@ -8,7 +8,7 @@
         )
         ">
         <NCheckbox :checked="props.line.selected" @click="
-            props.line.selected = !props.line.selected
+            lyric.lyrics[props.line.id].selected = !lyric.lyrics[props.line.id].selected
             " />
         <div style="display: flex; flex: 1; gap: 8px; flex-direction: column">
             <div style="display: flex; flex: 1; gap: 8px; flex-wrap: wrap">

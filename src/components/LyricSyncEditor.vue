@@ -1,14 +1,7 @@
 <template>
     <div class="lyric-sync-editor">
         <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]" ref="syncEditor">
-            <div v-for="(word, i) in lyric.lyrics[currentWord.lineIndex].words" v-show="word.word.trim().length > 0"
-                :key="i" @click="currentWord.wordIndex = i">
-                <div>{{ word.word }}</div>
-                <div>{{ toTimestamp(word.startTime ?? 0) }}</div>
-                <div>{{ toTimestamp(word.endTime ?? 0) }}</div>
-                <div v-if="i === currentWord.wordIndex">{{ toTimestamp(currentTime) }}</div>
-                <div v-if="i === currentWord.wordIndex" />
-            </div>
+            <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex].words" :key="i" :word="word" />
         </div>
         <div class="lyric-line-sync-editor-no-selected" v-else>
             <div>
@@ -35,12 +28,13 @@ import { storeToRefs } from "pinia";
 import LyricSyncLine from "./LyricSyncLine.vue";
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
 import type { LyricWord } from "../store/lyric";
+import LyricSyncWord from "./LyricSyncWord.vue";
 
 const currentWord = useCurrentSyncWord();
 const audio = useAudio();
 const settings = useSettings();
 const { setCurrentTime } = audio;
-const { currentTime } = storeToRefs(audio);
+const { currentTimeMS } = storeToRefs(audio);
 const syncEditor = ref<HTMLDivElement>();
 const lyric = useEditingLyric();
 const lineMinHeight = computed(getMinHeight);
@@ -86,7 +80,8 @@ function isBlankWord() {
 }
 
 function getCurrentWord(): LyricWord | undefined {
-    return lyric.lineWithIds[currentWord.lineIndex]?.words?.[currentWord.wordIndex];
+    const word = lyric.lyrics[currentWord.lineIndex]?.words?.[currentWord.wordIndex];
+    return word;
 }
 
 function moveRight() {
@@ -167,22 +162,22 @@ function onKeyPress(e: KeyboardEvent) {
         }
         case "KeyF": { // 记录当前时间为当前单词的起始时间
             const curWord = getCurrentWord();
-            if (curWord) curWord.startTime = currentTime.value;
+            if (curWord) curWord.startTime = currentTimeMS.value;
             collected = true;
             break;
         }
         case "KeyG": { // 记录当前时间为当前单词的结束时间和下一个单词的起始时间，并移动到下一个单词
             const curWord = getCurrentWord();
-            if (curWord) curWord.endTime = currentTime.value;
+            if (curWord) curWord.endTime = currentTimeMS.value;
             moveRight();
             const nextWord = getCurrentWord();
-            if (nextWord) nextWord.startTime = currentTime.value;
+            if (nextWord) nextWord.startTime = currentTimeMS.value;
             collected = true;
             break;
         }
         case "KeyH": { // 记录当前时间为当前单词的结束时间，并移动到下一个单词（用于空出间奏时间）
             const curWord = getCurrentWord();
-            if (curWord) curWord.endTime = currentTime.value;
+            if (curWord) curWord.endTime = currentTimeMS.value;
             moveRight();
             collected = true;
             break;
@@ -267,6 +262,7 @@ onUnmounted(() => {
             content: ""
             width: 0
             height: 0
+            margin-bottom: 8px
             border-left: 4px solid transparent
             border-right: 4px solid transparent
             border-top: 4px solid var(--att-theme-color)

@@ -7,18 +7,23 @@
 import type { LyricLine } from "./lyric-types";
 
 function msToTimestamp(timeMS: number): string {
+	if (timeMS === Infinity) {
+		return "99:99.999";
+	}
 	timeMS = timeMS / 1000;
 	const secs = timeMS % 60;
 	timeMS = (timeMS - secs) / 60;
 	const mins = timeMS % 60;
 	const hrs = (timeMS - mins) / 60;
 
+	const h = hrs.toString().padStart(2, "0");
+	const m = mins.toString().padStart(2, "0");
+	const s = secs.toFixed(3).padStart(6, "0");
+
 	if (hrs > 0) {
-		return `${hrs}:${mins}:${secs}`;
-	} else if (mins > 0) {
-		return `${mins}:${secs}`;
+		return `${h}:${m}:${s}`;
 	} else {
-		return secs.toString();
+		return `${m}:${s}`;
 	}
 }
 
@@ -112,7 +117,7 @@ export default function exportTTMLText(
 					const span = doc.createElement("span");
 					span.setAttribute("begin", msToTimestamp(word.time));
 					span.setAttribute("end", msToTimestamp(word.time + word.duration));
-					span.appendChild(doc.createTextNode(word.word));
+					span.appendChild(doc.createTextNode(word.word.trim()));
 					lineP.appendChild(span);
 				}
 			} else {
@@ -128,14 +133,13 @@ export default function exportTTMLText(
 					bgLine.shouldAlignRight ? "v2" : "v1",
 				);
 				bgLineSpan.setAttribute("itunes:key", `L${++i}`);
-				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
 				if (bgLine.dynamicLyric && bgLine.dynamicLyricTime !== undefined) {
 					for (const word of bgLine.dynamicLyric) {
 						const span = doc.createElement("span");
 						span.setAttribute("begin", msToTimestamp(word.time));
 						span.setAttribute("end", msToTimestamp(word.time + word.duration));
-						span.appendChild(doc.createTextNode(word.word));
+						span.appendChild(doc.createTextNode(word.word.trim()));
 						bgLineSpan.appendChild(span);
 					}
 				} else {
