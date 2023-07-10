@@ -5,3 +5,4 @@ export { useProgress } from "./progress";
 export { useSettings } from "./settings";
 export { useRightClickLyricLine } from "./right-click";
 export { useEditMode } from "./edit-mode";
+export { useDialogs } from "./dialogs";

@@ -26,7 +26,7 @@ import { storeToRefs } from "pinia";
 import { useEditingLyric, useRightClickLyricLine, useSettings } from "../store";
 import LyricLineEditor from "./LyricLineEditor.vue";
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 
 const settings = useSettings();
 
@@ -47,6 +47,33 @@ const lyricMenu = useRightClickLyricLine();
 function onAddNewLine() {
     addNewLine();
 }
+
+function onKeyPress(e: KeyboardEvent) {
+    if (e.ctrlKey && e.code === "KeyZ") {
+        lyric.undo();
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+    } else if (e.ctrlKey && e.code === "KeyY") {
+        lyric.redo();
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+    } else if (e.ctrlKey && e.code === "KeyA") {
+        lyric.selectAllLine();
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener("keypress", onKeyPress);
+})
+
+onUnmounted(() => {
+    window.removeEventListener("keypress", onKeyPress);
+})
 </script>
 
 <style lang="sass">

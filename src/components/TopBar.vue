@@ -78,7 +78,7 @@ import saveFile from 'save-file';
 import { parseLyric } from "../utils/ttml-lyric-parser";
 import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
 import { Home24Regular } from "@vicons/fluent";
-import { useEditMode, useRightClickLyricLine, useEditingLyric, useSettings } from "../store";
+import { useEditMode, useDialogs, useRightClickLyricLine, useEditingLyric, useSettings } from "../store";
 import { parseLrc } from "../../src-wasm/pkg";
 import type { LyricLine } from "../store/lyric";
 
@@ -88,6 +88,7 @@ const lyricLineMenu = useRightClickLyricLine();
 const settings = useSettings();
 const aboutModalOpened = ref(false);
 const notify = useNotification();
+const dialogs = useDialogs();
 
 const MENU = ref({
     file: [
@@ -119,6 +120,7 @@ const MENU = ref({
                 label: '导出 Lyricify Syllable 歌词', key: 'export-to-lys',
             }]
         },
+        { label: '上传歌词到 AMLL 歌词数据库', key: 'submit-to-amll-db' },
         { type: 'divider' },
         // { label: '设置', key: 'setting' },
         { label: '关于', key: 'about' },
@@ -243,6 +245,10 @@ function onSelectMenu(key: string) {
         case "export-to-lys": {
             const output = lyric.toLYS();
             saveFile(new TextEncoder().encode(output), "lyric.lys");
+            break;
+        }
+        case "submit-to-amll-db": {
+            dialogs.submitLyric = true;
             break;
         }
         case "about": {

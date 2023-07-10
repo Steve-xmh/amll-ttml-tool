@@ -19,6 +19,7 @@
             <ContextMenu />
             <TutorialModal />
             <ProgressOverlay />
+            <UploadDBDialog />
         </NNotificationProvider>
     </NConfigProvider>
 </template>
@@ -41,6 +42,7 @@ import AudioPlayerBar from "./components/AudioPlayerBar.vue";
 import TutorialModal from "./components/TutorialModal.vue";
 import TopBar from "./components/TopBar.vue";
 import ContextMenu from "./components/ContextMenu.vue";
+import UploadDBDialog from "./components/UploadDBDialog.vue";
 
 const themeVars = useThemeVars();
 const edit = useEditMode();
