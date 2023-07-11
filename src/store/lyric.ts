@@ -165,6 +165,17 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			});
 			this.record();
 		},
+		insertNewLineAt(lineIndex: number) {
+			this.lyrics.splice(lineIndex, 0, {
+				words: [],
+				translatedLyric: "",
+				romanLyric: "",
+				isBackground: false,
+				isDuet: false,
+				selected: false,
+			})
+			this.record();
+		},
 		selectLine(lineIndex: number) {
 			if (this.lyrics[lineIndex]) this.lyrics[lineIndex].selected = true;
 		},

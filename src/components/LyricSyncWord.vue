@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import { useAudio, useCurrentSyncWord, useSettings } from "../store";
-import { reactive, watch } from "vue";
+import { reactive, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { kuroshiro } from "../utils/kuroshiro-analyzer-kuromoji-fix-dict";
 import type { LyricWordWithId } from "../store/lyric";
@@ -37,6 +37,12 @@ watch(() => [props.word, settings.showJpnRomaji], async () => {
         displayWord.htmlWord = await kuroshiro.convert(displayWord.word, { to: 'romaji', mode: "furigana" })
     }
 }, { flush: "post" });
+
+onMounted(async () => {
+    if (settings.showJpnRomaji) {
+        displayWord.htmlWord = await kuroshiro.convert(displayWord.word, { to: 'romaji', mode: "furigana" })
+    }
+})
 
 function toTimestamp(duration: number) {
     const isRemainTime = duration < 0;

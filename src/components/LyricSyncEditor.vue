@@ -75,8 +75,12 @@ function toTimestamp(duration: number) {
     return `${isRemainTime ? "-" : ""}${min}:${secText}`;
 }
 
-function isBlankWord() {
-    return (lyric.lineWithIds[currentWord.lineIndex]?.words?.[currentWord.wordIndex]?.word?.trim()?.length ?? 0) === 0;
+function isBlankWord(lineIndex = currentWord.lineIndex, wordIndex = currentWord.wordIndex) {
+    return (lyric.lineWithIds[lineIndex]?.words?.[wordIndex]?.word?.trim()?.length ?? 0) === 0;
+}
+
+function isWordExist(lineIndex = currentWord.lineIndex, wordIndex = currentWord.wordIndex) {
+    return !!lyric.lyrics[lineIndex]?.words?.[wordIndex];
 }
 
 function getCurrentWord(): LyricWord | undefined {
@@ -85,49 +89,78 @@ function getCurrentWord(): LyricWord | undefined {
 }
 
 function moveRight() {
+    let lineIndex = currentWord.lineIndex;
+    let wordIndex = currentWord.wordIndex;
     do {
-        if (currentWord.wordIndex < lyric.lineWithIds[currentWord.lineIndex].words.length - 1) {
-            currentWord.wordIndex++;
-        } else if (currentWord.lineIndex < lyric.lineWithIds.length - 1) {
-            currentWord.wordIndex = 0;
-            currentWord.lineIndex++;
+        if (wordIndex < lyric.lineWithIds[lineIndex].words.length - 1) {
+            wordIndex++;
+        } else if (lineIndex < lyric.lineWithIds.length - 1) {
+            wordIndex = 0;
+            lineIndex++;
+        } else {
+            break;
         }
-    } while (isBlankWord());
+    } while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+    if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
+        currentWord.wordIndex = wordIndex;
+        currentWord.lineIndex = lineIndex;
+    }
 }
 
 function moveLeft() {
+    let lineIndex = currentWord.lineIndex;
+    let wordIndex = currentWord.wordIndex;
     do {
-        if (currentWord.wordIndex > 0) {
-            currentWord.wordIndex--;
-        } else if (currentWord.lineIndex > 0) {
-            currentWord.wordIndex = lyric.lineWithIds[--currentWord.lineIndex].words.length - 1;
+        if (wordIndex > 0) {
+            wordIndex--;
+        } else if (lineIndex > 0) {
+            wordIndex = lyric.lineWithIds[--lineIndex].words.length - 1;
+        } else {
+            break;
         }
-    } while (isBlankWord());
+    } while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+    if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
+        currentWord.wordIndex = wordIndex;
+        currentWord.lineIndex = lineIndex;
+    }
 }
 
 function moveUp() {
+    let lineIndex = currentWord.lineIndex;
+    let wordIndex = currentWord.wordIndex;
     do {
-        if (currentWord.lineIndex > 0) {
-            currentWord.lineIndex--;
-            currentWord.wordIndex = 0;
+        if (lineIndex > 0) {
+            lineIndex--;
+            wordIndex = 0;
         } else {
             break;
         }
-    } while (isBlankWord());
+    } while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+    if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
+        currentWord.wordIndex = wordIndex;
+        currentWord.lineIndex = lineIndex;
+    }
 }
 
 function moveDown() {
+    let lineIndex = currentWord.lineIndex;
+    let wordIndex = currentWord.wordIndex;
     do {
-        if (currentWord.lineIndex < lyric.lineWithIds.length - 1) {
-            currentWord.lineIndex++;
-            currentWord.wordIndex = 0;
+        if (lineIndex < lyric.lineWithIds.length - 1) {
+            lineIndex++;
+            wordIndex = 0;
         } else {
             break;
         }
-    } while (isBlankWord());
+    } while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+    if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
+        currentWord.wordIndex = wordIndex;
+        currentWord.lineIndex = lineIndex;
+    }
 }
 
 function onKeyPress(e: KeyboardEvent) {
+    if((e.target as HTMLElement)?.nodeName === 'INPUT') return;
     let collected = false;
     switch (e.code) {
         case "KeyA": // 移动到上一个单词

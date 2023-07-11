@@ -117,7 +117,7 @@ export default function exportTTMLText(
 					const span = doc.createElement("span");
 					span.setAttribute("begin", msToTimestamp(word.time));
 					span.setAttribute("end", msToTimestamp(word.time + word.duration));
-					span.appendChild(doc.createTextNode(word.word.trim()));
+					span.appendChild(doc.createTextNode(word.word));
 					lineP.appendChild(span);
 				}
 			} else {
@@ -127,24 +127,19 @@ export default function exportTTMLText(
 			if (line.backgroundLyric) {
 				const bgLine = line.backgroundLyric;
 				const bgLineSpan = doc.createElement("span");
-
-				bgLineSpan.setAttribute(
-					"ttm:agent",
-					bgLine.shouldAlignRight ? "v2" : "v1",
-				);
-				bgLineSpan.setAttribute("itunes:key", `L${++i}`);
+				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
 				if (bgLine.dynamicLyric && bgLine.dynamicLyricTime !== undefined) {
 					for (const word of bgLine.dynamicLyric) {
 						const span = doc.createElement("span");
 						span.setAttribute("begin", msToTimestamp(word.time));
 						span.setAttribute("end", msToTimestamp(word.time + word.duration));
-						span.appendChild(doc.createTextNode(word.word.trim()));
+						span.appendChild(doc.createTextNode(word.word));
 						bgLineSpan.appendChild(span);
 					}
 				} else {
 					bgLineSpan.appendChild(
-						doc.createTextNode(bgLine.originalLyric.trim()),
+						doc.createTextNode(bgLine.originalLyric),
 					);
 				}
 
@@ -152,14 +147,14 @@ export default function exportTTMLText(
 					const span = doc.createElement("span");
 					span.setAttribute("ttm:role", "x-translation");
 					span.setAttribute("xml:lang", "zh-CN");
-					span.appendChild(doc.createTextNode(bgLine.translatedLyric.trim()));
+					span.appendChild(doc.createTextNode(bgLine.translatedLyric));
 					bgLineSpan.appendChild(span);
 				}
 
 				if (bgLine.romanLyric) {
 					const span = doc.createElement("span");
 					span.setAttribute("ttm:role", "x-roman");
-					span.appendChild(doc.createTextNode(bgLine.romanLyric.trim()));
+					span.appendChild(doc.createTextNode(bgLine.romanLyric));
 					bgLineSpan.appendChild(span);
 				}
 
@@ -170,14 +165,14 @@ export default function exportTTMLText(
 				const span = doc.createElement("span");
 				span.setAttribute("ttm:role", "x-translation");
 				span.setAttribute("xml:lang", "zh-CN");
-				span.appendChild(doc.createTextNode(line.translatedLyric.trim()));
+				span.appendChild(doc.createTextNode(line.translatedLyric));
 				lineP.appendChild(span);
 			}
 
 			if (line.romanLyric) {
 				const span = doc.createElement("span");
 				span.setAttribute("ttm:role", "x-roman");
-				span.appendChild(doc.createTextNode(line.romanLyric.trim()));
+				span.appendChild(doc.createTextNode(line.romanLyric));
 				lineP.appendChild(span);
 			}
 

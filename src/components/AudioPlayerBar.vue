@@ -151,6 +151,7 @@ onMounted(() => {
 });
 
 function onKeyPress(e: KeyboardEvent) {
+    if((e.target as HTMLElement)?.nodeName === 'INPUT') return;
     let collected = false;
     switch (e.code) {
         case "Space":
