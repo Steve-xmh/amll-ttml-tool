@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: 克隆仓库源代码
         uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
       - name: 配置 NodeJS
         uses: actions/setup-node@v3.0.0
       - name: 安装 wasm-pack
