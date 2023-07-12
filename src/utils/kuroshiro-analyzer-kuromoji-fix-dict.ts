@@ -1,5 +1,7 @@
-import kuromoji from "kuromoji/build/kuromoji";
+import kuromoji from "kuromoji";
 import Kuroshiro from "kuroshiro/dist/kuroshiro";
+
+console.log(kuromoji);
 
 export interface ParseResult {
 	surface_form: string;
@@ -102,4 +104,4 @@ export class Analyzer {
 }
 
 export const kuroshiro = new Kuroshiro();
-await kuroshiro.init(new Analyzer("kuromoji-dict"));
+await kuroshiro.init(new Analyzer("kuromoji-dict-min"));

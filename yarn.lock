@@ -2385,8 +2385,9 @@ __metadata:
     "@vicons/fluent": ^0.12.0
     "@vitejs/plugin-vue": ^4.2.3
     "@vue/tsconfig": ^0.4.0
+    fflate: ^0.8.0
     jieba-wasm: ^0.0.2
-    kuromoji: ^0.1.2
+    kuromoji: "file:./libs/kuromoji.js"
     kuroshiro: ^1.2.0
     naive-ui: ^2.34.4
     pangu: ^4.0.7
@@ -3321,6 +3322,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fflate@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "fflate@npm:0.8.0"
+  checksum: 6215f95ee01d620a41e459247a7de7e7117dd23e78ef017c26b64c26f2a880a90eedc77675918bbf816d18cc990f6505cd71be933c67cc48cc1e7ebbff1589ea
+  languageName: node
+  linkType: hard
+
 "file-saver@npm:^2.0.0-rc.4":
   version: 2.0.5
   resolution: "file-saver@npm:2.0.5"
@@ -4124,25 +4132,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kuromoji@npm:0.1.2":
+"kuromoji@file:./libs/kuromoji.js::locator=amll-ttml-tool%40workspace%3A.":
   version: 0.1.2
-  resolution: "kuromoji@npm:0.1.2"
+  resolution: "kuromoji@file:./libs/kuromoji.js#./libs/kuromoji.js::hash=88d2df&locator=amll-ttml-tool%40workspace%3A."
   dependencies:
     async: ^2.0.1
     doublearray: 0.0.2
     zlibjs: ^0.3.1
-  checksum: 473dc83b35c6989eeffbef90a45e5def37bb89ad55bdde17b9fdb48f52a0ca6de52e209a14b1d1a923dd80c5b7871732a6e85aef00fc0869570885fec30ecc1c
-  languageName: node
-  linkType: hard
-
-"kuromoji@patch:kuromoji@npm%3A0.1.2#./.yarn/patches/kuromoji-npm-0.1.2-f20046ed5f.patch::locator=amll-ttml-tool%40workspace%3A.":
-  version: 0.1.2
-  resolution: "kuromoji@patch:kuromoji@npm%3A0.1.2#./.yarn/patches/kuromoji-npm-0.1.2-f20046ed5f.patch::version=0.1.2&hash=f21148&locator=amll-ttml-tool%40workspace%3A."
-  dependencies:
-    async: ^2.0.1
-    doublearray: 0.0.2
-    zlibjs: ^0.3.1
-  checksum: 06d8a7893b096447d4c810f67930cdc6dd2e1f9434d3d247d29c36d17ce20ea0e092ec7f05828a7303e5df3fbcee9870b2db41399adfe7d6997d680c46639e8a
+  checksum: 11d915f341048ce1fd685ec4590cbbc4cdf5b0258f53ccdcd0a79e35d57130e1e80690487a40c5651ca91cf68496ba548f0802e9e499f79487d5eddf9bc0cd08
   languageName: node
   linkType: hard
 

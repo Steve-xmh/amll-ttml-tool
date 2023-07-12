@@ -17,8 +17,9 @@
     "@ungap/structured-clone": "^1.2.0",
     "@vicons/fluent": "^0.12.0",
     "@vue/tsconfig": "^0.4.0",
+    "fflate": "^0.8.0",
     "jieba-wasm": "^0.0.2",
-    "kuromoji": "^0.1.2",
+    "kuromoji": "file:./libs/kuromoji.js",
     "kuroshiro": "^1.2.0",
     "naive-ui": "^2.34.4",
     "pangu": "^4.0.7",
@@ -42,8 +43,5 @@
     "vite-plugin-wasm": "^3.2.2",
     "vite-svg-loader": "^4.0.0"
   },
-  "packageManager": "yarn@3.6.1",
-  "resolutions": {
-    "kuromoji@^0.1.2": "patch:kuromoji@npm%3A0.1.2#./.yarn/patches/kuromoji-npm-0.1.2-f20046ed5f.patch"
-  }
+  "packageManager": "yarn@3.6.1"
 }

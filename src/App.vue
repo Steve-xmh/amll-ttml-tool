@@ -11,8 +11,22 @@
             }" content-style="display: flex; flex-direction: column;">
                 <TopBar />
                 <NLayoutContent style="flex: 1">
-                    <LyricEditor v-if="edit.editMode === 'edit'" />
-                    <LyricSyncEditor v-else-if="edit.editMode === 'sync'" />
+                    <Suspense v-if="edit.editMode === 'edit'">
+                        <LyricEditor />
+                        <template #fallback>
+                            <NSpin>
+                                <div></div>
+                            </NSpin>
+                        </template>
+                    </Suspense>
+                    <Suspense v-else-if="edit.editMode === 'sync'">
+                        <LyricSyncEditor />
+                        <template #fallback>
+                            <NSpin>
+                                <div></div>
+                            </NSpin>
+                        </template>
+                    </Suspense>
                 </NLayoutContent>
                 <AudioPlayerBar />
             </NLayout>
@@ -32,17 +46,18 @@ import {
     NGlobalStyle,
     useThemeVars,
     NNotificationProvider,
+    NSpin,
 } from "naive-ui";
-import { onMounted } from "vue";
+import { onMounted, Suspense, defineAsyncComponent } from "vue";
 import { useEditMode } from "./store";
-import LyricEditor from "./components/LyricEditor.vue";
 import ProgressOverlay from "./components/ProgressOverlay.vue";
-import LyricSyncEditor from "./components/LyricSyncEditor.vue";
 import AudioPlayerBar from "./components/AudioPlayerBar.vue";
 import TutorialModal from "./components/TutorialModal.vue";
 import TopBar from "./components/TopBar.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 import UploadDBDialog from "./components/UploadDBDialog.vue";
+const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.vue"));
+const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
 
 const themeVars = useThemeVars();
 const edit = useEditMode();

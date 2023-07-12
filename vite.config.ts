@@ -5,7 +5,12 @@ import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { VitePWA } from "vite-plugin-pwa";
 
-const plugins = [vue(), svgLoader(), wasm(), topLevelAwait()];
+const plugins = [
+	vue(),
+	svgLoader(),
+	wasm(),
+	topLevelAwait(),
+];
 
 if (!process.env.TAURI_PLATFORM) {
 	plugins.push(VitePWA());

@@ -13,7 +13,6 @@
 import { useAudio, useCurrentSyncWord, useSettings } from "../store";
 import { reactive, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
-import { kuroshiro } from "../utils/kuroshiro-analyzer-kuromoji-fix-dict";
 import type { LyricWordWithId } from "../store/lyric";
 
 const currentWord = useCurrentSyncWord();
@@ -34,12 +33,14 @@ watch(() => [props.word, settings.showJpnRomaji], async () => {
     displayWord.word = props.word.word;
     displayWord.htmlWord = "";
     if (settings.showJpnRomaji) {
+        const { kuroshiro } = await import("../utils/kuroshiro-analyzer-kuromoji-fix-dict");
         displayWord.htmlWord = await kuroshiro.convert(displayWord.word, { to: 'romaji', mode: "furigana" })
     }
 }, { flush: "post" });
 
 onMounted(async () => {
     if (settings.showJpnRomaji) {
+        const { kuroshiro } = await import("../utils/kuroshiro-analyzer-kuromoji-fix-dict");
         displayWord.htmlWord = await kuroshiro.convert(displayWord.word, { to: 'romaji', mode: "furigana" })
     }
 })

@@ -2,6 +2,12 @@
 
 一个全新的逐词歌词编辑器！针对 [Apple Music-like Lyrics 网易云插件](https://github.com/Steve-xmh/applemusic-like-lyrics)设计！
 
+## 使用
+
+你可以通过访问 [`https://steve-xmh.github.io/amll-ttml-tool/`](https://steve-xmh.github.io/amll-ttml-tool/)来使用本工具的在线版本。
+
+也可以使用 Github Action 构建的 Tauri 桌面版本，具体见 [Github Action 构建 Tauri 桌面版本](https://github.com/Steve-xmh/amll-ttml-tool/actions/workflows/build-test.yaml)。
+
 ## 编辑器功能（计划中）
 
 最新进度可以前往[这个议题查看](https://github.com/Steve-xmh/amll-ttml-tool/issues/2)
@@ -21,10 +27,11 @@
 
 ## 开发构建
 
-首先，本项目仅可使用 Yarn 2，请确保你已经安装好了 Yarn 包管理器后运行以下你需要使用的指令：
+首先，本项目仅可使用 Yarn 2，请确保你已经安装好了 Yarn 包管理器和 wasm-pack 后运行以下你需要使用的指令：
 
 ```bash
 yarn # 安装依赖
+wasm-pack build --target bundler --release "./src-wasm/" # 构建 WASM 模块
 yarn dev # 开启开发服务器
 yarn build # 构建网页版本
 yarn tauri dev # 开启 Tauri 桌面开发环境

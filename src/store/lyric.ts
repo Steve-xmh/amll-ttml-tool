@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { parseLyric } from "../utils/ttml-lyric-parser";
-import { cut } from "../libs/jieba-wasm";
+import { cut } from "../../libs/jieba-wasm";
 import { toRaw } from "vue";
 import exportTTMLText from "../utils/ttml-writer";
 import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
@@ -311,7 +311,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 						romanLyric: line.romanLyric,
 						shouldAlignRight: line.isDuet,
 					};
-				} else {
+				} else if (line.words.length !== 0) {
 					return {
 						originalLyric: line.words.map((w) => w.word).join(""),
 						beginTime: line.words[0].startTime,
