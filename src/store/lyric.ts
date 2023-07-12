@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { parseLyric } from "../utils/ttml-lyric-parser";
-import { cut } from "../../libs/jieba-wasm";
 import { toRaw } from "vue";
 import exportTTMLText from "../utils/ttml-writer";
 import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
@@ -173,7 +172,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBackground: false,
 				isDuet: false,
 				selected: false,
-			})
+			});
 			this.record();
 		},
 		selectLine(lineIndex: number) {
@@ -377,6 +376,8 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			const results: LyricLine[] = [];
 			const sel = this.lyrics.filter((line) => line.selected).length;
 			let cur = 0;
+			p.label = "正在加载 Jieba 分词模块……";
+			const { cut } = await import("jieba-wasm");
 			for (let i = 0; i < this.lyrics.length; i++) {
 				const line: LyricLine = {
 					...toRaw(this.lyrics[i]),
