@@ -11,6 +11,9 @@
     "fmt": "rome format --write ./src",
     "tauri": "tauri"
   },
+  "workspaces": [
+    "./libs/*"
+  ],
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
     "@types/ungap__structured-clone": "^0.3.0",
@@ -19,7 +22,6 @@
     "@vue/tsconfig": "^0.4.0",
     "fflate": "^0.8.0",
     "jieba-wasm": "^0.0.2",
-    "kuromoji": "file:./libs/kuromoji.js",
     "kuroshiro": "^1.2.0",
     "naive-ui": "^2.34.4",
     "pangu": "^4.0.7",
