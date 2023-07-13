@@ -73,14 +73,12 @@ import {
     NSpace,
     useNotification,
 } from "naive-ui";
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import saveFile from 'save-file';
 import { parseLyric } from "../utils/ttml-lyric-parser";
 import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
 import { Home24Regular } from "@vicons/fluent";
 import { useEditMode, useDialogs, useRightClickLyricLine, useEditingLyric, useSettings } from "../store";
-import { parseLrc } from "../../src-wasm/pkg";
-import type { LyricLine } from "../store/lyric";
 
 const edit = useEditMode();
 const lyric = useEditingLyric();

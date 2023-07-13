@@ -1,6 +1,12 @@
+<div align=center>
+
+![](./public/logo.svg)
+
 # Apple Music-like Lyrics TTML Tool
 
 一个全新的逐词歌词编辑器！针对 [Apple Music-like Lyrics 网易云插件](https://github.com/Steve-xmh/applemusic-like-lyrics)设计！
+
+</div>
 
 ## 使用
 

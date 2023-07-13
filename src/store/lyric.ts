@@ -60,6 +60,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				})),
 				id: lid,
 			})),
+		hasLineWithMoreWords: (state) => !!state.lyrics.find(line => line.words.length > 1),
 	},
 	actions: {
 		reset() {
@@ -174,6 +175,14 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				selected: false,
 			});
 			this.record();
+		},
+		reorderWord(lineIndex: number, oldIndex: number, newIndex: number) {
+			const line = this.lyrics[lineIndex];
+			if (line?.words[oldIndex]) {
+				const word = line.words.splice(oldIndex, 1)[0];
+				line.words.splice(newIndex, 0, word);
+				this.record();
+			}
 		},
 		selectLine(lineIndex: number) {
 			if (this.lyrics[lineIndex]) this.lyrics[lineIndex].selected = true;
@@ -301,7 +310,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		toRawLine(lineIndex: number): RawLyricLine {
 			const line = this.lyrics[lineIndex];
 			if (line) {
-				if (line.words.length === 1) {
+				if (line.words.length === 1 && !this.hasLineWithMoreWords) {
 					return {
 						originalLyric: line.words[0].word,
 						beginTime: line.words[0].startTime,

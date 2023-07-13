@@ -38,7 +38,8 @@
             <TutorialModal />
             <ProgressOverlay />
             <UploadDBDialog />
-            <SplitWordModal />
+            <ServiceWorkerUpdater v-if="enableSW" />
+            <!-- <SplitWordModal /> -->
         </NNotificationProvider>
     </NConfigProvider>
 </template>
@@ -62,11 +63,13 @@ import TopBar from "./components/TopBar.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 import UploadDBDialog from "./components/modals/UploadDBDialog.vue";
 import SplitWordModal from "./components/modals/SplitWordModal.vue";
+import ServiceWorkerUpdater from "./components/ServiceWorkerUpdater.vue";
 const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.vue"));
 const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
 
 const themeVars = useThemeVars();
 const edit = useEditMode();
+const enableSW = !!import.meta.env.TAURI_PLATFORM;
 
 onMounted(() => {
     // ask before page close

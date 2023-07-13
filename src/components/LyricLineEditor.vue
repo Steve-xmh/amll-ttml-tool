@@ -12,8 +12,11 @@
             " />
         <div style="display: flex; flex: 1; gap: 8px; flex-direction: column">
             <div style="display: flex; flex: 1; gap: 8px; flex-wrap: wrap">
-                <LyricWordEditor v-for="(word, i) in props.line.words" :key="i" :line-index="props.line.id"
-                    :word="word.word" :word-index="word.id" />
+                <Draggable :list="props.line.words" item-key="id" @sort="onSort">
+                    <template #item="{ element }">
+                        <LyricWordEditor :line-index="element.lineIndex" :word="element.word" :word-index="element.id" />
+                    </template>
+                </Draggable>
                 <NInput class="new-word" round autosize ref="inputRef" placeholder="新单词" :value="editState.newWord"
                     @input="editState.newWord = $event" @change="onAddNewWord" style="min-width: 100px" />
             </div>
@@ -44,6 +47,7 @@
 import { NInput, NCheckbox, NButton, NIcon, type InputInst } from "naive-ui";
 import { useEditingLyric, useRightClickLyricLine, useSettings } from "../store";
 import { computed, watch, nextTick, onMounted, reactive, ref } from "vue";
+import Draggable from 'vuedraggable'
 import { Dismiss12Filled, TextAlignRight24Filled, VideoBackgroundEffect24Filled } from "@vicons/fluent";
 import LyricWordEditor from "./LyricWordEditor.vue";
 import type { LyricLineWithId } from "../store/lyric";
@@ -60,6 +64,13 @@ const editState = reactive({
 });
 const settings = useSettings();
 const inputRef = ref<InputInst | null>(null);
+
+function onSort(e: CustomEvent & {
+    oldIndex: number;
+    newIndex: number;
+}) {
+    lyric.reorderWord(props.line.id, e.oldIndex, e.newIndex);
+}
 
 watch(() => props.line, () => {
     editState.translateLine = props.line.translatedLyric;
