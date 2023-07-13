@@ -377,7 +377,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			const sel = this.lyrics.filter((line) => line.selected).length;
 			let cur = 0;
 			p.label = "正在加载 Jieba 分词模块……";
-			const { cut } = await import("jieba-wasm");
+			const { cut } = await import("jieba-rs-wasm");
 			for (let i = 0; i < this.lyrics.length; i++) {
 				const line: LyricLine = {
 					...toRaw(this.lyrics[i]),

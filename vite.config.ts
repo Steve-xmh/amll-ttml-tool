@@ -1,16 +1,23 @@
-import { defineConfig } from "vite";
+import { defineConfig, type UserConfig } from "vite";
 import svgLoader from "vite-svg-loader";
 import vue from "@vitejs/plugin-vue";
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { VitePWA } from "vite-plugin-pwa";
 
-const plugins = [
-	vue(),
-	svgLoader(),
-	wasm(),
-	topLevelAwait(),
-];
+const plugins = [vue(), svgLoader(), wasm(), topLevelAwait()];
+
+const rollupOptions: UserConfig["build"]["rollupOptions"] = {
+	output: {
+		manualChunks(id) {
+			if (id.includes("naive-ui")) {
+				return "naive-ui";
+			} else if (id.includes("node_modules")) {
+				return "vendor";
+			}
+		},
+	},
+};
 
 if (!process.env.TAURI_PLATFORM) {
 	plugins.push(VitePWA());
@@ -41,6 +48,9 @@ export default defineConfig({
 				minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
 				// produce sourcemaps for debug builds
 				sourcemap: !!process.env.TAURI_DEBUG,
+				rollupOptions,
 		  }
-		: undefined,
+		: {
+				rollupOptions,
+		  },
 });
