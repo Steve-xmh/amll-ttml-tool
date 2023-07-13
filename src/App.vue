@@ -14,7 +14,8 @@
                     <Suspense v-if="edit.editMode === 'edit'">
                         <LyricEditor />
                         <template #fallback>
-                            <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+                            <div
+                                style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
                                 <NSpin />
                                 <div>正在加载编辑页面</div>
                             </div>
@@ -23,7 +24,8 @@
                     <Suspense v-else-if="edit.editMode === 'sync'">
                         <LyricSyncEditor />
                         <template #fallback>
-                            <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+                            <div
+                                style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
                                 <NSpin />
                                 <div>正在加载打轴页面</div>
                             </div>
@@ -36,6 +38,7 @@
             <TutorialModal />
             <ProgressOverlay />
             <UploadDBDialog />
+            <SplitWordModal />
         </NNotificationProvider>
     </NConfigProvider>
 </template>
@@ -52,12 +55,13 @@ import {
 } from "naive-ui";
 import { onMounted, Suspense, defineAsyncComponent } from "vue";
 import { useEditMode } from "./store";
-import ProgressOverlay from "./components/ProgressOverlay.vue";
+import ProgressOverlay from "./components/modals/ProgressOverlay.vue";
 import AudioPlayerBar from "./components/AudioPlayerBar.vue";
-import TutorialModal from "./components/TutorialModal.vue";
+import TutorialModal from "./components/modals/TutorialModal.vue";
 import TopBar from "./components/TopBar.vue";
 import ContextMenu from "./components/ContextMenu.vue";
-import UploadDBDialog from "./components/UploadDBDialog.vue";
+import UploadDBDialog from "./components/modals/UploadDBDialog.vue";
+import SplitWordModal from "./components/modals/SplitWordModal.vue";
 const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.vue"));
 const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
 
