@@ -38,7 +38,7 @@ export default function exportTTMLText(
 		if (line.originalLyric.length === 0 && tmp.length > 0) {
 			params.push(tmp);
 			tmp = [];
-		} else if (!line.isBackgroundLyric && line.originalLyric.length > 0) {
+		} else {
 			tmp.push(line);
 		}
 	}

@@ -328,6 +328,15 @@ export const useEditingLyric = defineStore("editing-lyric", {
 							flag: 0,
 						})),
 					};
+				} else {
+					return {
+						originalLyric: "",
+						beginTime: 0,
+						duration: 0,
+						translatedLyric: line.translatedLyric,
+						romanLyric: line.romanLyric,
+						shouldAlignRight: line.isDuet,
+					};
 				}
 			} else {
 				throw new TypeError(`第 ${lineIndex} 行歌词不存在`);

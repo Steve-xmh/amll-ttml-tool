@@ -14,17 +14,19 @@
                     <Suspense v-if="edit.editMode === 'edit'">
                         <LyricEditor />
                         <template #fallback>
-                            <NSpin>
-                                <div></div>
-                            </NSpin>
+                            <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+                                <NSpin />
+                                <div>正在加载编辑页面</div>
+                            </div>
                         </template>
                     </Suspense>
                     <Suspense v-else-if="edit.editMode === 'sync'">
                         <LyricSyncEditor />
                         <template #fallback>
-                            <NSpin>
-                                <div></div>
-                            </NSpin>
+                            <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+                                <NSpin />
+                                <div>正在加载打轴页面</div>
+                            </div>
                         </template>
                     </Suspense>
                 </NLayoutContent>
