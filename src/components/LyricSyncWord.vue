@@ -1,17 +1,20 @@
 <template>
-    <div v-show="props.word.word.trim().length > 0" @click="currentWord.wordIndex = props.word.id">
+    <div v-show="props.word.word.trim().length > 0" :class="{
+        'lyric-word-not-main': props.notMain,
+        'lyric-word-warn': hasError,
+    }" @click="currentWord.wordIndex = props.word.id" ref="elRef">
         <div v-if="displayWord.htmlWord" v-html="displayWord.htmlWord"></div>
         <div v-else>{{ displayWord.word }}</div>
         <div>{{ toTimestamp(props.word.startTime ?? 0) }}</div>
         <div>{{ toTimestamp(props.word.endTime ?? 0) }}</div>
-        <div v-if="props.word.id === currentWord.wordIndex">{{ toTimestamp(currentTimeMS) }}</div>
-        <div v-if="props.word.id === currentWord.wordIndex" />
+        <div v-if="props.word.id === currentWord.wordIndex && !props.notMain">{{ toTimestamp(currentTimeMS) }}</div>
+        <div v-if="props.word.id === currentWord.wordIndex && !props.notMain" />
     </div>
 </template>
 
 <script lang="ts" setup>
 import { useAudio, useCurrentSyncWord, useSettings } from "../store";
-import { reactive, watch, onMounted } from "vue";
+import { reactive, watch, onMounted, ref, nextTick, computed } from "vue";
 import { storeToRefs } from "pinia";
 import type { LyricWordWithId } from "../store/lyric";
 
@@ -22,11 +25,31 @@ const { currentTimeMS } = storeToRefs(audio);
 
 const props = defineProps<{
     word: LyricWordWithId;
+    notMain?: boolean;
 }>();
 
 const displayWord = reactive({
     word: props.word.word,
     htmlWord: "",
+});
+
+const elRef = ref<HTMLDivElement>();
+const lastWordIndex = ref(currentWord.wordIndex)
+watch(() => [currentWord.wordIndex, props.word.id, props.word.lineIndex], () => {
+    if (!props.notMain && currentWord.wordIndex === props.word.id) {
+        nextTick(() => {
+            elRef.value?.scrollIntoView({
+                behavior: Math.abs(currentWord.wordIndex - lastWordIndex.value) <= 1 ? "smooth" : "instant",
+                block: "center",
+                inline: "center"
+            });
+        })
+        lastWordIndex.value = currentWord.wordIndex
+    }
+}, { flush: "post" })
+
+const hasError = computed(() => {
+    return props.word.endTime - props.word.startTime < 0;
 });
 
 watch(() => [props.word, settings.showJpnRomaji], async () => {
@@ -58,3 +81,10 @@ function toTimestamp(duration: number) {
 }
 
 </script>
+
+<style lang="sass">
+.lyric-word-warn
+    color: #EE4444
+.lyric-word-not-main
+    opacity: 0.5
+</style>

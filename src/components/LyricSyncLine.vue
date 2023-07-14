@@ -21,6 +21,7 @@ currentWord.wordIndex = 0;
                             word.id === currentWord.wordIndex,
                         'hot-word':
                             word.startTime <= currentTime && word.endTime > currentTime,
+                        'lyric-line-word-warn': word.endTime - word.startTime < 0,
                     }">{{ word.word }}</span>
                 </div>
                 <div v-if="settings.showTranslateLine">{{ line.translatedLyric }}</div>
@@ -32,17 +33,14 @@ currentWord.wordIndex = 0;
 
 <script setup lang="ts">
 import {
-    useEditingLyric,
     useSettings,
     useAudio,
     useCurrentSyncWord,
 } from "../store";
 import { storeToRefs } from "pinia";
-import { nextTick, ref, computed } from "vue";
+import { nextTick, ref, watch } from "vue";
 import type { LyricLineWithId } from "../store/lyric";
-const itemRef = ref<{
-    $el?: HTMLLIElement;
-}>();
+const itemRef = ref<HTMLDivElement>();
 
 const { currentTime } = storeToRefs(useAudio());
 const currentWord = useCurrentSyncWord();
@@ -52,26 +50,17 @@ const props = defineProps<{
     line: LyricLineWithId;
 }>();
 
-currentWord.$subscribe(
-    (mut) => {
-        const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
-        if (
-            evt.key === "lineIndex" &&
-            itemRef.value &&
-            currentWord.lineIndex === props.line.id
-        ) {
-            const el = itemRef.value.$el;
-            nextTick(() => {
-                el?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                    inline: "center",
-                });
-            })
-        }
-    },
-    { flush: "post" }
-);
+watch(() => [currentWord.lineIndex, props.line.id], () => {
+    if (currentWord.lineIndex === props.line.id) {
+        nextTick(() => {
+                itemRef.value?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "center"
+            });
+        })
+    }
+}, { flush: "post" })
 
 function toTimestamp(duration: number) {
     const isRemainTime = duration < 0;
@@ -89,6 +78,8 @@ function toTimestamp(duration: number) {
 <style lang="sass">
 .sync-line > *
     margin-right: 6px
+.lyric-line-word-warn
+    color: #EE4444
 .lyric-line-item
     cursor: pointer
     outline-offset: -4px

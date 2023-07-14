@@ -1,7 +1,13 @@
 <template>
     <div class="lyric-sync-editor">
-        <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]" ref="syncEditor">
+        <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]">
+            <template v-if="lyric.lineWithIds[currentWord.lineIndex - 1]">
+                <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex - 1].words" not-main :key="i" :word="word" />
+            </template>
             <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex].words" :key="i" :word="word" />
+            <template v-if="lyric.lineWithIds[currentWord.lineIndex + 1]">
+                <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex + 1].words" not-main :key="i" :word="word" />
+            </template>
         </div>
         <div class="lyric-line-sync-editor-no-selected" v-else>
             <div>
