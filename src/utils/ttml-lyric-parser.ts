@@ -21,9 +21,7 @@ function parseTimespan(timeSpan: string): number {
 	}
 }
 
-const wordReg = /^([,.'"?A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\-]+)$/;
-
-export function parseLyric(ttmlText: string, strictMode = false): LyricLine[] {
+export function parseLyric(ttmlText: string): LyricLine[] {
 	const domParser = new DOMParser();
 	const ttmlDoc: XMLDocument = domParser.parseFromString(
 		ttmlText,
@@ -53,179 +51,130 @@ export function parseLyric(ttmlText: string, strictMode = false): LyricLine[] {
 				!!lineEl.getAttribute("ttm:agent") &&
 				lineEl.getAttribute("ttm:agent") !== mainAgentId,
 			originalLyric: "",
-			dynamicLyric: [] as DynamicLyricWord[] | undefined,
-			dynamicLyricTime: parseTimespan(lineEl.getAttribute("begin")!!) as
-				| number
-				| undefined,
+			dynamicLyric: [],
+			dynamicLyricTime: parseTimespan(lineEl.getAttribute("begin")!!),
 			isBackgroundLyric: false,
-			backgroundLyric: undefined as LyricLine | undefined,
-			translatedLyric: undefined as string | undefined,
-			romanLyric: undefined as string | undefined,
-		} satisfies LyricLine;
+			backgroundLyric: undefined,
+			translatedLyric: undefined,
+			romanLyric: undefined,
+		} as LyricLine;
 
 		line.duration =
 			parseTimespan(lineEl.getAttribute("end")!!) - line.beginTime;
 
-		if (strictMode) {
-			let wordTmp = "";
-			for (const wordNode of lineEl.childNodes) {
-				if (wordNode.nodeType === Node.TEXT_NODE) {
-					wordTmp += wordNode.textContent;
-				} else if (wordNode.nodeType === Node.ELEMENT_NODE) {
-					const wordEl = wordNode as Element;
-					if (wordEl.hasAttribute("begin") && wordEl.hasAttribute("end")) {
-						if (wordNode.textContent) {
-							wordTmp += wordNode.textContent;
-						}
-						const word = {
-							word: wordTmp,
-							time: parseTimespan(wordEl.getAttribute("begin")!!),
-							duration: 0,
-							flag: 0,
-						} satisfies DynamicLyricWord;
-						word.duration =
-							parseTimespan(wordEl.getAttribute("end")!!) - word.time;
-						wordTmp = "";
-						line.dynamicLyric?.push(word);
-					}
-				}
-			}
-		} else {
-			let notFirst = false;
-			for (const wordEl of lineEl.querySelectorAll("p>span[begin][end]")) {
-				const word = {
-					word: wordEl.innerHTML,
-					time: parseTimespan(wordEl.getAttribute("begin")!!),
+		let wordTmp = "";
+		for (const wordNode of lineEl.childNodes) {
+			if (wordNode.nodeType === Node.TEXT_NODE) {
+				line.dynamicLyric?.push({
+					word: wordNode.textContent ?? "",
+					time: 0,
 					duration: 0,
 					flag: 0,
-				} satisfies DynamicLyricWord;
-				if (notFirst) {
-					if (wordReg.test(wordEl.innerHTML)) {
-						word.word = ` ${word.word}`;
-					}
-				} else {
-					notFirst = true;
-				}
-				word.duration = parseTimespan(wordEl.getAttribute("end")!!) - word.time;
-				line.dynamicLyric?.push(word);
-			}
-		}
+				});
+			} else if (wordNode.nodeType === Node.ELEMENT_NODE) {
+				const wordEl = wordNode as Element;
+				const role = wordEl.getAttribute("ttm:role");
 
-		for (const childEl of lineEl.children) {
-			const role = childEl.getAttribute("ttm:role");
-			if (childEl.nodeName === "span" && role) {
-				if (role === "x-bg") {
-					const bgLine = {
-						originalLyric: "",
-						translatedLyric: undefined as string | undefined,
-						romanLyric: undefined as string | undefined,
-						dynamicLyric: [] as DynamicLyricWord[] | undefined,
-						dynamicLyricTime: line.dynamicLyricTime,
-						isBackgroundLyric: true,
-						beginTime: line.beginTime,
-						duration: line.duration,
-						shouldAlignRight: line.shouldAlignRight,
-					} satisfies LyricLine;
+				if (wordEl.nodeName === "span" && role) {
+					if (role === "x-bg") {
+						const bgLine = {
+							originalLyric: "",
+							translatedLyric: undefined,
+							romanLyric: undefined,
+							dynamicLyric: [],
+							dynamicLyricTime: line.dynamicLyricTime,
+							isBackgroundLyric: true,
+							beginTime: line.beginTime,
+							duration: line.duration,
+							shouldAlignRight: line.shouldAlignRight,
+						} as LyricLine;
 
-					if (strictMode) {
-						let wordTmp = "";
-						for (const wordNode of childEl.childNodes) {
+						for (const wordNode of wordEl.childNodes) {
 							if (wordNode.nodeType === Node.TEXT_NODE) {
-								wordTmp += wordNode.textContent;
+								bgLine.dynamicLyric?.push({
+									word: wordNode.textContent ?? "",
+									time: 0,
+									duration: 0,
+									flag: 0,
+								});
 							} else if (wordNode.nodeType === Node.ELEMENT_NODE) {
 								const wordEl = wordNode as Element;
 								if (
 									wordEl.hasAttribute("begin") &&
 									wordEl.hasAttribute("end")
 								) {
-									if (wordNode.textContent) {
-										wordTmp += wordNode.textContent;
-									}
+									wordTmp += wordNode.textContent ?? "";
 									const word = {
 										word: wordTmp,
 										time: parseTimespan(wordEl.getAttribute("begin")!!),
 										duration: 0,
 										flag: 0,
-									} satisfies DynamicLyricWord;
+									} as DynamicLyricWord;
 									word.duration =
 										parseTimespan(wordEl.getAttribute("end")!!) - word.time;
 									wordTmp = "";
-									line.dynamicLyric?.push(word);
+									bgLine.dynamicLyric?.push(word);
 								}
 							}
 						}
-					} else {
-						let notFirst = false;
-						for (const wordEl of childEl.querySelectorAll(
-							"span>span[begin][end]",
-						)) {
-							const word = {
-								word: wordEl.innerHTML,
-								time: parseTimespan(wordEl.getAttribute("begin")!!),
-								duration: 0,
-								flag: 0,
-							} satisfies DynamicLyricWord;
-							if (notFirst) {
-								if (wordReg.test(wordEl.innerHTML)) {
-									word.word = ` ${word.word}`;
+
+						const firstWord = bgLine.dynamicLyric?.[0];
+						if (firstWord?.word.startsWith("(")) {
+							firstWord.word = firstWord.word.substring(1);
+						}
+
+						const lastWord =
+							bgLine.dynamicLyric?.[bgLine.dynamicLyric.length - 1];
+						if (lastWord?.word.endsWith(")")) {
+							lastWord.word = lastWord.word.substring(
+								0,
+								lastWord.word.length - 1,
+							);
+						}
+
+						for (const bgChildEl of wordEl.children) {
+							const role = bgChildEl.getAttribute("ttm:role");
+							if (bgChildEl.nodeName === "span" && role) {
+								if (role === "x-translation") {
+									bgLine.translatedLyric = bgChildEl.innerHTML.trim();
+								} else if (role === "x-roman") {
+									bgLine.romanLyric = bgChildEl.innerHTML.trim();
 								}
-							} else {
-								notFirst = true;
-							}
-							word.duration =
-								parseTimespan(wordEl.getAttribute("end")!!) - word.time;
-							bgLine.dynamicLyric?.push(word);
-						}
-					}
-
-					const firstWord = bgLine.dynamicLyric?.[0];
-					if (firstWord?.word.startsWith("(")) {
-						firstWord.word = firstWord.word.substring(1);
-					}
-
-					const lastWord =
-						bgLine.dynamicLyric?.[bgLine.dynamicLyric.length - 1];
-					if (lastWord?.word.endsWith(")")) {
-						lastWord.word = lastWord.word.substring(
-							0,
-							lastWord.word.length - 1,
-						);
-					}
-
-					for (const bgChildEl of childEl.children) {
-						const role = bgChildEl.getAttribute("ttm:role");
-						if (bgChildEl.nodeName === "span" && role) {
-							if (role === "x-translation") {
-								bgLine.translatedLyric = bgChildEl.innerHTML.trim();
-							} else if (role === "x-roman") {
-								bgLine.romanLyric = bgChildEl.innerHTML.trim();
 							}
 						}
-					}
 
-					if (bgLine.dynamicLyric?.length === 0) {
-						bgLine.originalLyric = "";
-						for (const childNode of childEl.childNodes) {
-							if (childNode.nodeType === Node.TEXT_NODE) {
-								bgLine.originalLyric += childNode.textContent;
+						if (bgLine.dynamicLyric?.length === 0) {
+							bgLine.originalLyric = "";
+							for (const childNode of wordEl.childNodes) {
+								if (childNode.nodeType === Node.TEXT_NODE) {
+									bgLine.originalLyric += childNode.nodeValue ?? "";
+								}
 							}
+							bgLine.originalLyric = bgLine.originalLyric.trim();
+							bgLine.dynamicLyric = undefined;
+							bgLine.dynamicLyricTime = undefined;
+						} else if (line.dynamicLyric) {
+							bgLine.originalLyric =
+								bgLine.dynamicLyric?.reduce((pv, cv) => pv + cv.word, "") || "";
 						}
-						bgLine.originalLyric = bgLine.originalLyric.trim();
-						bgLine.dynamicLyric = undefined;
-						bgLine.dynamicLyricTime = undefined;
-					} else if (line.dynamicLyric) {
-						bgLine.originalLyric =
-							bgLine.dynamicLyric?.reduce((pv, cv) => pv + cv.word, "") || "";
-					}
 
-					line.backgroundLyric = bgLine;
-				} else if (role === "x-translation") {
-					line.translatedLyric = childEl.innerHTML.trim();
-				} else if (role === "x-roman") {
-					line.romanLyric = childEl.innerHTML.trim();
-				}
-				if (line.backgroundLyric && line.translatedLyric && line.romanLyric) {
-					break;
+						line.backgroundLyric = bgLine;
+					} else if (role === "x-translation") {
+						line.translatedLyric = wordEl.innerHTML;
+					} else if (role === "x-roman") {
+						line.romanLyric = wordEl.innerHTML;
+					}
+				} else if (wordEl.hasAttribute("begin") && wordEl.hasAttribute("end")) {
+					const word = {
+						word: wordNode.textContent ?? "",
+						time: parseTimespan(wordEl.getAttribute("begin")!!),
+						duration: 0,
+						flag: 0,
+					} satisfies DynamicLyricWord;
+					word.duration =
+						parseTimespan(wordEl.getAttribute("end")!!) - word.time;
+					wordTmp = "";
+					line.dynamicLyric?.push(word);
 				}
 			}
 		}

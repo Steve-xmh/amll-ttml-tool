@@ -163,10 +163,17 @@ function onSelectMenu(key: string) {
             fileDialog.accept = ".ttml, application/ttml+xml, application/xml, */*";
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
-                const text = await fileDialog.files?.[0].text();
-                if (text) {
-                    const result = parseLyric(text);
-                    lyric.loadLyric(result);
+                try {
+                    const text = await fileDialog.files?.[0].text();
+                    if (text) {
+                        const result = parseLyric(text);
+                        lyric.loadLyric(result);
+                    }
+                } catch (err) {
+                    notify.error({
+                        title: "加载歌词失败",
+                        content: String(err),
+                    })
                 }
             });
             fileDialog.remove();
@@ -178,8 +185,15 @@ function onSelectMenu(key: string) {
             fileDialog.accept = ".lrc, */*";
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
-                const text = await fileDialog.files?.[0].text();
-                if (text) lyric.loadLRC(text);
+                try {
+                    const text = await fileDialog.files?.[0].text();
+                    if (text) lyric.loadLRC(text);
+                } catch (err) {
+                    notify.error({
+                        title: "导入 LRC 歌词失败",
+                        content: String(err),
+                    })
+                }
             });
             fileDialog.remove();
             break;
@@ -190,8 +204,15 @@ function onSelectMenu(key: string) {
             fileDialog.accept = ".yrc, */*";
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
-                const text = await fileDialog.files?.[0].text();
-                if (text) lyric.loadYRC(text);
+                try {
+                    const text = await fileDialog.files?.[0].text();
+                    if (text) lyric.loadYRC(text);
+                } catch (err) {
+                    notify.error({
+                        title: "导入 YRC 歌词失败",
+                        content: String(err),
+                    })
+                }
             });
             fileDialog.remove();
             break;
@@ -202,8 +223,15 @@ function onSelectMenu(key: string) {
             fileDialog.accept = ".qrc, */*";
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
-                const text = await fileDialog.files?.[0].text();
-                if (text) lyric.loadQRC(text);
+                try {
+                    const text = await fileDialog.files?.[0].text();
+                    if (text) lyric.loadQRC(text);
+                } catch (err) {
+                    notify.error({
+                        title: "导入 QRC 歌词失败",
+                        content: String(err),
+                    })
+                }
             });
             fileDialog.remove();
             break;
@@ -214,35 +242,77 @@ function onSelectMenu(key: string) {
             fileDialog.accept = ".lys, */*";
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
-                const text = await fileDialog.files?.[0].text();
-                if (text) lyric.loadLYS(text);
+                try {
+                    const text = await fileDialog.files?.[0].text();
+                    if (text) lyric.loadLYS(text);
+                } catch (err) {
+                    notify.error({
+                        title: "导入 Lyricify Syllable 歌词失败",
+                        content: String(err),
+                    })
+                }
             });
             fileDialog.remove();
             break;
         }
         case "save": {
-            const output = lyric.toTTML();
-            saveFile(new TextEncoder().encode(output), "lyric.ttml");
+            try {
+                const output = lyric.toTTML();
+                saveFile(new TextEncoder().encode(output), "lyric.ttml");
+            } catch (err) {
+                notify.error({
+                    title: "保存失败",
+                    content: String(err),
+                })
+            }
             break;
         }
         case "export-to-lrc": {
-            const output = lyric.toLRC();
-            saveFile(new TextEncoder().encode(output), "lyric.lrc");
+            try {
+                const output = lyric.toLRC();
+                saveFile(new TextEncoder().encode(output), "lyric.lrc");
+            } catch (err) {
+                notify.error({
+                    title: "导出 LRC 歌词失败",
+                    content: String(err),
+                })
+            }
             break;
         }
         case "export-to-yrc": {
-            const output = lyric.toYRC();
-            saveFile(new TextEncoder().encode(output), "lyric.yrc");
+            try {
+                const output = lyric.toYRC();
+                saveFile(new TextEncoder().encode(output), "lyric.yrc");
+            } catch (err) {
+                notify.error({
+                    title: "导出 YRC 歌词失败",
+                    content: String(err),
+                })
+            }
             break;
         }
         case "export-to-qrc": {
-            const output = lyric.toQRC();
-            saveFile(new TextEncoder().encode(output), "lyric.qrc");
+            try {
+                const output = lyric.toQRC();
+                saveFile(new TextEncoder().encode(output), "lyric.qrc");
+            } catch (err) {
+                notify.error({
+                    title: "导出 QRC 歌词失败",
+                    content: String(err),
+                })
+            }
             break;
         }
         case "export-to-lys": {
-            const output = lyric.toLYS();
-            saveFile(new TextEncoder().encode(output), "lyric.lys");
+            try {
+                const output = lyric.toLYS();
+                saveFile(new TextEncoder().encode(output), "lyric.lys");
+            } catch (err) {
+                notify.error({
+                    title: "导出 Lyricify Syllable 歌词失败",
+                    content: String(err),
+                })
+            }
             break;
         }
         case "submit-to-amll-db": {

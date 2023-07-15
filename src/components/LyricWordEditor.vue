@@ -73,6 +73,7 @@ function onDeleteWord() {
     padding: 4px 12px
     border: 1px solid var(--att-border-color)
     cursor: pointer
+    white-space: pre-wrap
     background: transparent
     border-radius: calc(var(--att-height-medium) / 2)
     height: var(--att-height-medium)
