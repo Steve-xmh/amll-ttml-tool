@@ -113,13 +113,23 @@ export default function exportTTMLText(
 			lineP.setAttribute("itunes:key", `L${++i}`);
 
 			if (line.dynamicLyric && line.dynamicLyricTime !== undefined) {
+				let beginTime = Infinity;
+				let endTime = 0;
 				for (const word of line.dynamicLyric) {
-					const span = doc.createElement("span");
-					span.setAttribute("begin", msToTimestamp(word.time));
-					span.setAttribute("end", msToTimestamp(word.time + word.duration));
-					span.appendChild(doc.createTextNode(word.word));
-					lineP.appendChild(span);
+					if (word.word.trim().length === 0) {
+						lineP.appendChild(doc.createTextNode(word.word));
+					} else {
+						const span = doc.createElement("span");
+						span.setAttribute("begin", msToTimestamp(word.time));
+						span.setAttribute("end", msToTimestamp(word.time + word.duration));
+						span.appendChild(doc.createTextNode(word.word));
+						lineP.appendChild(span);
+						beginTime = Math.min(beginTime, word.time);
+						endTime = Math.max(endTime, word.time + word.duration);
+					}
 				}
+				lineP.setAttribute("begin", msToTimestamp(beginTime));
+				lineP.setAttribute("end", msToTimestamp(endTime));
 			} else {
 				lineP.appendChild(doc.createTextNode(line.originalLyric));
 			}
@@ -130,17 +140,26 @@ export default function exportTTMLText(
 				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
 				if (bgLine.dynamicLyric && bgLine.dynamicLyricTime !== undefined) {
+					let beginTime = 0;
+					let endTime = 0;
 					for (const word of bgLine.dynamicLyric) {
-						const span = doc.createElement("span");
-						span.setAttribute("begin", msToTimestamp(word.time));
-						span.setAttribute("end", msToTimestamp(word.time + word.duration));
-						span.appendChild(doc.createTextNode(word.word));
-						bgLineSpan.appendChild(span);
+						if (word.word.trim().length === 0) {
+							bgLineSpan.appendChild(doc.createTextNode(word.word));
+						} else {
+							const span = doc.createElement("span");
+							span.setAttribute("begin", msToTimestamp(word.time));
+							span.setAttribute(
+								"end",
+								msToTimestamp(word.time + word.duration),
+							);
+							span.appendChild(doc.createTextNode(word.word));
+							bgLineSpan.appendChild(span);
+							beginTime = Math.min(beginTime, word.time);
+							endTime = Math.max(endTime, word.time + word.duration);
+						}
 					}
 				} else {
-					bgLineSpan.appendChild(
-						doc.createTextNode(bgLine.originalLyric),
-					);
+					bgLineSpan.appendChild(doc.createTextNode(bgLine.originalLyric));
 				}
 
 				if (bgLine.translatedLyric) {
