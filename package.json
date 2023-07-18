@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:wasm": "wasm-pack build --target bundler --release src-wasm",
     "preview": "vite preview",
     "fmt": "rome format --write ./src",
     "tauri": "tauri"

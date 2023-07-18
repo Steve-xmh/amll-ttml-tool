@@ -116,6 +116,8 @@ const MENU = ref({
                 label: '导出 QRC 歌词', key: 'export-to-qrc',
             }, {
                 label: '导出 Lyricify Syllable 歌词', key: 'export-to-lys',
+            }, {
+                label: '导出 ASS 字幕', key: 'export-to-ass',
             }]
         },
         { label: '上传歌词到 AMLL 歌词数据库', key: 'submit-to-amll-db' },
@@ -313,6 +315,11 @@ function onSelectMenu(key: string) {
                     content: String(err),
                 })
             }
+            break;
+        }
+        case "export-to-ass": {
+            const output = lyric.toASS();
+            saveFile(new TextEncoder().encode(output), "lyric.ass");
             break;
         }
         case "submit-to-amll-db": {

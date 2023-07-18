@@ -113,6 +113,7 @@ pub fn parse_line(src: &str) -> IResult<&str, LyricLine<'_>> {
                     words,
                     is_bg,
                     is_duet,
+                    ..Default::default()
                 },
             ))
         }
@@ -127,6 +128,7 @@ pub fn parse_line(src: &str) -> IResult<&str, LyricLine<'_>> {
                     words,
                     is_bg,
                     is_duet,
+                    ..Default::default()
                 },
             ))
         }

@@ -35,7 +35,7 @@ jobs:
       - name: 安装前端依赖
         run: yarn install # change this to npm or pnpm depending on which one you use
       - name: 构建 WASM 部分
-        run: wasm-pack build --target bundler --release ./src-wasm/
+        run: yarn build:wasm
       - name: 构建 Tauri 程序
         uses: tauri-apps/tauri-action@v0
         env:

@@ -3,6 +3,7 @@ mod qrc;
 mod utils;
 mod yrc;
 mod lys;
+mod ass;
 
 use std::borrow::Cow;
 
@@ -32,6 +33,10 @@ pub struct LyricWord<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct LyricLine<'a> {
     pub words: Vec<LyricWord<'a>>,
+    #[serde(default)]
+    pub translated_lyric: String,
+    #[serde(default)]
+    pub roman_lyric: String,
     #[serde(default, rename = "isBG")]
     pub is_bg: bool,
     #[serde(default)]
@@ -96,6 +101,19 @@ export function parseLys(src: string): LyricLine[];
  * @returns Lyricify Syllable 格式的字符串
  */
 export function stringifyLys(lines: LyricLine[]): string;
+
+/**
+ * 将歌词数组转换为 ASS 字幕格式的字符串
+ * 
+ * 注意导出会损失 10 毫秒以内的精度
+ * 
+ * 主唱名称会变为 `v1`，对唱会变为 `v2`
+ * 
+ * 如果是背景歌词则会在名称后面加上后缀 `-bg`
+ * @param lines 歌词数组
+ * @returns ASS 字幕格式的字符串
+ */
+export function stringifyAss(lines: LyricLine[]): string;
 
 /**
  * 一个歌词单词

@@ -37,7 +37,7 @@
 
 ```bash
 yarn # 安装依赖
-wasm-pack build --target bundler --release "./src-wasm/" # 构建 WASM 模块
+yarn build:wasm # 构建 WASM 模块
 yarn dev # 开启开发服务器
 yarn build # 构建网页版本
 yarn tauri dev # 开启 Tauri 桌面开发环境

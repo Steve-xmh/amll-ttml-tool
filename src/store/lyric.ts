@@ -15,6 +15,7 @@ import {
 	stringifyYrc,
 	stringifyQrc,
 	stringifyLys,
+	stringifyAss,
 } from "../../src-wasm/pkg";
 
 set_panic_hook();
@@ -387,6 +388,10 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		toLYS() {
 			const lines = toRaw(this.lyrics);
 			return stringifyLys(lines);
+		},
+		toASS() {
+			const lines = toRaw(this.lyrics);
+			return stringifyAss(lines);
 		},
 		async splitLineByJieba() {
 			const progress = useProgress();
