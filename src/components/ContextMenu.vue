@@ -17,6 +17,8 @@ const lineContextMenu = [
     { label: '删除选定歌词行', key: 'delete-line' },
     { label: '在选定歌词行前插入新歌词行', key: 'insert-before-line' },
     { label: '在选定歌词行后插入新歌词行', key: 'insert-after-line' },
+    { label: '切换背景人声歌词', key: 'toggle-bg-line' },
+    { label: '切换对唱人声歌词', key: 'toggle-duet-line' },
 ] as DropdownMixedOption[];
 const wordOnlyContextMenu = [
     { label: '删除选定单词', key: 'delete-word' },
@@ -37,6 +39,16 @@ function onSelectMenu(key: string) {
         }
         case "delete-word": {
             lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord);
+            break;
+        }
+        case "toggle-bg-line": {
+            const line = lyric.lyrics[lyricLineMenu.selectedLine];
+            if (line) line.isBackground = !line.isBackground;
+            break;
+        }
+        case "toggle-duet-line": {
+            const line = lyric.lyrics[lyricLineMenu.selectedLine];
+            if (line) line.isDuet = !line.isDuet;
             break;
         }
         case "insert-before-line": {
