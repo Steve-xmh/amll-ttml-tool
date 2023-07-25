@@ -204,7 +204,7 @@ export default function exportTTMLText(
 	ttRoot.appendChild(body);
 
 	if (pretty) {
-		var xsltDoc = new DOMParser().parseFromString(
+		const xsltDoc = new DOMParser().parseFromString(
 			[
 				'<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform">',
 				'  <xsl:strip-space elements="*"/>',
@@ -220,9 +220,9 @@ export default function exportTTMLText(
 			"application/xml",
 		);
 
-		var xsltProcessor = new XSLTProcessor();
+		const xsltProcessor = new XSLTProcessor();
 		xsltProcessor.importStylesheet(xsltDoc);
-		var resultDoc = xsltProcessor.transformToDocument(doc);
+		const resultDoc = xsltProcessor.transformToDocument(doc);
 
 		return new XMLSerializer().serializeToString(resultDoc);
 	} else {

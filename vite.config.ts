@@ -69,6 +69,8 @@ const rollupOptions: UserConfig["build"]["rollupOptions"] = {
 		manualChunks(id) {
 			if (id.includes("naive-ui")) {
 				return "naive-ui";
+			} if (id.includes("@pixi")) {
+				return "pixi";
 			} else if (id.includes("node_modules")) {
 				return "vendor";
 			}

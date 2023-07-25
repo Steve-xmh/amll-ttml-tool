@@ -3,6 +3,7 @@ import { parseLyric } from "../utils/ttml-lyric-parser";
 import { toRaw } from "vue";
 import exportTTMLText from "../utils/ttml-writer";
 import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
+import type { LyricLine as CoreLyricLine } from "@applemusic-like-lyrics/core";
 import { waitNextTick } from "../utils";
 import { useProgress } from "./progress";
 import {
@@ -61,7 +62,22 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				})),
 				id: lid,
 			})),
-		hasLineWithMoreWords: (state) => !!state.lyrics.find(line => line.words.length > 1),
+		lineForPreview: (state): CoreLyricLine[] =>
+			state.lyrics.map((l) => ({
+				startTime: l.words?.[0].startTime ?? 0,
+				endTime: l.words?.[l.words.length - 1].endTime ?? 0,
+				words: l.words.map((w) => ({
+					startTime: w.startTime,
+					endTime: w.endTime,
+					word: w.word,
+				})),
+				isBG: l.isBackground,
+				isDuet: l.isDuet,
+				romanLyric: l.romanLyric,
+				translatedLyric: l.translatedLyric,
+			})),
+		hasLineWithMoreWords: (state) =>
+			!!state.lyrics.find((line) => line.words.length > 1),
 	},
 	actions: {
 		reset() {

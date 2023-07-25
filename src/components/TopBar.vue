@@ -45,6 +45,8 @@
                 @click="edit.editMode = 'edit'">编辑模式</NButton>
             <NButton :quaternary="edit.editMode !== 'sync'" :type="edit.editMode === 'sync' ? 'primary' : 'default'"
                 @click="edit.editMode = 'sync'">打轴模式</NButton>
+            <NButton :quaternary="edit.editMode !== 'amll-preview'" :type="edit.editMode === 'amll-preview' ? 'primary' : 'default'"
+                @click="edit.editMode = 'amll-preview'">预览模式</NButton>
         </div>
         <div style="flex: 1; text-align: right" class="app-name">
             Apple Music-like Lyrics TTML Tool

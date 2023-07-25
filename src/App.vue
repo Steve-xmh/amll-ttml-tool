@@ -31,6 +31,16 @@
                             </div>
                         </template>
                     </Suspense>
+                    <Suspense v-else-if="edit.editMode === 'amll-preview'">
+                        <AMLLPreviewView />
+                        <template #fallback>
+                            <div
+                                style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+                                <NSpin />
+                                <div>正在加载 AMLL 预览页面</div>
+                            </div>
+                        </template>
+                    </Suspense>
                 </NLayoutContent>
                 <AudioPlayerBar />
             </NLayout>
@@ -66,6 +76,7 @@ import SplitWordModal from "./components/modals/SplitWordModal.vue";
 import ServiceWorkerUpdater from "./components/ServiceWorkerUpdater.vue";
 const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.vue"));
 const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
+const AMLLPreviewView = defineAsyncComponent(() => import("./components/AMLLPreviewView.vue"));
 
 const themeVars = useThemeVars();
 const edit = useEditMode();
