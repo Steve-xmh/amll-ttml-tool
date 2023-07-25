@@ -28,24 +28,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@applemusic-like-lyrics/core@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@applemusic-like-lyrics/core@npm:0.0.3"
-  dependencies:
-    jss: ^10.10.0
-    jss-preset-default: ^10.10.0
-    pixi.js: ^7.2.4
-  checksum: 78809ff46c7d5ff7912654acdb79948abe3fda17e593a986d2f938cefd83090cb01ae065f941936c91bfb64d4cba3f2227f34132463894457625575ba0d4e148
+"@applemusic-like-lyrics/core@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@applemusic-like-lyrics/core@npm:0.0.6"
+  peerDependencies:
+    "@pixi/app": "*"
+    "@pixi/core": "*"
+    "@pixi/display": "*"
+    "@pixi/filter-blur": "*"
+    "@pixi/filter-color-matrix": "*"
+    "@pixi/sprite": "*"
+    jss: "*"
+    jss-preset-default: "*"
+  checksum: 9674372e9e0b5c877b4d05e0f06fce97fca4103091d1ef4c805ce2f47a2bc5a5a59d5c2c8a614001c928d4f7bbd564dfe1afcdb88717cf3eb3303086967ef4f8
   languageName: node
   linkType: hard
 
-"@applemusic-like-lyrics/vue@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@applemusic-like-lyrics/vue@npm:0.0.3"
+"@applemusic-like-lyrics/vue@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@applemusic-like-lyrics/vue@npm:0.0.6"
   dependencies:
-    "@applemusic-like-lyrics/core": ^0.0.3
-    vue: ^3.3.4
-  checksum: 7f2ece1832e4f6910ca10bdb9544e04d6acb9bc1794ca094a941d181e9cd59ba4a096720b58904bd9e2c1c22e5da6b61cd049081bba5461aa48692cf5ecccd6e
+    "@applemusic-like-lyrics/core": ^0.0.6
+  peerDependencies:
+    vue: "*"
+  checksum: 111f11433e027d07844a29dbdd493a74f34a6c6f648c15348d43c2177b08f683ce183fae55d98ad96cf3a278263367d5a84692bed864ccde742815a9f3193d13
   languageName: node
   linkType: hard
 
@@ -2947,7 +2953,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "amll-ttml-tool@workspace:."
   dependencies:
-    "@applemusic-like-lyrics/vue": ^0.0.3
+    "@applemusic-like-lyrics/vue": ^0.0.6
     "@tauri-apps/api": ^1.2.0
     "@tauri-apps/cli": ^1.2.2
     "@types/node": ^18.7.10
@@ -2959,11 +2965,14 @@ __metadata:
     "@vue/tsconfig": ^0.4.0
     fflate: ^0.8.0
     jieba-wasm: ^0.0.2
+    jss: ^10.10.0
+    jss-preset-default: ^10.10.0
     kuroshiro: ^1.2.0
     naive-ui: ^2.34.4
     pangu: ^4.0.7
     pinia: ^2.1.4
     pinia-plugin-persistedstate: ^3.2.0
+    pixi.js: ^7.2.4
     rome: ^12.1.3
     sass: ^1.64.1
     save-file: ^2.3.1
