@@ -22,7 +22,9 @@ jobs:
         with:
           version: latest
       - name: 安装前端依赖
-        run: yarn
+        run: yarn install
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
       - name: 构建 WASM 部分
         run: yarn build:wasm
       - name: 构建网页版本
