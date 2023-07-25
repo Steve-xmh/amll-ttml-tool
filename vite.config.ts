@@ -69,10 +69,10 @@ const rollupOptions: UserConfig["build"]["rollupOptions"] = {
 		manualChunks(id) {
 			if (id.includes("naive-ui")) {
 				return "naive-ui";
-			} if (id.includes("@pixi")) {
+			} else if (id.includes("@pixi")) {
 				return "pixi";
 			} else if (id.includes("node_modules")) {
-				return "vendor";
+				return null;
 			}
 		},
 	},
@@ -82,7 +82,6 @@ const rollupOptions: UserConfig["build"]["rollupOptions"] = {
 export default defineConfig({
 	plugins,
 	base: process.env.TAURI_PLATFORM ? "/" : "./",
-
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
 	// prevent vite from obscuring rust errors
 	clearScreen: false,
@@ -107,5 +106,6 @@ export default defineConfig({
 		  }
 		: {
 				rollupOptions,
+				sourcemap: true,
 		  },
 });
