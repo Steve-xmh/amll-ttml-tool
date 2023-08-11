@@ -31,7 +31,7 @@ export interface LyricLine {
 	words: LyricWord[];
 	translatedLyric: string;
 	romanLyric: string;
-	isBackground: boolean;
+	isBG: boolean;
 	isDuet: boolean;
 	selected: boolean;
 }
@@ -71,7 +71,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 					endTime: w.endTime,
 					word: w.word,
 				})),
-				isBG: l.isBackground,
+				isBG: l.isBG,
 				isDuet: l.isDuet,
 				romanLyric: l.romanLyric,
 				translatedLyric: l.translatedLyric,
@@ -176,7 +176,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				words: [],
 				translatedLyric: "",
 				romanLyric: "",
-				isBackground: false,
+				isBG: false,
 				isDuet: false,
 				selected: false,
 			});
@@ -187,7 +187,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				words: [],
 				translatedLyric: "",
 				romanLyric: "",
-				isBackground: false,
+				isBG: false,
 				isDuet: false,
 				selected: false,
 			});
@@ -251,10 +251,10 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		},
 		toggleSelectedLineBackground() {
 			const hasNoBg =
-				this.lyrics.filter((line) => line.selected && !line.isBackground)
+				this.lyrics.filter((line) => line.selected && !line.isBG)
 					.length > 0;
 			this.lyrics.forEach((line) => {
-				if (line.selected) line.isBackground = hasNoBg;
+				if (line.selected) line.isBG = hasNoBg;
 			});
 		},
 		toggleSelectedLineDuet() {
@@ -373,7 +373,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 
 			for (let i = 0; i < this.lyrics.length; i++) {
 				const line = this.lyrics[i];
-				if (line.isBackground) {
+				if (line.isBG) {
 					const lastLine = transformed[transformed.length - 1];
 					if (lastLine && lastLine.backgroundLyric === undefined) {
 						lastLine.backgroundLyric = this.toRawLine(i);

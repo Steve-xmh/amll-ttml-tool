@@ -29,7 +29,7 @@
                     @change="lyric.modifyRomanLine(props.line.id, editState.romanLine)" style="min-width: 100px" />
             </div>
         </div>
-        <NIcon size="24" v-if="props.line.isBackground" color="#1166FF">
+        <NIcon size="24" v-if="props.line.isBG" color="#1166FF">
             <VideoBackgroundEffect24Filled />
         </NIcon>
         <NIcon size="24" v-if="props.line.isDuet" color="#63e2b7">

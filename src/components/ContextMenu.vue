@@ -43,7 +43,7 @@ function onSelectMenu(key: string) {
         }
         case "toggle-bg-line": {
             const line = lyric.lyrics[lyricLineMenu.selectedLine];
-            if (line) line.isBackground = !line.isBackground;
+            if (line) line.isBG = !line.isBG;
             break;
         }
         case "toggle-duet-line": {
