@@ -50,15 +50,19 @@
 
 然后在 `applemusic-like-lyrics` 下执行构建：
 ```bash
-yarn # 安装依赖
-cd packages/core # 构建歌词组件核心模块
-yarn build
-cd ../packages/vue # 构建歌词组件 Vue 组件绑定
-yarn build
-cd ../packages/ttml # 构建 TTML 歌词解析模块
-yarn build
-cd ../packages/lyric # 构建歌词解析模块
+cd packages/lyric # 构建歌词解析模块
 wasm-pack build --release --scope applemusic-like-lyrics
+cd ../ws-protocol # 构建 WebSocket 协议模块
+wasm-pack build --release --scope applemusic-like-lyrics
+cd ../fft # 构建音频可视化模块
+wasm-pack build --release --scope applemusic-like-lyrics
+yarn # 开始安装前端依赖
+cd ../core # 构建歌词组件核心模块
+yarn build
+cd ../vue # 构建歌词组件 Vue 组件绑定
+yarn build
+cd ../ttml # 构建 TTML 歌词解析模块
+yarn build
 ```
 
 最后回到 `amll-ttml-tool` 下执行构建：

@@ -40,6 +40,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: AMLL - 构建 WS Protocol 模块
+        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
+        working-directory: applemusic-like-lyrics/packages/ws-protocol
+      - name: AMLL - 构建 Lyric 模块
+        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
+        working-directory: applemusic-like-lyrics/packages/lyric
+      - name: 构建 FFT 模块
+        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
+        working-directory: applemusic-like-lyrics/packages/fft
       - name: AMLL - 安装依赖
         run: yarn
         working-directory: applemusic-like-lyrics
@@ -52,12 +61,6 @@ jobs:
       - name: AMLL - 构建 TTML 模块
         run: yarn build
         working-directory: applemusic-like-lyrics/packages/ttml
-      - name: AMLL - 构建 WS Protocol 模块
-        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
-        working-directory: applemusic-like-lyrics/packages/ws-protocol
-      - name: AMLL - 构建 Lyric 模块
-        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
-        working-directory: applemusic-like-lyrics/packages/lyric
       - name: 安装前端依赖
         run: yarn install
         working-directory: amll-ttml-tool
