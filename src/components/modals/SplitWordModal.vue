@@ -1,12 +1,12 @@
 <template>
     <NModal preset="card" :closable="!submitData.processing" @close="dialogs.submitLyric = false"
-        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" title="拆分单词">
+        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" :title="$t('splitWordModal.title')">
         <NSpace vertical>
 
         </NSpace>
         <template #footer>
             <NButton :disabled="submitData.processing || !submitData.name || !submitData.ids || lyric.lyrics.length === 0"
-                type="primary" @click="uploadAndSubmit">拆分</NButton>
+                type="primary" @click="uploadAndSubmit"><i18n-t keypath="splitWordModal.splitBtn" /></NButton>
         </template>
     </NModal>
 </template>

@@ -1,8 +1,8 @@
 <template>
     <NModal transform-origin="center" :show="currentProgresses.length > 0">
-        <NCard title="处理中" style="max-width: 500px;">
+        <NCard :title="$t('ProgressOverlay.title')" style="max-width: 500px;">
             <div v-for="progress, i in currentProgresses" :key="i">
-                <div>{{ progress.label }}</div>
+                <div>{{ $t(progress.label) }}</div>
                 <NProgress :percentage="Math.round(progress.progress * 100)" type="line" />
             </div>
         </NCard>

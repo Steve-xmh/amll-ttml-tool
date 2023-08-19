@@ -22,6 +22,7 @@ import { NButton, NIcon, NInput, type InputInst } from "naive-ui";
 import { Dismiss12Filled } from "@vicons/fluent";
 import { useEditingLyric, useRightClickLyricLine } from "../store";
 import { nextTick, reactive, ref, computed } from "vue";
+import { i18n } from '../i18n';
 
 const inputRef = ref<InputInst | null>(null);
 const props = defineProps<{
@@ -34,16 +35,16 @@ const { showMenuForLyric } = useRightClickLyricLine();
 
 const isWhiteSpace = computed(() =>
     props.word.trim().length === 0
-)
+);
 const displayWord = computed(() => {
     if (props.word.length === 0) {
-        return "空白"
+        return i18n.global.t("lyricWordEditor.empty");
     } else if (props.word.trim().length === 0) {
-        return "空格x" + props.word.length
+        return i18n.global.t("lyricWordEditor.space", [props.word.length]);
     } else {
-        return props.word
+        return props.word;
     }
-})
+});
 
 const edit = reactive({
     enable: false,

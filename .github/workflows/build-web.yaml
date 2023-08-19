@@ -15,20 +15,47 @@ jobs:
         uses: actions/checkout@v2.3.4
         with:
           submodules: recursive
+          path: amll-ttml-tool
+      - name: 克隆 AMLL 仓库源代码
+        uses: actions/checkout@v2.3.4
+        with:
+          repository: Steve-xmh/applemusic-like-lyrics
+          ref: 3.0-dev
+          submodules: recursive
+          path: applemusic-like-lyrics
       - name: 配置 NodeJS
         uses: actions/setup-node@v3.0.0
       - name: 安装 wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
         with:
           version: latest
+      - name: AMLL - 安装依赖
+        run: yarn
+        working-directory: applemusic-like-lyrics
+      - name: AMLL - 构建 Core 模块
+        run: yarn build
+        working-directory: applemusic-like-lyrics/packages/core
+      - name: AMLL - 构建 Vue 模块
+        run: yarn build
+        working-directory: applemusic-like-lyrics/packages/vue
+      - name: AMLL - 构建 TTML 模块
+        run: yarn build
+        working-directory: applemusic-like-lyrics/packages/ttml
+      - name: AMLL - 构建 WS Protocol 模块
+        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
+        working-directory: applemusic-like-lyrics/packages/ws-protocol
+      - name: AMLL - 构建 Lyric 模块
+        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
+        working-directory: applemusic-like-lyrics/packages/lyric
       - name: 安装前端依赖
         run: yarn install
+        working-directory: amll-ttml-tool
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      - name: 构建 WASM 部分
-        run: yarn build:wasm
       - name: 构建网页版本
-        run: yarn build
+        run: |
+          yarn
+          yarn build
       - name: 部署到 Github Pages
         uses: crazy-max/ghaction-github-pages@v2.6.0
         with:

@@ -15,18 +15,19 @@
         </div>
         <div style="margin: 12px">
             <NButton :dashed="lyric.lineWithIds.length > 0" block :type="lyric.lineWithIds.length === 0 ? 'primary' : 'default'"
-                @click="onAddNewLine"> 增加一行歌词 </NButton>
+                @click="onAddNewLine">
+                <i18n-t keypath="lyricEditor.addNewLineBtn" />
+            </NButton>
         </div>
     </div>
 </template>
 
 <script setup lang="tsx">
 import { NButton } from "naive-ui";
-import { storeToRefs } from "pinia";
 import { useEditingLyric, useRightClickLyricLine, useSettings } from "../store";
 import LyricLineEditor from "./LyricLineEditor.vue";
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
-import { computed, onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 
 const settings = useSettings();
 

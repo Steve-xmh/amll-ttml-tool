@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Yarn 2 cache -- we don't need since dependencies are not fully compatible
+.yarn/cache/

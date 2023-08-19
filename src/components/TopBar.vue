@@ -2,34 +2,34 @@
     <NLayoutHeader bordered style="padding: 16px; display: flex; align-items: center">
         <div class="menu-full">
             <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.file">
-                <NButton quaternary>文件</NButton>
+                <NButton quaternary><i18n-t keypath="topBar.menu.file" /></NButton>
             </NDropdown>
             <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.edit">
-                <NButton quaternary>编辑</NButton>
+                <NButton quaternary><i18n-t keypath="topBar.menu.edit" /></NButton>
             </NDropdown>
             <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.view">
-                <NButton quaternary>查看</NButton>
+                <NButton quaternary><i18n-t keypath="topBar.menu.view" /></NButton>
             </NDropdown>
             <NDropdown placement="bottom-start" trigger="click" @select="onSelectMenu" :options="MENU.tool">
-                <NButton quaternary>工具</NButton>
+                <NButton quaternary><i18n-t keypath="topBar.menu.tool" /></NButton>
             </NDropdown>
             <NDivider vertical />
         </div>
         <div class="menu-slim">
             <NDropdown trigger="click" @select="onSelectMenu" :options="[{
-                label: '文件',
+                label: $t('topBar.menu.file'),
                 key: 'sub-file',
                 children: MENU.file,
             }, {
-                label: '编辑',
+                label: $t('topBar.menu.edit'),
                 key: 'sub-edit',
                 children: MENU.edit,
             }, {
-                label: '查看',
+                label: $t('topBar.menu.view'),
                 key: 'sub-view',
                 children: MENU.view,
             }, {
-                label: '工具',
+                label: $t('topBar.menu.tool'),
                 key: 'sub-tool',
                 children: MENU.tool,
             }]">
@@ -42,23 +42,25 @@
         </div>
         <div style="display: flex; justify-content: center; gap: 8px">
             <NButton :quaternary="edit.editMode !== 'edit'" :type="edit.editMode === 'edit' ? 'primary' : 'default'"
-                @click="edit.editMode = 'edit'">编辑模式</NButton>
+                @click="edit.editMode = 'edit'"><i18n-t keypath="topBar.modeBtns.edit" /></NButton>
             <NButton :quaternary="edit.editMode !== 'sync'" :type="edit.editMode === 'sync' ? 'primary' : 'default'"
-                @click="edit.editMode = 'sync'">打轴模式</NButton>
-            <NButton :quaternary="edit.editMode !== 'amll-preview'" :type="edit.editMode === 'amll-preview' ? 'primary' : 'default'"
-                @click="edit.editMode = 'amll-preview'">预览模式</NButton>
+                @click="edit.editMode = 'sync'"><i18n-t keypath="topBar.modeBtns.sync" /></NButton>
+            <NButton :quaternary="edit.editMode !== 'amll-preview'"
+                :type="edit.editMode === 'amll-preview' ? 'primary' : 'default'" @click="edit.editMode = 'amll-preview'">
+                <i18n-t keypath="topBar.modeBtns.preview" /></NButton>
         </div>
         <div style="flex: 1; text-align: right" class="app-name">
-            Apple Music-like Lyrics TTML Tool
+            <i18n-t keypath="topBar.appName" />
         </div>
     </NLayoutHeader>
     <NModal v-model:show="aboutModalOpened" preset="card" transform-origin="center" style="max-width: 600px;"
-        title="Apple Music-like Lyrics TTML Tool">
+        :title="$t('aboutModal.appName')">
         <NSpace vertical>
-            <div>一个用于 Apple Music 的逐词歌词 TTML 编辑和时间轴工具</div>
+            <div><i18n-t keypath="aboutModal.description" /></div>
             <NSpace>
-                <NButton @click="goToRepo">Github</NButton>
-                <NButton @click="settings.showingTutorial = true; aboutModalOpened = false;">简短教程</NButton>
+                <NButton @click="goToRepo"><i18n-t keypath="aboutModal.githubBtn" /></NButton>
+                <NButton @click="settings.showingTutorial = true; aboutModalOpened = false;"><i18n-t
+                        keypath="aboutModal.tutorialBtn" /></NButton>
             </NSpace>
         </NSpace>
     </NModal>
@@ -168,7 +170,7 @@ function onSelectMenu(key: string) {
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
                 try {
-                    const text = await fileDialog.files?.[0].text();
+                    const text = await fileDialog.files?.[0]?.text();
                     if (text) {
                         const result = parseLyric(text);
                         lyric.loadLyric(result);
@@ -190,7 +192,7 @@ function onSelectMenu(key: string) {
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
                 try {
-                    const text = await fileDialog.files?.[0].text();
+                    const text = await fileDialog.files?.[0]?.text();
                     if (text) lyric.loadLRC(text);
                 } catch (err) {
                     notify.error({
@@ -209,7 +211,7 @@ function onSelectMenu(key: string) {
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
                 try {
-                    const text = await fileDialog.files?.[0].text();
+                    const text = await fileDialog.files?.[0]?.text();
                     if (text) lyric.loadYRC(text);
                 } catch (err) {
                     notify.error({
@@ -228,7 +230,7 @@ function onSelectMenu(key: string) {
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
                 try {
-                    const text = await fileDialog.files?.[0].text();
+                    const text = await fileDialog.files?.[0]?.text();
                     if (text) lyric.loadQRC(text);
                 } catch (err) {
                     notify.error({
@@ -247,7 +249,7 @@ function onSelectMenu(key: string) {
             fileDialog.click();
             fileDialog.addEventListener("input", async () => {
                 try {
-                    const text = await fileDialog.files?.[0].text();
+                    const text = await fileDialog.files?.[0]?.text();
                     if (text) lyric.loadLYS(text);
                 } catch (err) {
                     notify.error({

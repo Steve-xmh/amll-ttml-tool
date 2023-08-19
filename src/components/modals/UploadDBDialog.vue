@@ -1,45 +1,58 @@
 <template>
     <NModal preset="card" :closable="!submitData.processing" @close="dialogs.submitLyric = false"
-        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" title="提交歌词到 AMLL 歌词数据库">
-        <NSpace vertical>
-            <div>首先，感谢您的慷慨歌词贡献！</div>
-            <div>通过提交，你将默认同意<b>使用 CC0 共享协议完全放弃歌词所有权</b>并提交到歌词数据库！</div>
-            <div>并且歌词将会在以后被 AMLL 插件作为默认 TTML 歌词源获取！</div>
-            <div>如果您对歌词所有权比较看重的话，请勿提交歌词哦！</div>
-            <div>请输入以下提交信息然后跳转到 Github 议题提交页面！</div>
-            <h4>歌曲名称</h4>
+        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" :title="$t('uploadDBDialog.title')">
+        <NSpace vertical style="line-height: 2rem; white-space: pre-line;">
+            <NAlert type="warning">
+                <i18n-t keypath="uploadDBDialog.ncmOnlyWarning" />
+            </NAlert>
+            <i18n-t keypath="uploadDBDialog.content">
+                <b v-t="'uploadDBDialog.boldCC0'"></b>
+            </i18n-t>
+            <h4>
+                <i18n-t keypath="uploadDBDialog.musicName" />
+            </h4>
             <NInput :loading="submitData.processing" :disabled="submitData.processing" v-model:value="submitData.name"
-                placeholder="歌曲名称" />
-            <div>推荐使用 歌手 - 歌曲 格式，方便仓库管理员确认你的歌曲是否存在</div>
-            <h4>音乐对应的网易云音乐 ID</h4>
-            <NInput :loading="submitData.processing" :disabled="submitData.processing" v-model:value="submitData.ids"
-                placeholder="音乐对应的网易云音乐 ID" />
+                :placeholder="$t('uploadDBDialog.musicNamePlaceholder')" />
             <div>
-                <div>可以通过在 AMLL 插件内右键复制音乐 ID 得到，应该都是纯数字</div>
-                <div>如果需要同时提交到多个歌曲上，可以以英文逗号分隔 ID</div>
+                <i18n-t keypath="uploadDBDialog.musicNameTip" />
             </div>
-            <h4>提交缘由</h4>
+            <h4>
+                <i18n-t keypath="uploadDBDialog.ncmID" />
+            </h4>
+            <NInput :loading="submitData.processing" :disabled="submitData.processing" v-model:value="submitData.ids"
+                :placeholder="$t('uploadDBDialog.ncmIDPlaceholder')" />
+            <div>
+                <i18n-t keypath="uploadDBDialog.ncmIDTip" />
+            </div>
+            <h4><i18n-t keypath="uploadDBDialog.uploadReason.label" /></h4>
             <NRadio :checked="submitData.submitReason === '新歌词提交'" value="新歌词提交" @click="submitData.submitReason = '新歌词提交'">
-                新歌词提交</NRadio>
+                <i18n-t keypath="uploadDBDialog.uploadReason.newLyric" />
+            </NRadio>
             <NRadio :checked="submitData.submitReason === '修正已有歌词'" value="修正已有歌词"
-                @click="submitData.submitReason = '修正已有歌词'">修正已有歌词</NRadio>
-            <h4>备注</h4>
+                @click="submitData.submitReason = '修正已有歌词'"><i18n-t keypath="uploadDBDialog.uploadReason.patchLyric" />
+            </NRadio>
+            <h4>
+                <i18n-t keypath="uploadDBDialog.comment" />
+            </h4>
             <NInput :loading="submitData.processing" :disabled="submitData.processing" v-model:value="submitData.comment"
-                placeholder="备注" />
-            <div>有什么需要补充说明的呢？</div>
+                :placeholder="$t('uploadDBDialog.commentPlaceholder')" />
+            <div><i18n-t keypath="uploadDBDialog.commentTip" /></div>
         </NSpace>
         <template #footer>
             <NButton :disabled="submitData.processing || !submitData.name || !submitData.ids || lyric.lyrics.length === 0"
-                type="primary" @click="uploadAndSubmit">上传并跳转提交</NButton>
-            <NText v-if="lyric.lyrics.length === 0" style="margin-left: 12px" type="error">歌词还什么都没有呢？</NText>
+                type="primary" @click="uploadAndSubmit"><i18n-t keypath="uploadDBDialog.uploadBtn" /></NButton>
+            <NText v-if="lyric.lyrics.length === 0" style="margin-left: 12px" type="error">
+                <i18n-t keypath="uploadDBDialog.errors.noLyricContent" />
+            </NText>
         </template>
     </NModal>
 </template>
 
 <script setup lang="ts">
-import { NModal, NText, NInput, NRadio, NSpace, NButton, useNotification } from 'naive-ui';
+import { NModal, NText, NInput, NRadio, NSpace, NButton, NAlert, useNotification } from 'naive-ui';
 import { useEditingLyric, useDialogs } from '../../store';
 import { reactive } from "vue";
+import { i18n } from '../../i18n';
 
 const lyric = useEditingLyric();
 const notify = useNotification();
@@ -76,10 +89,10 @@ async function uploadAndSubmit() {
         issueUrl.searchParams.append("comment", submitData.comment);
         open(issueUrl.toString());
     } catch (err) {
-        console.warn("提交失败", err);
+        console.warn("Submit failed", err);
         notify.error({
-            title: "歌词提交失败！",
-            content: `错误原因：\n${err}`,
+            title: i18n.global.t("uploadDBDialog.errorNotification.title"),
+            content: i18n.global.t("uploadDBDialog.errorNotification.content", [err]),
         });
     }
     submitData.processing = false;

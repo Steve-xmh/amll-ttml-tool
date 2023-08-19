@@ -17,7 +17,7 @@ import {
 	stringifyQrc,
 	stringifyLys,
 	stringifyAss,
-} from "../../src-wasm/pkg";
+} from "@applemusic-like-lyrics/lyric";
 
 set_panic_hook();
 
@@ -64,8 +64,8 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			})),
 		lineForPreview: (state): CoreLyricLine[] =>
 			state.lyrics.map((l) => ({
-				startTime: l.words?.[0].startTime ?? 0,
-				endTime: l.words?.[l.words.length - 1].endTime ?? 0,
+				startTime: l.words?.[0]?.startTime ?? 0,
+				endTime: l.words?.[l.words.length - 1]?.endTime ?? 0,
 				words: l.words.map((w) => ({
 					startTime: w.startTime,
 					endTime: w.endTime,
@@ -251,8 +251,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		},
 		toggleSelectedLineBackground() {
 			const hasNoBg =
-				this.lyrics.filter((line) => line.selected && !line.isBG)
-					.length > 0;
+				this.lyrics.filter((line) => line.selected && !line.isBG).length > 0;
 			this.lyrics.forEach((line) => {
 				if (line.selected) line.isBG = hasNoBg;
 			});

@@ -10,9 +10,8 @@
             </template>
         </div>
         <div class="lyric-line-sync-editor-no-selected" v-else>
-            <div>
-                <div>尚未选中歌词</div>
-                <div>点击下方的歌词行以选中歌词开始打轴</div>
+            <div style="white-space: pre-line;">
+                <i18n-t keypath="lyricSyncEditor.unselectedTip" />
             </div>
         </div>
         <div class="lyric-line-viewer">

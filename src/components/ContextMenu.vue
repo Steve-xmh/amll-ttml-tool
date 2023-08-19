@@ -12,17 +12,18 @@ import {
 import { onMounted } from "vue";
 import { useRightClickLyricLine, useEditingLyric } from "../store";
 import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
+import { i18n } from '../i18n';
 
 const lineContextMenu = [
-    { label: '删除选定歌词行', key: 'delete-line' },
-    { label: '在选定歌词行前插入新歌词行', key: 'insert-before-line' },
-    { label: '在选定歌词行后插入新歌词行', key: 'insert-after-line' },
-    { label: '切换背景人声歌词', key: 'toggle-bg-line' },
-    { label: '切换对唱人声歌词', key: 'toggle-duet-line' },
+    { label: i18n.global.t("contextMenu.deleteLine"), key: 'delete-line' },
+    { label: i18n.global.t("contextMenu.insertBeforeLine"), key: 'insert-before-line' },
+    { label: i18n.global.t("contextMenu.insertAfterLine"), key: 'insert-after-line' },
+    { label: i18n.global.t("contextMenu.toggleBGLine"), key: 'toggle-bg-line' },
+    { label: i18n.global.t("contextMenu.toggleDuetLine"), key: 'toggle-duet-line' },
 ] as DropdownMixedOption[];
 const wordOnlyContextMenu = [
-    { label: '删除选定单词', key: 'delete-word' },
-    { label: '切割当前单词', key: 'split-word' },
+    { label: i18n.global.t("contextMenu.deleteWord"), key: 'delete-word' },
+    { label: i18n.global.t("contextMenu.splitWord"), key: 'split-word' },
     { type: 'divider', },
     ...lineContextMenu
 ] as DropdownMixedOption[];
@@ -61,8 +62,8 @@ function onSelectMenu(key: string) {
         }
         default: {
             notify.error({
-                title: "功能暂未实现",
-                content: "请静候作者爆肝实现吧~",
+                title: i18n.global.t("contextMenu.wipNotification.title"),
+                content: i18n.global.t("contextMenu.wipNotification.content"),
                 duration: 4000,
             });
         }

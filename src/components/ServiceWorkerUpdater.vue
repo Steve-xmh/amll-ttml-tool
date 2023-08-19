@@ -6,6 +6,7 @@ import {
     useNotification,
 } from "naive-ui";
 import { onMounted, h } from "vue";
+import { i18n } from '../i18n';
 import { registerSW } from "virtual:pwa-register";
 
 const notify = useNotification();
@@ -14,8 +15,8 @@ onMounted(async () => {
     const updateSW = registerSW({
         onNeedRefresh() {
             const n = notify.info({
-                title: "编辑器已更新！",
-                content: "请点击更新按钮以更新编辑器！",
+                title: i18n.global.t("serviceWorkerUpdater.needRefresh.title"),
+                content: i18n.global.t("serviceWorkerUpdater.needRefresh.content"),
                 action: () => h(
                     NButton,
                     {
@@ -27,7 +28,7 @@ onMounted(async () => {
                         }
                     },
                     {
-                        default: () => "更新"
+                        default: () => i18n.global.t("serviceWorkerUpdater.needRefresh.updateBtn"),
                     }
                 )
             });

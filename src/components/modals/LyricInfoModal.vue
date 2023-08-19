@@ -5,7 +5,7 @@
             
         </NSpace>
         <template #footer>
-            <NButton>保存</NButton>
+            <NButton><i18n-t keypath="lyricInfoModal.saveBtn" /></NButton>
         </template>
     </NModal>
 </template>

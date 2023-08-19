@@ -17,7 +17,7 @@
                             <div
                                 style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
                                 <NSpin />
-                                <div>正在加载编辑页面</div>
+                                <div><i18n-t keypath="app.loadingEditPage" /></div>
                             </div>
                         </template>
                     </Suspense>
@@ -27,7 +27,7 @@
                             <div
                                 style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
                                 <NSpin />
-                                <div>正在加载打轴页面</div>
+                                <div><i18n-t keypath="app.loadingSyncPage" /></div>
                             </div>
                         </template>
                     </Suspense>
@@ -37,7 +37,7 @@
                             <div
                                 style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
                                 <NSpin />
-                                <div>正在加载 AMLL 预览页面</div>
+                                <div><i18n-t keypath="app.loadingAMLLPreviewPage" /></div>
                             </div>
                         </template>
                     </Suspense>
@@ -84,9 +84,11 @@ const enableSW = !!import.meta.env.TAURI_PLATFORM;
 
 onMounted(() => {
     // ask before page close
-    window.addEventListener("beforeunload", evt => {
-        evt.preventDefault();
-        return evt.returnValue = "";
-    })
+    if (!import.meta.env.DEV) {
+        window.addEventListener("beforeunload", evt => {
+            evt.preventDefault();
+            return evt.returnValue = "";
+        })
+    }
 });
 </script>

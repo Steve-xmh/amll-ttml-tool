@@ -16,6 +16,7 @@
     "./libs/*"
   ],
   "dependencies": {
+    "@applemusic-like-lyrics/lyric": "^0.0.2",
     "@applemusic-like-lyrics/vue": "^0.0.6",
     "@tauri-apps/api": "^1.2.0",
     "@types/ungap__structured-clone": "^0.3.0",
@@ -35,6 +36,7 @@
     "sass": "^1.64.1",
     "save-file": "^2.3.1",
     "vue": "^3.3.4",
+    "vue-i18n": "9",
     "vue-virtual-scroller": "next",
     "vuedraggable": "next"
   },
@@ -51,5 +53,13 @@
     "vite-plugin-wasm": "^3.2.2",
     "vite-svg-loader": "^4.0.0"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@3.6.1",
+  "resolutions": {
+    "@applemusic-like-lyrics/lyric": "portal:../applemusic-like-lyrics/packages/lyric/pkg",
+    "@applemusic-like-lyrics/core": "portal:../applemusic-like-lyrics/packages/core",
+    "@applemusic-like-lyrics/react": "portal:../applemusic-like-lyrics/packages/react",
+    "@applemusic-like-lyrics/ttml": "portal:../applemusic-like-lyrics/packages/ttml",
+    "@applemusic-like-lyrics/vue": "portal:../applemusic-like-lyrics/packages/vue",
+    "@applemusic-like-lyrics/ws-protocol": "portal:../applemusic-like-lyrics/packages/ws-protocol/pkg"
+  }
 }

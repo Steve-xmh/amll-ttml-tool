@@ -1,3 +1,6 @@
+> **WARNING**
+> 本工具仍在开发当中，仍有很多缺失的功能和 BUG，请仅用作尝鲜用途，并随时保存你的歌词文件以防万一！
+
 <div align=center>
 
 ![](./public/logo.svg)
@@ -33,14 +36,38 @@
 
 ## 开发构建
 
-首先，本项目仅可使用 Yarn 2，请确保你已经安装好了 Yarn 包管理器和 wasm-pack 后运行以下你需要使用的指令：
+本工具构建可能相对比较复杂，如果文字描述太过繁杂的话可以直接参考 [`build-web.yaml`](.github\workflows\build-web.yaml) 工作流的步骤自行进行。
+
+首先，本项目仅可使用 Yarn 2，请确保你已经安装好了 Yarn 包管理器和 wasm-pack！
+
+然后克隆本仓库和 [`Steve-xmh/applemusic-like-lyrics`](https://github.com/Steve-xmh/applemusic-like-lyrics) 仓库，克隆到同一文件夹下，即文件夹结构大致如下：
+
+```
+.
+|- applemusic-like-lyrics
+\- amll-ttml-tool
+```
+
+然后在 `applemusic-like-lyrics` 下执行构建：
+```bash
+yarn # 安装依赖
+cd packages/core # 构建歌词组件核心模块
+yarn build
+cd ../packages/vue # 构建歌词组件 Vue 组件绑定
+yarn build
+cd ../packages/ttml # 构建 TTML 歌词解析模块
+yarn build
+cd ../packages/lyric # 构建歌词解析模块
+wasm-pack build --release --scope applemusic-like-lyrics
+```
+
+最后回到 `amll-ttml-tool` 下执行构建：
 
 ```bash
 yarn # 安装依赖
-yarn build:wasm # 构建 WASM 模块
 yarn dev # 开启开发服务器
 yarn build # 构建网页版本
-yarn tauri dev # 开启 Tauri 桌面开发环境
+yarn tauri dev # 开启 Tauri 桌面版本开发环境
 yarn tauri build # 构建 Tauri 桌面版本
 ```
 
@@ -48,3 +75,9 @@ yarn tauri build # 构建 Tauri 桌面版本
 
 <img width="912" alt="image" src="https://github.com/Steve-xmh/amll-ttml-tool/assets/39523898/e12220b5-0490-43da-bbbe-44ea2d64eef3">
 <img width="912" alt="image" src="https://github.com/Steve-xmh/amll-ttml-tool/assets/39523898/53b74012-ed11-405c-8411-59bc2036abb9">
+
+## 贡献
+
+欢迎各种积极的代码/翻译贡献！也欢迎积极提交各种议题和建议！
+
+如果想要提供新的语言翻译，可以参考 [`./src/i18n/index.ts`](./src/i18n/index.ts) 和 [`./src/i18n/zh-cn.ts`](./src/i18n/zh-cn.ts) 哦！

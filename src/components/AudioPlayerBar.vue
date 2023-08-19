@@ -2,7 +2,9 @@
     <NLayoutFooter bordered class="audio-player-bar">
         <NUpload :default-upload="false" :multiple="false" :show-file-list="false" style="width: unset"
             @change="onUploadMusic">
-            <NButton v-if="!curFile">{{ "加载音乐" }}</NButton>
+            <NButton v-if="!curFile">
+                <i18n-t keypath="audioPlayerBar.loadMusicBtn" />
+            </NButton>
             <NButton v-else quaternary circle>
                 <NIcon size="18">
                     <MusicNote224Filled />
