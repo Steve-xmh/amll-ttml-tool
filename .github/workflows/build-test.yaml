@@ -46,12 +46,14 @@ jobs:
       - name: AMLL - 构建 Lyric 模块
         run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
         working-directory: applemusic-like-lyrics/packages/lyric
-      - name: 构建 FFT 模块
+      - name: AMLL - 构建 FFT 模块
         run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
         working-directory: applemusic-like-lyrics/packages/fft
       - name: AMLL - 安装依赖
         run: yarn
         working-directory: applemusic-like-lyrics
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
       - name: AMLL - 构建 Core 模块
         run: yarn build
         working-directory: applemusic-like-lyrics/packages/core
