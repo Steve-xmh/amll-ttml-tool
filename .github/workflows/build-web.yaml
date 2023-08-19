@@ -58,13 +58,12 @@ jobs:
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
       - name: 构建网页版本
-        run: |
-          yarn
-          yarn build
+        run: yarn build
+        working-directory: amll-ttml-tool
       - name: 部署到 Github Pages
         uses: crazy-max/ghaction-github-pages@v2.6.0
         with:
           target_branch: gh-pages
-          build_dir: dist
+          build_dir: amll-ttml-tool/dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
