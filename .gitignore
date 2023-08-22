@@ -25,3 +25,4 @@ dist-ssr
 
 # Yarn 2 cache -- we don't need since dependencies are not fully compatible
 .yarn/cache/
+.yarn/install-state.gz
