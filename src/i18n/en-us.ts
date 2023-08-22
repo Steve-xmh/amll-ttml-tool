@@ -21,7 +21,8 @@ export const enUS = {
 	aboutModal: {
 		// 原则上不翻译这里的应用名称
 		appName: "Apple Music-like Lyrics TTML Tool",
-		description: "A Word-by-Word TTML Editing and Timeline Tool for Apple Music Lyrics",
+		description:
+			"A Word-by-Word TTML Editing and Timeline Tool for Apple Music Lyrics",
 		githubBtn: "Github",
 		tutorialBtn: "Quick Tutorial",
 	},
@@ -47,9 +48,10 @@ export const enUS = {
 		romanLinePlaceholder: "Romaji",
 	},
 	lyricSyncEditor: {
-		unselectedTip: ["No lyrics selected", "Click on a line below to start syncing"].join(
-			"\n",
-		),
+		unselectedTip: [
+			"No lyrics selected",
+			"Click on a line below to start syncing",
+		].join("\n"),
 	},
 	lyricWordEditor: {
 		empty: "Blank",
@@ -90,11 +92,11 @@ export const enUS = {
 			"If you decided to keep your copyright of your content, please cancel.",
 			"Fill out the form and we are taking you to the issue page on Github.",
 		].join("\n"),
-		boldCC0: "According to CC0 agreement, completely give up on the copyright of the content",
+		boldCC0:
+			"According to CC0 agreement, completely give up on the copyright of the content",
 		musicName: "Track name",
 		musicNamePlaceholder: "Track name",
-		musicNameTip:
-			"Artist - Track, that's the recommended format.",
+		musicNameTip: "Artist - Track, that's the recommended format.",
 		ncmID: "Track ID on Netease Cloud Music",
 		ncmIDPlaceholder: "Track ID",
 		ncmIDTip: [
@@ -121,8 +123,8 @@ export const enUS = {
 	tutorial: {
 		title: "Welcome to Apple Music-like Lyrics TTML Tool",
 		content: [
-            "This TTML lyrics tool is designed for Apple Music-like Lyrics playing page of BetterNCM plugin.",
-            "We provide multiple functions for making various kinds of lyrics.",
+			"This TTML lyrics tool is designed for Apple Music-like Lyrics playing page of BetterNCM plugin.",
+			"We provide multiple functions for making various kinds of lyrics.",
 			"Check out our quick tutorial, we'll get you there soon: ",
 		].join("\n"),
 		wipWarning:
@@ -179,11 +181,13 @@ export const enUS = {
 				},
 				moveToPreviousWordAndCurrentTime: {
 					key: "Key R",
-					description: "Move back to last word, and set the current timestamp as the starting of it",
+					description:
+						"Move back to last word, and set the current timestamp as the starting of it",
 				},
 				moveToNextWordAndSetCurrentTime: {
 					key: "Key Y",
-					description: "Move back to next word, and set the current timestamp as the starting of it",
+					description:
+						"Move back to next word, and set the current timestamp as the starting of it",
 				},
 				setWordStartTimeToCurrentTime: {
 					key: "Key F",

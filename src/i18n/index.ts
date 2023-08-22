@@ -14,7 +14,7 @@ const messages: {
 	[locateId: string]: LocateMessage;
 } = {
 	"zh-CN": zhCN,
-    "en-US": enUS,
+	"en-US": enUS,
 };
 
 export const i18n = createI18n({
