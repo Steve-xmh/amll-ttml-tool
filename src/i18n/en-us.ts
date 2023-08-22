@@ -82,23 +82,23 @@ export const enUS = {
 	uploadDBDialog: {
 		title: "Commit lyrics to AMLL Vault (Netease Cloud Music only)",
 		ncmOnlyWarning:
-			"This function is only for the users who use AMLL plugin for Netease Cloud Music. If you are making lyrics and plan to upload to other applications, please do so by their functions instead of here. ",
+			"This function is only for the users who use AMLL plugin for Netease Cloud Music. If you are making lyrics and plan to upload to other applications, please do so by their functions instead of here.",
 		content: [
-			"We appreciate your contributions of lyrics. ",
+			"We appreciate your contributions of lyrics.",
 			"By uploading, you are agreed to {0} and upload your content to our database! ",
-			"And your content may be used as the default TTML lyrics by the plugin. ",
-			"If you decided to keep your copyright of your content, please cancel. ",
-			"Fill out the form and we are taking you to the issue page on Github. ",
+			"And your content may be used as the default TTML lyrics by the plugin.",
+			"If you decided to keep your copyright of your content, please cancel.",
+			"Fill out the form and we are taking you to the issue page on Github.",
 		].join("\n"),
 		boldCC0: "According to CC0 agreement, completely give up on the copyright of the content",
 		musicName: "Track name",
 		musicNamePlaceholder: "Track name",
 		musicNameTip:
-			"Artist - Track, that's the recommended format. ",
+			"Artist - Track, that's the recommended format.",
 		ncmID: "Track ID on Netease Cloud Music",
 		ncmIDPlaceholder: "Track ID",
 		ncmIDTip: [
-			"It is copiable by right click on the AMLL plugin on Netease Cloud Music and it should be digital. ",
+			"It is copiable by right click on the AMLL plugin on Netease Cloud Music and it should be digital.",
 			"If you are uploading the same lyrics to multiple tracks, please split IDs by comma(,)",
 		].join("\n"),
 		uploadReason: {
@@ -121,37 +121,37 @@ export const enUS = {
 	tutorial: {
 		title: "Welcome to Apple Music-like Lyrics TTML Tool",
 		content: [
-            "This TTML lyrics tool is designed for Apple Music-like Lyrics playing page of BetterNCM plugin. ",
-            "We provide multiple functions for making various kinds of lyrics. ",
+            "This TTML lyrics tool is designed for Apple Music-like Lyrics playing page of BetterNCM plugin.",
+            "We provide multiple functions for making various kinds of lyrics.",
 			"Check out our quick tutorial, we'll get you there soon: ",
 		].join("\n"),
 		wipWarning:
-			"This tool is still in development, please always save your project. ",
+			"This tool is still in development, please always save your project.",
 		step1: {
 			title: "Load lyrics",
 			content: [
-				"Lyrics can be loaded by go to File->Upload lyrics file. ",
-				"It is okay for lyrics in non-TTML format. LRC/YRC/QRC/Lyricify Syllable formats are acceptable. ",
+				"Lyrics can be loaded by go to File->Upload lyrics file.",
+				"It is okay for lyrics in non-TTML format. LRC/YRC/QRC/Lyricify Syllable formats are acceptable.",
 			].join("\n"),
 		},
 		step2: {
 			title: "Edit lyrics",
 			content: [
-				"Click the {0} button to edit lyrics (by default). ",
+				"Click the {0} button to edit lyrics (by default).",
 				"You can append a new line, add new words, even split or edit them! ",
-				"Please notify that all space will be saved. ",
-				"If you want to add translation or romaji, please enable by going to View->Show translation/romaji lyrics. ",
-				"If you want to adjust lyrics property (toggle Background Voice or Duet), please right click or go to menu and choose from the list. ",
-				"If you want to edit multiple lines at the same time, please check the lines, and go to menu. ",
+				"Please notify that all space will be saved.",
+				"If you want to add translation or romaji, please enable by going to View->Show translation/romaji lyrics.",
+				"If you want to adjust lyrics property (toggle Background Voice or Duet), please right click or go to menu and choose from the list.",
+				"If you want to edit multiple lines at the same time, please check the lines, and go to menu.",
 			].join("\n"),
 			editModeBtnExample: "Edit Mode",
 		},
 		step3: {
 			title: "Sync Lyrics",
 			content: [
-				"Click the {0} button to enable Sync Mode. ",
-				"Load your music from file below then start syncing. ",
-				"You can also slowdown the track if it goes too fast. ",
+				"Click the {0} button to enable Sync Mode.",
+				"Load your music from file below then start syncing.",
+				"You can also slowdown the track if it goes too fast.",
 				"These are the default keymap of syncing mode: ",
 				"{1}",
 			].join("\n"),
@@ -220,8 +220,8 @@ export const enUS = {
 		step4: {
 			title: "Save Lyrics",
 			content: [
-				"You can save lyrics as TTML format, as well as other mainstream formats. ",
-				"BUT please remind that currently, translation and romaji will not be saved as Lyricify Syllable. Translations, rumaji and syllable timestamps will not be saved as LRC. Translations, romaji and lyrics property will not be saved as YRC/QRC. ",
+				"You can save lyrics as TTML format, as well as other mainstream formats.",
+				"BUT please remind that currently, translation and romaji will not be saved as Lyricify Syllable. Translations, rumaji and syllable timestamps will not be saved as LRC. Translations, romaji and lyrics property will not be saved as YRC/QRC.",
 			].join("\n"),
 		},
 		step5: {
