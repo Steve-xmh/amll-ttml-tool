@@ -1,23 +1,23 @@
 <template>
     <NModal transform-origin="center" :show="settings.showingTutorial">
-        <NCard :title="$t('tutorial.title')" style="max-width: 800px;">
+        <NCard :title="t('tutorial.title')" style="max-width: 800px;">
             <NSpace vertical style="white-space: pre-line; line-height: 2rem;">
                 <i18n-t keypath="tutorial.content" />
                 <NAlert type="warning">
                     <i18n-t keypath="tutorial.wipWarning" />
                 </NAlert>
                 <NSteps vertical>
-                    <NStep :title="$t('tutorial.step1.title')">
+                    <NStep :title="t('tutorial.step1.title')">
                         <i18n-t keypath="tutorial.step1.content" />
                     </NStep>
-                    <NStep :title="$t('tutorial.step2.title')">
+                    <NStep :title="t('tutorial.step2.title')">
                         <i18n-t keypath="tutorial.step2.content">
-                            <NButton>{{ $t("tutorial.step2.editModeBtnExample") }}</NButton>
+                            <NButton>{{ t("tutorial.step2.editModeBtnExample") }}</NButton>
                         </i18n-t>
                     </NStep>
-                    <NStep :title="$t('tutorial.step3.title')">
+                    <NStep :title="t('tutorial.step3.title')">
                         <i18n-t keypath="tutorial.step3.content">
-                            <NButton>{{ $t("tutorial.step3.syncModeBtnExample") }}</NButton>
+                            <NButton>{{ t("tutorial.step3.syncModeBtnExample") }}</NButton>
                         </i18n-t>
                         <table>
                             <tr>
@@ -137,16 +137,16 @@
                             </tr>
                         </table>
                     </NStep>
-                    <NStep :title="$t('tutorial.step4.title')">
+                    <NStep :title="t('tutorial.step4.title')">
                     <i18n-t keypath="tutorial.step4.content" />
                 </NStep>
-                <NStep :title="$t('tutorial.step5.title')">
+                <NStep :title="t('tutorial.step5.title')">
                     <NAlert type="warning">
                         <i18n-t keypath="tutorial.step5.ncmOnlyWarning" />
                     </NAlert>
                     <i18n-t keypath="tutorial.step5.content">
                         <a href="https://github.com/Steve-xmh/amll-ttml-db">
-                            {{ $t("tutorial.step5.amllTtmlDbUrlName") }}
+                            {{ t("tutorial.step5.amllTtmlDbUrlName") }}
                         </a>
                     </i18n-t>
                 </NStep>
@@ -164,7 +164,9 @@
 <script setup lang="ts">
 import { NCard, NModal, NSteps, NStep, NSpace, NButton, NAlert } from 'naive-ui';
 import { useSettings } from '../../store';
+import { useI18n } from "vue-i18n";
 
 const settings = useSettings();
+const { t } = useI18n();
 
 </script>

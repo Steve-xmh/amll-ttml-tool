@@ -1,6 +1,6 @@
 <template>
     <NModal preset="card" :closable="!submitData.processing" @close="dialogs.submitLyric = false"
-        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" :title="$t('splitWordModal.title')">
+        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" :title="t('splitWordModal.title')">
         <NSpace vertical>
 
         </NSpace>
@@ -15,10 +15,12 @@
 import { NModal, NText, NInput, NRadio, NSpace, NButton, useNotification } from 'naive-ui';
 import { useEditingLyric, useDialogs } from '../../store';
 import { reactive } from "vue";
+import { useI18n } from "vue-i18n";
 
 const lyric = useEditingLyric();
 const notify = useNotification();
 const dialogs = useDialogs();
+const { t } = useI18n();
 
 const submitData = reactive({
     name: "",

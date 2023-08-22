@@ -17,19 +17,19 @@
         </div>
         <div class="menu-slim">
             <NDropdown trigger="click" @select="onSelectMenu" :options="[{
-                label: $t('topBar.menu.file'),
+                label: t('topBar.menu.file'),
                 key: 'sub-file',
                 children: MENU.file,
             }, {
-                label: $t('topBar.menu.edit'),
+                label: t('topBar.menu.edit'),
                 key: 'sub-edit',
                 children: MENU.edit,
             }, {
-                label: $t('topBar.menu.view'),
+                label: t('topBar.menu.view'),
                 key: 'sub-view',
                 children: MENU.view,
             }, {
-                label: $t('topBar.menu.tool'),
+                label: t('topBar.menu.tool'),
                 key: 'sub-tool',
                 children: MENU.tool,
             }]">
@@ -54,7 +54,7 @@
         </div>
     </NLayoutHeader>
     <NModal v-model:show="aboutModalOpened" preset="card" transform-origin="center" style="max-width: 600px;"
-        :title="$t('aboutModal.appName')">
+        :title="t('aboutModal.appName')">
         <NSpace vertical>
             <div><i18n-t keypath="aboutModal.description" /></div>
             <NSpace>
@@ -78,6 +78,7 @@ import {
     useNotification,
 } from "naive-ui";
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import saveFile from 'save-file';
 import { parseLyric } from "../utils/ttml-lyric-parser";
 import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
@@ -91,61 +92,62 @@ const settings = useSettings();
 const aboutModalOpened = ref(false);
 const notify = useNotification();
 const dialogs = useDialogs();
+const { t } = useI18n();
 
 const MENU = ref({
     file: [
-        { label: '新建歌词', key: 'new' },
-        { label: '打开歌词', key: 'open' },
+        { label: t('topBar.menu.newLyric'), key: 'new' },
+        { label: t('topBar.menu.openLyric'), key: 'open' },
         { type: 'divider' },
-        { label: '保存歌词', key: 'save' },
+        { label: t('topBar.menu.saveLyric'), key: 'save' },
         // { label: '另存为歌词', key: 'save-as' },
         // { type: 'divider' },
         {
-            label: '导入歌词...', key: 'import-from', children: [{
-                label: '从 LRC 歌词导入', key: 'import-from-lrc',
+            label: t('topBar.menu.importLyric'), key: 'import-from', children: [{
+                label: t('topBar.menu.importLyricFromLrc'), key: 'import-from-lrc',
             }, {
-                label: '从 YRC 歌词导入', key: 'import-from-yrc',
+                label: t('topBar.menu.importLyricFromYrc'), key: 'import-from-yrc',
             }, {
-                label: '从 QRC 歌词导入', key: 'import-from-qrc',
+                label: t('topBar.menu.importLyricFromQrc'), key: 'import-from-qrc',
             }, {
-                label: '从 Lyricify Syllable 歌词导入', key: 'import-from-lys',
+                label: t('topBar.menu.importLyricFromLys'), key: 'import-from-lys',
             }]
         },
         {
-            label: '导出歌词...', key: 'export-to', children: [{
-                label: '导出 LRC 歌词', key: 'export-to-lrc',
+            label: t('topBar.menu.exportLyric'), key: 'export-to', children: [{
+                label: t('topBar.menu.exportLyricToLrc'), key: 'export-to-lrc',
             }, {
-                label: '导出 YRC 歌词', key: 'export-to-yrc',
+                label: t('topBar.menu.exportLyricToYrc'), key: 'export-to-yrc',
             }, {
-                label: '导出 QRC 歌词', key: 'export-to-qrc',
+                label: t('topBar.menu.exportLyricToQrc'), key: 'export-to-qrc',
             }, {
-                label: '导出 Lyricify Syllable 歌词', key: 'export-to-lys',
+                label: t('topBar.menu.exportLyricToLys'), key: 'export-to-lys',
             }, {
-                label: '导出 ASS 字幕', key: 'export-to-ass',
+                label: t('topBar.menu.exportLyricToAss'), key: 'export-to-ass',
             }]
         },
-        { label: '上传歌词到 AMLL 歌词数据库', key: 'submit-to-amll-db' },
+        { label: t('topBar.menu.uploadToAMLLDB'), key: 'submit-to-amll-db' },
         { type: 'divider' },
         // { label: '设置', key: 'setting' },
-        { label: '关于', key: 'about' },
+        { label: t('topBar.menu.about'), key: 'about' },
     ] as DropdownMixedOption[],
     edit: [
-        { label: '撤销', key: 'undo' },
-        { label: '重做', key: 'redo' },
-        { label: '选中所有歌词行', key: 'select-all' },
-        { label: '取消选中所有歌词行', key: 'unselect-all' },
-        { label: '反选所有歌词行', key: 'invert-select-all' },
+        { label: t('topBar.menu.undo'), key: 'undo' },
+        { label: t('topBar.menu.redo'), key: 'redo' },
+        { label: t('topBar.menu.selectAllLines'), key: 'select-all' },
+        { label: t('topBar.menu.unselectAllLines'), key: 'unselect-all' },
+        { label: t('topBar.menu.invertSelectAllLines'), key: 'invert-select-all' },
         { type: 'divider' },
-        { label: '切换所选歌词行为背景人声', key: 'toggle-bg' },
-        { label: '切换所选歌词行为对唱人声', key: 'toggle-duet' },
+        { label: t('topBar.menu.toggleBGLineOnSelectedLines'), key: 'toggle-bg' },
+        { label: t('topBar.menu.toggleDuetLineOnSelectedLines'), key: 'toggle-duet' },
     ] as DropdownMixedOption[],
     view: [
-        { label: '显示翻译歌词', key: 'show-tran' },
-        { label: '显示音译歌词', key: 'show-roman' },
-        { label: '显示日语参考罗马字注音（实验性）', key: 'show-jpn-romaji' },
+        { label: t('topBar.menu.showTranslatedLyricLines'), key: 'show-tran' },
+        { label: t('topBar.menu.showRomanLyricLines'), key: 'show-roman' },
+        { label: t('topBar.menu.showMachineRomanji'), key: 'show-jpn-romaji' },
     ],
     tool: [
-        { label: '使用 JieBa 对歌词行分词', key: 'split-words-jieba' },
+        { label: t('topBar.menu.splitWordByJieba'), key: 'split-words-jieba' },
         // { label: '简繁转换', key: 'trad-to-simp' },
         // { label: '生成日语罗马字音译歌词', key: 'gen-jpn-romaji' },
         // { label: '生成粤语音译歌词', key: 'gen-cat' },

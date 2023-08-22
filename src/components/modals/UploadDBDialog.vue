@@ -1,6 +1,6 @@
 <template>
     <NModal preset="card" :closable="!submitData.processing" @close="dialogs.submitLyric = false"
-        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" :title="$t('uploadDBDialog.title')">
+        :show="dialogs.submitLyric" transform-origin="center" style="max-width: 600px;" :title="t('uploadDBDialog.title')">
         <NSpace vertical style="line-height: 2rem; white-space: pre-line;">
             <NAlert type="warning">
                 <i18n-t keypath="uploadDBDialog.ncmOnlyWarning" />
@@ -12,7 +12,7 @@
                 <i18n-t keypath="uploadDBDialog.musicName" />
             </h4>
             <NInput :loading="submitData.processing" :disabled="submitData.processing" v-model:value="submitData.name"
-                :placeholder="$t('uploadDBDialog.musicNamePlaceholder')" />
+                :placeholder="t('uploadDBDialog.musicNamePlaceholder')" />
             <div>
                 <i18n-t keypath="uploadDBDialog.musicNameTip" />
             </div>
@@ -20,7 +20,7 @@
                 <i18n-t keypath="uploadDBDialog.ncmID" />
             </h4>
             <NInput :loading="submitData.processing" :disabled="submitData.processing" v-model:value="submitData.ids"
-                :placeholder="$t('uploadDBDialog.ncmIDPlaceholder')" />
+                :placeholder="t('uploadDBDialog.ncmIDPlaceholder')" />
             <div>
                 <i18n-t keypath="uploadDBDialog.ncmIDTip" />
             </div>
@@ -35,7 +35,7 @@
                 <i18n-t keypath="uploadDBDialog.comment" />
             </h4>
             <NInput :loading="submitData.processing" :disabled="submitData.processing" v-model:value="submitData.comment"
-                :placeholder="$t('uploadDBDialog.commentPlaceholder')" />
+                :placeholder="t('uploadDBDialog.commentPlaceholder')" />
             <div><i18n-t keypath="uploadDBDialog.commentTip" /></div>
         </NSpace>
         <template #footer>
@@ -52,11 +52,12 @@
 import { NModal, NText, NInput, NRadio, NSpace, NButton, NAlert, useNotification } from 'naive-ui';
 import { useEditingLyric, useDialogs } from '../../store';
 import { reactive } from "vue";
-import { i18n } from '../../i18n';
+import { useI18n } from "vue-i18n";
 
 const lyric = useEditingLyric();
 const notify = useNotification();
 const dialogs = useDialogs();
+const { t } = useI18n();
 
 const submitData = reactive({
     name: "",
@@ -91,8 +92,8 @@ async function uploadAndSubmit() {
     } catch (err) {
         console.warn("Submit failed", err);
         notify.error({
-            title: i18n.global.t("uploadDBDialog.errorNotification.title"),
-            content: i18n.global.t("uploadDBDialog.errorNotification.content", [err]),
+            title: t("uploadDBDialog.errorNotification.title"),
+            content: t("uploadDBDialog.errorNotification.content", [err]),
         });
     }
     submitData.processing = false;
