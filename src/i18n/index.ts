@@ -1,5 +1,6 @@
 import { createI18n } from "vue-i18n";
 import { zhCN } from "./zh-cn";
+import { enUS } from "./en-us";
 
 type FullPartial<T> = { [K in keyof T]?: FullPartial<T[K]> | undefined };
 
@@ -13,6 +14,7 @@ const messages: {
 	[locateId: string]: LocateMessage;
 } = {
 	"zh-CN": zhCN,
+    "en-US": enUS,
 };
 
 export const i18n = createI18n({
