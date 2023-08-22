@@ -1,8 +1,8 @@
 export const enUS = {
 	app: {
-		loadingEditPage: "Loading Page Edit",
-		loadingSyncPage: "Loading Page Sync",
-		loadingAMLLPreviewPage: "Loading Page AMLL Lyrics Preview",
+		loadingEditPage: "Loading Edit Page",
+		loadingSyncPage: "Loading Sync Page",
+		loadingAMLLPreviewPage: "Loading AMLL Lyrics Preview Page",
 	},
 	topBar: {
 		menu: {
@@ -53,7 +53,7 @@ export const enUS = {
 	},
 	lyricWordEditor: {
 		empty: "Blank",
-		space: "空格x{0}", // 空格x（空格数量）
+		space: "Space x{0}", // 空格x（空格数量）
 	},
 	serviceWorkerUpdater: {
 		needRefresh: {
