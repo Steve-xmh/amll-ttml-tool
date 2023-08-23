@@ -1,5 +1,4 @@
 import { createI18n } from "vue-i18n";
-import type { DefineLocaleMessage } from "vue-i18n";
 import { zhCN } from "./zh-cn";
 import { enUS } from "./en-us";
 
@@ -18,6 +17,7 @@ export type LocateMessage = FullPartial<BaseSchema>;
 export const i18n = createI18n<[typeof zhCN]>({
 	legacy: false,
 	globalInjection: true,
+	silentFallbackWarn: true,
 	locale: navigator.language,
 	fallbackLocale: [...navigator.languages, "zh-CN"],
 	messages: {

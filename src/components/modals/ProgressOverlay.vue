@@ -20,6 +20,6 @@ import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
 const { currentProgresses } = storeToRefs(useProgress());
-const { t } = useI18n();
+const { t } = useI18n({ useScope: "global" });
 
 </script>

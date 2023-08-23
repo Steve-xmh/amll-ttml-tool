@@ -20,7 +20,7 @@ import { useI18n } from "vue-i18n";
 const lyric = useEditingLyric();
 const notify = useNotification();
 const dialogs = useDialogs();
-const { t } = useI18n();
+const { t } = useI18n({ useScope: "global" });
 
 const submitData = reactive({
     name: "",

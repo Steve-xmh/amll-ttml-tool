@@ -92,7 +92,7 @@ const settings = useSettings();
 const aboutModalOpened = ref(false);
 const notify = useNotification();
 const dialogs = useDialogs();
-const { t } = useI18n();
+const { t } = useI18n({ useScope: "global" });
 
 const MENU = ref({
     file: [
@@ -104,6 +104,8 @@ const MENU = ref({
         // { type: 'divider' },
         {
             label: t('topBar.menu.importLyric'), key: 'import-from', children: [{
+                label: t('topBar.menu.importLyricFromText'), key: 'import-from-text',
+            }, {
                 label: t('topBar.menu.importLyricFromLrc'), key: 'import-from-lrc',
             }, {
                 label: t('topBar.menu.importLyricFromYrc'), key: 'import-from-yrc',
@@ -185,6 +187,10 @@ function onSelectMenu(key: string) {
                 }
             });
             fileDialog.remove();
+            break;
+        }
+        case "import-from-text": {
+            dialogs.importFromText = true;
             break;
         }
         case "import-from-lrc": {

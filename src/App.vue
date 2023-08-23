@@ -48,6 +48,7 @@
             <TutorialModal />
             <ProgressOverlay />
             <UploadDBDialog />
+            <ImportPlainTextModal />
             <ServiceWorkerUpdater v-if="enableSW" />
             <!-- <SplitWordModal /> -->
         </NNotificationProvider>
@@ -74,6 +75,7 @@ import ContextMenu from "./components/ContextMenu.vue";
 import UploadDBDialog from "./components/modals/UploadDBDialog.vue";
 import SplitWordModal from "./components/modals/SplitWordModal.vue";
 import ServiceWorkerUpdater from "./components/ServiceWorkerUpdater.vue";
+import ImportPlainTextModal from "./components/modals/ImportPlainTextModal.vue";
 const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.vue"));
 const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
 const AMLLPreviewView = defineAsyncComponent(() => import("./components/AMLLPreviewView.vue"));

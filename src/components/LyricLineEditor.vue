@@ -17,15 +17,18 @@
                         <LyricWordEditor :line-index="element.lineIndex" :word="element.word" :word-index="element.id" />
                     </template>
                 </Draggable>
-                <NInput class="new-word" round autosize ref="inputRef" :placeholder="t('lyricLineEditor.newWordPlaceholder')" :value="editState.newWord"
+                <NInput class="new-word" round autosize ref="inputRef"
+                    :placeholder="t('lyricLineEditor.newWordPlaceholder')" :value="editState.newWord"
                     @input="editState.newWord = $event" @change="onAddNewWord" style="min-width: 100px" />
             </div>
             <div v-if="settings.showTranslateLine">
-                <NInput round :placeholder="t('lyricLineEditor.translateLinePlaceholder')" :value="editState.translateLine" @input="editState.translateLine = $event"
+                <NInput round :placeholder="t('lyricLineEditor.translateLinePlaceholder')" :value="editState.translateLine"
+                    @input="editState.translateLine = $event"
                     @change="lyric.modifyTranslatedLine(props.line.id, editState.translateLine)" style="min-width: 100px" />
             </div>
             <div v-if="settings.showRomanLine">
-                <NInput round :placeholder="t('lyricLineEditor.romanLinePlaceholder')" :value="editState.romanLine" @input="editState.romanLine = $event"
+                <NInput round :placeholder="t('lyricLineEditor.romanLinePlaceholder')" :value="editState.romanLine"
+                    @input="editState.romanLine = $event"
                     @change="lyric.modifyRomanLine(props.line.id, editState.romanLine)" style="min-width: 100px" />
             </div>
         </div>
@@ -64,7 +67,7 @@ const editState = reactive({
     romanLine: props.line.romanLyric,
 });
 const settings = useSettings();
-const { t } = useI18n();
+const { t } = useI18n({ useScope: "global" });
 const inputRef = ref<InputInst | null>(null);
 
 function onSort(e: CustomEvent & {

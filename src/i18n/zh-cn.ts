@@ -11,6 +11,7 @@ export const zhCN = {
 			openLyric: "打开歌词",
 			saveLyric: "保存歌词",
 			importLyric: "导入歌词...",
+			importLyricFromText: "从纯文本导入",
 			importLyricFromLrc: "从 LRC 歌词导入",
 			importLyricFromYrc: "从 YRC 歌词导入",
 			importLyricFromQrc: "从 QRC 歌词导入",
@@ -106,6 +107,23 @@ export const zhCN = {
 		title: "拆分单词",
 		splitBtn: "拆分",
 	},
+	importPlainTextModal: {
+		title: "从纯文本导入歌词",
+		textPlaceholder: "纯文本歌词内容",
+		importMode: "导入模式",
+		lyricOnly: "仅歌词",
+		lyricWithTranslation: "歌词和翻译歌词",
+		lyricWithTranslationAndRoman: "歌词和翻译、音译歌词",
+		lyricSplitMode: "歌词分行（翻译和音译）模式",
+		sameLineWithSeparator: "同行分隔",
+		sameLineSeparator: "歌词行分隔符",
+		sameLineSeparatorPlaceholder: "留空则不分隔",
+		interleavedLine: "多行交错分隔",
+		swapTransAndRoman: "交换翻译行和音译行",
+		wordSeparator: "单词分隔符",
+		wordSeparatorPlaceholder: "留空则不分隔",
+		importBtn: "导入歌词",
+	},
 	uploadDBDialog: {
 		title: "提交歌词到 AMLL 歌词数据库（仅网易云）",
 		ncmOnlyWarning:
@@ -158,7 +176,7 @@ export const zhCN = {
 			title: "加载歌词",
 			content: [
 				"您可以通过左上角的菜单 - 文件 - 打开歌词来加载歌词哦！",
-				"如果您的歌词不是 TTML 格式也没有关系，歌词工具支持从 LRC/YRC/QRC/Lyricify Syllable 格式导入歌词哦！",
+				"如果您的歌词不是 TTML 格式也没有关系，歌词工具支持从 纯文本/LRC/YRC/QRC/Lyricify Syllable 格式导入歌词哦！",
 			].join("\n"),
 		},
 		step2: {
