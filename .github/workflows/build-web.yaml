@@ -23,6 +23,19 @@ jobs:
           ref: 3.0-dev
           submodules: recursive
           path: applemusic-like-lyrics
+      - name: 缓存依赖项目
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-cache
+          path: |
+            amll-ttml-tool/node_modules
+            amll-ttml-tool/src-tauri/target
+            amll-ttml-tool/.yarn/cache
+            amll-ttml-tool/.yarn/install-state.gz
+            applemusic-like-lyrics/node_modules
+            applemusic-like-lyrics/target
+            applemusic-like-lyrics/.yarn/cache
+            applemusic-like-lyrics/.yarn/install-state.gz
       - name: 配置 NodeJS
         uses: actions/setup-node@v3.0.0
       - name: 安装 wasm-pack
