@@ -1,4 +1,4 @@
-import { createI18n } from "vue-i18n";
+import { createI18n, type I18nOptions } from "vue-i18n";
 import { zhCN } from "./zh-cn";
 import { enUS } from "./en-us";
 
@@ -14,7 +14,7 @@ type FullPartial<T> = { [K in keyof T]?: FullPartial<T[K]> | undefined };
 
 export type LocateMessage = FullPartial<BaseSchema>;
 
-export const i18n = createI18n<[typeof zhCN]>({
+const options: I18nOptions = {
 	legacy: false,
 	globalInjection: true,
 	silentFallbackWarn: true,
@@ -28,4 +28,6 @@ export const i18n = createI18n<[typeof zhCN]>({
 		"zh-CN": zhCN,
 		"en-US": enUS,
 	},
-});
+};
+
+export const i18n = createI18n<false, typeof options>(options);

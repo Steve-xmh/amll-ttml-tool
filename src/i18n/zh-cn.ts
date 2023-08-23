@@ -35,6 +35,7 @@ export const zhCN = {
 			showTranslatedLyricLines: "显示翻译歌词",
 			showRomanLyricLines: "显示音译歌词",
 			showMachineRomanji: "显示日语参考罗马字注音（实验性）",
+			splitWordBySimpleMethod: "使用简单方式对歌词行分词",
 			splitWordByJieba: "使用 JieBa 对歌词行分词",
 			view: "查看",
 			tool: "工具",
@@ -102,6 +103,10 @@ export const zhCN = {
 	},
 	progressOverlay: {
 		title: "处理中",
+		processingWordSpliting: "正在进行分词操作",
+		loadingJiebaModule: "正在加载 Jieba 分词模块……",
+		splitingWords: "正在进行分词操作 ({0}/{1})",
+		finishing: "正在完成",
 	},
 	splitWordModal: {
 		title: "拆分单词",

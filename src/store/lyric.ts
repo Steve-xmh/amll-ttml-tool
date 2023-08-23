@@ -18,6 +18,7 @@ import {
 	stringifyLys,
 	stringifyAss,
 } from "@applemusic-like-lyrics/lyric";
+import { i18n } from "../i18n";
 
 set_panic_hook();
 
@@ -408,13 +409,80 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			const lines = toRaw(this.lyrics);
 			return stringifyAss(lines);
 		},
+		splitLineBySimpleMethod() {
+			const rawLines: LyricLine[] = this.lyrics.map((line) => ({
+				...toRaw(line),
+				words: toRaw(line.words).map((w) => ({ ...w })),
+			}));
+			const results: LyricLine[] = [];
+			const latinReg = /^[A-z\u00C0-\u00ff'\.,-\/#!$%\^&\*;:{}=\-_`~()]+$/;
+
+			rawLines.forEach((line) => {
+				const chars = line.words.flatMap((w) => w.word.split(""));
+				console.log(chars);
+				const wordsResult: LyricWord[] = [];
+				let tmpWord: LyricWord = {
+					word: "",
+					startTime: 0,
+					endTime: 0,
+				};
+				chars.forEach((c) => {
+					if (/^\s+$/.test(c)) {
+						if (tmpWord.word.trim().length > 0) {
+							wordsResult.push(tmpWord);
+						}
+						tmpWord = {
+							word: " ",
+							startTime: 0,
+							endTime: 0,
+						};
+					} else if (latinReg.test(c)) {
+						if (latinReg.test(tmpWord.word)) {
+							tmpWord.word += c;
+						} else {
+							if (tmpWord.word.length > 0) {
+								wordsResult.push(tmpWord);
+							}
+							tmpWord = {
+								word: c,
+								startTime: 0,
+								endTime: 0,
+							};
+						}
+					} else {
+						if (tmpWord.word.length > 0) {
+							wordsResult.push(tmpWord);
+						}
+						tmpWord = {
+							word: c,
+							startTime: 0,
+							endTime: 0,
+						};
+					}
+				});
+				if (tmpWord.word.length > 0) {
+					wordsResult.push(tmpWord);
+				}
+				results.push({
+					...line,
+					words: wordsResult,
+				});
+			});
+
+			console.log(results);
+
+			this.lyrics = results;
+			this.record();
+		},
 		async splitLineByJieba() {
 			const progress = useProgress();
-			const p = progress.newProgress("正在进行分词操作");
+			const p = progress.newProgress(
+				i18n.global.t("progressOverlay.processingWordSpliting"),
+			);
 			const results: LyricLine[] = [];
 			const sel = this.lyrics.filter((line) => line.selected).length;
 			let cur = 0;
-			p.label = "正在加载 Jieba 分词模块……";
+			p.label = i18n.global.t("progressOverlay.loadingJiebaModule");
 			const { cut } = await import("jieba-rs-wasm");
 			for (let i = 0; i < this.lyrics.length; i++) {
 				const line: LyricLine = {
@@ -442,12 +510,13 @@ export const useEditingLyric = defineStore("editing-lyric", {
 
 				line.words = newWords;
 
-				p.label = `正在进行分词操作 (${++cur}/${sel})`;
+				// p.label = `正在进行分词操作 (${++cur}/${sel})`;
+				p.label = i18n.global.t("progressOverlay.splitingWords", [++cur, sel]);
 				p.progress = cur / sel;
 				results.push(line);
 				if (i % 5 === 0) await waitNextTick();
 			}
-			p.label = "正在完成";
+			p.label = i18n.global.t("progressOverlay.finishing");
 			await waitNextTick();
 			this.lyrics = results;
 			progress.finishProgress(p);

@@ -45,7 +45,7 @@ jobs:
         uses: KyleMayes/install-llvm-action@v1
         if: matrix.platform == 'macos-latest'
         with:
-          version: "16"
+          version: "14"
       - name: 配置 NodeJS
         uses: actions/setup-node@v3
         with:

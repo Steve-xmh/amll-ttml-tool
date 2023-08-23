@@ -149,6 +149,7 @@ const MENU = ref({
         { label: t('topBar.menu.showMachineRomanji'), key: 'show-jpn-romaji' },
     ],
     tool: [
+        { label: t('topBar.menu.splitWordBySimpleMethod'), key: 'split-words-simple' },
         { label: t('topBar.menu.splitWordByJieba'), key: 'split-words-jieba' },
         // { label: '简繁转换', key: 'trad-to-simp' },
         // { label: '生成日语罗马字音译歌词', key: 'gen-jpn-romaji' },
@@ -376,6 +377,10 @@ function onSelectMenu(key: string) {
         }
         case "split-words-jieba": {
             lyric.splitLineByJieba();
+            break;
+        }
+        case "split-words-simple": {
+            lyric.splitLineBySimpleMethod();
             break;
         }
         case "toggle-bg": {
