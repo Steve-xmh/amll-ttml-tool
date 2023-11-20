@@ -74,7 +74,7 @@ async function uploadAndSubmit() {
         const lyricData = encodeURIComponent(lyric.toTTML());
         const lyricUrl = await fetch("https://dpaste.org/api/", {
             method: "POST",
-            mode: "no-cors",
+            mode: "cors",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
