@@ -74,11 +74,15 @@ async function uploadAndSubmit() {
         const lyricData = encodeURIComponent(lyric.toTTML());
         const lyricUrl = await fetch("https://dpaste.org/api/", {
             method: "POST",
+            mode: "no-cors",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: "format=url&lexer=xml&expires=3600&filename=lyric.ttml&content=" + lyricData
-        }).then(v => v.text()).then(v => v.trim() + "/raw");
+        }).then(v => {
+            console.log(v);
+            return v.text();
+        }).then(v => v.trim() + "/raw");
         const issueUrl = new URL("https://github.com/Steve-xmh/amll-ttml-db/issues/new");
         issueUrl.searchParams.append("labels", "歌词提交/补正");
         issueUrl.searchParams.append("template", "submit-lyric.yml");

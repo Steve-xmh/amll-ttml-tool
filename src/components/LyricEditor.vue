@@ -83,5 +83,5 @@ onUnmounted(() => {
     flex-direction: column
     height: 100%
     .line-item
-        border-bottom: 1px solid var(--att-border-color)
+        border-bottom: 1px solid rgba(170, 170, 170, 0.2666666667)
 </style>

@@ -53,7 +53,7 @@ const props = defineProps<{
 watch(() => [currentWord.lineIndex, props.line.id], () => {
     if (currentWord.lineIndex === props.line.id) {
         nextTick(() => {
-                itemRef.value?.scrollIntoView({
+            itemRef.value?.scrollIntoView({
                 behavior: "smooth",
                 block: "center",
                 inline: "center"
@@ -84,7 +84,7 @@ function toTimestamp(duration: number) {
     cursor: pointer
     outline-offset: -4px
     padding: 4px
-    border-bottom: 1px solid var(--att-border-color)
+    border-bottom: 1px solid rgba(170, 170, 170, 0.2666666667)
     &.lyric-line-item-selected
         outline: 3px solid var(--att-theme-color) //#63e2b7
     &:hover

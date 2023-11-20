@@ -15,8 +15,8 @@
     "./libs/*"
   ],
   "dependencies": {
-    "@applemusic-like-lyrics/lyric": "^0.0.2",
-    "@applemusic-like-lyrics/vue": "^0.0.6",
+    "@applemusic-like-lyrics/lyric": "^0.0.3",
+    "@applemusic-like-lyrics/vue": "^0.0.13",
     "@pixi/app": "^7.2.4",
     "@pixi/core": "^7.2.4",
     "@pixi/display": "^7.2.4",

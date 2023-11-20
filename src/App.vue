@@ -1,5 +1,5 @@
 <template>
-    <NConfigProvider useOsTheme>
+    <NConfigProvider :theme="theme">
         <NNotificationProvider>
             <NGlobalStyle />
             <NLayout position="absolute" :style="{
@@ -7,6 +7,7 @@
                 '--att-theme-color-hover': themeVars.primaryColorHover,
                 '--att-theme-color-pressed': themeVars.primaryColorPressed,
                 '--att-border-color': themeVars.borderColor,
+                '--att-divider-color': themeVars.dividerColor,
                 '--att-height-medium': themeVars.heightMedium,
             }" content-style="display: flex; flex-direction: column;">
                 <TopBar />
@@ -62,10 +63,12 @@ import {
     NConfigProvider,
     NGlobalStyle,
     useThemeVars,
+    useOsTheme,
     NNotificationProvider,
     NSpin,
+    darkTheme,
 } from "naive-ui";
-import { onMounted, Suspense, defineAsyncComponent } from "vue";
+import { onMounted, Suspense, defineAsyncComponent, computed } from "vue";
 import { useEditMode } from "./store";
 import ProgressOverlay from "./components/modals/ProgressOverlay.vue";
 import AudioPlayerBar from "./components/AudioPlayerBar.vue";
@@ -80,6 +83,8 @@ const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.
 const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
 const AMLLPreviewView = defineAsyncComponent(() => import("./components/AMLLPreviewView.vue"));
 
+const osThemeRef = useOsTheme();
+const theme = computed(() => osThemeRef.value === "dark" ? darkTheme : undefined);
 const themeVars = useThemeVars();
 const edit = useEditMode();
 const enableSW = !!import.meta.env.TAURI_PLATFORM;

@@ -1,12 +1,15 @@
 <template>
     <div class="lyric-sync-editor">
-        <div class="lyric-line-sync-editor" v-if="lyric.lyrics[currentWord.lineIndex]">
+        <div class="lyric-line-sync-editor" ref="syncEditor" @wheel="onSyncEditorScroll"
+            v-if="lyric.lyrics[currentWord.lineIndex]">
             <template v-if="lyric.lineWithIds[currentWord.lineIndex - 1]">
-                <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex - 1].words" not-main :key="i" :word="word" />
+                <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex - 1].words" not-main :key="i"
+                    :word="word" />
             </template>
             <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex].words" :key="i" :word="word" />
             <template v-if="lyric.lineWithIds[currentWord.lineIndex + 1]">
-                <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex + 1].words" not-main :key="i" :word="word" />
+                <LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex + 1].words" not-main :key="i"
+                    :word="word" />
             </template>
         </div>
         <div class="lyric-line-sync-editor-no-selected" v-else>
@@ -52,6 +55,14 @@ function getMinHeight() {
     } else {
         return 37;
     }
+}
+
+function onSyncEditorScroll(evt: WheelEvent) {
+    // 默认横向滚动
+    syncEditor.value?.scrollBy({
+        left: evt.deltaX + evt.deltaY,
+        behavior: "auto",
+    });
 }
 
 currentWord.$subscribe((mut) => {
@@ -165,7 +176,7 @@ function moveDown() {
 }
 
 function onKeyPress(e: KeyboardEvent) {
-    if((e.target as HTMLElement)?.nodeName === 'INPUT') return;
+    if ((e.target as HTMLElement)?.nodeName === 'INPUT') return;
     let collected = false;
     switch (e.code) {
         case "KeyA": // 移动到上一个单词

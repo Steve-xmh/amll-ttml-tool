@@ -1,9 +1,24 @@
 <template>
-    <div style="background-color: #222; width: 100%; height: 100%;">
-        <LyricPlayer enable ref="playerRef" :current-time="audio.currentTimeMS" :lyric-lines="lyric.lineForPreview"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; mix-blend-mode: plus-lighter;" />
+    <div class="amll-preview-view">
+        <LyricPlayer enable ref="playerRef" :current-time="audio.currentTimeMS" :lyric-lines="lyric.lineForPreview" />
     </div>
 </template>
+
+<style lang="sass">
+.amll-preview-view
+    background-color: #222
+    width: 100%
+    height: 100%
+    > *
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        mix-blend-mode: plus-lighter
+        > *
+            box-sizing: content-box
+</style>
 
 <script setup lang="ts">
 import { LyricPlayer, type LyricPlayerRef } from "@applemusic-like-lyrics/vue";
