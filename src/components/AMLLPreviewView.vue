@@ -1,6 +1,7 @@
 <template>
     <div class="amll-preview-view">
-        <LyricPlayer enable ref="playerRef" :current-time="audio.currentTimeMS" :lyric-lines="lyric.lineForPreview" />
+        <LyricPlayer enable enable-spring enable-scale enable-blur align-anchor="top" :align-position="0.2" ref="playerRef"
+            :current-time="audio.currentTimeMS" :lyric-lines="lyric.lineForPreview" />
     </div>
 </template>
 

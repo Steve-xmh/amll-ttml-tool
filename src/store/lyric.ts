@@ -102,7 +102,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				],
 				translatedLyric: line.translatedLyric ?? "",
 				romanLyric: line.romanLyric ?? "",
-				isBackground: !!line.isBackgroundLyric,
+				isBG: !!line.isBackgroundLyric,
 				isDuet: !!line.shouldAlignRight,
 				selected: false,
 			}));
@@ -118,7 +118,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				})),
 				translatedLyric: "",
 				romanLyric: "",
-				isBackground: false,
+				isBG: false,
 				isDuet: false,
 				selected: false,
 			}));
@@ -134,7 +134,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				})),
 				translatedLyric: "",
 				romanLyric: "",
-				isBackground: false,
+				isBG: false,
 				isDuet: false,
 				selected: false,
 			}));
@@ -150,7 +150,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				})),
 				translatedLyric: "",
 				romanLyric: "",
-				isBackground: false,
+				isBG: false,
 				isDuet: false,
 				selected: false,
 			}));
@@ -166,7 +166,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				})),
 				translatedLyric: "",
 				romanLyric: "",
-				isBackground: !!line.isBG,
+				isBG: !!line.isBG,
 				isDuet: !!line.isDuet,
 				selected: false,
 			}));
