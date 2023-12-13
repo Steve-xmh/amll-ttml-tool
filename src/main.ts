@@ -7,9 +7,12 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import App from "./App.vue";
 
 window.document.addEventListener("keydown", (evt) => {
-    // prevent space scroll
-    if (evt.code === "Space") {
-        evt.preventDefault();
+    // 阻止非编辑状态下的空格滚动
+    var el = (evt.target as HTMLElement).nodeName;
+    if( el !== 'TEXTAREA' && el !== 'INPUT' ) {
+        if (evt.code === "Space") {
+            evt.preventDefault();
+        }
     }
 })
 
