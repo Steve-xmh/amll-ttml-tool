@@ -49,7 +49,7 @@ jobs:
       - name: 配置 NodeJS
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
       - name: 安装 wasm-pack
