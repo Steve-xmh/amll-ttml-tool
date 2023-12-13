@@ -128,6 +128,7 @@ const MENU = ref({
                 label: t('topBar.menu.exportLyricToAss'), key: 'export-to-ass',
             }]
         },
+        { label: t('topBar.menu.importFromAMLLDB'), key: 'import-from-amll-db' },
         { label: t('topBar.menu.uploadToAMLLDB'), key: 'submit-to-amll-db' },
         { type: 'divider' },
         // { label: '设置', key: 'setting' },
@@ -333,6 +334,10 @@ function onSelectMenu(key: string) {
         case "export-to-ass": {
             const output = lyric.toASS();
             saveFile(new TextEncoder().encode(output), "lyric.ass");
+            break;
+        }
+        case "import-from-amll-db": {
+            dialogs.importFromDB = true;
             break;
         }
         case "submit-to-amll-db": {

@@ -50,6 +50,7 @@
             <ProgressOverlay />
             <UploadDBDialog />
             <ImportPlainTextModal />
+            <ImportFromDBDialog />
             <ServiceWorkerUpdater v-if="enableSW" />
             <!-- <SplitWordModal /> -->
         </NNotificationProvider>
@@ -76,6 +77,7 @@ import TutorialModal from "./components/modals/TutorialModal.vue";
 import TopBar from "./components/TopBar.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 import UploadDBDialog from "./components/modals/UploadDBDialog.vue";
+import ImportFromDBDialog from "./components/modals/ImportFromDBDialog.vue";
 import SplitWordModal from "./components/modals/SplitWordModal.vue";
 import ServiceWorkerUpdater from "./components/ServiceWorkerUpdater.vue";
 import ImportPlainTextModal from "./components/modals/ImportPlainTextModal.vue";

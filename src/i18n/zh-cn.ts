@@ -22,6 +22,7 @@ export const zhCN = {
 			exportLyricToQrc: "导出 QRC 歌词",
 			exportLyricToLys: "导出 Lyricify Syllable 歌词",
 			exportLyricToAss: "导出 ASS 字幕",
+			importFromAMLLDB: "从 AMLL 歌词数据库导入歌词",
 			uploadToAMLLDB: "上传歌词到 AMLL 歌词数据库",
 			about: "关于",
 			edit: "编辑",
@@ -288,6 +289,14 @@ export const zhCN = {
 			"之后您可以通过左上角的 文件菜单 - 关于 - 简短教程 再次访问本页面，如果忘记怎么操作了可以再来看看哦！",
 		closeBtn: "我知道了",
 	},
+	importFromAMLLDB: {
+		title: "从 AMLL 歌词数据库导入歌词",
+		description: "导入成功将会覆盖当前歌词内容，请注意保存已有歌词！",
+		musicID: {
+			placeholder: "音乐 ID",
+		},
+		importBtn: "导入"
+	}
 };
 
 // 在开发中实现热重载的代码
