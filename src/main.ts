@@ -6,6 +6,13 @@ import { i18n } from "./i18n";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import App from "./App.vue";
 
+window.document.addEventListener("keydown", (evt) => {
+    // prevent space scroll
+    if (evt.code === "Space") {
+        evt.preventDefault();
+    }
+})
+
 const pinia = createPinia();
 pinia.use(PiniaUndo);
 pinia.use(piniaPluginPersistedstate);
