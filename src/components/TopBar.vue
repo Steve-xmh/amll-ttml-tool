@@ -47,7 +47,8 @@
                 @click="edit.editMode = 'sync'"><i18n-t keypath="topBar.modeBtns.sync" /></NButton>
             <NButton :quaternary="edit.editMode !== 'amll-preview'"
                 :type="edit.editMode === 'amll-preview' ? 'primary' : 'default'" @click="edit.editMode = 'amll-preview'">
-                <i18n-t keypath="topBar.modeBtns.preview" /></NButton>
+                <i18n-t keypath="topBar.modeBtns.preview" />
+            </NButton>
         </div>
         <div style="flex: 1; text-align: right" class="app-name">
             <i18n-t keypath="topBar.appName" />
@@ -286,12 +287,19 @@ function onSelectMenu(key: string) {
         }
         case "save-to-clipboard": {
             const output = lyric.toTTML();
-            navigator.clipboard.writeText(output).catch(err => {
-                notify.error({
-                    title: "保存到剪贴板失败",
-                    content: String(err),
-                })
-            });
+            navigator.clipboard.writeText(output)
+                .then(() => {
+                    notify.success({
+                        title: "保存到剪贴板成功",
+                        content: "已将歌词保存到剪贴板",
+                        duration: 3000,
+                    })
+                }).catch(err => {
+                    notify.error({
+                        title: "保存到剪贴板失败",
+                        content: String(err),
+                    })
+                });
             break;
         }
         case "export-to-lrc": {
