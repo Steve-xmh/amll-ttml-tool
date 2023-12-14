@@ -10,6 +10,7 @@ export const zhCN = {
 			newLyric: "新建歌词",
 			openLyric: "打开歌词",
 			saveLyric: "保存歌词",
+			saveLyricToClipboard: "保存歌词到剪贴板",
 			importLyric: "导入歌词...",
 			importLyricFromText: "从纯文本导入",
 			importLyricFromLrc: "从 LRC 歌词导入",

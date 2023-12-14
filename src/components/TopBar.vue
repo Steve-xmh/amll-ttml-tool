@@ -100,6 +100,7 @@ const MENU = ref({
         { label: t('topBar.menu.openLyric'), key: 'open' },
         { type: 'divider' },
         { label: t('topBar.menu.saveLyric'), key: 'save' },
+        { label: t('topBar.menu.saveLyricToClipboard'), key: 'save-to-clipboard' },
         // { label: '另存为歌词', key: 'save-as' },
         // { type: 'divider' },
         {
@@ -281,6 +282,16 @@ function onSelectMenu(key: string) {
                     content: String(err),
                 })
             }
+            break;
+        }
+        case "save-to-clipboard": {
+            const output = lyric.toTTML();
+            navigator.clipboard.writeText(output).catch(err => {
+                notify.error({
+                    title: "保存到剪贴板失败",
+                    content: String(err),
+                })
+            });
             break;
         }
         case "export-to-lrc": {
