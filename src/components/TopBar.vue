@@ -110,6 +110,8 @@ const MENU = ref({
             }, {
                 label: t('topBar.menu.importLyricFromLrc'), key: 'import-from-lrc',
             }, {
+                label: t('topBar.menu.importLyricFromEslrc'), key: 'import-from-eslrc',
+            }, {
                 label: t('topBar.menu.importLyricFromYrc'), key: 'import-from-yrc',
             }, {
                 label: t('topBar.menu.importLyricFromQrc'), key: 'import-from-qrc',
@@ -120,6 +122,8 @@ const MENU = ref({
         {
             label: t('topBar.menu.exportLyric'), key: 'export-to', children: [{
                 label: t('topBar.menu.exportLyricToLrc'), key: 'export-to-lrc',
+            }, {
+                label: t('topBar.menu.exportLyricToEslrc'), key: 'export-to-eslrc',
             }, {
                 label: t('topBar.menu.exportLyricToYrc'), key: 'export-to-yrc',
             }, {
@@ -209,6 +213,25 @@ function onSelectMenu(key: string) {
                 } catch (err) {
                     notify.error({
                         title: "导入 LRC 歌词失败",
+                        content: String(err),
+                    })
+                }
+            });
+            fileDialog.remove();
+            break;
+        }
+        case "import-from-eslrc": {
+            const fileDialog = document.createElement("input");
+            fileDialog.type = "file";
+            fileDialog.accept = ".lrc, */*";
+            fileDialog.click();
+            fileDialog.addEventListener("input", async () => {
+                try {
+                    const text = await fileDialog.files?.[0]?.text();
+                    if (text) lyric.loadESLRC(text);
+                } catch (err) {
+                    notify.error({
+                        title: "导入 ESLyric 歌词失败",
                         content: String(err),
                     })
                 }
@@ -309,6 +332,18 @@ function onSelectMenu(key: string) {
             } catch (err) {
                 notify.error({
                     title: "导出 LRC 歌词失败",
+                    content: String(err),
+                })
+            }
+            break;
+        }
+        case "export-to-eslrc": {
+            try {
+                const output = lyric.toESLRC();
+                saveFile(new TextEncoder().encode(output), "lyric.lrc");
+            } catch (err) {
+                notify.error({
+                    title: "导出 ESLyric 歌词失败",
                     content: String(err),
                 })
             }

@@ -17,6 +17,8 @@ import {
 	stringifyQrc,
 	stringifyLys,
 	stringifyAss,
+	parseEslrc,
+	stringifyEslrc,
 } from "@applemusic-like-lyrics/lyric";
 import { i18n } from "../i18n";
 
@@ -111,6 +113,22 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		loadLRC(lyric: string) {
 			this.artists = [];
 			this.lyrics = parseLrc(lyric).map((line) => ({
+				words: line.words.map((w) => ({
+					startTime: w.startTime,
+					endTime: w.endTime,
+					word: w.word,
+				})),
+				translatedLyric: "",
+				romanLyric: "",
+				isBG: false,
+				isDuet: false,
+				selected: false,
+			}));
+			this.record();
+		},
+		loadESLRC(lyric: string) {
+			this.artists = [];
+			this.lyrics = parseEslrc(lyric).map((line) => ({
 				words: line.words.map((w) => ({
 					startTime: w.startTime,
 					endTime: w.endTime,
@@ -392,6 +410,10 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		toLRC() {
 			const lines = toRaw(this.lyrics);
 			return stringifyLrc(lines);
+		},
+		toESLRC() {
+			const lines = toRaw(this.lyrics);
+			return stringifyEslrc(lines);
 		},
 		toYRC() {
 			const lines = toRaw(this.lyrics);

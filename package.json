@@ -15,7 +15,7 @@
     "./libs/*"
   ],
   "dependencies": {
-    "@applemusic-like-lyrics/lyric": "^0.0.3",
+    "@applemusic-like-lyrics/lyric": "^0.1.1",
     "@applemusic-like-lyrics/vue": "^0.0.13",
     "@pixi/app": "^7.2.4",
     "@pixi/core": "^7.2.4",
@@ -60,7 +60,7 @@
     "vite-plugin-wasm": "^3.2.2",
     "vite-svg-loader": "^4.0.0"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.0.2",
   "resolutions": {
     "@applemusic-like-lyrics/lyric": "portal:../applemusic-like-lyrics/packages/lyric/pkg",
     "@applemusic-like-lyrics/core": "portal:../applemusic-like-lyrics/packages/core",
