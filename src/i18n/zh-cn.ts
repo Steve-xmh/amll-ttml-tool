@@ -1,3 +1,14 @@
+/*
+ * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ *
+ * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
+ * This source code file is a part of AMLL TTML Tool project.
+ * 本项目的源代码的使用受到 GNU GENERAL PUBLIC LICENSE version 3 许可证的约束，具体可以参阅以下链接。
+ * Use of this source code is governed by the GNU GPLv3 license that can be found through the following link.
+ *
+ * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
+ */
+
 export const zhCN = {
 	app: {
 		loadingEditPage: "正在加载编辑页面",
@@ -132,6 +143,9 @@ export const zhCN = {
 		wordSeparator: "单词分隔符",
 		wordSeparatorPlaceholder: "留空则不分隔",
 		importBtn: "导入歌词",
+        enablePrefixMarkup: "启用特殊前缀",
+        bgLinePrefix: "背景歌词前缀",
+        duetLinePrefix: "对唱歌词前缀",
 	},
 	uploadDBDialog: {
 		title: "提交歌词到 AMLL 歌词数据库（仅网易云）",

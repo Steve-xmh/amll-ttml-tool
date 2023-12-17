@@ -1,3 +1,14 @@
+<!--
+  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  -
+  - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
+  - This source code file is a part of AMLL TTML Tool project.
+  - 本项目的源代码的使用受到 GNU GENERAL PUBLIC LICENSE version 3 许可证的约束，具体可以参阅以下链接。
+  - Use of this source code is governed by the GNU GPLv3 license that can be found through the following link.
+  -
+  - https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
+  -->
+
 <template>
     <NModal preset="card" @close="dialogs.importFromText = false"
         :class="{ 'import-plain-text-modal': true, 'fullscreen': inputs.fullscreen }"
@@ -30,6 +41,14 @@
                 <i18n-t keypath="importPlainTextModal.wordSeparator" />
                 <NInput v-model:value="inputs.wordSeparator"
                     :placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
+                <i18n-t keypath="importPlainTextModal.enablePrefixMarkup" />
+                <NCheckbox v-model:checked="inputs.prefixMarkup" style="justify-self: flex-end;" />
+                <i18n-t keypath="importPlainTextModal.bgLinePrefix" />
+                <NInput v-model:value="inputs.bgLinePrefix" :disabled="!inputs.prefixMarkup"
+                        :placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
+                <i18n-t keypath="importPlainTextModal.duetLinePrefix" />
+                <NInput v-model:value="inputs.duetLinePrefix" :disabled="!inputs.prefixMarkup"
+                        :placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
             </div>
             <div>
                 <NButton type="primary" @click="importLyric">
@@ -61,6 +80,9 @@ const inputs = reactive({
     sameLineSeparator: "|",
     swapTransAndRoman: false,
     wordSeparator: "\\",
+    prefixMarkup: false,
+    bgLinePrefix: "<",
+    duetLinePrefix: ">",
 });
 
 const importModeOptions: SelectOption[] = [{
@@ -87,6 +109,21 @@ function importLyric() {
     const result: LyricLine[] = [];
 
     function addLine(orig = "", trans = "", roman = "") {
+        let isBG = false;
+        let isDuet = false;
+        if (inputs.prefixMarkup) {
+            for (let i = 0; i < 2; i++) {
+                if (orig.startsWith(inputs.bgLinePrefix)) {
+                    orig = orig.substring(inputs.bgLinePrefix.length);
+                    isBG = true;
+                } else if (orig.startsWith(inputs.duetLinePrefix)) {
+                    orig = orig.substring(inputs.duetLinePrefix.length);
+                    isDuet = true;
+                } else {
+                    break;
+                }
+            }
+        }
         result.push({
             words: [{
                 word: orig,
@@ -95,8 +132,8 @@ function importLyric() {
             }],
             translatedLyric: trans,
             romanLyric: roman,
-            isBG: false,
-            isDuet: false,
+            isBG,
+            isDuet,
             selected: false,
         });
     }
