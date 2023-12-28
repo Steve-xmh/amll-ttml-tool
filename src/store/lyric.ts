@@ -9,29 +9,29 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { defineStore } from "pinia";
-import { parseLyric } from "../utils/ttml-lyric-parser";
-import { toRaw } from "vue";
+import {defineStore} from "pinia";
+import {parseLyric} from "../utils/ttml-lyric-parser";
+import {toRaw} from "vue";
 import exportTTMLText from "../utils/ttml-writer";
-import type { LyricLine as RawLyricLine } from "../utils/lyric-types";
-import type { LyricLine as CoreLyricLine } from "@applemusic-like-lyrics/core";
-import { waitNextTick } from "../utils";
-import { useProgress } from "./progress";
+import type {LyricLine as RawLyricLine} from "../utils/lyric-types";
+import type {LyricLine as CoreLyricLine} from "@applemusic-like-lyrics/core";
+import {waitNextTick} from "../utils";
+import {useProgress} from "./progress";
 import {
-	parseLrc,
-	parseYrc,
-	parseQrc,
-	parseLys,
-	set_panic_hook,
-	stringifyLrc,
-	stringifyYrc,
-	stringifyQrc,
-	stringifyLys,
-	stringifyAss,
-	parseEslrc,
-	stringifyEslrc,
+    parseEslrc,
+    parseLrc,
+    parseLys,
+    parseQrc,
+    parseYrc,
+    set_panic_hook,
+    stringifyAss,
+    stringifyEslrc,
+    stringifyLrc,
+    stringifyLys,
+    stringifyQrc,
+    stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
-import { i18n } from "../i18n";
+import {i18n} from "../i18n";
 
 set_panic_hook();
 
@@ -39,6 +39,7 @@ export interface LyricWord {
 	startTime: number;
 	endTime: number;
 	word: string;
+    emptyBeat?: number;
 }
 
 export interface LyricLine {
@@ -259,14 +260,22 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				this.record();
 			}
 		},
-		modifyWord(lineIndex: number, wordIndex: number, newWord: string) {
-			if (this.lyrics[lineIndex]) {
-				if (this.lyrics[lineIndex].words[wordIndex]) {
-					this.lyrics[lineIndex].words[wordIndex].word = newWord;
-					this.record();
-				}
-			}
-		},
+        modifyWord(lineIndex: number, wordIndex: number, newWord: string) {
+            if (this.lyrics[lineIndex]) {
+                if (this.lyrics[lineIndex].words[wordIndex]) {
+                    this.lyrics[lineIndex].words[wordIndex].word = newWord;
+                    this.record();
+                }
+            }
+        },
+        modifyWordEmptyBeat(lineIndex: number, wordIndex: number, newEmptyBeat: number) {
+            if (this.lyrics[lineIndex]) {
+                if (this.lyrics[lineIndex].words[wordIndex]) {
+                    this.lyrics[lineIndex].words[wordIndex].emptyBeat = newEmptyBeat === 0 ? undefined : newEmptyBeat;
+                    this.record();
+                }
+            }
+        },
 		modifyTranslatedLine(lineIndex: number, text: string) {
 			if (this.lyrics[lineIndex]) {
 				this.lyrics[lineIndex].translatedLyric = text;
@@ -448,7 +457,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				words: toRaw(line.words).map((w) => ({ ...w })),
 			}));
 			const results: LyricLine[] = [];
-			const latinReg = /^[A-z\u00C0-\u00ff'\.,-\/#!$%\^&\*;:{}=\-_`~()]+$/;
+            const latinReg = /^[A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
 
 			rawLines.forEach((line) => {
 				const chars = line.words.flatMap((w) => w.word.split(""));
@@ -525,23 +534,21 @@ export const useEditingLyric = defineStore("editing-lyric", {
 					results.push(line);
 					continue;
 				}
-				const newWords = line.words.flatMap((w) => {
-					const splited: string[] = cut(w.word, true);
-					const charDuration = (w.endTime - w.startTime) / w.word.length;
-					const result: LyricWord[] = [];
-					let i = 0;
-					for (const split of splited) {
-						result.push({
-							startTime: w.startTime + i * charDuration,
-							endTime: w.startTime + (i + split.length) * charDuration,
-							word: split,
-						});
-						i += split.length;
-					}
-					return result;
-				});
-
-				line.words = newWords;
+                line.words = line.words.flatMap((w) => {
+                    const splited: string[] = cut(w.word, true);
+                    const charDuration = (w.endTime - w.startTime) / w.word.length;
+                    const result: LyricWord[] = [];
+                    let i = 0;
+                    for (const split of splited) {
+                        result.push({
+                            startTime: w.startTime + i * charDuration,
+                            endTime: w.startTime + (i + split.length) * charDuration,
+                            word: split,
+                        });
+                        i += split.length;
+                    }
+                    return result;
+                });
 
 				// p.label = `正在进行分词操作 (${++cur}/${sel})`;
 				p.label = i18n.global.t("progressOverlay.splitingWords", [++cur, sel]);

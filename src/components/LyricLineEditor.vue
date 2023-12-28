@@ -25,7 +25,7 @@
             <div style="display: flex; flex: 1; gap: 8px; flex-wrap: wrap">
                 <Draggable :list="props.line.words" item-key="id" @sort="onSort">
                     <template #item="{ element }">
-                        <LyricWordEditor :line-index="element.lineIndex" :word="element.word" :word-index="element.id" />
+                        <LyricWordEditor :line-index="element.lineIndex" :word="element" :word-index="element.id"/>
                     </template>
                 </Draggable>
                 <NInput class="new-word" round autosize ref="inputRef"
@@ -58,14 +58,14 @@
 </template>
 
 <script setup lang="tsx">
-import { NInput, NCheckbox, NButton, NIcon, type InputInst } from "naive-ui";
-import { useEditingLyric, useRightClickLyricLine, useSettings } from "../store";
-import { watch, reactive, ref } from "vue";
-import { useI18n } from "vue-i18n";
+import {type InputInst, NButton, NCheckbox, NIcon, NInput} from "naive-ui";
+import {useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
+import {reactive, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
 import Draggable from 'vuedraggable'
-import { Dismiss12Filled, TextAlignRight24Filled, VideoBackgroundEffect24Filled } from "@vicons/fluent";
+import {Dismiss12Filled, TextAlignRight24Filled, VideoBackgroundEffect24Filled} from "@vicons/fluent";
 import LyricWordEditor from "./LyricWordEditor.vue";
-import type { LyricLineWithId } from "../store/lyric";
+import type {LyricLineWithId} from "../store/lyric";
 
 const props = defineProps<{
     line: LyricLineWithId;

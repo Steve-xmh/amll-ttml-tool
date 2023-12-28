@@ -10,32 +10,33 @@
   -->
 
 <template>
-    <NDropdown trigger="manual" :show="lyricLineMenu.show" @select="onSelectMenu" :x="lyricLineMenu.x" :y="lyricLineMenu.y"
-        placement="bottom-start" :options="lyricLineMenu.selectedWord === -1 ? lineContextMenu : wordOnlyContextMenu"
-        @clickoutside="lyricLineMenu.show = false" />
+    <NDropdown trigger="manual" :show="lyricLineMenu.show" @select="onSelectMenu" :x="lyricLineMenu.x"
+               :y="lyricLineMenu.y"
+               placement="bottom-start"
+               :options="lyricLineMenu.selectedWord === -1 ? lineContextMenu : wordOnlyContextMenu"
+               @clickoutside="lyricLineMenu.show = false"/>
 </template>
 
-<script setup lang="ts">
-import {
-    NDropdown,
-    useNotification,
-} from "naive-ui";
-import { onMounted } from "vue";
-import { useRightClickLyricLine, useEditingLyric } from "../store";
-import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
-import { i18n } from '../i18n';
+<script setup lang="tsx">
+import {NDropdown, useNotification} from "naive-ui";
+import {onMounted} from "vue";
+import {useEditingLyric, useRightClickLyricLine} from "../store";
+import type {DropdownMixedOption} from "naive-ui/es/dropdown/src/interface";
+import {i18n} from '../i18n';
+import ContextMenuWordEdit from "./ContextMenuWordEdit.vue";
 
 const lineContextMenu = [
-    { label: i18n.global.t("contextMenu.deleteLine"), key: 'delete-line' },
-    { label: i18n.global.t("contextMenu.insertBeforeLine"), key: 'insert-before-line' },
-    { label: i18n.global.t("contextMenu.insertAfterLine"), key: 'insert-after-line' },
-    { label: i18n.global.t("contextMenu.toggleBGLine"), key: 'toggle-bg-line' },
-    { label: i18n.global.t("contextMenu.toggleDuetLine"), key: 'toggle-duet-line' },
+    {label: i18n.global.t("contextMenu.deleteLine"), key: 'delete-line'},
+    {label: i18n.global.t("contextMenu.insertBeforeLine"), key: 'insert-before-line'},
+    {label: i18n.global.t("contextMenu.insertAfterLine"), key: 'insert-after-line'},
+    {label: i18n.global.t("contextMenu.toggleBGLine"), key: 'toggle-bg-line'},
+    {label: i18n.global.t("contextMenu.toggleDuetLine"), key: 'toggle-duet-line'},
 ] as DropdownMixedOption[];
 const wordOnlyContextMenu = [
-    { label: i18n.global.t("contextMenu.deleteWord"), key: 'delete-word' },
-    { label: i18n.global.t("contextMenu.splitWord"), key: 'split-word' },
-    { type: 'divider', },
+    {type: "render", render: () => <ContextMenuWordEdit/>},
+    {label: i18n.global.t("contextMenu.deleteWord"), key: 'delete-word'},
+    {label: i18n.global.t("contextMenu.splitWord"), key: 'split-word'},
+    {type: 'divider',},
     ...lineContextMenu
 ] as DropdownMixedOption[];
 

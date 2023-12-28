@@ -25,35 +25,38 @@
     )
     ">
         {{ displayWord }}
+        <NTag size="tiny" class="empty-beat" v-if="!!props.word.emptyBeat">
+            {{ props.word.emptyBeat }}
+        </NTag>
     </button>
 </template>
 
-<script setup lang="tsx">
-import { NButton, NIcon, NInput, type InputInst } from "naive-ui";
-import { Dismiss12Filled } from "@vicons/fluent";
-import { useEditingLyric, useRightClickLyricLine } from "../store";
-import { nextTick, reactive, ref, computed } from "vue";
-import { i18n } from '../i18n';
+<script setup lang="ts">
+import {type InputInst, NTag} from "naive-ui";
+import {useEditingLyric, useRightClickLyricLine} from "../store";
+import {computed, nextTick, reactive, ref} from "vue";
+import {i18n} from '../i18n';
+import type {LyricWord} from "../store/lyric";
 
 const inputRef = ref<InputInst | null>(null);
 const props = defineProps<{
     lineIndex: number;
     wordIndex: number;
-    word: string;
+    word: LyricWord;
 }>();
 const { modifyWord, removeWord } = useEditingLyric();
 const { showMenuForLyric } = useRightClickLyricLine();
 
 const isWhiteSpace = computed(() =>
-    props.word.trim().length === 0
+    props.word.word.trim().length === 0
 );
 const displayWord = computed(() => {
-    if (props.word.length === 0) {
+    if (props.word.word.length === 0) {
         return i18n.global.t("lyricWordEditor.empty");
-    } else if (props.word.trim().length === 0) {
-        return i18n.global.t("lyricWordEditor.space", [props.word.length]);
+    } else if (props.word.word.trim().length === 0) {
+        return i18n.global.t("lyricWordEditor.space", [props.word.word.length]);
     } else {
-        return props.word;
+        return props.word.word;
     }
 });
 
@@ -64,13 +67,13 @@ const edit = reactive({
 
 function onEditWord() {
     edit.enable = true;
-    edit.value = props.word;
+    edit.value = props.word.word;
     nextTick(() => inputRef.value?.focus());
 }
 
 function onFinishEditWord() {
     edit.enable = false;
-    if (edit.value !== props.word)
+    if (edit.value !== props.word.word)
         modifyWord(props.lineIndex, props.wordIndex, edit.value);
 }
 
@@ -86,7 +89,7 @@ function onDeleteWord() {
     border: 1px solid var(--att-border-color)
     color: var(--n-text-color)
     cursor: pointer
-    white-space: pre-wrap
+    //white-space: pre-wrap
     background: transparent
     border-radius: calc(var(--att-height-medium) / 2)
     height: var(--att-height-medium)

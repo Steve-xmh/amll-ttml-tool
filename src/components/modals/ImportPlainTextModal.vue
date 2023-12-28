@@ -46,8 +46,14 @@
                 <i18n-t keypath="importPlainTextModal.bgLinePrefix" />
                 <NInput v-model:value="inputs.bgLinePrefix" :disabled="!inputs.prefixMarkup"
                         :placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
-                <i18n-t keypath="importPlainTextModal.duetLinePrefix" />
+                <i18n-t keypath="importPlainTextModal.duetLinePrefix"/>
                 <NInput v-model:value="inputs.duetLinePrefix" :disabled="!inputs.prefixMarkup"
+                        :placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
+                <i18n-t keypath="importPlainTextModal.emptyBeat"/>
+                <NCheckbox
+                    v-model:checked="inputs.emptyBeat" style="justify-self: flex-end;"/>
+                <i18n-t keypath="importPlainTextModal.emptyBeatMark"/>
+                <NInput v-model:value="inputs.emptyBeatMark" :disabled="!inputs.emptyBeat"
                         :placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
             </div>
             <div>
@@ -60,13 +66,13 @@
 </template>
 
 <script setup lang="ts">
-import { NModal, NInput, NIcon, NButton, NSelect, useNotification, type SelectOption, NCheckbox } from 'naive-ui';
-import { FullScreenMaximize16Filled } from "@vicons/fluent";
-import { useEditingLyric, useDialogs } from '../../store';
-import { useI18n } from "vue-i18n";
-import { reactive } from "vue";
-import { Codemirror } from 'vue-codemirror'
-import type { LyricLine } from '../../store/lyric';
+import {NButton, NCheckbox, NIcon, NInput, NModal, NSelect, type SelectOption} from 'naive-ui';
+import {FullScreenMaximize16Filled} from "@vicons/fluent";
+import {useDialogs, useEditingLyric} from '../../store';
+import {useI18n} from "vue-i18n";
+import {reactive} from "vue";
+import {Codemirror} from 'vue-codemirror'
+import type {LyricLine} from '../../store/lyric';
 
 const lyric = useEditingLyric();
 const dialogs = useDialogs();
@@ -83,6 +89,8 @@ const inputs = reactive({
     prefixMarkup: false,
     bgLinePrefix: "<",
     duetLinePrefix: ">",
+    emptyBeat: false,
+    emptyBeatMark: "^",
 });
 
 const importModeOptions: SelectOption[] = [{
@@ -217,6 +225,21 @@ function importLyric() {
         });
     }
 
+    if (inputs.emptyBeat && inputs.emptyBeatMark.trim().length === 1) {
+        const mark = inputs.emptyBeatMark.trim();
+        result.forEach(line => {
+            line.words.forEach(word => {
+                let processd = word.word;
+                while (processd.endsWith(mark)) {
+                    processd = processd.substring(0, processd.length - mark.length);
+                    if (word.emptyBeat) word.emptyBeat += 1;
+                    else word.emptyBeat = 1;
+                }
+                word.word = processd;
+            });
+        });
+    }
+
     lyric.lyrics = result;
     lyric.record();
     dialogs.importFromText = false;
@@ -249,6 +272,7 @@ function importLyric() {
     flex-direction: column
     justify-content: space-between
     > *:last-child
+        margin-top: 8px
         align-self: flex-end
     > *:first-child
         display: grid
