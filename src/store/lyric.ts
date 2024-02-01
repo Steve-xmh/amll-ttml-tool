@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -10,61 +10,75 @@
  */
 
 import {defineStore} from "pinia";
-import {parseLyric} from "../utils/ttml-lyric-parser";
+import {parseLyric} from "../utils/ttml-parser";
 import {toRaw} from "vue";
 import exportTTMLText from "../utils/ttml-writer";
-import type {LyricLine as RawLyricLine} from "../utils/lyric-types";
+import type {LyricLine, LyricWord, TTMLMetadata} from "../utils/ttml-types";
 import type {LyricLine as CoreLyricLine} from "@applemusic-like-lyrics/core";
 import {waitNextTick} from "../utils";
 import {useProgress} from "./progress";
 import {
-    parseEslrc,
-    parseLrc,
-    parseLys,
-    parseQrc,
-    parseYrc,
-    set_panic_hook,
-    stringifyAss,
-    stringifyEslrc,
-    stringifyLrc,
-    stringifyLys,
-    stringifyQrc,
-    stringifyYrc,
+	type LyricLine as WasmLyricLine,
+	parseEslrc,
+	parseLrc,
+	parseLys,
+	parseQrc,
+	parseYrc,
+	set_panic_hook,
+	stringifyAss,
+	stringifyEslrc,
+	stringifyLrc,
+	stringifyLys,
+	stringifyQrc,
+	stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
 import {i18n} from "../i18n";
+import structuredClone from "@ungap/structured-clone";
 
 set_panic_hook();
 
-export interface LyricWord {
-	startTime: number;
-	endTime: number;
-	word: string;
-    emptyBeat?: number;
+export interface LyricWordWithId extends LyricWord {
+	lineIndex: number;
+	id: number;
 }
 
-export interface LyricLine {
-	words: LyricWord[];
-	translatedLyric: string;
-	romanLyric: string;
-	isBG: boolean;
-	isDuet: boolean;
+export interface LyricLineWithState extends LyricLine {
 	selected: boolean;
 }
 
-export type LyricWordWithId = LyricWord & {
-	lineIndex: number;
-	id: number;
-};
-
-export type LyricLineWithId = LyricLine & {
+export interface LyricLineWithId extends LyricLineWithState {
 	words: LyricWordWithId[];
 	id: number;
-};
+}
+
+function mapFromWasmLyric(line: WasmLyricLine): LyricLineWithState {
+	return {
+		words: line.words.map((w) => ({
+			startTime: w.startTime,
+			endTime: w.endTime,
+			word: w.word,
+		})),
+		translatedLyric: "",
+		romanLyric: "",
+		isBG: false,
+		isDuet: false,
+		selected: false,
+		startTime: line.words.reduce(
+			(pv, cv) => Math.min(pv, cv.startTime),
+			Number.MAX_VALUE,
+		),
+		endTime: line.words.reduce(
+			(pv, cv) => Math.max(pv, cv.endTime),
+			Number.MIN_VALUE,
+		),
+	};
+}
 
 export const useEditingLyric = defineStore("editing-lyric", {
 	state: () => ({
 		artists: [] as string[],
-		lyrics: [] as LyricLine[],
+		lyrics: [] as LyricLineWithState[],
+		metadata: {} as TTMLMetadata,
 	}),
 	getters: {
 		lineWithIds: (state): LyricLineWithId[] =>
@@ -98,108 +112,46 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		reset() {
 			this.artists.splice(0, this.artists.length);
 			this.lyrics.splice(0, this.lyrics.length);
+			this.metadata = {};
 			this.record();
 		},
-		loadLyric(lyricLines: ReturnType<typeof parseLyric>) {
+		loadLyric(ttmlLyric: ReturnType<typeof parseLyric>) {
 			this.artists = [];
-			this.lyrics = lyricLines.map((line) => ({
-				words: line.dynamicLyric?.map((w) => ({
-					startTime: w.time,
-					endTime: w.time + w.duration,
-					word: w.word,
-				})) ?? [
-					{
-						word: line.originalLyric,
-						startTime: line.beginTime,
-						endTime: line.beginTime + line.duration,
-					},
-				],
-				translatedLyric: line.translatedLyric ?? "",
-				romanLyric: line.romanLyric ?? "",
-				isBG: !!line.isBackgroundLyric,
-				isDuet: !!line.shouldAlignRight,
+			this.lyrics = ttmlLyric.lyricLines.map((line) => ({
+				...line,
 				selected: false,
 			}));
+			this.metadata = ttmlLyric.metadata;
 			this.record();
 		},
 		loadLRC(lyric: string) {
 			this.artists = [];
-			this.lyrics = parseLrc(lyric).map((line) => ({
-				words: line.words.map((w) => ({
-					startTime: w.startTime,
-					endTime: w.endTime,
-					word: w.word,
-				})),
-				translatedLyric: "",
-				romanLyric: "",
-				isBG: false,
-				isDuet: false,
-				selected: false,
-			}));
+			this.lyrics = parseLrc(lyric).map(mapFromWasmLyric);
+			this.metadata = {};
 			this.record();
 		},
 		loadESLRC(lyric: string) {
 			this.artists = [];
-			this.lyrics = parseEslrc(lyric).map((line) => ({
-				words: line.words.map((w) => ({
-					startTime: w.startTime,
-					endTime: w.endTime,
-					word: w.word,
-				})),
-				translatedLyric: "",
-				romanLyric: "",
-				isBG: false,
-				isDuet: false,
-				selected: false,
-			}));
+			this.lyrics = parseEslrc(lyric).map(mapFromWasmLyric);
+			this.metadata = {};
 			this.record();
 		},
 		loadYRC(lyric: string) {
 			this.artists = [];
-			this.lyrics = parseYrc(lyric).map((line) => ({
-				words: line.words.map((w) => ({
-					startTime: w.startTime,
-					endTime: w.endTime,
-					word: w.word,
-				})),
-				translatedLyric: "",
-				romanLyric: "",
-				isBG: false,
-				isDuet: false,
-				selected: false,
-			}));
+			this.lyrics = parseYrc(lyric).map(mapFromWasmLyric);
+			this.metadata = {};
 			this.record();
 		},
 		loadQRC(lyric: string) {
 			this.artists = [];
-			this.lyrics = parseQrc(lyric).map((line) => ({
-				words: line.words.map((w) => ({
-					startTime: w.startTime,
-					endTime: w.endTime,
-					word: w.word,
-				})),
-				translatedLyric: "",
-				romanLyric: "",
-				isBG: false,
-				isDuet: false,
-				selected: false,
-			}));
+			this.lyrics = parseQrc(lyric).map(mapFromWasmLyric);
+			this.metadata = {};
 			this.record();
 		},
 		loadLYS(lyric: string) {
 			this.artists = [];
-			this.lyrics = parseLys(lyric).map((line) => ({
-				words: line.words.map((w) => ({
-					startTime: w.startTime,
-					endTime: w.endTime,
-					word: w.word,
-				})),
-				translatedLyric: "",
-				romanLyric: "",
-				isBG: !!line.isBG,
-				isDuet: !!line.isDuet,
-				selected: false,
-			}));
+			this.lyrics = parseLys(lyric).map(mapFromWasmLyric);
+			this.metadata = {};
 			this.record();
 		},
 		addNewLine() {
@@ -210,6 +162,8 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBG: false,
 				isDuet: false,
 				selected: false,
+				startTime: 0,
+				endTime: 0,
 			});
 			this.record();
 		},
@@ -221,6 +175,8 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				isBG: false,
 				isDuet: false,
 				selected: false,
+				startTime: 0,
+				endTime: 0,
 			});
 			this.record();
 		},
@@ -260,22 +216,27 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				this.record();
 			}
 		},
-        modifyWord(lineIndex: number, wordIndex: number, newWord: string) {
-            if (this.lyrics[lineIndex]) {
-                if (this.lyrics[lineIndex].words[wordIndex]) {
-                    this.lyrics[lineIndex].words[wordIndex].word = newWord;
-                    this.record();
-                }
-            }
-        },
-        modifyWordEmptyBeat(lineIndex: number, wordIndex: number, newEmptyBeat: number) {
-            if (this.lyrics[lineIndex]) {
-                if (this.lyrics[lineIndex].words[wordIndex]) {
-                    this.lyrics[lineIndex].words[wordIndex].emptyBeat = newEmptyBeat === 0 ? undefined : newEmptyBeat;
-                    this.record();
-                }
-            }
-        },
+		modifyWord(lineIndex: number, wordIndex: number, newWord: string) {
+			if (this.lyrics[lineIndex]) {
+				if (this.lyrics[lineIndex].words[wordIndex]) {
+					this.lyrics[lineIndex].words[wordIndex].word = newWord;
+					this.record();
+				}
+			}
+		},
+		modifyWordEmptyBeat(
+			lineIndex: number,
+			wordIndex: number,
+			newEmptyBeat: number,
+		) {
+			if (this.lyrics[lineIndex]) {
+				if (this.lyrics[lineIndex].words[wordIndex]) {
+					this.lyrics[lineIndex].words[wordIndex].emptyBeat =
+						newEmptyBeat === 0 ? undefined : newEmptyBeat;
+					this.record();
+				}
+			}
+		},
 		modifyTranslatedLine(lineIndex: number, text: string) {
 			if (this.lyrics[lineIndex]) {
 				this.lyrics[lineIndex].translatedLyric = text;
@@ -362,68 +323,23 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				this.record();
 			}
 		},
-		toRawLine(lineIndex: number): RawLyricLine {
-			const line = this.lyrics[lineIndex];
-			if (line) {
-				if (line.words.length === 1 && !this.hasLineWithMoreWords) {
-					return {
-						originalLyric: line.words[0].word,
-						beginTime: line.words[0].startTime,
-						duration: line.words[0].endTime - line.words[0].startTime,
-						translatedLyric: line.translatedLyric,
-						romanLyric: line.romanLyric,
-						shouldAlignRight: line.isDuet,
-					};
-				} else if (line.words.length !== 0) {
-					return {
-						originalLyric: line.words.map((w) => w.word).join(""),
-						beginTime: line.words[0].startTime,
-						duration:
-							line.words[line.words.length - 1].endTime -
-							line.words[0].startTime,
-						dynamicLyricTime: line.words[0].startTime,
-						shouldAlignRight: line.isDuet,
-						translatedLyric: line.translatedLyric,
-						romanLyric: line.romanLyric,
-						dynamicLyric: line.words.map((w) => ({
-							word: w.word,
-							time: w.startTime,
-							duration: w.endTime - w.startTime,
-							flag: 0,
-						})),
-					};
-				} else {
-					return {
-						originalLyric: "",
-						beginTime: 0,
-						duration: 0,
-						translatedLyric: line.translatedLyric,
-						romanLyric: line.romanLyric,
-						shouldAlignRight: line.isDuet,
-					};
-				}
-			} else {
-				throw new TypeError(`第 ${lineIndex} 行歌词不存在`);
-			}
-		},
 		toTTML() {
-			const transformed: RawLyricLine[] = [];
+			const transformed: LyricLine[] = [];
 
 			for (let i = 0; i < this.lyrics.length; i++) {
 				const line = this.lyrics[i];
 				if (line.isBG) {
-					const lastLine = transformed[transformed.length - 1];
-					if (lastLine && lastLine.backgroundLyric === undefined) {
-						lastLine.backgroundLyric = this.toRawLine(i);
-					} else {
+					const lastLine = this.lyrics[i - 1];
+					if (lastLine && lastLine.isBG) {
 						throw new TypeError(
 							`第 ${i} 行背景人声歌词重复，每行普通歌词只能拥有一个背景人声歌词`,
 						);
 					}
-				} else {
-					transformed.push(this.toRawLine(i));
 				}
+				transformed.push(toRaw(this.lyrics[i]));
 			}
+
+			console.log(structuredClone((transformed)));
 
 			return exportTTMLText(transformed);
 		},
@@ -452,12 +368,12 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			return stringifyAss(lines);
 		},
 		splitLineBySimpleMethod() {
-			const rawLines: LyricLine[] = this.lyrics.map((line) => ({
+			const rawLines: LyricLineWithState[] = this.lyrics.map((line) => ({
 				...toRaw(line),
 				words: toRaw(line.words).map((w) => ({ ...w })),
 			}));
-			const results: LyricLine[] = [];
-            const latinReg = /^[A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
+			const results: LyricLineWithState[] = [];
+			const latinReg = /^[A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
 
 			rawLines.forEach((line) => {
 				const chars = line.words.flatMap((w) => w.word.split(""));
@@ -508,6 +424,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				results.push({
 					...line,
 					words: wordsResult,
+					selected: false,
 				});
 			});
 
@@ -521,34 +438,34 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			const p = progress.newProgress(
 				i18n.global.t("progressOverlay.processingWordSpliting"),
 			);
-			const results: LyricLine[] = [];
+			const results: LyricLineWithState[] = [];
 			const sel = this.lyrics.filter((line) => line.selected).length;
 			let cur = 0;
 			p.label = i18n.global.t("progressOverlay.loadingJiebaModule");
 			const { cut } = await import("jieba-rs-wasm");
 			for (let i = 0; i < this.lyrics.length; i++) {
-				const line: LyricLine = {
+				const line: LyricLineWithState = {
 					...toRaw(this.lyrics[i]),
 				};
 				if (!line.selected) {
 					results.push(line);
 					continue;
 				}
-                line.words = line.words.flatMap((w) => {
-                    const splited: string[] = cut(w.word, true);
-                    const charDuration = (w.endTime - w.startTime) / w.word.length;
-                    const result: LyricWord[] = [];
-                    let i = 0;
-                    for (const split of splited) {
-                        result.push({
-                            startTime: w.startTime + i * charDuration,
-                            endTime: w.startTime + (i + split.length) * charDuration,
-                            word: split,
-                        });
-                        i += split.length;
-                    }
-                    return result;
-                });
+				line.words = line.words.flatMap((w) => {
+					const splited: string[] = cut(w.word, true);
+					const charDuration = (w.endTime - w.startTime) / w.word.length;
+					const result: LyricWord[] = [];
+					let i = 0;
+					for (const split of splited) {
+						result.push({
+							startTime: w.startTime + i * charDuration,
+							endTime: w.startTime + (i + split.length) * charDuration,
+							word: split,
+						});
+						i += split.length;
+					}
+					return result;
+				});
 
 				// p.label = `正在进行分词操作 (${++cur}/${sel})`;
 				p.label = i18n.global.t("progressOverlay.splitingWords", [++cur, sel]);

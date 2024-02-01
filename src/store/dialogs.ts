@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { defineStore } from "pinia";
+import {defineStore} from "pinia";
 
 export const useDialogs = defineStore("dialogs", {
 	state: () => ({
@@ -17,5 +17,6 @@ export const useDialogs = defineStore("dialogs", {
 		submitLyric: false,
 		editLyricInfo: false,
 		importFromText: false,
+		metadata: false,
 	}),
 });

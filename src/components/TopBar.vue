@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -79,23 +79,14 @@
 </template>
 
 <script setup lang="ts">
-import {
-    NLayoutHeader,
-    NDropdown,
-    NButton,
-    NDivider,
-    NIcon,
-    NModal,
-    NSpace,
-    useNotification,
-} from "naive-ui";
-import { ref } from "vue";
-import { useI18n } from "vue-i18n";
+import {NButton, NDivider, NDropdown, NIcon, NLayoutHeader, NModal, NSpace, useNotification,} from "naive-ui";
+import {ref} from "vue";
+import {useI18n} from "vue-i18n";
 import saveFile from 'save-file';
-import { parseLyric } from "../utils/ttml-lyric-parser";
-import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
-import { Home24Regular } from "@vicons/fluent";
-import { useEditMode, useDialogs, useRightClickLyricLine, useEditingLyric, useSettings } from "../store";
+import {parseLyric} from "../utils/ttml-parser";
+import type {DropdownMixedOption} from "naive-ui/es/dropdown/src/interface";
+import {Home24Regular} from "@vicons/fluent";
+import {useDialogs, useEditingLyric, useEditMode, useRightClickLyricLine, useSettings} from "../store";
 
 const edit = useEditMode();
 const lyric = useEditingLyric();
@@ -110,6 +101,7 @@ const MENU = ref({
     file: [
         { label: t('topBar.menu.newLyric'), key: 'new' },
         { label: t('topBar.menu.openLyric'), key: 'open' },
+			{label: t('topBar.menu.openFromClipboard'), key: 'open-from-clipboard'},
         { type: 'divider' },
         { label: t('topBar.menu.saveLyric'), key: 'save' },
         { label: t('topBar.menu.saveLyricToClipboard'), key: 'save-to-clipboard' },
@@ -160,6 +152,8 @@ const MENU = ref({
         { type: 'divider' },
         { label: t('topBar.menu.toggleBGLineOnSelectedLines'), key: 'toggle-bg' },
         { label: t('topBar.menu.toggleDuetLineOnSelectedLines'), key: 'toggle-duet' },
+			{type: 'divider'},
+			{label: t('topBar.menu.editMetadata'), key: 'edit-metadata'},
     ] as DropdownMixedOption[],
     view: [
         { label: t('topBar.menu.showTranslatedLyricLines'), key: 'show-tran' },
@@ -208,6 +202,27 @@ function onSelectMenu(key: string) {
             fileDialog.remove();
             break;
         }
+			case "open-from-clipboard": {
+				navigator.clipboard.readText().then(text => {
+					if (text) {
+						try {
+							const result = parseLyric(text);
+							lyric.loadLyric(result);
+						} catch (err) {
+							notify.error({
+								title: "加载歌词失败",
+								content: String(err),
+							})
+						}
+					}
+				}).catch(err => {
+					notify.error({
+						title: "加载歌词失败",
+						content: String(err),
+					})
+				});
+				break;
+			}
         case "import-from-text": {
             dialogs.importFromText = true;
             break;
@@ -421,6 +436,10 @@ function onSelectMenu(key: string) {
             lyric.redo();
             break;
         }
+			case "edit-metadata": {
+				dialogs.metadata = true;
+				break;
+			}
         case "show-tran": {
             settings.showTranslateLine = !settings.showTranslateLine;
             break;

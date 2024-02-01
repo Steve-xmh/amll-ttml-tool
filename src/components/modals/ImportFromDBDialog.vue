@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -27,11 +27,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useDialogs, useEditingLyric } from "../../store";
-import { NModal, NInputNumber, NAlert, NButton, NSpace, useNotification } from "naive-ui";
-import { useI18n } from "vue-i18n";
-import { parseLyric } from "../../utils/ttml-lyric-parser";
+import {ref} from "vue";
+import {useDialogs, useEditingLyric} from "../../store";
+import {NAlert, NButton, NInputNumber, NModal, NSpace, useNotification} from "naive-ui";
+import {useI18n} from "vue-i18n";
+import {parseLyric} from "../../utils/ttml-parser";
 
 const musicId = ref(0);
 const editingLyric = useEditingLyric();

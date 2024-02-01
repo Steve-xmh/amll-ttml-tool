@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -18,14 +18,14 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import Main from "./Main.vue";
 
 window.document.addEventListener("keydown", (evt) => {
-    // 阻止非编辑状态下的空格滚动
-    var el = (evt.target as HTMLElement).nodeName;
-    if (el !== 'TEXTAREA' && el !== 'INPUT') {
-        if (evt.code === "Space") {
-            evt.preventDefault();
-        }
-    }
-})
+	// 阻止非编辑状态下的空格滚动
+	var el = (evt.target as HTMLElement).nodeName;
+	if (el !== "TEXTAREA" && el !== "INPUT") {
+		if (evt.code === "Space") {
+			evt.preventDefault();
+		}
+	}
+});
 
 const pinia = createPinia();
 pinia.use(PiniaUndo);

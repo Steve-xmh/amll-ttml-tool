@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -24,6 +24,7 @@ export const zhCN = {
 			file: "文件",
 			newLyric: "新建歌词",
 			openLyric: "打开歌词",
+			openFromClipboard: "从剪贴板打开歌词",
 			saveLyric: "保存歌词",
 			saveLyricToClipboard: "保存歌词到剪贴板",
 			importLyric: "导入歌词...",
@@ -147,11 +148,11 @@ export const zhCN = {
 		wordSeparator: "单词分隔符",
 		wordSeparatorPlaceholder: "留空则不分隔",
 		importBtn: "导入歌词",
-        enablePrefixMarkup: "启用特殊前缀",
-        bgLinePrefix: "背景歌词前缀",
-        duetLinePrefix: "对唱歌词前缀",
+		enablePrefixMarkup: "启用特殊前缀",
+		bgLinePrefix: "背景歌词前缀",
+		duetLinePrefix: "对唱歌词前缀",
 		emptyBeat: "启用空拍",
-		emptyBeatMark: "空拍符号"
+		emptyBeatMark: "空拍符号",
 	},
 	uploadDBDialog: {
 		title: "提交歌词到 AMLL 歌词数据库（仅网易云）",
@@ -318,8 +319,8 @@ export const zhCN = {
 		musicID: {
 			placeholder: "音乐 ID",
 		},
-		importBtn: "导入"
-	}
+		importBtn: "导入",
+	},
 };
 
 // 在开发中实现热重载的代码

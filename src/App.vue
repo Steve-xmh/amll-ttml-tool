@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -10,67 +10,68 @@
   -->
 
 <template>
-    <NGlobalStyle/>
-    <NLayout position="absolute" :style="{
+	<NGlobalStyle/>
+	<NLayout :style="{
                 '--att-theme-color': themeVars.primaryColorSuppl,
                 '--att-theme-color-hover': themeVars.primaryColorHover,
                 '--att-theme-color-pressed': themeVars.primaryColorPressed,
                 '--att-border-color': themeVars.borderColor,
                 '--att-divider-color': themeVars.dividerColor,
                 '--att-height-medium': themeVars.heightMedium,
-            }" content-style="display: flex; flex-direction: column;">
-        <TopBar/>
-        <NLayoutContent style="flex: 1">
-            <Suspense v-if="edit.editMode === 'edit'">
-                <LyricEditor/>
-                <template #fallback>
-                    <div
-                        style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
-                        <NSpin/>
-                        <div>
-                            <i18n-t keypath="app.loadingEditPage"/>
-                        </div>
-                    </div>
-                </template>
-            </Suspense>
-            <Suspense v-else-if="edit.editMode === 'sync'">
-                <LyricSyncEditor/>
-                <template #fallback>
-                    <div
-                        style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
-                        <NSpin/>
-                        <div>
-                            <i18n-t keypath="app.loadingSyncPage"/>
-                        </div>
-                    </div>
-                </template>
-            </Suspense>
-            <Suspense v-else-if="edit.editMode === 'amll-preview'">
-                <AMLLPreviewView/>
-                <template #fallback>
-                    <div
-                        style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
-                        <NSpin/>
-                        <div>
-                            <i18n-t keypath="app.loadingAMLLPreviewPage"/>
-                        </div>
-                    </div>
-                </template>
-            </Suspense>
-        </NLayoutContent>
-        <AudioPlayerBar/>
-    </NLayout>
-    <ContextMenu/>
-    <TutorialModal/>
-    <ProgressOverlay/>
-    <UploadDBDialog/>
-    <ImportPlainTextModal/>
-    <ImportFromDBDialog/>
-    <ServiceWorkerUpdater v-if="enableSW"/>
-    <!-- <SplitWordModal /> -->
+            }" content-style="display: flex; flex-direction: column;" position="absolute">
+		<TopBar/>
+		<NLayoutContent style="flex: 1">
+			<Suspense v-if="edit.editMode === 'edit'">
+				<LyricEditor/>
+				<template #fallback>
+					<div
+						style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+						<NSpin/>
+						<div>
+							<i18n-t keypath="app.loadingEditPage"/>
+						</div>
+					</div>
+				</template>
+			</Suspense>
+			<Suspense v-else-if="edit.editMode === 'sync'">
+				<LyricSyncEditor/>
+				<template #fallback>
+					<div
+						style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+						<NSpin/>
+						<div>
+							<i18n-t keypath="app.loadingSyncPage"/>
+						</div>
+					</div>
+				</template>
+			</Suspense>
+			<Suspense v-else-if="edit.editMode === 'amll-preview'">
+				<AMLLPreviewView/>
+				<template #fallback>
+					<div
+						style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px">
+						<NSpin/>
+						<div>
+							<i18n-t keypath="app.loadingAMLLPreviewPage"/>
+						</div>
+					</div>
+				</template>
+			</Suspense>
+		</NLayoutContent>
+		<AudioPlayerBar/>
+	</NLayout>
+	<ContextMenu/>
+	<TutorialModal/>
+	<ProgressOverlay/>
+	<UploadDBDialog/>
+	<ImportPlainTextModal/>
+	<ImportFromDBDialog/>
+	<MetadataDialog/>
+	<ServiceWorkerUpdater v-if="enableSW"/>
+	<!-- <SplitWordModal /> -->
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {NGlobalStyle, NLayout, NLayoutContent, NSpin, useNotification, useThemeVars,} from "naive-ui";
 import {defineAsyncComponent, onErrorCaptured, onMounted, Suspense} from "vue";
 import {useEditMode} from "./store";
@@ -84,6 +85,7 @@ import ImportFromDBDialog from "./components/modals/ImportFromDBDialog.vue";
 import ServiceWorkerUpdater from "./components/ServiceWorkerUpdater.vue";
 import ImportPlainTextModal from "./components/modals/ImportPlainTextModal.vue";
 import {useI18n} from "vue-i18n";
+import MetadataDialog from "./components/modals/MetadataDialog.vue";
 
 const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.vue"));
 const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
@@ -96,20 +98,20 @@ const notify = useNotification();
 const i18n = useI18n({useScope: "global"});
 
 onErrorCaptured((err) => {
-    notify.error({
-        title: i18n.t("runtimeError.title"),
-        content: i18n.t("runtimeError.content", [String(err.stack ?? err)]),
-    });
-    return false;
+	notify.error({
+		title: i18n.t("runtimeError.title"),
+		content: i18n.t("runtimeError.content", [String(err.stack ?? err)]),
+	});
+	return false;
 });
 
 onMounted(() => {
-    // ask before page close
-    if (!import.meta.env.DEV) {
-        window.addEventListener("beforeunload", evt => {
-            evt.preventDefault();
-            return evt.returnValue = "";
-        })
-    }
+	// ask before page close
+	if (!import.meta.env.DEV) {
+		window.addEventListener("beforeunload", evt => {
+			evt.preventDefault();
+			return evt.returnValue = "";
+		})
+	}
 });
 </script>
