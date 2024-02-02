@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -20,14 +20,17 @@
         <div>{{ toTimestamp(props.word.endTime ?? 0) }}</div>
         <div v-if="props.word.id === currentWord.wordIndex && !props.notMain">{{ toTimestamp(currentTimeMS) }}</div>
         <div v-if="props.word.id === currentWord.wordIndex && !props.notMain" />
+			<div v-if="props.word.id === currentWord.wordIndex && !props.notMain && (props.word.emptyBeat ?? 0) > 0">
+				{{ currentWord.emptyBeat }} / {{ props.word.emptyBeat }}
+			</div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { useAudio, useCurrentSyncWord, useSettings } from "../store";
-import { reactive, watch, onMounted, ref, nextTick, computed } from "vue";
-import { storeToRefs } from "pinia";
-import type { LyricWordWithId } from "../store/lyric";
+import {useAudio, useCurrentSyncWord, useSettings} from "../store";
+import {computed, nextTick, onMounted, reactive, ref, watch} from "vue";
+import {storeToRefs} from "pinia";
+import type {LyricWordWithId} from "../store/lyric";
 
 const currentWord = useCurrentSyncWord();
 const audio = useAudio();
