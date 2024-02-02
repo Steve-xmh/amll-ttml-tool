@@ -119,7 +119,7 @@ function moveRight() {
 	let wordIndex = currentWord.wordIndex;
 	if ((getCurrentWord()?.emptyBeat ?? 0) > currentWord.emptyBeat) {
 		currentWord.emptyBeat++;
-		return;
+		return false;
 	}
 	do {
 		if (wordIndex < lyric.lineWithIds[lineIndex].words.length - 1) {
@@ -136,6 +136,7 @@ function moveRight() {
 		currentWord.lineIndex = lineIndex;
 		currentWord.emptyBeat = 0;
 	}
+	return true;
 }
 
 function moveLeft() {
@@ -143,7 +144,7 @@ function moveLeft() {
 	let wordIndex = currentWord.wordIndex;
 	if (currentWord.emptyBeat > 0) {
 		currentWord.emptyBeat--;
-		return;
+		return false;
 	}
 	do {
 		if (wordIndex > 0) {
@@ -159,6 +160,7 @@ function moveLeft() {
 		currentWord.lineIndex = lineIndex;
 		currentWord.emptyBeat = getCurrentWord()?.emptyBeat ?? 0;
 	}
+	return true;
 }
 
 function moveUp() {
@@ -218,16 +220,18 @@ function onKeyPress(e: KeyboardEvent) {
 			collected = true;
 			break;
 		case "KeyR": { // 移动到上一个单词，并设置播放位置为目标单词的​起始时间
-			moveLeft();
-			const curWord = getCurrentWord();
-			if (curWord) setCurrentTime(curWord.startTime);
+			if (moveLeft()) {
+				const curWord = getCurrentWord();
+				if (curWord) setCurrentTime(curWord.startTime);
+			}
 			collected = true;
 			break;
 		}
 		case "KeyY": { // 移动到下一个单词，并设置播放位置为目标单词的​起始时间
-			moveRight();
-			const curWord = getCurrentWord();
-			if (curWord) setCurrentTime(curWord.startTime);
+			if (moveRight()) {
+				const curWord = getCurrentWord();
+				if (curWord) setCurrentTime(curWord.startTime);
+			}
 			collected = true;
 			break;
 		}
@@ -239,17 +243,19 @@ function onKeyPress(e: KeyboardEvent) {
 		}
 		case "KeyG": { // 记录当前时间为当前单词的结束时间和下一个单词的起始时间，并移动到下一个单词
 			const curWord = getCurrentWord();
-			if (curWord) curWord.endTime = currentTimeMS.value;
-			moveRight();
-			const nextWord = getCurrentWord();
-			if (nextWord) nextWord.startTime = currentTimeMS.value;
+			if (moveRight()) {
+				if (curWord) curWord.endTime = currentTimeMS.value;
+				const nextWord = getCurrentWord();
+				if (nextWord) nextWord.startTime = currentTimeMS.value;
+			}
 			collected = true;
 			break;
 		}
 		case "KeyH": { // 记录当前时间为当前单词的结束时间，并移动到下一个单词（用于空出间奏时间）
 			const curWord = getCurrentWord();
-			if (curWord) curWord.endTime = currentTimeMS.value;
-			moveRight();
+			if (moveRight()) {
+				if (curWord) curWord.endTime = currentTimeMS.value;
+			}
 			collected = true;
 			break;
 		}
