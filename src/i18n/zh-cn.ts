@@ -52,6 +52,7 @@ export const zhCN = {
 			invertSelectAllLines: "反选所有歌词行",
 			toggleBGLineOnSelectedLines: "切换所选歌词行为背景人声",
 			toggleDuetLineOnSelectedLines: "切换所选歌词行为对唱人声",
+			editMetadata: "编辑歌词元数据",
 			showTranslatedLyricLines: "显示翻译歌词",
 			showRomanLyricLines: "显示音译歌词",
 			showMachineRomanji: "显示日语参考罗马字注音（实验性）",
@@ -66,6 +67,27 @@ export const zhCN = {
 			preview: "预览模式",
 		},
 		appName: "Apple Music-like Lyrics TTML Tool",
+	},
+	metadataDialog: {
+		title: "编辑歌词元数据",
+		selectNew: "请选择新增元数据类型",
+		addNew: "添加新元数据",
+		valuePlaceholder: "请输入值",
+		tableHead: {
+			key: "元数据类型",
+			values: "值",
+		},
+		builtinOptions: {
+			ncmMusicId: "歌词所匹配的网易云音乐 ID",
+			qqMusicId: "歌词所匹配的 QQ 音乐 ID",
+			spotifyId: "歌词所匹配的 Spotify 音乐 ID",
+			appleMusicId: "歌词所匹配的 Apple Music 音乐 ID",
+			isrc: "歌词所匹配的 ISRC 编码",
+			musicName: "歌词所匹配的歌曲名",
+			artists: "歌词所匹配的歌手名",
+			album: "歌词所匹配的专辑名",
+			ttmlAuthorGithub: "逐词歌词作者 Github ID",
+		}
 	},
 	aboutModal: {
 		// 原则上不翻译这里的应用名称

@@ -78,7 +78,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 	state: () => ({
 		artists: [] as string[],
 		lyrics: [] as LyricLineWithState[],
-		metadata: {} as TTMLMetadata,
+		metadata: [] as TTMLMetadata[],
 	}),
 	getters: {
 		lineWithIds: (state): LyricLineWithId[] =>
@@ -112,7 +112,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		reset() {
 			this.artists.splice(0, this.artists.length);
 			this.lyrics.splice(0, this.lyrics.length);
-			this.metadata = {};
+			this.metadata = [];
 			this.record();
 		},
 		loadLyric(ttmlLyric: ReturnType<typeof parseLyric>) {
@@ -127,31 +127,31 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		loadLRC(lyric: string) {
 			this.artists = [];
 			this.lyrics = parseLrc(lyric).map(mapFromWasmLyric);
-			this.metadata = {};
+			this.metadata = [];
 			this.record();
 		},
 		loadESLRC(lyric: string) {
 			this.artists = [];
 			this.lyrics = parseEslrc(lyric).map(mapFromWasmLyric);
-			this.metadata = {};
+			this.metadata = [];
 			this.record();
 		},
 		loadYRC(lyric: string) {
 			this.artists = [];
 			this.lyrics = parseYrc(lyric).map(mapFromWasmLyric);
-			this.metadata = {};
+			this.metadata = [];
 			this.record();
 		},
 		loadQRC(lyric: string) {
 			this.artists = [];
 			this.lyrics = parseQrc(lyric).map(mapFromWasmLyric);
-			this.metadata = {};
+			this.metadata = [];
 			this.record();
 		},
 		loadLYS(lyric: string) {
 			this.artists = [];
 			this.lyrics = parseLys(lyric).map(mapFromWasmLyric);
-			this.metadata = {};
+			this.metadata = [];
 			this.record();
 		},
 		addNewLine() {
@@ -341,7 +341,10 @@ export const useEditingLyric = defineStore("editing-lyric", {
 
 			console.log(structuredClone((transformed)));
 
-			return exportTTMLText(transformed);
+			return exportTTMLText({
+				lyricLines: transformed,
+				metadata: toRaw(this.metadata),
+			});
 		},
 		toLRC() {
 			const lines = toRaw(this.lyrics);

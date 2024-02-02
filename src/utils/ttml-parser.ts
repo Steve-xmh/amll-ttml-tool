@@ -43,14 +43,23 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 	let mainAgentId = "v1";
 
-	const metadata: TTMLMetadata = {};
-	for (const meta of ttmlDoc.querySelectorAll("amll\\:meta[key]")) {
-		const key = meta.getAttribute("key");
-		if (key) {
-			try {
-				metadata[key] = JSON.parse(meta.innerHTML);
-			} catch (err) {
-				console.warn("解析元数据发生错误：", key, meta.innerHTML, err);
+	const metadata: TTMLMetadata[] = [];
+	for (const meta of ttmlDoc.querySelectorAll("meta")) {
+		if (meta.tagName === "amll:meta") {
+			const key = meta.getAttribute("key");
+			if (key) {
+				const value = meta.getAttribute("value");
+				if (value) {
+					const existing = metadata.find((m) => m.key === key);
+					if (existing) {
+						existing.value.push(value);
+					} else {
+						metadata.push({
+							key,
+							value: [value],
+						});
+					}
+				}
 			}
 		}
 	}
@@ -157,7 +166,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		parseParseLine(lineEl);
 	}
 
-	console.log(lyricLines);
+	console.log(lyricLines, metadata);
 
 	return {
 		metadata,

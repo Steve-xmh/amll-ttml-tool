@@ -15,7 +15,7 @@
  * 但是可能会有信息会丢失
  */
 
-import type {LyricLine, LyricWord} from "./ttml-types";
+import type {LyricLine, LyricWord, TTMLLyric} from "./ttml-types";
 
 function msToTimestamp(timeMS: number): string {
 	if (timeMS === Infinity) {
@@ -39,10 +39,11 @@ function msToTimestamp(timeMS: number): string {
 }
 
 export default function exportTTMLText(
-	lyric: LyricLine[],
+	ttmlLyric: TTMLLyric,
 	pretty = false,
 ): string {
 	const params: LyricLine[][] = [];
+	const lyric = ttmlLyric.lyricLines;
 
 	let tmp: LyricLine[] = [];
 	for (const line of lyric) {
@@ -90,22 +91,31 @@ export default function exportTTMLText(
 	const body = doc.createElement("body");
 	const hasOtherPerson = !!lyric.find((v) => v.isDuet);
 
-	const metadata = doc.createElement("metadata");
+	const metadataEl = doc.createElement("metadata");
 	const mainPersonAgent = doc.createElement("ttm:agent");
 	mainPersonAgent.setAttribute("type", "person");
 	mainPersonAgent.setAttribute("xml:id", "v1");
 
-	metadata.appendChild(mainPersonAgent);
+	metadataEl.appendChild(mainPersonAgent);
 
 	if (hasOtherPerson) {
 		const otherPersonAgent = doc.createElement("ttm:agent");
 		otherPersonAgent.setAttribute("type", "other");
 		otherPersonAgent.setAttribute("xml:id", "v2");
 
-		metadata.appendChild(otherPersonAgent);
+		metadataEl.appendChild(otherPersonAgent);
 	}
 
-	head.appendChild(metadata);
+	for (const metadata of ttmlLyric.metadata) {
+		for (const value of metadata.value) {
+			const metaEl = doc.createElement("amll:meta");
+			metaEl.setAttribute("key", metadata.key);
+			metaEl.setAttribute("value", value);
+			metadataEl.appendChild(metaEl);
+		}
+	}
+
+	head.appendChild(metadataEl);
 
 	let i = 0;
 
@@ -234,7 +244,7 @@ export default function exportTTMLText(
 	if (pretty) {
 		const xsltDoc = new DOMParser().parseFromString(
 			[
-				'<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform">',
+				'<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">',
 				'  <xsl:strip-space elements="*"/>',
 				'  <xsl:template match="para[content-style][not(text())]">',
 				'    <xsl:value-of select="normalize-space(.)"/>',
