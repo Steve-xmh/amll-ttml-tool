@@ -10,10 +10,10 @@
   -->
 
 <template>
-    <div v-show="props.word.word.trim().length > 0" :class="{
+    <div v-show="props.word.word.trim().length > 0" ref="elRef" :class="{
         'lyric-word-not-main': props.notMain,
         'lyric-word-warn': hasError,
-    }" @click="currentWord.wordIndex = props.word.id" ref="elRef">
+    }" @click="currentWord.wordIndex = props.word.id; currentWord.emptyBeat = 0;">
         <div v-if="displayWord.htmlWord" v-html="displayWord.htmlWord"></div>
         <div v-else>{{ displayWord.word }}</div>
         <div>{{ toTimestamp(props.word.startTime ?? 0) }}</div>

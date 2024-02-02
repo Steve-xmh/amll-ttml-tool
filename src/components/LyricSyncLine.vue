@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -16,6 +16,7 @@
     }" @click="
     currentWord.lineIndex = props.line.id;
 currentWord.wordIndex = 0;
+currentWord.emptyBeat = 0;
 " ref="itemRef">
         <div class="lyric-line-item-inner">
             <div>{{ toTimestamp(line.words?.[0]?.startTime ?? 0) }}</div>
@@ -43,14 +44,11 @@ currentWord.wordIndex = 0;
 </template>
 
 <script setup lang="ts">
-import {
-    useSettings,
-    useAudio,
-    useCurrentSyncWord,
-} from "../store";
-import { storeToRefs } from "pinia";
-import { nextTick, ref, watch } from "vue";
-import type { LyricLineWithId } from "../store/lyric";
+import {useAudio, useCurrentSyncWord, useSettings,} from "../store";
+import {storeToRefs} from "pinia";
+import {nextTick, ref, watch} from "vue";
+import type {LyricLineWithId} from "../store/lyric";
+
 const itemRef = ref<HTMLDivElement>();
 
 const { currentTime } = storeToRefs(useAudio());

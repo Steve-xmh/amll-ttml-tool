@@ -117,7 +117,7 @@ function getCurrentWord(): LyricWord | undefined {
 function moveRight() {
 	let lineIndex = currentWord.lineIndex;
 	let wordIndex = currentWord.wordIndex;
-	if (getCurrentWord()?.emptyBeat ?? 0 > currentWord.emptyBeat) {
+	if ((getCurrentWord()?.emptyBeat ?? 0) > currentWord.emptyBeat) {
 		currentWord.emptyBeat++;
 		return;
 	}
