@@ -263,7 +263,13 @@ function onKeyPress(e: KeyboardEvent) {
 					}
 				}
 				const nextWord = getCurrentWord();
-				if (nextWord) nextWord.startTime = currentTimeMS.value;
+				const currentLine = getCurrentLine();
+				if (nextWord) {
+					nextWord.startTime = currentTimeMS.value;
+					if (currentLine && currentWord.wordIndex === 0) {
+						currentLine.startTime = nextWord.startTime;
+					}
+				}
 			}
 			collected = true;
 			break;
