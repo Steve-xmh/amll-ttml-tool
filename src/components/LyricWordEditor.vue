@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -36,7 +36,7 @@ import {type InputInst, NTag} from "naive-ui";
 import {useEditingLyric, useRightClickLyricLine} from "../store";
 import {computed, nextTick, reactive, ref} from "vue";
 import {i18n} from '../i18n';
-import type {LyricWord} from "../store/lyric";
+import type {LyricWord} from "../utils/ttml-types";
 
 const inputRef = ref<InputInst | null>(null);
 const props = defineProps<{

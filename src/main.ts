@@ -19,7 +19,7 @@ import Main from "./Main.vue";
 
 window.document.addEventListener("keydown", (evt) => {
 	// 阻止非编辑状态下的空格滚动
-	var el = (evt.target as HTMLElement).nodeName;
+	const el = (evt.target as HTMLElement).nodeName;
 	if (el !== "TEXTAREA" && el !== "INPUT") {
 		if (evt.code === "Space") {
 			evt.preventDefault();

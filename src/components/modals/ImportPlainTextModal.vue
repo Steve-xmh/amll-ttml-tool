@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -72,7 +72,7 @@ import {useDialogs, useEditingLyric} from '../../store';
 import {useI18n} from "vue-i18n";
 import {reactive} from "vue";
 import {Codemirror} from 'vue-codemirror'
-import type {LyricLine} from '../../store/lyric';
+import type {LyricLine} from '../../utils/ttml-types';
 
 const lyric = useEditingLyric();
 const dialogs = useDialogs();

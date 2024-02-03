@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -12,7 +12,7 @@
 <template>
     <NModal transform-origin="center" :show="currentProgresses.length > 0">
         <NCard :title="t('ProgressOverlay.title')" style="max-width: 500px;">
-            <div v-for="progress, i in currentProgresses" :key="i">
+					<div v-for="(progress, i) in currentProgresses" :key="i">
                 <div>{{ t(progress.label) }}</div>
                 <NProgress :percentage="Math.round(progress.progress * 100)" type="line" />
             </div>
@@ -21,14 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-    NModal,
-    NCard,
-    NProgress,
-} from "naive-ui";
-import { useProgress } from "../../store";
-import { storeToRefs } from "pinia";
-import { useI18n } from "vue-i18n";
+import {NCard, NModal, NProgress,} from "naive-ui";
+import {useProgress} from "../../store";
+import {storeToRefs} from "pinia";
+import {useI18n} from "vue-i18n";
 
 const { currentProgresses } = storeToRefs(useProgress());
 const { t } = useI18n({ useScope: "global" });

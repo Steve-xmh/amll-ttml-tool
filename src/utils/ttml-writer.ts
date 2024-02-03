@@ -18,6 +18,9 @@
 import type {LyricLine, LyricWord, TTMLLyric} from "./ttml-types";
 
 function msToTimestamp(timeMS: number): string {
+	if (!Number.isSafeInteger(timeMS) || timeMS < 0) {
+		return "00:00.000";
+	}
 	if (timeMS === Infinity) {
 		return "99:99.999";
 	}

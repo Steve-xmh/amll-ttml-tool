@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -9,9 +9,9 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { createI18n, type I18nOptions } from "vue-i18n";
-import { zhCN } from "./zh-cn";
-import { enUS } from "./en-us";
+import {createI18n, type I18nOptions} from "vue-i18n";
+import {zhCN} from "./zh-cn";
+import {enUS} from "./en-us";
 
 type BaseSchema = typeof zhCN;
 
@@ -37,7 +37,7 @@ const options: I18nOptions = {
 		// as name with .ts extension.
 		// You can refer ./zh-cn.ts as a locale messages file example.
 		"zh-CN": zhCN,
-		"en-US": enUS,
+		"en-US": enUS as BaseSchema,
 	},
 };
 
