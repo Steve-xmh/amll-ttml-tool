@@ -277,10 +277,11 @@ function onKeyPress(e: KeyboardEvent) {
 		case "KeyH": { // 记录当前时间为当前单词的结束时间，并移动到下一个单词（用于空出间奏时间）
 			const curWord = getCurrentWord();
 			const currentLine = getCurrentLine();
+			const curWordIndex = currentWord.wordIndex;
 			if (moveRight()) {
 				if (curWord) {
 					curWord.endTime = currentTimeMS.value;
-					if (currentLine && currentWord.wordIndex === currentLine.words.length - 1) {
+					if (currentLine && curWordIndex === currentLine.words.length - 1) {
 						currentLine.endTime = curWord.endTime;
 					}
 				}
