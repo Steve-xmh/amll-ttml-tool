@@ -243,10 +243,12 @@ function onKeyPress(e: KeyboardEvent) {
 			const curWord = getCurrentWord();
 			if (curWord) {
 				curWord.startTime = currentTimeMS.value;
+		if ((curWord.emptyBeat ?? 0) > 0) currentWord.emptyBeat = 1;
 				const currentLine = getCurrentLine();
 				if (currentWord.wordIndex === 0 && currentLine) {
 					currentLine.startTime = currentTimeMS.value;
 				}
+		lyric.record();
 			}
 			collected = true;
 			break;
@@ -256,8 +258,10 @@ function onKeyPress(e: KeyboardEvent) {
 			const currentLine = getCurrentLine();
 			const curWordIndex = currentWord.wordIndex;
 			if (moveRight()) {
+		let shouldRecord = false;
 				if (curWord) {
 					curWord.endTime = currentTimeMS.value;
+		  shouldRecord = true;
 					if (currentLine && curWordIndex === currentLine.words.length - 1) {
 						currentLine.endTime = curWord.endTime;
 					}
@@ -265,11 +269,15 @@ function onKeyPress(e: KeyboardEvent) {
 				const nextWord = getCurrentWord();
 				if (nextWord) {
 					nextWord.startTime = currentTimeMS.value;
+		  shouldRecord = true;
 					const currentLine = getCurrentLine();
 					if (currentLine && currentWord.wordIndex === 0) {
 						currentLine.startTime = nextWord.startTime;
 					}
 				}
+		if (shouldRecord) {
+		  lyric.record();
+		}
 			}
 			collected = true;
 			break;
@@ -284,6 +292,7 @@ function onKeyPress(e: KeyboardEvent) {
 					if (currentLine && curWordIndex === currentLine.words.length - 1) {
 						currentLine.endTime = curWord.endTime;
 					}
+		  lyric.record();
 				}
 			}
 			collected = true;

@@ -13,9 +13,9 @@
 // 因为目前那个 pinia-undo 那个库对深拷贝操作会发生异常
 // 所以自己修改了一个版本，使得可以手动记录快照，限制最高撤销次数，并正确撤销和重做
 
-import type { PiniaPluginContext } from "pinia";
+import type {PiniaPluginContext} from "pinia";
 import structuredClone from "@ungap/structured-clone";
-import { toRaw } from "vue";
+import {toRaw} from "vue";
 
 type Store = PiniaPluginContext["store"];
 type Options = PiniaPluginContext["options"];
@@ -47,7 +47,7 @@ class UndoStack<T> {
  * @returns {Object} State of the store without omitted keys.
  */
 function removeOmittedKeys(options: Options, store: Store): Store["$state"] {
-	const clone = JSON.parse(JSON.stringify(toRaw(store.$state)));
+	const clone = (window.structuredClone || structuredClone)(toRaw(store.$state));
 	if (options.undo?.omit) {
 		options.undo.omit.forEach((key) => {
 			// rome-ignore lint/performance/noDelete: <explanation>
