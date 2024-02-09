@@ -34,11 +34,11 @@
 </template>
 
 <script setup lang="tsx">
-import { NButton } from "naive-ui";
-import { useEditingLyric, useRightClickLyricLine, useSettings } from "../store";
+import {NButton} from "naive-ui";
+import {useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
 import LyricLineEditor from "./LyricLineEditor.vue";
-import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
-import { onMounted, onUnmounted } from "vue";
+import {DynamicScroller, DynamicScrollerItem} from 'vue-virtual-scroller'
+import {onMounted, onUnmounted} from "vue";
 
 const settings = useSettings();
 
@@ -61,17 +61,17 @@ function onAddNewLine() {
 }
 
 function onKeyPress(e: KeyboardEvent) {
-    if (e.ctrlKey && e.code === "KeyZ") {
+  if ((e.ctrlKey || e.metaKey) && e.code === "KeyZ") {
         lyric.undo();
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-    } else if (e.ctrlKey && e.code === "KeyY") {
+  } else if ((e.ctrlKey || e.metaKey) && e.code === "KeyY") {
         lyric.redo();
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-    } else if (e.ctrlKey && e.code === "KeyA") {
+  } else if ((e.ctrlKey || e.metaKey) && e.code === "KeyA") {
         lyric.selectAllLine();
         e.preventDefault();
         e.stopPropagation();

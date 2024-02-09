@@ -10,13 +10,13 @@
   -->
 
 <template>
-    <div class="context-menu-word-edit">
-        <div>内容</div>
-        <NInput @blur="onContentBlur" placeholder="" v-model:value="wordEdit.word" size="small"/>
-        <div>空拍</div>
-        <NInputNumber v-model:value="wordEdit.emptyBeat" @blur="onEmptyBeatBlur"
-                      style="max-width: 7em" placeholder="0" :min="0" :step="1" size="small"/>
-    </div>
+  <div class="context-menu-word-edit">
+    <div>内容</div>
+    <NInput v-model:value="wordEdit.word" placeholder="" size="small" @blur="onContentBlur"/>
+    <div>空拍</div>
+    <NInputNumber v-model:value="wordEdit.emptyBeat" :min="0"
+                  :step="1" placeholder="0" size="small" style="max-width: 7em" @blur="onEmptyBeatBlur"/>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -31,37 +31,38 @@ const notify = useNotification();
 const lyric = useEditingLyric();
 
 const wordEdit = reactive({
-    word: "",
-    emptyBeat: 0,
+  word: "",
+  emptyBeat: 0,
 })
 
 onMounted(() => {
-    const selectedWord: LyricWord | undefined = lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[lyricLineMenu.selectedWord];
+  const selectedWord: LyricWord | undefined = lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[lyricLineMenu.selectedWord];
 
-    wordEdit.word = selectedWord?.word ?? "";
-    wordEdit.emptyBeat = selectedWord?.emptyBeat ?? 0;
+  wordEdit.word = selectedWord?.word ?? "";
+  wordEdit.emptyBeat = selectedWord?.emptyBeat ?? 0;
 })
 
 function onEmptyBeatBlur() {
-    lyric.modifyWordEmptyBeat(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord, wordEdit.emptyBeat);
+  lyric.modifyWordEmptyBeat(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord, wordEdit.emptyBeat);
 }
 
 function onContentBlur() {
-    lyric.modifyWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord, wordEdit.word);
+  lyric.modifyWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord, wordEdit.word);
 }
 
 </script>
 
 <style scoped lang="sass">
 .context-menu-word-edit
-    width: 100%
-    padding: 8px 14px
-    display: grid
-    grid-template-columns: auto auto
-    gap: 8px
-    align-items: center
+  width: 100%
+  display: grid
+  padding: 0 1em
+  padding-top: 0.5em
+  grid-template-columns: auto auto
+  gap: 8px
+  align-items: center
 
-    > *:nth-child(2n)
-        justify-self: flex-end
+  > *:nth-child(2n)
+    justify-self: flex-end
 </style>
 
