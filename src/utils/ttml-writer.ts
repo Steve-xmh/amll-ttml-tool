@@ -177,7 +177,11 @@ export default function exportTTMLText(
 				if (bgLine.words.length > 1) {
 					let beginTime = Infinity;
 					let endTime = 0;
-					for (let wordIndex = 0; wordIndex < bgLine.words.length; wordIndex++) {
+					for (
+						let wordIndex = 0;
+						wordIndex < bgLine.words.length;
+						wordIndex++
+					) {
 						const word = bgLine.words[wordIndex];
 						if (word.word.trim().length === 0) {
 							bgLineSpan.appendChild(doc.createTextNode(word.word));

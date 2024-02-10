@@ -148,10 +148,12 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			line.startTime = parseTimespan(startTime);
 			line.endTime = parseTimespan(endTime);
 		} else {
-			line.startTime = line.words.reduce((pv, cv) => Math.min(pv, cv.startTime), Infinity);
+			line.startTime = line.words.reduce(
+				(pv, cv) => Math.min(pv, cv.startTime),
+				Infinity,
+			);
 			line.endTime = line.words.reduce((pv, cv) => Math.max(pv, cv.endTime), 0);
 		}
-
 
 		if (haveBg) {
 			const bgLine = lyricLines.pop();

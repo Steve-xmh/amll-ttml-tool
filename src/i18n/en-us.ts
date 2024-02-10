@@ -61,7 +61,7 @@ export const enUS = {
 		// 原则上不翻译这里的应用名称
 		appName: "Apple Music-like Lyrics TTML Tool",
 		description:
-			"A Word-by-Word TTML Editing and Timeline Tool for Apple Music Lyrics",
+			"A Word-by-Word TTML Editing and Timeline Tool for Apple Music-like Lyrics",
 		githubBtn: "Github",
 		tutorialBtn: "Quick Tutorial",
 	},
@@ -287,7 +287,7 @@ export const enUS = {
 // 将下面的语言代码换成相对应的即可实现指定语言的热重载
 // 注意大小写敏感
 
-import { i18n } from ".";
+import {i18n} from ".";
 
 if (import.meta.hot) {
 	import.meta.hot.accept((newModule) => {

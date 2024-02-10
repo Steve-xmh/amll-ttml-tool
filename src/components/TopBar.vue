@@ -120,9 +120,10 @@ import {
   Save24Regular,
   SelectAllOff24Regular,
   SelectAllOn24Regular,
+  Settings24Regular,
   TextAlignRight24Filled,
   TextBulletListSquareEdit24Regular,
-  VideoBackgroundEffect24Filled
+  VideoBackgroundEffect24Regular,
 } from "@vicons/fluent";
 import {useDialogs, useEditingLyric, useEditMode, useRightClickLyricLine, useSettings} from "../store";
 
@@ -186,7 +187,7 @@ const MENU = reactive({
     {label: t('topBar.menu.importFromAMLLDB'), key: 'import-from-amll-db', icon: renderIcon(CloudArrowDown24Regular)},
     {label: t('topBar.menu.uploadToAMLLDB'), key: 'submit-to-amll-db', icon: renderIcon(CloudArrowUp24Regular)},
     {type: 'divider'},
-    // { label: '设置', key: 'setting' },
+    {label: t('topBar.menu.settings'), key: 'settings', icon: renderIcon(Settings24Regular)},
     {label: t('topBar.menu.about'), key: 'about', icon: renderIcon(Info24Regular)},
   ] as DropdownMixedOption[],
   edit: [
@@ -196,7 +197,7 @@ const MENU = reactive({
     {label: t('topBar.menu.unselectAllLines'), key: 'unselect-all', icon: renderIcon(SelectAllOff24Regular)},
     {label: t('topBar.menu.invertSelectAllLines'), key: 'invert-select-all', icon: renderIcon(MultiselectLtr24Regular)},
     {type: 'divider'},
-    {label: t('topBar.menu.toggleBGLineOnSelectedLines'), key: 'toggle-bg', icon: renderIcon(VideoBackgroundEffect24Filled)},
+    {label: t('topBar.menu.toggleBGLineOnSelectedLines'), key: 'toggle-bg', icon: renderIcon(VideoBackgroundEffect24Regular)},
     {label: t('topBar.menu.toggleDuetLineOnSelectedLines'), key: 'toggle-duet', icon: renderIcon(TextAlignRight24Filled)},
     {type: 'divider'},
     {label: t('topBar.menu.editMetadata'), key: 'edit-metadata', icon: renderIcon(TextBulletListSquareEdit24Regular)},
@@ -250,7 +251,7 @@ function onSelectMenu(key: string) {
     }
     case "open-from-clipboard": {
       navigator.clipboard.readText().then(text => {
-        if (text) {
+        if (text.trim().length > 0) {
           try {
             const result = parseLyric(text);
             lyric.loadLyric(result);
@@ -260,6 +261,11 @@ function onSelectMenu(key: string) {
               content: String(err),
             })
           }
+        } else {
+          notify.error({
+            title: "加载歌词失败",
+            content: "剪切板没有任何数据"
+          })
         }
       }).catch(err => {
         notify.error({
@@ -468,6 +474,10 @@ function onSelectMenu(key: string) {
     }
     case "submit-to-amll-db": {
       dialogs.submitLyric = true;
+      break;
+    }
+    case "settings": {
+      dialogs.settings = true;
       break;
     }
     case "about": {

@@ -1,12 +1,17 @@
-import { defineConfig, type UserConfig } from "vite";
+import {defineConfig, type UserConfig} from "vite";
 import svgLoader from "vite-svg-loader";
 import vue from "@vitejs/plugin-vue";
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
-import { VitePWA } from "vite-plugin-pwa";
+import {VitePWA} from "vite-plugin-pwa";
 
 const plugins = [
-	vue(),
+	vue({
+		script: {
+			defineModel: true,
+			propsDestructure: true,
+		}
+	}),
 	svgLoader(),
 	wasm(),
 	topLevelAwait(),

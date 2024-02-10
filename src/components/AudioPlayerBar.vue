@@ -11,7 +11,7 @@
 
 <template>
     <NLayoutFooter bordered class="audio-player-bar">
-        <NUpload :default-upload="false" :multiple="false" :show-file-list="false" style="width: unset"
+      <NUpload ref="uploadRef" :default-upload="false" :multiple="false" :show-file-list="false" style="width: unset"
             @change="onUploadMusic">
             <NButton v-if="!curFile">
                 <i18n-t keypath="audioPlayerBar.loadMusicBtn" />
@@ -55,28 +55,17 @@
 </template>
 
 <script setup lang="ts">
-import {
-    NLayoutFooter,
-    NSlider,
-    NIcon,
-    NButton,
-    NUpload,
-    type UploadFileInfo,
-} from "naive-ui";
-import {
-    Play48Filled,
-    Pause48Filled,
-    Speaker248Filled,
-    MusicNote224Filled,
-    TopSpeed24Regular,
-} from "@vicons/fluent";
-import { ref, reactive, onUnmounted, onMounted } from "vue";
-import { useAudio, useSettings } from "../store";
+import {NButton, NIcon, NLayoutFooter, NSlider, NUpload, type UploadFileInfo, type UploadInst,} from "naive-ui";
+import {MusicNote224Filled, Pause48Filled, Play48Filled, Speaker248Filled, TopSpeed24Regular,} from "@vicons/fluent";
+import {onMounted, onUnmounted, ref} from "vue";
+import {useAudio, useSettings} from "../store";
+import {useKeyBinding} from "../utils/keybindings";
 
 const curFile = ref<UploadFileInfo>();
 const audioPlayer = ref(new Audio());
 const settings = useSettings();
 const audio = useAudio();
+const uploadRef = ref<UploadInst | null>(null)
 
 audio.$onAction((e) => {
     if (e.name === "setCurrentTime") {
@@ -163,61 +152,75 @@ onMounted(() => {
     audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
 });
 
-function onKeyPress(e: KeyboardEvent) {
-    if((e.target as HTMLElement)?.nodeName === 'INPUT') return;
-    let collected = false;
-    switch (e.code) {
-        case "Space":
-            if (audioPlayer.value.paused) {
-                audioPlayer.value.play();
-            } else {
-                audioPlayer.value.pause();
-            }
-            collected = true;
-            break;
-        case "ArrowUp":
-            settings.volume = Math.min(1, Math.max(0, settings.volume + 0.1));
-            collected = true;
-            break;
-        case "ArrowDown":
-            settings.volume = Math.min(1, Math.max(0, settings.volume - 0.1));
-            collected = true;
-            break;
-        case "ArrowLeft":
-            if (audioPlayer.value.seekable) {
-                audioPlayer.value.currentTime = Math.max(
-                    0,
-                    audioPlayer.value.currentTime - 5
-                )
-            }
-            collected = true;
-            break;
-        case "ArrowRight":
-            if (audioPlayer.value.seekable) {
-                audioPlayer.value.currentTime = Math.min(
-                    audioPlayer.value.duration,
-                    audioPlayer.value.currentTime + 5
-                )
-            }
-            collected = true;
-            break;
-        case "BracketLeft":
-            settings.speed = Math.max(0.25, Math.min(4, settings.speed - 0.25));
-            collected = true;
-            break;
-        case "BracketRight":
-            settings.speed = Math.max(0.25, Math.min(4, settings.speed + 0.25));
-            collected = true;
-            break;
-    }
-    if (collected) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-}
-
-onMounted(() => {
-    window.addEventListener("keyup", onKeyPress);
+useKeyBinding(settings.keybindings.resumeOrPause, () => {
+  if (audioPlayer.value.paused) {
+    audioPlayer.value.play();
+  } else {
+    audioPlayer.value.pause();
+  }
+});
+useKeyBinding(settings.keybindings.volumeUp, () => {
+  settings.volume = Math.min(1, Math.max(0, settings.volume + 0.1));
+});
+useKeyBinding(settings.keybindings.volumeDown, () => {
+  settings.volume = Math.min(1, Math.max(0, settings.volume - 0.1));
+});
+useKeyBinding(settings.keybindings.seekPlayForward5s, () => {
+  if (audioPlayer.value.seekable) {
+    audioPlayer.value.currentTime = Math.min(
+        audioPlayer.value.duration,
+        audioPlayer.value.currentTime + 5
+    );
+  }
+});
+useKeyBinding(settings.keybindings.seekPlayBackward5s, () => {
+  if (audioPlayer.value.seekable) {
+    audioPlayer.value.currentTime = Math.max(
+        0,
+        audioPlayer.value.currentTime - 5
+    );
+  }
+});
+useKeyBinding(settings.keybindings.seekPlayForward1s, () => {
+  if (audioPlayer.value.seekable) {
+    audioPlayer.value.currentTime = Math.min(
+        audioPlayer.value.duration,
+        audioPlayer.value.currentTime + 1
+    );
+  }
+});
+useKeyBinding(settings.keybindings.seekPlayBackward1s, () => {
+  if (audioPlayer.value.seekable) {
+    audioPlayer.value.currentTime = Math.max(
+        0,
+        audioPlayer.value.currentTime - 1
+    );
+  }
+});
+useKeyBinding(settings.keybindings.seekPlayForward100ms, () => {
+  if (audioPlayer.value.seekable) {
+    audioPlayer.value.currentTime = Math.min(
+        audioPlayer.value.duration,
+        audioPlayer.value.currentTime + 0.1
+    );
+  }
+});
+useKeyBinding(settings.keybindings.seekPlayBackward100ms, () => {
+  if (audioPlayer.value.seekable) {
+    audioPlayer.value.currentTime = Math.max(
+        0,
+        audioPlayer.value.currentTime - 0.1
+    );
+  }
+});
+useKeyBinding(settings.keybindings.speedUp, () => {
+  settings.speed = Math.max(0.25, Math.min(4, settings.speed + 0.25));
+});
+useKeyBinding(settings.keybindings.speedDown, () => {
+  settings.speed = Math.max(0.25, Math.min(4, settings.speed - 0.25));
+});
+useKeyBinding(settings.keybindings.openMusicFile, () => {
+  uploadRef.value?.openOpenFileDialog();
 });
 
 onUnmounted(() => {
@@ -226,7 +229,6 @@ onUnmounted(() => {
     }
     audioPlayer.value.pause();
     audioPlayer.value.remove();
-    window.removeEventListener("keyup", onKeyPress);
 });
 </script>
 

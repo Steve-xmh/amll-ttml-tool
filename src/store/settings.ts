@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { defineStore } from "pinia";
+import {defineStore} from "pinia";
 
 export const useSettings = defineStore("settings", {
 	state: () => ({
@@ -20,6 +20,34 @@ export const useSettings = defineStore("settings", {
 		speed: 1,
 
 		showingTutorial: true,
+
+		keybindings: {
+			resumeOrPause: ["Space"],
+			seekPlayForward5s: ["ArrowRight"],
+			seekPlayBackward5s: ["ArrowLeft"],
+			seekPlayForward1s: [],
+			seekPlayBackward1s: [],
+			seekPlayForward100ms: [],
+			seekPlayBackward100ms: [],
+			volumeUp: ["ArrowUp"],
+			volumeDown: ["ArrowDown"],
+			speedUp: ["BracketLeft"],
+			speedDown: ["BracketRight"],
+
+			openMusicFile: [],
+			openLyricFile: [],
+			saveLyricFile: [],
+
+			moveLeftWord: ["KeyA"],
+			moveRightWord: ["KeyD"],
+			moveUpLine: ["KeyW"],
+			moveDownLine: ["KeyS"],
+			seekLeftWord: ["KeyR"],
+			seekRightWord: ["KeyY"],
+			setCurWordStartTime: ["KeyF"],
+			stepWordAndSetTime: ["KeyG"],
+			stepWordAndSetEndTime: ["KeyH"],
+		},
 	}),
 	persist: true,
 });

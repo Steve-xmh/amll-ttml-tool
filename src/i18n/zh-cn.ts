@@ -43,6 +43,7 @@ export const zhCN = {
 			exportLyricToAss: "导出 ASS 字幕",
 			importFromAMLLDB: "从 AMLL 歌词数据库导入歌词",
 			uploadToAMLLDB: "上传歌词到 AMLL 歌词数据库",
+			settings: "设置",
 			about: "关于",
 			edit: "编辑",
 			undo: "撤销",
@@ -68,6 +69,44 @@ export const zhCN = {
 		},
 		appName: "Apple Music-like Lyrics TTML Tool",
 	},
+	settingsDialog: {
+		title: "设置",
+		tab: {
+			common: "通用",
+			keybindings: "按键绑定",
+		},
+		common: {
+			showTranslateLine: "显示翻译歌词",
+			showRomanLine: "显示音译歌词",
+			showJpnRomaji: "显示日语参考罗马字注音（实验性）",
+			volume: "音量",
+			speed: "播放速度",
+		},
+		keybindings: {
+			resumeOrPause: "播放 / 暂停",
+			seekPlayForward5s: "播放进度快进 5 秒",
+			seekPlayBackward5s: "播放进度快退 5 秒",
+			seekPlayForward1s: "播放进度快进 1 秒",
+			seekPlayBackward1s: "播放进度快退 1 秒",
+			seekPlayForward100ms: "播放进度快进 0.1 秒",
+			seekPlayBackward100ms: "播放进度快退 0.1 秒",
+			volumeUp: "增加音量",
+			volumeDown: "减小音量",
+			speedUp: "加速播放",
+			speedDown: "减速播放",
+			moveLeftWord: "移动到上一个单词",
+			moveRightWord: "移动到下一个单词",
+			moveUpLine: "移动到上一个歌词行首位",
+			moveDownLine: "移动到下一个歌词行首位",
+			seekLeftWord: "移动并跳转播放位置到上一个单词的开始时间",
+			seekRightWord: "移动并跳转播放位置到下一个单词的开始时间",
+			setCurWordStartTime: "设置当前单词开始时间为当前播放位置",
+			stepWordAndSetTime:
+				"设置当前单词结束时间为当前播放位置，步进到下一个单词",
+			stepWordAndSetEndTime:
+				"设置当前单词结束时间为当前播放位置，步进到下一个单词",
+		},
+	},
 	metadataDialog: {
 		title: "编辑歌词元数据",
 		selectNew: "请选择新增元数据类型",
@@ -87,12 +126,13 @@ export const zhCN = {
 			artists: "歌词所匹配的歌手名",
 			album: "歌词所匹配的专辑名",
 			ttmlAuthorGithub: "逐词歌词作者 Github ID",
-		}
+		},
 	},
 	aboutModal: {
 		// 原则上不翻译这里的应用名称
 		appName: "Apple Music-like Lyrics TTML Tool",
-		description: "一个用于 Apple Music 的逐词歌词 TTML 编辑和时间轴工具",
+		description:
+			"一个用于 Apple Music-like lyrics 生态的逐词歌词 TTML 编辑和时间轴工具",
 		githubBtn: "Github",
 		tutorialBtn: "简短教程",
 	},
@@ -180,10 +220,14 @@ export const zhCN = {
 		title: "提交歌词到 AMLL 歌词数据库（仅简体中文用户）",
 		chineseUserOnlyWarning:
 			"本功能仅使用 AMLL 歌词数据库的简体中文用户可用，如果您是为了在其他软件上使用歌词而编辑歌词的话，请参考对应的软件提交歌词的方式来提交歌词哦！",
-		noMusicIdWarning: "没有在歌词元数据中找到任何平台的音乐ID！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加音乐ID！",
-		noMusicNameWarning: "没有在歌词元数据中找到音乐名称！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加音乐名称！",
-		noArtistWarning: "没有在歌词元数据中找到歌手名称！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加歌手名称！",
-		noAlbumWarning: "没有在歌词元数据中找到专辑名称！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加专辑名称！",
+		noMusicIdWarning:
+			"没有在歌词元数据中找到任何平台的音乐ID！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加音乐ID！",
+		noMusicNameWarning:
+			"没有在歌词元数据中找到音乐名称！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加音乐名称！",
+		noArtistWarning:
+			"没有在歌词元数据中找到歌手名称！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加歌手名称！",
+		noAlbumWarning:
+			"没有在歌词元数据中找到专辑名称！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加专辑名称！",
 		unknownArtists: "未知歌手",
 		unknownMusicName: "未知音乐",
 		content: [
@@ -347,6 +391,10 @@ export const zhCN = {
 			placeholder: "音乐 ID",
 		},
 		importBtn: "导入",
+	},
+	shortcutInput: {
+		none: "无绑定",
+		recording: "请按下任意键...",
 	},
 };
 

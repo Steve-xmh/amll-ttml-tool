@@ -23,7 +23,11 @@ type Options = PiniaPluginContext["options"];
 class UndoStack<T> {
 	private stack: T[] = [];
 	private stackPos = 0;
-	constructor(firstValue: T, private limit = 50) {
+
+	constructor(
+		firstValue: T,
+		private limit = 50,
+	) {
 		this.stack.push(firstValue);
 	}
 	push(value: T) {
@@ -47,7 +51,9 @@ class UndoStack<T> {
  * @returns {Object} State of the store without omitted keys.
  */
 function removeOmittedKeys(options: Options, store: Store): Store["$state"] {
-	const clone = (window.structuredClone || structuredClone)(toRaw(store.$state));
+	const clone = (window.structuredClone || structuredClone)(
+		toRaw(store.$state),
+	);
 	if (options.undo?.omit) {
 		options.undo.omit.forEach((key) => {
 			// rome-ignore lint/performance/noDelete: <explanation>

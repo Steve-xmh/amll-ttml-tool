@@ -18,5 +18,6 @@ export const useDialogs = defineStore("dialogs", {
 		editLyricInfo: false,
 		importFromText: false,
 		metadata: false,
+		settings: false,
 	}),
 });

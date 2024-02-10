@@ -339,7 +339,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				transformed.push(toRaw(this.lyrics[i]));
 			}
 
-			console.log(structuredClone((transformed)));
+			console.log(structuredClone(transformed));
 
 			return exportTTMLText({
 				lyricLines: transformed,
