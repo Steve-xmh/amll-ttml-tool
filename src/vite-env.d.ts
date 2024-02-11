@@ -14,3 +14,9 @@
 declare module "pangu/dist/browser/pangu.min.js" {
 	export function spacing(data: string): string;
 }
+
+declare global {
+	interface Window {
+		readonly __TAURI_INTERNALS__: object | undefined;
+	}
+}

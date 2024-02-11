@@ -10,7 +10,7 @@ const plugins = [
 		script: {
 			defineModel: true,
 			propsDestructure: true,
-		}
+		},
 	}),
 	svgLoader(),
 	wasm(),
@@ -72,13 +72,9 @@ const plugins = [
 const rollupOptions: UserConfig["build"]["rollupOptions"] = {
 	output: {
 		manualChunks(id) {
-			if (id.includes("naive-ui")) {
-				return "naive-ui";
-			} else if (id.includes("@pixi")) {
-				return "pixi";
-			} else if (id.includes("node_modules")) {
-				return null;
-			}
+			if (id.includes("naive-ui")) return "naive-ui";
+			if (id.includes("@pixi")) return "pixi";
+			if (id.includes("node_modules")) return null;
 		},
 	},
 };

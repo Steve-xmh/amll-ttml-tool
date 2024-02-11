@@ -16,7 +16,7 @@
     </div>
 </template>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .amll-preview-view
     background-color: #222
     width: 100%
@@ -33,9 +33,9 @@
 </style>
 
 <script setup lang="ts">
-import { LyricPlayer, type LyricPlayerRef } from "@applemusic-like-lyrics/vue";
-import { onMounted, ref } from "vue";
-import { useAudio, useEditingLyric } from "../store";
+import {LyricPlayer, type LyricPlayerRef} from "@applemusic-like-lyrics/vue";
+import {onMounted, ref} from "vue";
+import {useAudio, useEditingLyric} from "../store";
 
 const audio = useAudio();
 const lyric = useEditingLyric();

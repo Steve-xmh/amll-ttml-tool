@@ -245,8 +245,8 @@ useKeyBinding(settings.keybindings.setCurWordStartTime, () => {
     lyric.record();
   }
 });
-// 记录当前时间为当前单词的结束时间和下一个单词的起始时间，并移动到下一个单词
-useKeyBinding(settings.keybindings.stepWordAndSetTime, () => {
+
+function stepWordAndSetTime() {
   const curWord = getCurrentWord();
   const currentLine = getCurrentLine();
   const curWordIndex = currentWord.wordIndex;
@@ -272,6 +272,20 @@ useKeyBinding(settings.keybindings.stepWordAndSetTime, () => {
       lyric.record();
     }
   }
+}
+
+// 记录当前时间为当前单词的结束时间和下一个单词的起始时间，并移动到下一个单词
+useKeyBinding(settings.keybindings.stepWordAndSetTime, () => {
+  stepWordAndSetTime();
+});
+useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias1, () => {
+  stepWordAndSetTime();
+});
+useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias2, () => {
+  stepWordAndSetTime();
+});
+useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias3, () => {
+  stepWordAndSetTime();
 });
 // 记录当前时间为当前单词的结束时间，并移动到下一个单词（用于空出间奏时间）
 useKeyBinding(settings.keybindings.stepWordAndSetEndTime, () => {

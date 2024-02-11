@@ -155,6 +155,24 @@
           <ShortcutInput v-model="settings.keybindings.stepWordAndSetTime" :default="['KeyG']"/>
         </div>
         <div>
+          <i18n-t keypath="settingsDialog.keybindings.stepWordAndSetTimeAlias1"/>
+        </div>
+        <div>
+          <ShortcutInput v-model="settings.keybindings.stepWordAndSetTimeAlias1" :default="[]"/>
+        </div>
+        <div>
+          <i18n-t keypath="settingsDialog.keybindings.stepWordAndSetTimeAlias2"/>
+        </div>
+        <div>
+          <ShortcutInput v-model="settings.keybindings.stepWordAndSetTimeAlias2" :default="[]"/>
+        </div>
+        <div>
+          <i18n-t keypath="settingsDialog.keybindings.stepWordAndSetTimeAlias3"/>
+        </div>
+        <div>
+          <ShortcutInput v-model="settings.keybindings.stepWordAndSetTimeAlias3" :default="[]"/>
+        </div>
+        <div>
           <i18n-t keypath="settingsDialog.keybindings.stepWordAndSetEndTime"/>
         </div>
         <div>
@@ -187,9 +205,9 @@ const {t} = useI18n({useScope: "global"});
   > *
     padding: 0.5em 1em
     align-self: center
+    display: block
 
     &:nth-child(even)
       justify-self: flex-end
-      display: block
 
 </style>

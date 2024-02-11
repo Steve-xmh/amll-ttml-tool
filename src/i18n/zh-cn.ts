@@ -103,6 +103,12 @@ export const zhCN = {
 			setCurWordStartTime: "设置当前单词开始时间为当前播放位置",
 			stepWordAndSetTime:
 				"设置当前单词结束时间为当前播放位置，步进到下一个单词",
+			stepWordAndSetTimeAlias1:
+				"设置当前单词结束时间为当前播放位置，步进到下一个单词（可选）",
+			stepWordAndSetTimeAlias2:
+				"设置当前单词结束时间为当前播放位置，步进到下一个单词（可选）",
+			stepWordAndSetTimeAlias3:
+				"设置当前单词结束时间为当前播放位置，步进到下一个单词（可选）",
 			stepWordAndSetEndTime:
 				"设置当前单词结束时间为当前播放位置，步进到下一个单词",
 		},

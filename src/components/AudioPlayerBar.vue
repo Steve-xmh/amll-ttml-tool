@@ -232,7 +232,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .audio-player-bar
     padding: 16px
     gap: 16px
