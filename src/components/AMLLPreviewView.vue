@@ -16,7 +16,7 @@
     </div>
 </template>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .amll-preview-view
   background-color: #222 !important
   width: 100% !important
