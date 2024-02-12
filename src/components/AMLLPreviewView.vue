@@ -18,18 +18,20 @@
 
 <style lang="sass" scoped>
 .amll-preview-view
-    background-color: #222
-    width: 100%
-    height: 100%
+  background-color: #222 !important
+  width: 100% !important
+  height: 100% !important
+
+  > *
+    position: absolute !important
+    top: 0 !important
+    left: 0 !important
+    width: 100% !important
+    height: 100% !important
+    mix-blend-mode: plus-lighter
+
     > *
-        position: absolute
-        top: 0
-        left: 0
-        width: 100%
-        height: 100%
-        mix-blend-mode: plus-lighter
-        > *
-            box-sizing: content-box
+      box-sizing: content-box !important
 </style>
 
 <script setup lang="ts">

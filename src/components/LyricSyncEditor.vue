@@ -301,7 +301,6 @@ useKeyBinding(settings.keybindings.stepWordAndSetEndTime, () => {
       lyric.record();
     }
   }
-  moveDown();
 });
 
 </script>
