@@ -55,14 +55,13 @@ class UndoStack<T> {
  * Removes properties from the store state.
  * @param options The options object defining the store passed to `defineStore()`.
  * @param store The store the plugin is augmenting.
- * @param serializer Custome serializer to serialize state before storing it in the undo stack.
  * @returns {object} State of the store without omitted keys.
  */
 function removeOmittedKeys(
 	options: Options,
 	store: Store,
 ): Store['$state'] {
-	const clone = structuredClone(toRaw(store.$state));
+	const clone = (window.structuredClone || structuredClone)(toRaw(store.$state));
 	if (options.undo?.omit) {
 		for (const key of options.undo.omit) {
 			delete clone[key];

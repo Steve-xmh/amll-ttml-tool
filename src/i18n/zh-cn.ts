@@ -201,9 +201,26 @@ export const zhCN = {
 	},
 	splitWordModal: {
 		title: "拆分单词",
+		originalWord: "原始单词",
+		delimiter: "分隔符",
 		tip: "拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除",
 		splitBtn: "拆分",
 		splitResultPreview: "拆分结果预览",
+	},
+	concatWordModal: {
+		title: "合并单词",
+		tip: "合并时将会合并时间戳，空拍可以选择合并方式",
+		mergeRange: "合并范围",
+		emptyBeatMergeMethod: {
+			label: "空拍合并方式",
+			accumulateWordBeat: "按单词和已有空拍数量累加",
+			accumulateBeat: "仅按已有空拍数量累加",
+			accumulateWord: "仅按单词数量累加",
+			clear: "清空",
+		},
+		concatBtn: "合并",
+		originPreview: "原始单词预览",
+		concatResultPreview: "合并结果预览",
 	},
 	importPlainTextModal: {
 		title: "从纯文本导入歌词",

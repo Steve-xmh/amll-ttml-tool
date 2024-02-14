@@ -17,10 +17,10 @@
 		<NAlert style="margin-bottom: 1em" type="info">
 			<i18n-t keypath="splitWordModal.tip"/>
 		</NAlert>
-		<NFormItem label="原始单词">
+		<NFormItem :label="t('splitWordModal.originalWord')">
 			<NInput v-model:value="splitWord"/>
 		</NFormItem>
-		<NFormItem label="分隔符">
+		<NFormItem :label="t('splitWordModal.delimiter')">
 			<NInput v-model:value="splitDelimiter"/>
 		</NFormItem>
 		<NSpace vertical>

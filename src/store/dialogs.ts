@@ -16,7 +16,7 @@ export const useDialogs = defineStore("dialogs", {
 		importFromDB: false,
 		submitLyric: false,
 		splitWord: false,
-		concatWords: true,
+		concatWords: false,
 		editLyricInfo: false,
 		importFromText: false,
 		metadata: false,
