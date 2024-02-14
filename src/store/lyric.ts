@@ -9,14 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {defineStore} from "pinia";
-import {parseLyric} from "../utils/ttml-parser";
-import {toRaw} from "vue";
-import exportTTMLText from "../utils/ttml-writer";
-import type {LyricLine, LyricWord, TTMLMetadata} from "../utils/ttml-types";
 import type {LyricLine as CoreLyricLine} from "@applemusic-like-lyrics/core";
-import {waitNextTick} from "../utils";
-import {useProgress} from "./progress";
 import {
 	type LyricLine as WasmLyricLine,
 	parseEslrc,
@@ -32,8 +25,15 @@ import {
 	stringifyQrc,
 	stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
-import {i18n} from "../i18n";
 import structuredClone from "@ungap/structured-clone";
+import {defineStore} from "pinia";
+import {toRaw} from "vue";
+import {i18n} from "../i18n";
+import {waitNextTick} from "../utils";
+import {parseLyric} from "../utils/ttml-parser";
+import type {LyricLine, LyricWord, TTMLMetadata} from "../utils/ttml-types";
+import exportTTMLText from "../utils/ttml-writer";
+import {useProgress} from "./progress";
 
 set_panic_hook();
 
@@ -80,6 +80,9 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		lyrics: [] as LyricLineWithState[],
 		metadata: [] as TTMLMetadata[],
 	}),
+	undo: {
+		enable: true,
+	},
 	getters: {
 		lineWithIds: (state): LyricLineWithId[] =>
 			state.lyrics.map((l, lid) => ({
@@ -114,6 +117,13 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			this.lyrics.splice(0, this.lyrics.length);
 			this.metadata = [];
 			this.record();
+		},
+		isDirty() {
+			return (
+				this.artists.length > 0 ||
+				this.lyrics.length > 0 ||
+				this.metadata.length > 0
+			);
 		},
 		loadLyric(ttmlLyric: ReturnType<typeof parseLyric>) {
 			this.artists = [];
@@ -192,13 +202,19 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			if (this.lyrics[lineIndex]) this.lyrics[lineIndex].selected = true;
 		},
 		selectAllLine() {
-			this.lyrics.forEach((line) => (line.selected = true));
+			for (const line of this.lyrics) {
+				line.selected = true;
+			}
 		},
 		unselectAllLine() {
-			this.lyrics.forEach((line) => (line.selected = false));
+			for (const line of this.lyrics) {
+				line.selected = false;
+			}
 		},
 		invertSelectAllLine() {
-			this.lyrics.forEach((line) => (line.selected = !line.selected));
+			for (const line of this.lyrics) {
+				line.selected = !line.selected;
+			}
 		},
 		removeLine(lineIndex: number) {
 			if (this.lyrics[lineIndex]) {
@@ -252,16 +268,16 @@ export const useEditingLyric = defineStore("editing-lyric", {
 		toggleSelectedLineBackground() {
 			const hasNoBg =
 				this.lyrics.filter((line) => line.selected && !line.isBG).length > 0;
-			this.lyrics.forEach((line) => {
+			for (const line of this.lyrics) {
 				if (line.selected) line.isBG = hasNoBg;
-			});
+			}
 		},
 		toggleSelectedLineDuet() {
 			const hasNoDuet =
 				this.lyrics.filter((line) => line.selected && !line.isDuet).length > 0;
-			this.lyrics.forEach((line) => {
+			for (const line of this.lyrics) {
 				if (line.selected) line.isDuet = hasNoDuet;
-			});
+			}
 		},
 		removeWord(lineIndex: number, wordIndex: number) {
 			if (this.lyrics[lineIndex]) {
@@ -330,7 +346,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				const line = this.lyrics[i];
 				if (line.isBG) {
 					const lastLine = this.lyrics[i - 1];
-					if (lastLine && lastLine.isBG) {
+					if (lastLine?.isBG) {
 						throw new TypeError(
 							`第 ${i} 行背景人声歌词重复，每行普通歌词只能拥有一个背景人声歌词`,
 						);
@@ -378,7 +394,8 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			const results: LyricLineWithState[] = [];
 			const latinReg = /^[A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
 
-			rawLines.forEach((line) => {
+			for (const line of rawLines) {
+
 				const chars = line.words.flatMap((w) => w.word.split(""));
 				console.log(chars);
 				const wordsResult: LyricWord[] = [];
@@ -387,7 +404,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 					startTime: 0,
 					endTime: 0,
 				};
-				chars.forEach((c) => {
+				for (const c of chars) {
 					if (/^\s+$/.test(c)) {
 						if (tmpWord.word.trim().length > 0) {
 							wordsResult.push(tmpWord);
@@ -420,7 +437,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 							endTime: 0,
 						};
 					}
-				});
+				}
 				if (tmpWord.word.length > 0) {
 					wordsResult.push(tmpWord);
 				}
@@ -429,7 +446,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 					words: wordsResult,
 					selected: false,
 				});
-			});
+			}
 
 			console.log(results);
 
@@ -482,8 +499,5 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			progress.finishProgress(p);
 			this.record();
 		},
-	},
-	undo: {
-		enable: true,
 	},
 });

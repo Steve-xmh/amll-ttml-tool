@@ -10,21 +10,22 @@
   -->
 
 <template>
-    <NModal preset="card" @close="dialogs.editLyricInfo = false"
-        :show="dialogs.editLyricInfo" transform-origin="center" style="max-width: 600px;" title="歌词文件信息">
-        <NSpace vertical>
-            
-        </NSpace>
-        <template #footer>
-            <NButton><i18n-t keypath="lyricInfoModal.saveBtn" /></NButton>
-        </template>
-    </NModal>
+	<NModal :show="dialogs.editLyricInfo" preset="card"
+			style="max-width: 600px;" title="歌词文件信息" transform-origin="center" @close="dialogs.editLyricInfo = false">
+		<NSpace vertical>
+
+		</NSpace>
+		<template #footer>
+			<NButton>
+				<i18n-t keypath="lyricInfoModal.saveBtn"/>
+			</NButton>
+		</template>
+	</NModal>
 </template>
 
 <script setup lang="ts">
-import { NModal, NText, NInput, NRadio, NSpace, NButton, useNotification } from 'naive-ui';
-import { useEditingLyric, useDialogs } from '../../store';
-import { reactive } from "vue";
+import {NButton, NModal, NSpace, useNotification} from 'naive-ui';
+import {useDialogs, useEditingLyric} from '../../store';
 
 const lyric = useEditingLyric();
 const notify = useNotification();

@@ -36,9 +36,8 @@ function msToTimestamp(timeMS: number): string {
 
 	if (hrs > 0) {
 		return `${h}:${m}:${s}`;
-	} else {
-		return `${m}:${s}`;
 	}
+	return `${m}:${s}`;
 }
 
 export default function exportTTMLText(
@@ -168,7 +167,7 @@ export default function exportTTMLText(
 			}
 
 			const nextLine = param[lineIndex + 1];
-			if (nextLine && nextLine.isBG) {
+			if (nextLine?.isBG) {
 				lineIndex++;
 				const bgLine = nextLine;
 				const bgLineSpan = doc.createElement("span");
@@ -270,7 +269,6 @@ export default function exportTTMLText(
 		const resultDoc = xsltProcessor.transformToDocument(doc);
 
 		return new XMLSerializer().serializeToString(resultDoc);
-	} else {
-		return new XMLSerializer().serializeToString(doc);
 	}
+	return new XMLSerializer().serializeToString(doc);
 }

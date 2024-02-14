@@ -10,14 +10,12 @@
  */
 
 import {createI18n, type I18nOptions} from "vue-i18n";
-import {zhCN} from "./zh-cn";
 import {enUS} from "./en-us";
+import {zhCN} from "./zh-cn";
 
 type BaseSchema = typeof zhCN;
 
 declare module "vue-i18n" {
-	// rome-ignore lint/suspicious/noRedeclare: <explanation>
-	// rome-ignore lint/suspicious/noEmptyInterface: <explanation>
 	export interface DefineLocaleMessage extends BaseSchema {}
 }
 

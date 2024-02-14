@@ -11,10 +11,10 @@
 
 <template>
 	<NModal :class="{ 'import-plain-text-modal': true, 'fullscreen': inputs.fullscreen }" :show="dialogs.importFromText"
-					:title="t('importPlainTextModal.title')"
-					content-style="display:flex;gap:16px;align-items:stretch;max-height:100%;overflow:hidden;"
-					preset="card" transform-origin="center"
-					@close="dialogs.importFromText = false">
+			:title="t('importPlainTextModal.title')"
+			content-style="display:flex;gap:16px;align-items:stretch;max-height:100%;overflow:hidden;"
+			preset="card" transform-origin="center"
+			@close="dialogs.importFromText = false">
 		<template #header-extra>
 			<NButton circle quaternary @click="inputs.fullscreen = !inputs.fullscreen">
 				<NIcon size="18">
@@ -23,8 +23,9 @@
 			</NButton>
 		</template>
 		<div class="import-plain-text-editor">
-			<Codemirror v-model:model-value="inputs.textContent" :placeholder="t('importPlainTextModal.textPlaceholder')"
-									style="height: 100%"/>
+			<Codemirror v-model:model-value="inputs.textContent"
+						:placeholder="t('importPlainTextModal.textPlaceholder')"
+						style="height: 100%"/>
 		</div>
 		<div class="import-plain-text-options">
 			<div>
@@ -32,32 +33,32 @@
 				<NSelect v-model:value="inputs.importMode" :options="importModeOptions"/>
 				<i18n-t keypath="importPlainTextModal.lyricSplitMode"/>
 				<NSelect v-model:value="inputs.lyricSplitMode" :disabled="inputs.importMode === 'lyric-only'"
-								 :options="lyricSplitModeOptions"/>
+						 :options="lyricSplitModeOptions"/>
 				<i18n-t keypath="importPlainTextModal.sameLineSeparator"/>
 				<NInput v-model:value="inputs.sameLineSeparator"
-								:disabled="inputs.importMode === 'lyric-only' || inputs.lyricSplitMode === 'interleaved-line'"
-								:placeholder="t('importPlainTextModal.sameLineSeparatorPlaceholder')"/>
+						:disabled="inputs.importMode === 'lyric-only' || inputs.lyricSplitMode === 'interleaved-line'"
+						:placeholder="t('importPlainTextModal.sameLineSeparatorPlaceholder')"/>
 				<i18n-t keypath="importPlainTextModal.swapTransAndRoman"/>
 				<NCheckbox v-model:checked="inputs.swapTransAndRoman"
-									 :disabled="inputs.importMode === 'lyric-only' || inputs.importMode === 'lyric-with-translation'"
-									 style="justify-self: flex-end;"/>
+						   :disabled="inputs.importMode === 'lyric-only' || inputs.importMode === 'lyric-with-translation'"
+						   style="justify-self: flex-end;"/>
 				<i18n-t keypath="importPlainTextModal.wordSeparator"/>
 				<NInput v-model:value="inputs.wordSeparator"
-								:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
+						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
 				<i18n-t keypath="importPlainTextModal.enablePrefixMarkup"/>
 				<NCheckbox v-model:checked="inputs.prefixMarkup" style="justify-self: flex-end;"/>
 				<i18n-t keypath="importPlainTextModal.bgLinePrefix"/>
 				<NInput v-model:value="inputs.bgLinePrefix" :disabled="!inputs.prefixMarkup"
-								:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
+						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
 				<i18n-t keypath="importPlainTextModal.duetLinePrefix"/>
 				<NInput v-model:value="inputs.duetLinePrefix" :disabled="!inputs.prefixMarkup"
-								:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
+						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
 				<i18n-t keypath="importPlainTextModal.emptyBeat"/>
 				<NCheckbox
 					v-model:checked="inputs.emptyBeat" style="justify-self: flex-end;"/>
 				<i18n-t keypath="importPlainTextModal.emptyBeatMark"/>
 				<NInput v-model:value="inputs.emptyBeatMark" :disabled="!inputs.emptyBeat"
-								:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
+						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
 			</div>
 			<div>
 				<NButton type="primary" @click="importLyric">

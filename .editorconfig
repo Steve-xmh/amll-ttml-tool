@@ -4,6 +4,6 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.{ts,tsx,js,jsx,json,yml,vue}]
+[*.{ts,tsx,js,jsx,json,yml,vue,sass}]
 charset = utf-8
 indent_style = tab

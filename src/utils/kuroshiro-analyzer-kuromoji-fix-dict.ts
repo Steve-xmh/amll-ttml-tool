@@ -95,18 +95,18 @@ export class Analyzer {
 	parse(str = ""): Promise<ParseResult[]> {
 		return new Promise((resolve) => {
 			if (str.trim() === "") return resolve([]);
-			const result = this._analyzer!!.tokenize(str);
+			const result = this._analyzer?.tokenize(str);
 			for (const w of result) {
 				w.verbose = {
 					word_id: w.word_id,
 					word_type: w.word_type,
 					word_position: w.word_position,
 				};
-				// rome-ignore lint/performance/noDelete: <explanation>
+				// biome-ignore lint/performance/noDelete: <explanation>
 				delete w.word_id;
-				// rome-ignore lint/performance/noDelete: <explanation>
+				// biome-ignore lint/performance/noDelete: <explanation>
 				delete w.word_type;
-				// rome-ignore lint/performance/noDelete: <explanation>
+				// biome-ignore lint/performance/noDelete: <explanation>
 				delete w.word_position;
 			}
 			resolve(result);

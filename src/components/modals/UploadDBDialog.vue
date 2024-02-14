@@ -11,8 +11,8 @@
 
 <template>
 	<NModal :closable="!submitData.processing" :show="dialogs.submitLyric" :title="t('uploadDBDialog.title')"
-					preset="card" style="max-width: 600px;" transform-origin="center"
-					@close="dialogs.submitLyric = false">
+			preset="card" style="max-width: 600px;" transform-origin="center"
+			@close="dialogs.submitLyric = false">
 		<NSpace style="line-height: 2rem; white-space: pre-line;" vertical>
 			<NAlert type="warning">
 				<i18n-t keypath="uploadDBDialog.chineseUserOnlyWarning"/>
@@ -24,11 +24,11 @@
 				<i18n-t keypath="uploadDBDialog.musicName"/>
 			</h4>
 			<NCheckbox v-model:checked="submitData.generateMusicNameFromMetadata"
-								 :label="t('uploadDBDialog.generateFromMetadata')"/>
+					   :label="t('uploadDBDialog.generateFromMetadata')"/>
 			<NInput v-model:value="submitData.name"
-							:disabled="submitData.processing || submitData.generateMusicNameFromMetadata"
-							:loading="submitData.processing"
-							:placeholder="t('uploadDBDialog.musicNamePlaceholder')"/>
+					:disabled="submitData.processing || submitData.generateMusicNameFromMetadata"
+					:loading="submitData.processing"
+					:placeholder="t('uploadDBDialog.musicNamePlaceholder')"/>
 			<div>
 				<i18n-t keypath="uploadDBDialog.musicNameTip"/>
 			</div>
@@ -36,18 +36,19 @@
 				<i18n-t keypath="uploadDBDialog.uploadReason.label"/>
 			</h4>
 			<NRadio :checked="submitData.submitReason === '新歌词提交'" value="新歌词提交"
-							@click="submitData.submitReason = '新歌词提交'">
+					@click="submitData.submitReason = '新歌词提交'">
 				<i18n-t keypath="uploadDBDialog.uploadReason.newLyric"/>
 			</NRadio>
 			<NRadio :checked="submitData.submitReason === '修正已有歌词'" value="修正已有歌词"
-							@click="submitData.submitReason = '修正已有歌词'">
+					@click="submitData.submitReason = '修正已有歌词'">
 				<i18n-t keypath="uploadDBDialog.uploadReason.patchLyric"/>
 			</NRadio>
 			<h4>
 				<i18n-t keypath="uploadDBDialog.comment"/>
 			</h4>
-			<NInput v-model:value="submitData.comment" :disabled="submitData.processing" :loading="submitData.processing"
-							:placeholder="t('uploadDBDialog.commentPlaceholder')"/>
+			<NInput v-model:value="submitData.comment" :disabled="submitData.processing"
+					:loading="submitData.processing"
+					:placeholder="t('uploadDBDialog.commentPlaceholder')"/>
 			<div>
 				<i18n-t keypath="uploadDBDialog.commentTip"/>
 			</div>
@@ -66,7 +67,7 @@
 		</NSpace>
 		<template #footer>
 			<NButton :disabled="submitData.processing || !submitData.name || !hasMusicId || lyric.lyrics.length === 0"
-							 type="primary" @click="uploadAndSubmit">
+					 type="primary" @click="uploadAndSubmit">
 				<i18n-t keypath="uploadDBDialog.uploadBtn"/>
 			</NButton>
 			<NText v-if="lyric.lyrics.length === 0" style="margin-left: 12px" type="error">

@@ -12,7 +12,7 @@
 export function classname(
 	...classes: (string | { [className: string]: boolean })[]
 ): string {
-	let result: string[] = [];
+	const result: string[] = [];
 	for (const arg of classes) {
 		if (typeof arg === "string") {
 			const className = arg.trim();

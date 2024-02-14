@@ -10,28 +10,29 @@
   -->
 
 <template>
-    <div class="amll-preview-view">
-        <LyricPlayer enable enable-spring enable-scale enable-blur align-anchor="top" :align-position="0.2" ref="playerRef"
-            :current-time="audio.currentTimeMS" :lyric-lines="lyric.lineForPreview" />
-    </div>
+	<div class="amll-preview-view">
+		<LyricPlayer ref="playerRef" :align-position="0.2" :current-time="audio.currentTimeMS" :lyric-lines="lyric.lineForPreview" align-anchor="top" enable
+					 enable-blur
+					 enable-scale enable-spring/>
+	</div>
 </template>
 
 <style lang="sass">
 .amll-preview-view
-  background-color: #222 !important
-  width: 100% !important
-  height: 100% !important
+	background-color: #222 !important
+	width: 100% !important
+	height: 100% !important
 
-  > *
-    position: absolute !important
-    top: 0 !important
-    left: 0 !important
-    width: 100% !important
-    height: 100% !important
-    mix-blend-mode: plus-lighter
+	> *
+		position: absolute !important
+		top: 0 !important
+		left: 0 !important
+		width: 100% !important
+		height: 100% !important
+		mix-blend-mode: plus-lighter
 
-    > *
-      box-sizing: content-box !important
+		> *
+			box-sizing: content-box !important
 </style>
 
 <script setup lang="ts">
@@ -44,8 +45,8 @@ const lyric = useEditingLyric();
 const playerRef = ref<LyricPlayerRef>();
 
 onMounted(() => {
-    playerRef.value?.lyricPlayer.value?.calcLayout(true);
-    playerRef.value?.lyricPlayer.value?.update(0);
+	playerRef.value?.lyricPlayer.value?.calcLayout(true);
+	playerRef.value?.lyricPlayer.value?.update(0);
 });
 
 </script>

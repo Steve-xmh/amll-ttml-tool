@@ -1,7 +1,7 @@
 import {UAParser} from "ua-parser-js";
 import {watch} from "vue";
 
-const IS_MAC = new UAParser().getOS().name === "Mac OS";
+const _IS_MAC = new UAParser().getOS().name === "Mac OS";
 
 export type KeyBindingsConfig = string[];
 

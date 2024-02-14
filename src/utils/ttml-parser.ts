@@ -27,9 +27,8 @@ function parseTimespan(timeSpan: string): number {
 		const min = Number(matches.groups?.min || "0");
 		const sec = Number(matches.groups?.sec.replace(/:/, ".") || "0");
 		return Math.floor((hour * 3600 + min * 60 + sec) * 1000);
-	} else {
-		throw new TypeError(`时间戳字符串解析失败：${timeSpan}`);
 	}
+	throw new TypeError(`时间戳字符串解析失败：${timeSpan}`);
 }
 
 export function parseLyric(ttmlText: string): TTMLLyric {

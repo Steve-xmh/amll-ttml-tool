@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { getClient, Client } from "@tauri-apps/api/http";
+import {Client, getClient} from "@tauri-apps/api/http";
 
 interface EAPIResponse {
 	code: number;

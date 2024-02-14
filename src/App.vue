@@ -67,7 +67,7 @@
 	<ImportPlainTextModal/>
 	<ImportFromDBDialog/>
 	<MetadataDialog/>
-  <SettingsModal/>
+	<SettingsModal/>
 	<ServiceWorkerUpdater v-if="enableSW"/>
 	<!-- <SplitWordModal /> -->
 </template>

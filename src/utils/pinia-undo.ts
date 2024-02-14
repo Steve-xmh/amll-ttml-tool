@@ -13,9 +13,16 @@
 // 因为目前那个 pinia-undo 那个库对深拷贝操作会发生异常
 // 所以自己修改了一个版本，使得可以手动记录快照，限制最高撤销次数，并正确撤销和重做
 
-import type {PiniaPluginContext} from "pinia";
 import structuredClone from "@ungap/structured-clone";
+import type {PiniaPluginContext} from "pinia";
 import {toRaw} from "vue";
+
+interface Serializer {
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	serialize: (value: any) => string
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	deserialize: (value: string) => any
+}
 
 type Store = PiniaPluginContext["store"];
 type Options = PiniaPluginContext["options"];
@@ -48,20 +55,28 @@ class UndoStack<T> {
  * Removes properties from the store state.
  * @param options The options object defining the store passed to `defineStore()`.
  * @param store The store the plugin is augmenting.
- * @returns {Object} State of the store without omitted keys.
+ * @param serializer Custome serializer to serialize state before storing it in the undo stack.
+ * @returns {object} State of the store without omitted keys.
  */
-function removeOmittedKeys(options: Options, store: Store): Store["$state"] {
-	const clone = (window.structuredClone || structuredClone)(
-		toRaw(store.$state),
-	);
+function removeOmittedKeys(
+	options: Options,
+	store: Store,
+): Store['$state'] {
+	const clone = structuredClone(toRaw(store.$state));
 	if (options.undo?.omit) {
-		options.undo.omit.forEach((key) => {
-			// rome-ignore lint/performance/noDelete: <explanation>
+		for (const key of options.undo.omit) {
 			delete clone[key];
-		});
-		return clone;
+		}
+		return clone
 	}
-	return clone;
+	return clone
+}
+
+type PluginOptions = PiniaPluginContext & {
+	/**
+	 * Custome serializer to serialize state before storing it in the undo stack.
+	 */
+	serializer?: Serializer
 }
 
 /**
@@ -76,8 +91,9 @@ function removeOmittedKeys(options: Options, store: Store): Store["$state"] {
  * pinia.use(PiniaUndo)
  * ```
  */
-export function PiniaUndo({ store, options }: PiniaPluginContext) {
-	if (!options.undo?.enable) return;
+export function PiniaUndo({store, options}: PluginOptions) {
+	if (!(options.undo?.enable))
+		return
 	const stack = new UndoStack(removeOmittedKeys(options, store));
 	store.undo = () => {
 		const undeStore = structuredClone(stack.undo()); // 如果不做深拷贝，深度对象会导致传入 Store 后被二次修改，导致异常
@@ -106,14 +122,18 @@ declare module "pinia" {
 		 * counterStore.increment();
 		 * counterStore.undo();
 		 * counterStore.redo();
+		 *
+		 * counterStore.$reset();
+		 * counterStore.resetStack();
 		 * ```
 		 */
-		undo: () => void;
-		redo: () => void;
-		record: () => void;
+		undo: () => void
+		redo: () => void
+		resetStack: () => void
+		record: () => void
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// biome-ignore lint/correctness/noUnusedVariables: <explanation>
 	export interface DefineStoreOptionsBase<S, Store> {
 		/**
 		 * Disable or ignore specific fields.
@@ -134,8 +154,8 @@ declare module "pinia" {
 		 * ```
 		 */
 		undo?: {
-			enable?: boolean;
-			omit?: Array<keyof S>;
-		};
+			enable?: boolean
+			omit?: Array<keyof S>
+		}
 	}
 }

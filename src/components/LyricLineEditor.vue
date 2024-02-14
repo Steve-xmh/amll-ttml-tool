@@ -10,7 +10,7 @@
   -->
 
 <template>
-    <div class="line" style="display: flex; align-items: center; gap: 12px" @contextmenu.prevent="
+	<div class="line" style="display: flex; align-items: center; gap: 12px" @contextmenu.prevent="
         lyricMenu.showMenuForLyric(
             props.line.id,
             -1,
@@ -18,43 +18,45 @@
             $event.clientY
         )
         ">
-        <NCheckbox :checked="props.line.selected" @click="
+		<NCheckbox :checked="props.line.selected" @click="
             lyric.lyrics[props.line.id].selected = !lyric.lyrics[props.line.id].selected
-            " />
-        <div style="display: flex; flex: 1; gap: 8px; flex-direction: column">
-            <div style="display: flex; flex: 1; gap: 8px; flex-wrap: wrap">
-                <Draggable :list="props.line.words" item-key="id" @sort="onSort">
-                    <template #item="{ element }">
-                        <LyricWordEditor :line-index="element.lineIndex" :word="element" :word-index="element.id"/>
-                    </template>
-                </Draggable>
-                <NInput class="new-word" round autosize ref="inputRef"
-                    :placeholder="t('lyricLineEditor.newWordPlaceholder')" :value="editState.newWord"
-                    @input="editState.newWord = $event" @change="onAddNewWord" style="min-width: 100px" />
-            </div>
-            <div v-if="settings.showTranslateLine">
-                <NInput round :placeholder="t('lyricLineEditor.translateLinePlaceholder')" :value="editState.translateLine"
-                    @input="editState.translateLine = $event"
-                    @change="lyric.modifyTranslatedLine(props.line.id, editState.translateLine)" style="min-width: 100px" />
-            </div>
-            <div v-if="settings.showRomanLine">
-                <NInput round :placeholder="t('lyricLineEditor.romanLinePlaceholder')" :value="editState.romanLine"
-                    @input="editState.romanLine = $event"
-                    @change="lyric.modifyRomanLine(props.line.id, editState.romanLine)" style="min-width: 100px" />
-            </div>
-        </div>
-        <NIcon size="24" v-if="props.line.isBG" color="#1166FF">
-            <VideoBackgroundEffect24Filled />
-        </NIcon>
-        <NIcon size="24" v-if="props.line.isDuet" color="#63e2b7">
-            <TextAlignRight24Filled />
-        </NIcon>
-        <NButton quaternary circle style="margin-left: 4px" @click="lyric.removeLine(props.line.id)">
-            <NIcon>
-                <Dismiss12Filled />
-            </NIcon>
-        </NButton>
-    </div>
+            "/>
+		<div style="display: flex; flex: 1; gap: 8px; flex-direction: column">
+			<div style="display: flex; flex: 1; gap: 8px; flex-wrap: wrap">
+				<Draggable :list="props.line.words" item-key="id" @sort="onSort">
+					<template #item="{ element }">
+						<LyricWordEditor :line-index="element.lineIndex" :word="element" :word-index="element.id"/>
+					</template>
+				</Draggable>
+				<NInput ref="inputRef" :placeholder="t('lyricLineEditor.newWordPlaceholder')" :value="editState.newWord" autosize
+						class="new-word" round
+						style="min-width: 100px" @change="onAddNewWord" @input="editState.newWord = $event"/>
+			</div>
+			<div v-if="settings.showTranslateLine">
+				<NInput :placeholder="t('lyricLineEditor.translateLinePlaceholder')" :value="editState.translateLine"
+						round
+						style="min-width: 100px"
+						@change="lyric.modifyTranslatedLine(props.line.id, editState.translateLine)"
+						@input="editState.translateLine = $event"/>
+			</div>
+			<div v-if="settings.showRomanLine">
+				<NInput :placeholder="t('lyricLineEditor.romanLinePlaceholder')" :value="editState.romanLine" round
+						style="min-width: 100px"
+						@change="lyric.modifyRomanLine(props.line.id, editState.romanLine)" @input="editState.romanLine = $event"/>
+			</div>
+		</div>
+		<NIcon v-if="props.line.isBG" color="#1166FF" size="24">
+			<VideoBackgroundEffect24Filled/>
+		</NIcon>
+		<NIcon v-if="props.line.isDuet" color="#63e2b7" size="24">
+			<TextAlignRight24Filled/>
+		</NIcon>
+		<NButton circle quaternary style="margin-left: 4px" @click="lyric.removeLine(props.line.id)">
+			<NIcon>
+				<Dismiss12Filled/>
+			</NIcon>
+		</NButton>
+	</div>
 </template>
 
 <script setup lang="tsx">
@@ -68,48 +70,51 @@ import LyricWordEditor from "./LyricWordEditor.vue";
 import type {LyricLineWithId} from "../store/lyric";
 
 const props = defineProps<{
-    line: LyricLineWithId;
+	line: LyricLineWithId;
 }>();
 const lyric = useEditingLyric();
 const lyricMenu = useRightClickLyricLine();
 const editState = reactive({
-    newWord: "",
-    translateLine: props.line.translatedLyric,
-    romanLine: props.line.romanLyric,
+	newWord: "",
+	translateLine: props.line.translatedLyric,
+	romanLine: props.line.romanLyric,
 });
 const settings = useSettings();
-const { t } = useI18n({ useScope: "global" });
+const {t} = useI18n({useScope: "global"});
 const inputRef = ref<InputInst | null>(null);
 
 function onSort(e: CustomEvent & {
-    oldIndex: number;
-    newIndex: number;
+	oldIndex: number;
+	newIndex: number;
 }) {
-    lyric.reorderWord(props.line.id, e.oldIndex, e.newIndex);
+	lyric.reorderWord(props.line.id, e.oldIndex, e.newIndex);
 }
 
 watch(() => props.line, () => {
-    editState.translateLine = props.line.translatedLyric;
-    editState.romanLine = props.line.romanLyric;
+	editState.translateLine = props.line.translatedLyric;
+	editState.romanLine = props.line.romanLyric;
 }, {
-    flush: "post",
+	flush: "post",
 });
 
 function onAddNewWord() {
-    lyric.addNewWord(props.line.id, editState.newWord);
-    editState.newWord = "";
+	lyric.addNewWord(props.line.id, editState.newWord);
+	editState.newWord = "";
 }
 
 </script>
 
 <style lang="sass" scoped>
 .new-word
-    opacity: 0
-    transition: opacity 0.2s
-    &:has(:focus)
-        opacity: 1
-    @media screen and (max-width: 768px)
-        opacity: 1
+	opacity: 0
+	transition: opacity 0.2s
+
+	&:has(:focus)
+		opacity: 1
+
+	@media screen and (max-width: 768px)
+		opacity: 1
+
 .line:hover .new-word
-    opacity: 1
+	opacity: 1
 </style>

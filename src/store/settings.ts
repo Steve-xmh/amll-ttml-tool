@@ -18,6 +18,7 @@ export const useSettings = defineStore("settings", {
 		showJpnRomaji: false,
 		volume: 0.5,
 		speed: 1,
+		timeOffset: 0,
 
 		showingTutorial: true,
 

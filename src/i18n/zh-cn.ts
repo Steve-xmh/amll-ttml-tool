@@ -81,6 +81,8 @@ export const zhCN = {
 			showJpnRomaji: "显示日语参考罗马字注音（实验性）",
 			volume: "音量",
 			speed: "播放速度",
+			timeOffset: "记录时间戳位移",
+			timeOffsetDesc: "单位毫秒，正值提前，负值推迟",
 		},
 		keybindings: {
 			resumeOrPause: "播放 / 暂停",

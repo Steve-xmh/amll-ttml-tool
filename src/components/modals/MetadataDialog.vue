@@ -11,7 +11,7 @@
 
 <template>
 	<NModal :show="dialogs.metadata" :title="t('metadataDialog.title')" preset="card" style="max-width: 600px;"
-					transform-origin="center" @close="dialogs.metadata = false">
+			transform-origin="center" @close="dialogs.metadata = false">
 		<NTable>
 			<thead>
 			<tr>
@@ -29,7 +29,7 @@
 				<td>
 					<div v-for="(value, valueIndex) in metadata.value" class="entry">
 						<NInput :placeholder="t('metadataDialog.valuePlaceholder')" :value="value"
-										@input="event => metadata.value[valueIndex] = event"/>
+								@input="event => metadata.value[valueIndex] = event"/>
 						<!--						<NButton>Delete</NButton>-->
 						<NButton circle quaternary @click="deleteValueOrMetadata(metadataIndex, valueIndex)">
 							<template #icon>
@@ -43,9 +43,10 @@
 			</tr>
 			<tr>
 				<td>
-					<NSelect v-model:value="selectedNewKey" :options="builtinOptions" :placeholder="t('metadataDialog.selectNew')"
-									 filterable
-									 tag/>
+					<NSelect v-model:value="selectedNewKey" :options="builtinOptions"
+							 :placeholder="t('metadataDialog.selectNew')"
+							 filterable
+							 tag/>
 				</td>
 				<td>
 					<NButton :disabled="!selectedNewKey" block @click="onAddNewMetadata">

@@ -3,6 +3,7 @@ import svgLoader from "vite-svg-loader";
 import vue from "@vitejs/plugin-vue";
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
+import path from "path";
 import {VitePWA} from "vite-plugin-pwa";
 
 const plugins = [
@@ -90,6 +91,26 @@ export default defineConfig({
 	server: {
 		port: 1420,
 		strictPort: true,
+	},
+	resolve: {
+		alias: {
+			"@applemusic-like-lyrics/core": path.resolve(
+				__dirname,
+				"../applemusic-like-lyrics/packages/core/src",
+			),
+			"@applemusic-like-lyrics/vue": path.resolve(
+				__dirname,
+				"../applemusic-like-lyrics/packages/vue/src",
+			),
+			"@applemusic-like-lyrics/bncm": path.resolve(
+				__dirname,
+				"../applemusic-like-lyrics/packages/bncm/src",
+			),
+			"@applemusic-like-lyrics/ttml": path.resolve(
+				__dirname,
+				"../applemusic-like-lyrics/packages/ttml/src",
+			),
+		},
 	},
 	// to make use of `TAURI_DEBUG` and other env variables
 	// https://tauri.studio/v1/api/config#buildconfig.beforedevcommand

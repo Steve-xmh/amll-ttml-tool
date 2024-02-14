@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Client, getClient, ResponseType } from "@tauri-apps/api/http";
+import {Client, getClient, ResponseType} from "@tauri-apps/api/http";
 
 export interface PlaylistSong {
 	attributes: {
@@ -104,14 +104,14 @@ export interface SyllableLyricData {
 }
 
 export class AppleMusicAPI {
-	private accessToken: string = "";
-	private indexFile: string = "";
+	private accessToken = "";
+	private indexFile = "";
 
 	constructor(
 		public mediaUserToken: string = localStorage.getItem(
 			"am-media-user-token",
 		) || "",
-		public language: string = "zh-CN",
+		public language = "zh-CN",
 	) {}
 
 	get headers() {
