@@ -10,16 +10,34 @@
   -->
 
 <template>
-	<NModal :closable="!submitData.processing" :show="dialogs.submitLyric" :title="t('splitWordModal.title')"
+	<NModal :segmented="{ footer: 'soft' }" :show="dialogs.splitWord"
 			preset="card" style="max-width: 600px;" transform-origin="center"
-			@close="dialogs.submitLyric = false">
+			:title="t('splitWordModal.title')"
+			@close="dialogs.splitWord = false">
+		<NAlert style="margin-bottom: 1em" type="info">
+			<i18n-t keypath="splitWordModal.tip"/>
+		</NAlert>
+		<NFormItem label="原始单词">
+			<NInput v-model:value="splitWord"/>
+		</NFormItem>
+		<NFormItem label="分隔符">
+			<NInput v-model:value="splitDelimiter"/>
+		</NFormItem>
 		<NSpace vertical>
-
+			<div>
+				<i18n-t keypath="splitWordModal.splitResultPreview"/>
+			</div>
+			<div class="result-preview">
+				<span v-for="word in splitResult">
+					{{ word }}
+				</span>
+			</div>
 		</NSpace>
 		<template #footer>
 			<NButton
-				:disabled="submitData.processing || !submitData.name || !submitData.ids || lyric.lyrics.length === 0"
-				type="primary" @click="uploadAndSubmit">
+				type="primary"
+				@click="processWordSplit"
+			>
 				<i18n-t keypath="splitWordModal.splitBtn"/>
 			</NButton>
 		</template>
@@ -27,54 +45,65 @@
 </template>
 
 <script setup lang="ts">
-import {NButton, NModal, NSpace, useNotification} from 'naive-ui';
-import {useDialogs, useEditingLyric} from '../../store';
-import {reactive} from "vue";
+import {NAlert, NButton, NFormItem, NInput, NModal, NSpace} from 'naive-ui';
+import {useDialogs, useEditingLyric, useRightClickLyricLine} from '../../store';
+import {computed, ref, watchEffect} from "vue";
 import {useI18n} from "vue-i18n";
+import type {LyricWord} from "../../utils/ttml-types";
 
 const lyric = useEditingLyric();
-const notify = useNotification();
+const rightClick = useRightClickLyricLine();
 const dialogs = useDialogs();
+const splitWord = ref("");
+const splitDelimiter = ref("\\");
 const {t} = useI18n({useScope: "global"});
 
-const submitData = reactive({
-	name: "",
-	ids: "",
-	submitReason: "新歌词提交",
-	comment: "",
-	processing: false,
+const originWord = computed(() => lyric.lyrics[rightClick.selectedLine]?.words?.[rightClick.selectedWord]?.word ?? "");
+const splitResult = computed(() => {
+	const word = splitWord.value;
+	const delimiter = splitDelimiter.value;
+	if (word && delimiter) {
+		return word.split(delimiter);
+	}
+	return [word];
 });
 
-async function uploadAndSubmit() {
-	if (submitData.processing) return;
-	submitData.processing = true;
-	try {
-		const lyricData = encodeURIComponent(lyric.toTTML());
-		const lyricUrl = await fetch("https://dpaste.org/api/", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: "format=url&lexer=xml&expires=3600&filename=lyric.ttml&content=" + lyricData
-		}).then(v => v.text()).then(v => v.trim() + "/raw");
-		const issueUrl = new URL("https://github.com/Steve-xmh/amll-ttml-db/issues/new");
-		issueUrl.searchParams.append("labels", "歌词提交/补正");
-		issueUrl.searchParams.append("template", "submit-lyric.yml");
-		issueUrl.searchParams.append("title", "[歌词提交/修正] " + submitData.name);
-		issueUrl.searchParams.append("song-name", submitData.name);
-		issueUrl.searchParams.append("song-id", submitData.ids);
-		issueUrl.searchParams.append("ttml-download-url", lyricUrl);
-		issueUrl.searchParams.append("upload-reason", submitData.submitReason);
-		issueUrl.searchParams.append("comment", submitData.comment);
-		open(issueUrl.toString());
-	} catch (err) {
-		console.warn("提交失败", err);
-		notify.error({
-			title: "歌词提交失败！",
-			content: `错误原因：\n${err}`,
-		});
+function processWordSplit() {
+	const line = lyric.lyrics[rightClick.selectedLine];
+	if (line) {
+		const joinResult = splitResult.value.join("");
+		const newWords: LyricWord[] = splitResult.value.map(word => ({word, startTime: 0, endTime: 0}));
+		const startTime = line.words[rightClick.selectedWord]?.startTime ?? 0;
+		const endTime = line.words[rightClick.selectedWord]?.endTime ?? 0;
+		const timeStep = (endTime - startTime) / joinResult.length;
+		let wordIndex = 0;
+		for (const newWord of newWords) {
+			newWord.startTime = startTime + timeStep * wordIndex;
+			newWord.endTime = startTime + timeStep * (wordIndex + newWord.word.length);
+			wordIndex += newWord.word.length;
+		}
+		line.words.splice(rightClick.selectedWord, 1, ...newWords);
+		lyric.record();
 	}
-	submitData.processing = false;
+	dialogs.splitWord = false;
 }
 
+watchEffect(() => {
+	splitWord.value = originWord.value;
+});
+
 </script>
+
+<style lang="sass" scoped>
+.result-preview
+	max-width: 100%
+	overflow: auto hidden
+	display: flex
+	gap: 1em
+	white-space: nowrap
+
+	> *
+		border: solid 1px #9993
+		border-radius: 4px
+		padding: 0 0.5em
+</style>

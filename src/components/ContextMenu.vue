@@ -24,8 +24,12 @@
 			 @click="() => {lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord); lyricLineMenu.show = false;}">
 			<i18n-t keypath="contextMenu.deleteWord"/>
 		</NEl>
-		<NEl tag="button" @click="showWipNotification">
+		<NEl tag="button" @click="() => {dialogs.splitWord = true; lyricLineMenu.show = false;}">
 			<i18n-t keypath="contextMenu.splitWord"/>
+		</NEl>
+		<NEl v-if="lyric.lyrics[lyricLineMenu.selectedLine]?.words?.length > 1" tag="button"
+			 @click="() => {dialogs.concatWords = true; lyricLineMenu.show = false;}">
+			<i18n-t keypath="contextMenu.concatWords" @click="showWipNotification"/>
 		</NEl>
 		<NDivider style="margin: 4px 0"/>
 		<NEl tag="button" @click="() => {lyric.removeLine(lyricLineMenu.selectedLine); lyricLineMenu.show = false;}">
@@ -53,7 +57,7 @@
 <script setup lang="tsx">
 import {NDivider, NEl, NPopover, useNotification} from "naive-ui";
 import {onMounted} from "vue";
-import {useEditingLyric, useRightClickLyricLine} from "../store";
+import {useDialogs, useEditingLyric, useRightClickLyricLine} from "../store";
 import type {DropdownMixedOption} from "naive-ui/es/dropdown/src/interface";
 import {i18n} from '../i18n';
 import ContextMenuWordEdit from "./ContextMenuWordEdit.vue";
@@ -76,6 +80,7 @@ const wordOnlyContextMenu = [
 const lyricLineMenu = useRightClickLyricLine();
 const notify = useNotification();
 const lyric = useEditingLyric();
+const dialogs = useDialogs();
 
 function showWipNotification() {
 	notify.error({

@@ -152,6 +152,7 @@ export const zhCN = {
 		toggleDuetLine: "切换对唱人声歌词",
 		deleteWord: "删除选定单词",
 		splitWord: "切割当前单词",
+		concatWords: "拼接单词",
 		wipNotification: {
 			title: "功能暂未实现",
 			content: "请静候作者爆肝实现吧~",
@@ -200,7 +201,9 @@ export const zhCN = {
 	},
 	splitWordModal: {
 		title: "拆分单词",
+		tip: "拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除",
 		splitBtn: "拆分",
+		splitResultPreview: "拆分结果预览",
 	},
 	importPlainTextModal: {
 		title: "从纯文本导入歌词",

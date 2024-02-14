@@ -68,6 +68,7 @@
 	<ImportFromDBDialog/>
 	<MetadataDialog/>
 	<SettingsModal/>
+	<SplitWordModal/>
 	<ServiceWorkerUpdater v-if="enableSW"/>
 	<!-- <SplitWordModal /> -->
 </template>
@@ -88,6 +89,7 @@ import ImportPlainTextModal from "./components/modals/ImportPlainTextModal.vue";
 import {useI18n} from "vue-i18n";
 import MetadataDialog from "./components/modals/MetadataDialog.vue";
 import SettingsModal from "./components/modals/SettingsModal.vue";
+import SplitWordModal from "./components/modals/SplitWordModal.vue";
 
 const LyricEditor = defineAsyncComponent(() => import("./components/LyricEditor.vue"));
 const LyricSyncEditor = defineAsyncComponent(() => import("./components/LyricSyncEditor.vue"));
