@@ -50,7 +50,7 @@ import LyricSyncLine from "./LyricSyncLine.vue";
 import {DynamicScroller, DynamicScrollerItem} from 'vue-virtual-scroller';
 import LyricSyncWord from "./LyricSyncWord.vue";
 import type {LyricLine, LyricWord} from "../utils/ttml-types";
-import {useKeyBinding} from "../utils/keybindings";
+import {useKeyBinding, type KeyBindingEvent} from "../utils/keybindings";
 
 const currentWord = useCurrentSyncWord();
 const audio = useAudio();
@@ -235,27 +235,29 @@ useKeyBinding(settings.keybindings.seekRightWord, () => {
 	}
 });
 // 记录当前时间为当前单词的起始时间
-useKeyBinding(settings.keybindings.setCurWordStartTime, () => {
+useKeyBinding(settings.keybindings.setCurWordStartTime, (evt: KeyBindingEvent) => {
 	const curWord = getCurrentWord();
 	if (curWord) {
-		curWord.startTime = currentTimeMS.value + settings.timeOffset;
+		const time = currentTimeMS.value + settings.timeOffset - evt.downTimeOffset;
+		curWord.startTime = time;
 		if ((curWord.emptyBeat ?? 0) > 0) currentWord.emptyBeat = 1;
 		const currentLine = getCurrentLine();
 		if (currentWord.wordIndex === 0 && currentLine) {
-			currentLine.startTime = currentTimeMS.value + settings.timeOffset;
+			currentLine.startTime = time;
 		}
 		lyric.record();
 	}
 });
 
-function stepWordAndSetTime() {
+function stepWordAndSetTime(evt: KeyBindingEvent) {
 	const curWord = getCurrentWord();
 	const currentLine = getCurrentLine();
 	const curWordIndex = currentWord.wordIndex;
 	if (moveRight()) {
+		const time = currentTimeMS.value + settings.timeOffset - evt.downTimeOffset;
 		let shouldRecord = false;
 		if (curWord) {
-			curWord.endTime = currentTimeMS.value + settings.timeOffset;
+			curWord.endTime = time;
 			shouldRecord = true;
 			if (currentLine && curWordIndex === currentLine.words.length - 1) {
 				currentLine.endTime = curWord.endTime;
@@ -263,7 +265,7 @@ function stepWordAndSetTime() {
 		}
 		const nextWord = getCurrentWord();
 		if (nextWord) {
-			nextWord.startTime = currentTimeMS.value + settings.timeOffset;
+			nextWord.startTime = time;
 			shouldRecord = true;
 			const currentLine = getCurrentLine();
 			if (currentLine && currentWord.wordIndex === 0) {
@@ -277,26 +279,26 @@ function stepWordAndSetTime() {
 }
 
 // 记录当前时间为当前单词的结束时间和下一个单词的起始时间，并移动到下一个单词
-useKeyBinding(settings.keybindings.stepWordAndSetTime, () => {
-	stepWordAndSetTime();
+useKeyBinding(settings.keybindings.stepWordAndSetTime, (evt) => {
+	stepWordAndSetTime(evt);
 });
-useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias1, () => {
-	stepWordAndSetTime();
+useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias1, (evt) => {
+	stepWordAndSetTime(evt);
 });
-useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias2, () => {
-	stepWordAndSetTime();
+useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias2, (evt) => {
+	stepWordAndSetTime(evt);
 });
-useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias3, () => {
-	stepWordAndSetTime();
+useKeyBinding(settings.keybindings.stepWordAndSetTimeAlias3, (evt) => {
+	stepWordAndSetTime(evt);
 });
 // 记录当前时间为当前单词的结束时间，并移动到下一个单词（用于空出间奏时间）
-useKeyBinding(settings.keybindings.stepWordAndSetEndTime, () => {
+useKeyBinding(settings.keybindings.stepWordAndSetEndTime, (evt) => {
 	const curWord = getCurrentWord();
 	const currentLine = getCurrentLine();
 	const curWordIndex = currentWord.wordIndex;
 	if (moveRight()) {
 		if (curWord) {
-			curWord.endTime = currentTimeMS.value + settings.timeOffset;
+			curWord.endTime = currentTimeMS.value + settings.timeOffset - evt.downTimeOffset;
 			if (currentLine && curWordIndex === currentLine.words.length - 1) {
 				currentLine.endTime = curWord.endTime;
 			}

@@ -4,6 +4,11 @@ import {watch} from "vue";
 const _IS_MAC = new UAParser().getOS().name === "Mac OS";
 
 export type KeyBindingsConfig = string[];
+export interface KeyBindingEvent {
+	downTime: number,
+	downTimeOffset: number,
+}
+export type KeyBindingCallback = (evt: KeyBindingEvent) => void;
 
 export function formatKeyBindings(cfg: KeyBindingsConfig): string {
 	return cfg.join(" + ");
@@ -11,13 +16,17 @@ export function formatKeyBindings(cfg: KeyBindingsConfig): string {
 
 const bufferedKeys = new Set<string>();
 const pressingKeys = new Set<string>();
-const registeredKeyBindings = new Map<string, Set<() => void>>();
+const registeredKeyBindings = new Map<string, Set<KeyBindingCallback>>();
+let downTime = 0;
 window.addEventListener("keydown", (evt) => {
 	console.log("Key down", evt.code);
 	if (isEditing(evt)) {
 		pressingKeys.clear();
 		bufferedKeys.clear();
 		return;
+	}
+	if (pressingKeys.size === 0) {
+		downTime = evt.timeStamp;
 	}
 	pressingKeys.add(evt.code);
 	bufferedKeys.add(evt.code);
@@ -35,8 +44,13 @@ window.addEventListener("keyup", (evt) => {
 			bufferedKeys.clear();
 			const callbacks = registeredKeyBindings.get(joined);
 			if (callbacks) {
+				const downTimeOffset = evt.timeStamp - downTime;
+				const e: KeyBindingEvent = {
+					downTime,
+					downTimeOffset,
+				};
 				for (const cb of callbacks) {
-					cb();
+					cb(e);
 				}
 				evt.preventDefault();
 				evt.stopPropagation();
@@ -62,7 +76,7 @@ function isEditing(event: KeyboardEvent) {
 
 export function registerKeyBindings(
 	cfg: KeyBindingsConfig,
-	callback: () => void,
+	callback: KeyBindingCallback,
 ) {
 	if (cfg.length === 0) {
 		return () => {
@@ -81,7 +95,7 @@ export function registerKeyBindings(
 	};
 }
 
-export function useKeyBinding(cfg: KeyBindingsConfig, callback: () => void) {
+export function useKeyBinding(cfg: KeyBindingsConfig, callback: KeyBindingCallback) {
 	watch(
 		() => cfg,
 		(n, _old, onCleanup) => {
