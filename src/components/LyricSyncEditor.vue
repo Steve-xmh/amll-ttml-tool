@@ -238,7 +238,7 @@ useKeyBinding(settings.keybindings.seekRightWord, () => {
 useKeyBinding(settings.keybindings.setCurWordStartTime, (evt: KeyBindingEvent) => {
 	const curWord = getCurrentWord();
 	if (curWord) {
-		const time = currentTimeMS.value + settings.timeOffset - evt.downTimeOffset;
+		const time = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
 		curWord.startTime = time;
 		if ((curWord.emptyBeat ?? 0) > 0) currentWord.emptyBeat = 1;
 		const currentLine = getCurrentLine();
@@ -254,7 +254,7 @@ function stepWordAndSetTime(evt: KeyBindingEvent) {
 	const currentLine = getCurrentLine();
 	const curWordIndex = currentWord.wordIndex;
 	if (moveRight()) {
-		const time = currentTimeMS.value + settings.timeOffset - evt.downTimeOffset;
+		const time = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
 		let shouldRecord = false;
 		if (curWord) {
 			curWord.endTime = time;
@@ -298,7 +298,7 @@ useKeyBinding(settings.keybindings.stepWordAndSetEndTime, (evt) => {
 	const curWordIndex = currentWord.wordIndex;
 	if (moveRight()) {
 		if (curWord) {
-			curWord.endTime = currentTimeMS.value + settings.timeOffset - evt.downTimeOffset;
+			curWord.endTime = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
 			if (currentLine && curWordIndex === currentLine.words.length - 1) {
 				currentLine.endTime = curWord.endTime;
 			}
