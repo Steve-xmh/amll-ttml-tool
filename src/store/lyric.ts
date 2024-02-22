@@ -339,7 +339,19 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				this.record();
 			}
 		},
+		roundTimeStamps() {
+			for (const line of this.lyrics) {
+				line.startTime = Math.round(line.startTime);
+				line.endTime = Math.round(line.endTime);
+				for (const word of line.words) {
+					word.startTime = Math.round(word.startTime);
+					word.endTime = Math.round(word.endTime);
+					if (word.emptyBeat !== undefined) word.emptyBeat = Math.round(word.emptyBeat);
+				}
+			}
+		},
 		toTTML() {
+			this.roundTimeStamps();
 			const transformed: LyricLine[] = [];
 
 			for (let i = 0; i < this.lyrics.length; i++) {
@@ -363,26 +375,32 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			});
 		},
 		toLRC() {
+			this.roundTimeStamps();
 			const lines = toRaw(this.lyrics);
 			return stringifyLrc(lines);
 		},
 		toESLRC() {
+			this.roundTimeStamps();
 			const lines = toRaw(this.lyrics);
 			return stringifyEslrc(lines);
 		},
 		toYRC() {
+			this.roundTimeStamps();
 			const lines = toRaw(this.lyrics);
 			return stringifyYrc(lines);
 		},
 		toQRC() {
+			this.roundTimeStamps();
 			const lines = toRaw(this.lyrics);
 			return stringifyQrc(lines);
 		},
 		toLYS() {
+			this.roundTimeStamps();
 			const lines = toRaw(this.lyrics);
 			return stringifyLys(lines);
 		},
 		toASS() {
+			this.roundTimeStamps();
 			const lines = toRaw(this.lyrics);
 			return stringifyAss(lines);
 		},
