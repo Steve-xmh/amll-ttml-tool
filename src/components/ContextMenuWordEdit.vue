@@ -16,31 +16,52 @@
 		<div>空拍</div>
 		<NInputNumber v-model:value="wordEdit.emptyBeat" :min="0"
 					  :step="1" placeholder="0" size="small" style="max-width: 7em" @blur="onEmptyBeatBlur"/>
+		<div>单词开始时间</div>
+		<TimeStampInput v-model:value="wordEdit.startTime"/>
+		<div>单词结束时间</div>
+		<TimeStampInput v-model:value="wordEdit.endTime"/>
 	</div>
 </template>
 
 <script setup lang="ts">
-
-import {NInput, NInputNumber, useNotification} from "naive-ui";
+import {NInput, NInputNumber} from "naive-ui";
 import {useEditingLyric, useRightClickLyricLine} from "../store";
-import {onMounted, reactive} from "vue";
+import {onMounted, onUnmounted, reactive, toRaw} from "vue";
 import type {LyricWord} from "../utils/ttml-types";
+import TimeStampInput from "./TimeStampInput.vue";
+import structuredClone from "@ungap/structured-clone";
 
 const lyricLineMenu = useRightClickLyricLine();
-const notify = useNotification();
 const lyric = useEditingLyric();
 
 const wordEdit = reactive({
 	word: "",
 	emptyBeat: 0,
-})
+	startTime: 0,
+	endTime: 0
+});
 
 onMounted(() => {
 	const selectedWord: LyricWord | undefined = lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[lyricLineMenu.selectedWord];
 
+	console.log("selectedWord", structuredClone(toRaw(selectedWord)));
+
 	wordEdit.word = selectedWord?.word ?? "";
 	wordEdit.emptyBeat = selectedWord?.emptyBeat ?? 0;
-})
+	wordEdit.startTime = selectedWord?.startTime ?? 0;
+	wordEdit.endTime = selectedWord?.endTime ?? 0;
+});
+
+onUnmounted(() => {
+	const selectedWord: LyricWord | undefined = lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[lyricLineMenu.selectedWord];
+
+	if (selectedWord) {
+		const shouldRecord = wordEdit.startTime !== selectedWord.startTime || wordEdit.endTime !== selectedWord.endTime;
+		selectedWord.startTime = wordEdit.startTime;
+		selectedWord.endTime = wordEdit.endTime;
+		if (shouldRecord) lyric.record();
+	}
+});
 
 function onEmptyBeatBlur() {
 	lyric.modifyWordEmptyBeat(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord, wordEdit.emptyBeat);

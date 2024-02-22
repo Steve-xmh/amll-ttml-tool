@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -11,44 +11,46 @@
 
 <template>
 	<NPopover :arrow="false" :options="lyricLineMenu.selectedWord === -1 ? lineContextMenu : wordOnlyContextMenu"
-			  :show="lyricLineMenu.show"
-			  :x="lyricLineMenu.x"
-			  :y="lyricLineMenu.y"
-			  class="context-menu"
-			  placement="bottom-start"
-			  style="padding: 4px"
-			  trigger="manual"
-			  @clickoutside="lyricLineMenu.show = false">
-		<ContextMenuWordEdit/>
+						:show="lyricLineMenu.show" :x="lyricLineMenu.x" :y="lyricLineMenu.y" class="context-menu"
+						placement="bottom-start"
+						style="padding: 4px" trigger="manual" @clickoutside="lyricLineMenu.show = false">
+		<ContextMenuWordEdit v-if="lyricLineMenu.selectedWord !== -1"/>
+		<NDivider v-if="lyricLineMenu.selectedWord !== -1" style="margin: 4px 0"/>
+		<div class="context-menu-line-edit">
+			<div>行开始时间</div>
+			<TimeStampInput v-model:value="lineInput.lineStartTime" @update:value="onTimeUpdate"/>
+			<div>行结束时间</div>
+			<TimeStampInput v-model:value="lineInput.lineEndTime" @update:value="onTimeUpdate"/>
+		</div>
+		<NDivider style="margin: 4px 0"/>
 		<NEl tag="button"
-			 @click="() => {lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord); lyricLineMenu.show = false;}">
+				 @click="() => { lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord); lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.deleteWord"/>
 		</NEl>
-		<NEl tag="button" @click="() => {dialogs.splitWord = true; lyricLineMenu.show = false;}">
+		<NEl tag="button" @click="() => { dialogs.splitWord = true; lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.splitWord"/>
 		</NEl>
 		<NEl v-if="lyric.lyrics[lyricLineMenu.selectedLine]?.words?.length > 1" tag="button"
-			 @click="() => {dialogs.concatWords = true; lyricLineMenu.show = false;}">
+				 @click="() => { dialogs.concatWords = true; lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.concatWords" @click="showWipNotification"/>
 		</NEl>
 		<NDivider style="margin: 4px 0"/>
-		<NEl tag="button" @click="() => {lyric.removeLine(lyricLineMenu.selectedLine); lyricLineMenu.show = false;}">
+		<NEl tag="button" @click="() => { lyric.removeLine(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.deleteLine"/>
 		</NEl>
-		<NEl tag="button"
-			 @click="() => {lyric.insertNewLineAt(lyricLineMenu.selectedLine); lyricLineMenu.show = false;}">
+		<NEl tag="button" @click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.insertBeforeLine"/>
 		</NEl>
 		<NEl tag="button"
-			 @click="() => {lyric.insertNewLineAt(lyricLineMenu.selectedLine + 1); lyricLineMenu.show = false;}">
+				 @click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine + 1); lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.insertAfterLine"/>
 		</NEl>
 		<NEl tag="button"
-			 @click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isBG = !line.isBG; lyricLineMenu.show = false; }">
+				 @click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isBG = !line.isBG; lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.toggleBGLine"/>
 		</NEl>
 		<NEl tag="button"
-			 @click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isDuet = !line.isDuet; lyricLineMenu.show = false; }">
+				 @click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isDuet = !line.isDuet; lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.toggleDuetLine"/>
 		</NEl>
 	</NPopover>
@@ -56,11 +58,12 @@
 
 <script setup lang="tsx">
 import {NDivider, NEl, NPopover, useNotification} from "naive-ui";
-import {onMounted} from "vue";
+import {onMounted, onUnmounted, reactive, watchEffect} from "vue";
 import {useDialogs, useEditingLyric, useRightClickLyricLine} from "../store";
 import type {DropdownMixedOption} from "naive-ui/es/dropdown/src/interface";
 import {i18n} from '../i18n';
 import ContextMenuWordEdit from "./ContextMenuWordEdit.vue";
+import TimeStampInput from "./TimeStampInput.vue";
 
 const lineContextMenu = [
 	{label: i18n.global.t("contextMenu.deleteLine"), key: 'delete-line'},
@@ -81,6 +84,18 @@ const lyricLineMenu = useRightClickLyricLine();
 const notify = useNotification();
 const lyric = useEditingLyric();
 const dialogs = useDialogs();
+const lineInput = reactive({
+	lineStartTime: 0,
+	lineEndTime: 0,
+});
+
+watchEffect(() => {
+	const line = lyric.lyrics[lyricLineMenu.selectedLine];
+	if (line) {
+		lineInput.lineStartTime = line.startTime;
+		lineInput.lineEndTime = line.endTime;
+	}
+});
 
 function showWipNotification() {
 	notify.error({
@@ -91,55 +106,38 @@ function showWipNotification() {
 	lyricLineMenu.show = false;
 }
 
-function onSelectMenu(key: string) {
-	switch (key) {
-		case "delete-line": {
-			lyric.removeLine(lyricLineMenu.selectedLine);
-			break;
-		}
-		case "delete-word": {
-			lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord);
-			break;
-		}
-		case "toggle-bg-line": {
-			const line = lyric.lyrics[lyricLineMenu.selectedLine];
-			if (line) line.isBG = !line.isBG;
-			break;
-		}
-		case "toggle-duet-line": {
-			const line = lyric.lyrics[lyricLineMenu.selectedLine];
-			if (line) line.isDuet = !line.isDuet;
-			break;
-		}
-		case "insert-before-line": {
+onMounted(() => {
+	const line = lyric.lyrics[lyricLineMenu.selectedLine];
+	if (line) {
+		lineInput.lineStartTime = line.startTime;
+		lineInput.lineEndTime = line.endTime;
+	}
+});
 
-			break;
-		}
-		case "insert-after-line": {
-
-			break;
-		}
-		default: {
-			notify.error({
-				title: i18n.global.t("contextMenu.wipNotification.title"),
-				content: i18n.global.t("contextMenu.wipNotification.content"),
-				duration: 4000,
-			});
+onUnmounted(() => {
+	const line = lyric.lyrics[lyricLineMenu.selectedLine];
+	if (line) {
+		const shouldRecord = line.startTime !== lineInput.lineStartTime || line.endTime !== lineInput.lineEndTime;
+		line.startTime = lineInput.lineStartTime;
+		line.endTime = lineInput.lineEndTime;
+		if (shouldRecord) {
+			lyric.record();
 		}
 	}
-
-}
-
-onMounted(() => {
-	// ask before page close
-	window.addEventListener("beforeunload", evt => {
-		evt.preventDefault();
-		return evt.returnValue = "";
-	})
-});
+})
 </script>
 
 <style lang="sass" scoped>
+.context-menu-line-edit
+	width: 100%
+	display: grid
+	padding: 0.5em 1em
+	grid-template-columns: auto auto
+	gap: 8px
+	align-items: center
+
+	> *:nth-child(2n)
+		justify-self: flex-end
 .context-menu
 	button
 		display: block

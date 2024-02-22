@@ -113,6 +113,8 @@ export const zhCN = {
 				"设置当前单词结束时间为当前播放位置，步进到下一个单词（可选）",
 			stepWordAndSetEndTime:
 				"设置当前单词结束时间为当前播放位置，步进到下一个单词",
+			setLineStartTime: "设置当前歌词行的开始时间为当前播放位置",
+			setLineEndTime: "设置当前歌词行的结束时间为当前播放位置",
 		},
 	},
 	metadataDialog: {

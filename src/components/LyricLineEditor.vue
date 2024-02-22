@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -21,6 +21,9 @@
 		<NCheckbox :checked="props.line.selected" @click="
             lyric.lyrics[props.line.id].selected = !lyric.lyrics[props.line.id].selected
             "/>
+		<div style="min-width: 3em; text-align: right">
+			{{ props.line.id + 1 }}
+		</div>
 		<div style="display: flex; flex: 1; gap: 8px; flex-direction: column">
 			<div style="display: flex; flex: 1; gap: 8px; flex-wrap: wrap">
 				<Draggable :list="props.line.words" item-key="id" @sort="onSort">

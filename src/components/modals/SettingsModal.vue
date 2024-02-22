@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+  - Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
   -
   - 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
   - This source code file is a part of AMLL TTML Tool project.
@@ -191,6 +191,18 @@
 				</div>
 				<div>
 					<ShortcutInput v-model="settings.keybindings.stepWordAndSetEndTime" :default="['KeyH']"/>
+				</div>
+				<div>
+					<i18n-t keypath="settingsDialog.keybindings.setLineStartTime"/>
+				</div>
+				<div>
+					<ShortcutInput v-model="settings.keybindings.setLineStartTime" :default="['KeyV']"/>
+				</div>
+				<div>
+					<i18n-t keypath="settingsDialog.keybindings.setLineEndTime"/>
+				</div>
+				<div>
+					<ShortcutInput v-model="settings.keybindings.setLineEndTime" :default="['KeyN']"/>
 				</div>
 			</NTabPane>
 		</NTabs>

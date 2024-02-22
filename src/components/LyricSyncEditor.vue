@@ -50,7 +50,7 @@ import LyricSyncLine from "./LyricSyncLine.vue";
 import {DynamicScroller, DynamicScrollerItem} from 'vue-virtual-scroller';
 import LyricSyncWord from "./LyricSyncWord.vue";
 import type {LyricLine, LyricWord} from "../utils/ttml-types";
-import {useKeyBinding, type KeyBindingEvent} from "../utils/keybindings";
+import {type KeyBindingEvent, useKeyBinding} from "../utils/keybindings";
 
 const currentWord = useCurrentSyncWord();
 const audio = useAudio();
@@ -302,6 +302,24 @@ useKeyBinding(settings.keybindings.stepWordAndSetEndTime, (evt) => {
 			if (currentLine && curWordIndex === currentLine.words.length - 1) {
 				currentLine.endTime = curWord.endTime;
 			}
+			lyric.record();
+		}
+	}
+});
+useKeyBinding(settings.keybindings.setLineStartTime, (evt) => {
+	const currentLine = getCurrentLine();
+	if (moveRight()) {
+		if (currentLine) {
+			currentLine.startTime = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
+			lyric.record();
+		}
+	}
+});
+useKeyBinding(settings.keybindings.setLineEndTime, (evt) => {
+	const currentLine = getCurrentLine();
+	if (moveRight()) {
+		if (currentLine) {
+			currentLine.endTime = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
 			lyric.record();
 		}
 	}
