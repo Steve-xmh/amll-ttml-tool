@@ -50,7 +50,11 @@ window.addEventListener("keyup", (evt) => {
 					downTimeOffset,
 				};
 				for (const cb of callbacks) {
-					cb(e);
+					try {
+						cb(e);
+					} catch (err) {
+						console.warn("Error in key binding ", joined, "callback", err);
+					}
 				}
 				evt.preventDefault();
 				evt.stopPropagation();
