@@ -17,7 +17,6 @@ import {
 	parseLys,
 	parseQrc,
 	parseYrc,
-	set_panic_hook,
 	stringifyAss,
 	stringifyEslrc,
 	stringifyLrc,
@@ -34,8 +33,6 @@ import {parseLyric} from "../utils/ttml-parser";
 import type {LyricLine, LyricWord, TTMLMetadata} from "../utils/ttml-types";
 import exportTTMLText from "../utils/ttml-writer";
 import {useProgress} from "./progress";
-
-set_panic_hook();
 
 export interface LyricWordWithId extends LyricWord {
 	lineIndex: number;
