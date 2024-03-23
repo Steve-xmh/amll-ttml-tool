@@ -37,31 +37,32 @@ window.addEventListener("keyup", (evt) => {
 		bufferedKeys.clear();
 		return;
 	}
-	pressingKeys.delete(evt.code);
-	if (pressingKeys.size === 0) {
-		if (bufferedKeys.size > 0) {
-			const joined = [...bufferedKeys].join(" + ");
-			bufferedKeys.clear();
-			const callbacks = registeredKeyBindings.get(joined);
-			if (callbacks) {
-				const downTimeOffset = evt.timeStamp - downTime;
-				const e: KeyBindingEvent = {
-					downTime,
-					downTimeOffset,
-				};
-				for (const cb of callbacks) {
-					try {
-						cb(e);
-					} catch (err) {
-						console.warn("Error in key binding ", joined, "callback", err);
-					}
+	console.log(pressingKeys.size);
+	if (bufferedKeys.size > 0) {
+		const joined = [...bufferedKeys].join(" + ");
+		bufferedKeys.clear();
+		const callbacks = registeredKeyBindings.get(joined);
+
+		if (callbacks) {
+			const downTimeOffset = evt.timeStamp - downTime;
+			const e: KeyBindingEvent = {
+				downTime,
+				downTimeOffset,
+			};
+			for (const cb of callbacks) {
+				try {
+					cb(e);
+				} catch (err) {
+					console.warn("Error in key binding ", joined, "callback", err);
 				}
-				evt.preventDefault();
-				evt.stopPropagation();
-				evt.stopImmediatePropagation();
 			}
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.stopImmediatePropagation();
 		}
 	}
+	pressingKeys.clear();
+
 });
 
 // From https://wangchujiang.com/hotkeys-js/
