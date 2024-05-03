@@ -11,7 +11,7 @@
 
 <template>
 	<NModal :show="dialogs.settings" :title="t('settingsDialog.title')" mask-closable preset="card"
-			style="max-width: 600px;" transform-origin="center" @close="dialogs.settings = false">
+					style="max-width: 600px;" transform-origin="center" @close="dialogs.settings = false">
 		<NTabs animated type="line">
 			<NTabPane key="common" :name="t('settingsDialog.tab.common')" class="setting-grid">
 				<div>
@@ -40,9 +40,7 @@
 				</div>
 				<div>
 					<NSlider v-model:value="settings.volume" :format-tooltip="(v) => `${(v * 100) | 0}%`" :max="1.0"
-							 :min="0.0"
-							 :step="0.01"
-							 style="width: 10em"/>
+									 :min="0.0" :step="0.01" style="width: 10em"/>
 				</div>
 
 				<div>
@@ -50,9 +48,7 @@
 				</div>
 				<div>
 					<NSlider v-model:value="settings.speed" :format-tooltip="(v) => `${v.toFixed(2)}x`" :max="4.0"
-							 :min="0.25"
-							 :step="0.01"
-							 style="width: 10em"/>
+									 :min="0.25" :step="0.01" style="width: 10em"/>
 				</div>
 
 				<div>
@@ -65,6 +61,19 @@
 				</div>
 				<div>
 					<NInputNumber v-model:value="settings.timeOffset" :step="1"/>
+				</div>
+
+				<div>
+					<div>
+						<i18n-t keypath="settingsDialog.common.uiLayoutMode"/>
+					</div>
+					<div class="desc">
+						<i18n-t keypath="settingsDialog.common.uiLayoutModeDesc"/>
+					</div>
+				</div>
+				<div>
+					<NSelect v-model:value="settings.uiLayoutMode" :options="uiLayoutModeOptions"
+									 style="min-width: 16em;"/>
 				</div>
 			</NTabPane>
 			<NTabPane key="shortcut" :name="t('settingsDialog.tab.keybindings')" class="setting-grid">
@@ -210,14 +219,21 @@
 </template>
 
 <script lang="ts" setup>
-import {useDialogs, useSettings} from "../../store";
-import {NInputNumber, NModal, NSlider, NSwitch, NTabPane, NTabs} from "naive-ui";
+import {UILayoutMode, useDialogs, useSettings} from "../../store";
+import {NInputNumber, NModal, NSelect, NSlider, NSwitch, NTabPane, NTabs} from "naive-ui";
 import {useI18n} from "vue-i18n";
 import ShortcutInput from "../ShortcutInput.vue";
 
 const dialogs = useDialogs();
 const settings = useSettings();
 const {t} = useI18n({useScope: "global"});
+const uiLayoutModeOptions = [{
+	value: UILayoutMode.Simple,
+	label: t("settingsDialog.common.uiLayoutModeOptions.simple"),
+}, {
+	value: UILayoutMode.Advanced,
+	label: t("settingsDialog.common.uiLayoutModeOptions.advanced"),
+}];
 
 </script>
 

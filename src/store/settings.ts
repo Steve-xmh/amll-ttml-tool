@@ -11,6 +11,11 @@
 
 import {defineStore} from "pinia";
 
+export enum UILayoutMode {
+	Simple = "simple",
+	Advanced = "advanced",
+}
+
 export const useSettings = defineStore("settings", {
 	state: () => ({
 		showTranslateLine: false,
@@ -21,6 +26,8 @@ export const useSettings = defineStore("settings", {
 		timeOffset: 0,
 
 		showingTutorial: true,
+
+		uiLayoutMode: UILayoutMode.Simple,
 
 		keybindings: {
 			resumeOrPause: ["Space"],

@@ -12,17 +12,18 @@
 <template>
 	<NPopover :arrow="false" :options="lyricLineMenu.selectedWord === -1 ? lineContextMenu : wordOnlyContextMenu"
 						:show="lyricLineMenu.show" :x="lyricLineMenu.x" :y="lyricLineMenu.y" class="context-menu"
-						placement="bottom-start"
-						style="padding: 4px" trigger="manual" @clickoutside="lyricLineMenu.show = false">
-		<ContextMenuWordEdit v-if="lyricLineMenu.selectedWord !== -1"/>
-		<NDivider v-if="lyricLineMenu.selectedWord !== -1" style="margin: 4px 0"/>
-		<div class="context-menu-line-edit">
-			<div>行开始时间</div>
-			<TimeStampInput v-model:value="lineInput.lineStartTime" @update:value="onTimeUpdate"/>
-			<div>行结束时间</div>
-			<TimeStampInput v-model:value="lineInput.lineEndTime" @update:value="onTimeUpdate"/>
-		</div>
-		<NDivider style="margin: 4px 0"/>
+						placement="bottom-start" style="padding: 4px" trigger="manual" @clickoutside="lyricLineMenu.show = false">
+		<template v-if="settings.uiLayoutMode === UILayoutMode.Simple">
+			<ContextMenuWordEdit v-if="lyricLineMenu.selectedWord !== -1"/>
+			<NDivider v-if="lyricLineMenu.selectedWord !== -1" style="margin: 4px 0"/>
+			<div class="context-menu-line-edit">
+				<div>行开始时间</div>
+				<TimeStampInput v-model:value="lineInput.lineStartTime" @update:value="onTimeUpdate"/>
+				<div>行结束时间</div>
+				<TimeStampInput v-model:value="lineInput.lineEndTime" @update:value="onTimeUpdate"/>
+			</div>
+			<NDivider style="margin: 4px 0"/>
+		</template>
 		<NEl tag="button"
 				 @click="() => { lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord); lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.deleteWord"/>
@@ -38,7 +39,8 @@
 		<NEl tag="button" @click="() => { lyric.removeLine(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.deleteLine"/>
 		</NEl>
-		<NEl tag="button" @click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
+		<NEl tag="button"
+				 @click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
 			<i18n-t keypath="contextMenu.insertBeforeLine"/>
 		</NEl>
 		<NEl tag="button"
@@ -59,7 +61,7 @@
 <script setup lang="tsx">
 import {NDivider, NEl, NPopover, useNotification} from "naive-ui";
 import {onMounted, onUnmounted, reactive, watchEffect} from "vue";
-import {useDialogs, useEditingLyric, useRightClickLyricLine} from "../store";
+import {UILayoutMode, useDialogs, useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
 import type {DropdownMixedOption} from "naive-ui/es/dropdown/src/interface";
 import {i18n} from '../i18n';
 import ContextMenuWordEdit from "./ContextMenuWordEdit.vue";
@@ -84,6 +86,7 @@ const lyricLineMenu = useRightClickLyricLine();
 const notify = useNotification();
 const lyric = useEditingLyric();
 const dialogs = useDialogs();
+const settings = useSettings();
 const lineInput = reactive({
 	lineStartTime: 0,
 	lineEndTime: 0,

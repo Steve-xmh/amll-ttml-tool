@@ -83,6 +83,12 @@ export const zhCN = {
 			speed: "播放速度",
 			timeOffset: "记录时间戳位移",
 			timeOffsetDesc: "单位毫秒，正值提前，负值推迟",
+			uiLayoutMode: "界面布局模式",
+			uiLayoutModeDesc: "如果需要更加密集的界面，可以选择高级布局（实验性）",
+			uiLayoutModeOptions: {
+				simple: "简单布局",
+				advanced: "高级布局（实验性）",
+			},
 		},
 		keybindings: {
 			resumeOrPause: "播放 / 暂停",

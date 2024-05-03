@@ -11,64 +11,76 @@
 
 <template>
 	<div class="line" style="display: flex; align-items: center; gap: 12px" @contextmenu.prevent="
-        lyricMenu.showMenuForLyric(
-            props.line.id,
-            -1,
-            $event.clientX,
-            $event.clientY
-        )
-        ">
+		lyricMenu.showMenuForLyric(
+			props.line.id,
+			-1,
+			$event.clientX,
+			$event.clientY
+		)
+		">
 		<NCheckbox :checked="props.line.selected" @click="
-            lyric.lyrics[props.line.id].selected = !lyric.lyrics[props.line.id].selected
-            "/>
+			lyric.lyrics[props.line.id].selected = !lyric.lyrics[props.line.id].selected
+			"/>
 		<div style="min-width: 3em; text-align: right">
 			{{ props.line.id + 1 }}
 		</div>
-		<div style="display: flex; flex: 1; gap: 8px; flex-direction: column">
-			<div style="display: flex; flex: 1; gap: 8px; flex-wrap: wrap">
-				<Draggable :list="props.line.words" item-key="id" @sort="onSort">
+		<div style="display: flex; flex: 1; gap: 8px; flex-direction: column; min-width: 0; overflow: hidden;">
+			<div
+				:style="settings.uiLayoutMode === UILayoutMode.Advanced ? 'overflow-x: auto; white-space: nowrap;' : 'display: flex; flex: direction: row; align-items: center;'">
+				<Draggable :list="props.line.words" :style="{
+					whiteSpace: settings.uiLayoutMode === UILayoutMode.Advanced && 'nowrap'
+				}" item-key="id" @sort="onSort">
 					<template #item="{ element }">
 						<LyricWordEditor :line-index="element.lineIndex" :word="element" :word-index="element.id"/>
 					</template>
 				</Draggable>
-				<NInput ref="inputRef" :placeholder="t('lyricLineEditor.newWordPlaceholder')" :value="editState.newWord" autosize
-						class="new-word" round
-						style="min-width: 100px" @change="onAddNewWord" @input="editState.newWord = $event"/>
+				<NInput v-if="settings.uiLayoutMode === UILayoutMode.Simple" ref="inputRef" :placeholder="t('lyricLineEditor.newWordPlaceholder')"
+								:value="editState.newWord" autosize round style="min-width: 100px;" @change="onAddNewWord"
+								@input="editState.newWord = $event"/>
 			</div>
 			<div v-if="settings.showTranslateLine">
 				<NInput :placeholder="t('lyricLineEditor.translateLinePlaceholder')" :value="editState.translateLine"
-						round
-						style="min-width: 100px"
-						@change="lyric.modifyTranslatedLine(props.line.id, editState.translateLine)"
-						@input="editState.translateLine = $event"/>
+								round style="min-width: 100px"
+								@change="lyric.modifyTranslatedLine(props.line.id, editState.translateLine)"
+								@input="editState.translateLine = $event"/>
 			</div>
 			<div v-if="settings.showRomanLine">
 				<NInput :placeholder="t('lyricLineEditor.romanLinePlaceholder')" :value="editState.romanLine" round
-						style="min-width: 100px"
-						@change="lyric.modifyRomanLine(props.line.id, editState.romanLine)" @input="editState.romanLine = $event"/>
+								style="min-width: 100px" @change="lyric.modifyRomanLine(props.line.id, editState.romanLine)"
+								@input="editState.romanLine = $event"/>
 			</div>
 		</div>
-		<NIcon v-if="props.line.isBG" color="#1166FF" size="24">
-			<VideoBackgroundEffect24Filled/>
-		</NIcon>
-		<NIcon v-if="props.line.isDuet" color="#63e2b7" size="24">
-			<TextAlignRight24Filled/>
-		</NIcon>
-		<NButton circle quaternary style="margin-left: 4px" @click="lyric.removeLine(props.line.id)">
-			<NIcon>
-				<Dismiss12Filled/>
+		<div>
+			<NIcon v-if="props.line.isBG" color="#1166FF" size="24">
+				<VideoBackgroundEffect24Filled/>
 			</NIcon>
-		</NButton>
+			<NIcon v-if="props.line.isDuet" color="#63e2b7" size="24">
+				<TextAlignRight24Filled/>
+			</NIcon>
+		</div>
+		<div style="display: flex; flex-direction: column;">
+			<NButton v-if="settings.uiLayoutMode === UILayoutMode.Advanced" circle quaternary style="margin-left: 4px"
+							 @click="lyric.addNewWord(props.line.id, '')">
+				<NIcon size="24">
+					<Add24Filled/>
+				</NIcon>
+			</NButton>
+			<NButton circle quaternary style="margin-left: 4px" @click="lyric.removeLine(props.line.id)">
+				<NIcon size="24">
+					<Delete24Regular/>
+				</NIcon>
+			</NButton>
+		</div>
 	</div>
 </template>
 
 <script setup lang="tsx">
 import {type InputInst, NButton, NCheckbox, NIcon, NInput} from "naive-ui";
-import {useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
+import {UILayoutMode, useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
 import {reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import Draggable from 'vuedraggable'
-import {Dismiss12Filled, TextAlignRight24Filled, VideoBackgroundEffect24Filled} from "@vicons/fluent";
+import {Add24Filled, Delete24Regular, TextAlignRight24Filled, VideoBackgroundEffect24Filled} from "@vicons/fluent";
 import LyricWordEditor from "./LyricWordEditor.vue";
 import type {LyricLineWithId} from "../store/lyric";
 
@@ -108,16 +120,15 @@ function onAddNewWord() {
 </script>
 
 <style lang="sass" scoped>
-.new-word
-	opacity: 0
-	transition: opacity 0.2s
+// .new-word
+// 	opacity: 0
+// 	transition: opacity 0.2s
 
-	&:has(:focus)
-		opacity: 1
+// 	&:has(:focus)
+// 		opacity: 1
 
-	@media screen and (max-width: 768px)
-		opacity: 1
-
+// 	@media screen and (max-width: 768px)
+// 		opacity: 1
 .line:hover .new-word
 	opacity: 1
 </style>
