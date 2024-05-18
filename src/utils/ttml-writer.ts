@@ -15,8 +15,8 @@
  * 但是可能会有信息会丢失
  */
 
-import type {LyricLine, LyricWord, TTMLLyric} from "./ttml-types";
-import {msToTimestamp} from "./timestamp";
+import type { LyricLine, LyricWord, TTMLLyric } from "./ttml-types";
+import { msToTimestamp } from "./timestamp";
 
 export default function exportTTMLText(
 	ttmlLyric: TTMLLyric,
@@ -101,6 +101,9 @@ export default function exportTTMLText(
 
 	const guessDuration = lyric[lyric.length - 1]?.endTime ?? 0;
 	body.setAttribute("dur", msToTimestamp(guessDuration));
+	const isDynamicLyric = lyric.some(
+		(line) => line.words.filter((v) => v.word.trim().length > 0).length > 1,
+	);
 
 	for (const param of params) {
 		const paramDiv = doc.createElement("div");
@@ -122,7 +125,7 @@ export default function exportTTMLText(
 			lineP.setAttribute("ttm:agent", line.isDuet ? "v2" : "v1");
 			lineP.setAttribute("itunes:key", `L${++i}`);
 
-			if (line.words.length > 1) {
+			if (isDynamicLyric) {
 				let beginTime = Infinity;
 				let endTime = 0;
 				for (const word of line.words) {
@@ -137,7 +140,7 @@ export default function exportTTMLText(
 				}
 				lineP.setAttribute("begin", msToTimestamp(line.startTime));
 				lineP.setAttribute("end", msToTimestamp(line.endTime));
-			} else if (line.words.length === 1) {
+			} else {
 				const word = line.words[0];
 				lineP.appendChild(doc.createTextNode(word.word));
 				lineP.setAttribute("begin", msToTimestamp(word.startTime));
@@ -151,7 +154,7 @@ export default function exportTTMLText(
 				const bgLineSpan = doc.createElement("span");
 				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
-				if (bgLine.words.length > 1) {
+				if (isDynamicLyric) {
 					let beginTime = Infinity;
 					let endTime = 0;
 					for (
@@ -176,7 +179,7 @@ export default function exportTTMLText(
 					}
 					bgLineSpan.setAttribute("begin", msToTimestamp(beginTime));
 					bgLineSpan.setAttribute("end", msToTimestamp(endTime));
-				} else if (bgLine.words.length === 1) {
+				} else {
 					const word = bgLine.words[0];
 					bgLineSpan.appendChild(doc.createTextNode(`(${word.word})`));
 					bgLineSpan.setAttribute("begin", msToTimestamp(word.startTime));
