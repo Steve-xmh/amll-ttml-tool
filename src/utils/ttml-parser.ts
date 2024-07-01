@@ -16,8 +16,8 @@
  * @see https://www.w3.org/TR/2018/REC-ttml1-20181108/
  */
 
-import type {LyricLine, LyricWord, TTMLLyric, TTMLMetadata,} from "./ttml-types";
-import {parseTimespan} from "./timestamp";
+import type { LyricLine, LyricWord, TTMLLyric, TTMLMetadata, } from "./ttml-types";
+import { parseTimespan } from "./timestamp";
 
 export function parseLyric(ttmlText: string): TTMLLyric {
 	const domParser = new DOMParser();
@@ -62,15 +62,15 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 	const lyricLines: LyricLine[] = [];
 
-	function parseParseLine(lineEl: Element, isBG = false) {
+	function parseParseLine(lineEl: Element, isBG = false, isDuet = false) {
 		const line: LyricLine = {
 			words: [],
 			translatedLyric: "",
 			romanLyric: "",
 			isBG,
 			isDuet:
-				!!lineEl.getAttribute("ttm:agent") &&
-				lineEl.getAttribute("ttm:agent") !== mainAgentId,
+				isBG ? isDuet : (!!lineEl.getAttribute("ttm:agent") &&
+					lineEl.getAttribute("ttm:agent") !== mainAgentId),
 			startTime: 0,
 			endTime: 0,
 		};
@@ -103,7 +103,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 				if (wordEl.nodeName === "span" && role) {
 					if (role === "x-bg") {
-						parseParseLine(wordEl, true);
+						parseParseLine(wordEl, true, line.isDuet);
 						haveBg = true;
 					} else if (role === "x-translation") {
 						line.translatedLyric = wordEl.innerHTML;
