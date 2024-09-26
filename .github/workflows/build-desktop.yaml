@@ -85,6 +85,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libasound2-dev libappindicator3-dev libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: 安装前端依赖
+        run: pnpm i
       - name: 构建 AMLL TTML Tools 程序并发布自动构建
         uses: tauri-apps/tauri-action@v0
         with:
