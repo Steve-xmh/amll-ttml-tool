@@ -10,13 +10,13 @@
   -->
 <template>
 	<NInput v-model:value="curTimeStamp" :status="isValueValid ? undefined : 'error'" placeholder="0:00.000"
-					@blur="onBlur"/>
+		@blur="onBlur" />
 </template>
 
 <script lang="ts" setup>
-import {computed, onMounted, ref, watchEffect} from "vue";
-import {msToTimestamp, parseTimespan} from "../utils/timestamp";
-import {NInput} from "naive-ui";
+import { NInput } from "naive-ui";
+import { computed, onMounted, ref, watchEffect } from "vue";
+import { msToTimestamp, parseTimespan } from "../utils/timestamp";
 
 const model = defineModel<number>("value");
 const emit = defineEmits<{
@@ -57,9 +57,6 @@ function onBlur() {
 		updateFromModel();
 	}
 }
-
 </script>
 
-<style lang="sass" scoped>
-
-</style>
+<style lang="css" scoped></style>

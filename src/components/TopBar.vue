@@ -10,87 +10,86 @@
   -->
 
 <template>
-	<NLayoutHeader bordered style="padding: 16px; display: flex; align-items: center">
+	<NLayoutHeader bordered style="padding: 4px; display: flex; align-items: center">
 		<div class="menu-full">
 			<NDropdown :options="MENU.file" placement="bottom-start" trigger="click" @select="onSelectMenu">
 				<NButton quaternary>
-					<i18n-t keypath="topBar.menu.file"/>
+					<i18n-t keypath="topBar.menu.file" />
 				</NButton>
 			</NDropdown>
 			<NDropdown :options="MENU.edit" placement="bottom-start" trigger="click" @select="onSelectMenu">
 				<NButton quaternary>
-					<i18n-t keypath="topBar.menu.edit"/>
+					<i18n-t keypath="topBar.menu.edit" />
 				</NButton>
 			</NDropdown>
 			<NDropdown :options="MENU.view" placement="bottom-start" trigger="click" @select="onSelectMenu">
 				<NButton quaternary>
-					<i18n-t keypath="topBar.menu.view"/>
+					<i18n-t keypath="topBar.menu.view" />
 				</NButton>
 			</NDropdown>
 			<NDropdown :options="MENU.tool" placement="bottom-start" trigger="click" @select="onSelectMenu">
 				<NButton quaternary>
-					<i18n-t keypath="topBar.menu.tool"/>
+					<i18n-t keypath="topBar.menu.tool" />
 				</NButton>
 			</NDropdown>
-			<NDivider vertical/>
+			<NDivider vertical />
 		</div>
 		<div class="menu-slim">
 			<NDropdown :options="[{
-                label: t('topBar.menu.file'),
-                key: 'sub-file',
-                children: MENU.file,
-            }, {
-                label: t('topBar.menu.edit'),
-                key: 'sub-edit',
-                children: MENU.edit,
-            }, {
-                label: t('topBar.menu.view'),
-                key: 'sub-view',
-                children: MENU.view,
-            }, {
-                label: t('topBar.menu.tool'),
-                key: 'sub-tool',
-                children: MENU.tool,
-            }]" trigger="click" @select="onSelectMenu">
+				label: t('topBar.menu.file'),
+				key: 'sub-file',
+				children: MENU.file,
+			}, {
+				label: t('topBar.menu.edit'),
+				key: 'sub-edit',
+				children: MENU.edit,
+			}, {
+				label: t('topBar.menu.view'),
+				key: 'sub-view',
+				children: MENU.view,
+			}, {
+				label: t('topBar.menu.tool'),
+				key: 'sub-tool',
+				children: MENU.tool,
+			}]" trigger="click" @select="onSelectMenu">
 				<NButton circle secondary>
 					<NIcon size="24">
-						<Home24Regular/>
+						<Home24Regular />
 					</NIcon>
 				</NButton>
 			</NDropdown>
 		</div>
 		<div style="display: flex; justify-content: center; gap: 8px">
 			<NButton :quaternary="edit.editMode !== 'edit'" :type="edit.editMode === 'edit' ? 'primary' : 'default'"
-					 @click="edit.editMode = 'edit'">
-				<i18n-t keypath="topBar.modeBtns.edit"/>
+				@click="edit.editMode = 'edit'">
+				<i18n-t keypath="topBar.modeBtns.edit" />
 			</NButton>
 			<NButton :quaternary="edit.editMode !== 'sync'" :type="edit.editMode === 'sync' ? 'primary' : 'default'"
-					 @click="edit.editMode = 'sync'">
-				<i18n-t keypath="topBar.modeBtns.sync"/>
+				@click="edit.editMode = 'sync'">
+				<i18n-t keypath="topBar.modeBtns.sync" />
 			</NButton>
 			<NButton :quaternary="edit.editMode !== 'amll-preview'"
-					 :type="edit.editMode === 'amll-preview' ? 'primary' : 'default'"
-					 @click="edit.editMode = 'amll-preview'">
-				<i18n-t keypath="topBar.modeBtns.preview"/>
+				:type="edit.editMode === 'amll-preview' ? 'primary' : 'default'"
+				@click="edit.editMode = 'amll-preview'">
+				<i18n-t keypath="topBar.modeBtns.preview" />
 			</NButton>
 		</div>
-		<div class="app-name" style="flex: 1; text-align: right">
-			<i18n-t keypath="topBar.appName"/>
+		<div class="app-name" style="flex: 1; padding-right: 1em; text-align: right">
+			<i18n-t keypath="topBar.appName" />
 		</div>
 	</NLayoutHeader>
 	<NModal v-model:show="aboutModalOpened" :title="t('aboutModal.appName')" preset="card" style="max-width: 600px;"
-			transform-origin="center">
+		transform-origin="center">
 		<NSpace vertical>
 			<div>
-				<i18n-t keypath="aboutModal.description"/>
+				<i18n-t keypath="aboutModal.description" />
 			</div>
 			<NSpace>
 				<NButton @click="goToRepo">
-					<i18n-t keypath="aboutModal.githubBtn"/>
+					<i18n-t keypath="aboutModal.githubBtn" />
 				</NButton>
 				<NButton @click="settings.showingTutorial = true; aboutModalOpened = false;">
-					<i18n-t
-						keypath="aboutModal.tutorialBtn"/>
+					<i18n-t keypath="aboutModal.tutorialBtn" />
 				</NButton>
 			</NSpace>
 		</NSpace>
@@ -98,12 +97,6 @@
 </template>
 
 <script setup lang="ts">
-import {NButton, NDivider, NDropdown, NIcon, NLayoutHeader, NModal, NSpace, useDialog, useNotification} from "naive-ui";
-import {type Component, h, reactive, ref} from "vue";
-import {useI18n} from "vue-i18n";
-import saveFile from 'save-file';
-import {parseLyric} from "../utils/ttml-parser";
-import type {DropdownMixedOption} from "naive-ui/es/dropdown/src/interface";
 import {
 	ArrowExportRtl24Regular,
 	ArrowImport24Regular,
@@ -126,7 +119,29 @@ import {
 	TextBulletListSquareEdit24Regular,
 	VideoBackgroundEffect24Regular,
 } from "@vicons/fluent";
-import {useDialogs, useEditingLyric, useEditMode, useRightClickLyricLine, useSettings} from "../store";
+import {
+	NButton,
+	NDivider,
+	NDropdown,
+	NIcon,
+	NLayoutHeader,
+	NModal,
+	NSpace,
+	useDialog,
+	useNotification,
+} from "naive-ui";
+import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
+import saveFile from "save-file";
+import { type Component, h, reactive, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import {
+	useDialogs,
+	useEditingLyric,
+	useEditMode,
+	useRightClickLyricLine,
+	useSettings,
+} from "../store";
+import { parseLyric } from "../utils/ttml-parser";
 
 const edit = useEditMode();
 const dialog = useDialog();
@@ -136,112 +151,185 @@ const settings = useSettings();
 const aboutModalOpened = ref(false);
 const notify = useNotification();
 const dialogs = useDialogs();
-const {t} = useI18n({useScope: "global"});
+const { t } = useI18n({ useScope: "global" });
 
 const renderIcon = (icon: Component) => {
 	return () => {
 		return h(NIcon, null, {
-			default: () => h(icon)
-		})
-	}
-}
+			default: () => h(icon),
+		});
+	};
+};
 
 const MENU = reactive({
 	file: [
-		{label: t('topBar.menu.newLyric'), key: 'new', icon: renderIcon(Document24Regular)},
-		{label: t('topBar.menu.openLyric'), key: 'open', icon: renderIcon(FolderOpen24Regular)},
-		{label: t('topBar.menu.openFromClipboard'), key: 'open-from-clipboard', icon: renderIcon(Clipboard24Regular)},
-		{type: 'divider'},
-		{label: t('topBar.menu.saveLyric'), key: 'save', icon: renderIcon(Save24Regular)},
 		{
-			label: t('topBar.menu.saveLyricToClipboard'),
-			key: 'save-to-clipboard',
-			icon: renderIcon(ClipboardPaste24Regular)
+			label: t("topBar.menu.newLyric"),
+			key: "new",
+			icon: renderIcon(Document24Regular),
+		},
+		{
+			label: t("topBar.menu.openLyric"),
+			key: "open",
+			icon: renderIcon(FolderOpen24Regular),
+		},
+		{
+			label: t("topBar.menu.openFromClipboard"),
+			key: "open-from-clipboard",
+			icon: renderIcon(Clipboard24Regular),
+		},
+		{ type: "divider" },
+		{
+			label: t("topBar.menu.saveLyric"),
+			key: "save",
+			icon: renderIcon(Save24Regular),
+		},
+		{
+			label: t("topBar.menu.saveLyricToClipboard"),
+			key: "save-to-clipboard",
+			icon: renderIcon(ClipboardPaste24Regular),
 		},
 		// { label: '另存为歌词', key: 'save-as' },
 		// { type: 'divider' },
 		{
-			label: t('topBar.menu.importLyric'),
-			key: 'import-from',
+			label: t("topBar.menu.importLyric"),
+			key: "import-from",
 			icon: renderIcon(ArrowImport24Regular),
-			children: [{
-				label: t('topBar.menu.importLyricFromText'), key: 'import-from-text',
-			}, {
-				label: t('topBar.menu.importLyricFromLrc'), key: 'import-from-lrc',
-			}, {
-				label: t('topBar.menu.importLyricFromEslrc'), key: 'import-from-eslrc',
-			}, {
-				label: t('topBar.menu.importLyricFromYrc'), key: 'import-from-yrc',
-			}, {
-				label: t('topBar.menu.importLyricFromQrc'), key: 'import-from-qrc',
-			}, {
-				label: t('topBar.menu.importLyricFromLys'), key: 'import-from-lys',
-			}]
+			children: [
+				{
+					label: t("topBar.menu.importLyricFromText"),
+					key: "import-from-text",
+				},
+				{
+					label: t("topBar.menu.importLyricFromLrc"),
+					key: "import-from-lrc",
+				},
+				{
+					label: t("topBar.menu.importLyricFromEslrc"),
+					key: "import-from-eslrc",
+				},
+				{
+					label: t("topBar.menu.importLyricFromYrc"),
+					key: "import-from-yrc",
+				},
+				{
+					label: t("topBar.menu.importLyricFromQrc"),
+					key: "import-from-qrc",
+				},
+				{
+					label: t("topBar.menu.importLyricFromLys"),
+					key: "import-from-lys",
+				},
+			],
 		},
 		{
-			label: t('topBar.menu.exportLyric'),
-			key: 'export-to',
+			label: t("topBar.menu.exportLyric"),
+			key: "export-to",
 			icon: renderIcon(ArrowExportRtl24Regular),
-			children: [{
-				label: t('topBar.menu.exportLyricToLrc'), key: 'export-to-lrc',
-			}, {
-				label: t('topBar.menu.exportLyricToEslrc'), key: 'export-to-eslrc',
-			}, {
-				label: t('topBar.menu.exportLyricToYrc'), key: 'export-to-yrc',
-			}, {
-				label: t('topBar.menu.exportLyricToQrc'), key: 'export-to-qrc',
-			}, {
-				label: t('topBar.menu.exportLyricToLys'), key: 'export-to-lys',
-			}, {
-				label: t('topBar.menu.exportLyricToAss'), key: 'export-to-ass',
-			}]
+			children: [
+				{
+					label: t("topBar.menu.exportLyricToLrc"),
+					key: "export-to-lrc",
+				},
+				{
+					label: t("topBar.menu.exportLyricToEslrc"),
+					key: "export-to-eslrc",
+				},
+				{
+					label: t("topBar.menu.exportLyricToYrc"),
+					key: "export-to-yrc",
+				},
+				{
+					label: t("topBar.menu.exportLyricToQrc"),
+					key: "export-to-qrc",
+				},
+				{
+					label: t("topBar.menu.exportLyricToLys"),
+					key: "export-to-lys",
+				},
+				{
+					label: t("topBar.menu.exportLyricToAss"),
+					key: "export-to-ass",
+				},
+			],
 		},
 		{
-			label: t('topBar.menu.importFromAMLLDB'),
-			key: 'import-from-amll-db',
-			icon: renderIcon(CloudArrowDown24Regular)
+			label: t("topBar.menu.importFromAMLLDB"),
+			key: "import-from-amll-db",
+			icon: renderIcon(CloudArrowDown24Regular),
 		},
-		{label: t('topBar.menu.uploadToAMLLDB'), key: 'submit-to-amll-db', icon: renderIcon(CloudArrowUp24Regular)},
-		{type: 'divider'},
-		{label: t('topBar.menu.settings'), key: 'settings', icon: renderIcon(Settings24Regular)},
-		{label: t('topBar.menu.about'), key: 'about', icon: renderIcon(Info24Regular)},
+		{
+			label: t("topBar.menu.uploadToAMLLDB"),
+			key: "submit-to-amll-db",
+			icon: renderIcon(CloudArrowUp24Regular),
+		},
+		{ type: "divider" },
+		{
+			label: t("topBar.menu.settings"),
+			key: "settings",
+			icon: renderIcon(Settings24Regular),
+		},
+		{
+			label: t("topBar.menu.about"),
+			key: "about",
+			icon: renderIcon(Info24Regular),
+		},
 	] as DropdownMixedOption[],
 	edit: [
-		{label: t('topBar.menu.undo'), key: 'undo', icon: renderIcon(ArrowUndo24Regular)},
-		{label: t('topBar.menu.redo'), key: 'redo', icon: renderIcon(ArrowRedo24Regular)},
-		{label: t('topBar.menu.selectAllLines'), key: 'select-all', icon: renderIcon(SelectAllOn24Regular)},
-		{label: t('topBar.menu.unselectAllLines'), key: 'unselect-all', icon: renderIcon(SelectAllOff24Regular)},
 		{
-			label: t('topBar.menu.invertSelectAllLines'),
-			key: 'invert-select-all',
-			icon: renderIcon(MultiselectLtr24Regular)
-		},
-		{type: 'divider'},
-		{
-			label: t('topBar.menu.toggleBGLineOnSelectedLines'),
-			key: 'toggle-bg',
-			icon: renderIcon(VideoBackgroundEffect24Regular)
+			label: t("topBar.menu.undo"),
+			key: "undo",
+			icon: renderIcon(ArrowUndo24Regular),
 		},
 		{
-			label: t('topBar.menu.toggleDuetLineOnSelectedLines'),
-			key: 'toggle-duet',
-			icon: renderIcon(TextAlignRight24Filled)
+			label: t("topBar.menu.redo"),
+			key: "redo",
+			icon: renderIcon(ArrowRedo24Regular),
 		},
-		{type: 'divider'},
 		{
-			label: t('topBar.menu.editMetadata'),
-			key: 'edit-metadata',
-			icon: renderIcon(TextBulletListSquareEdit24Regular)
+			label: t("topBar.menu.selectAllLines"),
+			key: "select-all",
+			icon: renderIcon(SelectAllOn24Regular),
+		},
+		{
+			label: t("topBar.menu.unselectAllLines"),
+			key: "unselect-all",
+			icon: renderIcon(SelectAllOff24Regular),
+		},
+		{
+			label: t("topBar.menu.invertSelectAllLines"),
+			key: "invert-select-all",
+			icon: renderIcon(MultiselectLtr24Regular),
+		},
+		{ type: "divider" },
+		{
+			label: t("topBar.menu.toggleBGLineOnSelectedLines"),
+			key: "toggle-bg",
+			icon: renderIcon(VideoBackgroundEffect24Regular),
+		},
+		{
+			label: t("topBar.menu.toggleDuetLineOnSelectedLines"),
+			key: "toggle-duet",
+			icon: renderIcon(TextAlignRight24Filled),
+		},
+		{ type: "divider" },
+		{
+			label: t("topBar.menu.editMetadata"),
+			key: "edit-metadata",
+			icon: renderIcon(TextBulletListSquareEdit24Regular),
 		},
 	] as DropdownMixedOption[],
 	view: [
-		{label: t('topBar.menu.showTranslatedLyricLines'), key: 'show-tran'},
-		{label: t('topBar.menu.showRomanLyricLines'), key: 'show-roman'},
-		{label: t('topBar.menu.showMachineRomanji'), key: 'show-jpn-romaji'},
+		{ label: t("topBar.menu.showTranslatedLyricLines"), key: "show-tran" },
+		{ label: t("topBar.menu.showRomanLyricLines"), key: "show-roman" },
+		{ label: t("topBar.menu.showMachineRomanji"), key: "show-jpn-romaji" },
 	],
 	tool: [
-		{label: t('topBar.menu.splitWordBySimpleMethod'), key: 'split-words-simple'},
-		{label: t('topBar.menu.splitWordByJieba'), key: 'split-words-jieba'},
+		{
+			label: t("topBar.menu.splitWordBySimpleMethod"),
+			key: "split-words-simple",
+		},
+		{ label: t("topBar.menu.splitWordByJieba"), key: "split-words-jieba" },
 		// { label: '简繁转换', key: 'trad-to-simp' },
 		// { label: '生成日语罗马字音译歌词', key: 'gen-jpn-romaji' },
 		// { label: '生成粤语音译歌词', key: 'gen-cat' },
@@ -263,19 +351,19 @@ async function loadFromClipboard() {
 				notify.error({
 					title: "加载歌词失败",
 					content: `解析歌词数据出错：${String(err)}`,
-				})
+				});
 			}
 		} else {
 			notify.error({
 				title: "从剪切板加载歌词失败",
-				content: "剪切板没有任何数据"
-			})
+				content: "剪切板没有任何数据",
+			});
 		}
 	} catch (err) {
 		notify.error({
 			title: "从剪切板加载歌词失败",
 			content: `无法读取剪切板：${String(err)}`,
-		})
+		});
 	}
 }
 
@@ -302,7 +390,7 @@ function onSelectMenu(key: string) {
 					notify.error({
 						title: "加载歌词失败",
 						content: String(err),
-					})
+					});
 				}
 			});
 			fileDialog.remove();
@@ -318,8 +406,8 @@ function onSelectMenu(key: string) {
 					transformOrigin: "mouse",
 					onPositiveClick: () => {
 						loadFromClipboard();
-					}
-				})
+					},
+				});
 			} else {
 				loadFromClipboard();
 			}
@@ -342,7 +430,7 @@ function onSelectMenu(key: string) {
 					notify.error({
 						title: "导入 LRC 歌词失败",
 						content: String(err),
-					})
+					});
 				}
 			});
 			fileDialog.remove();
@@ -361,7 +449,7 @@ function onSelectMenu(key: string) {
 					notify.error({
 						title: "导入 ESLyric 歌词失败",
 						content: String(err),
-					})
+					});
 				}
 			});
 			fileDialog.remove();
@@ -380,7 +468,7 @@ function onSelectMenu(key: string) {
 					notify.error({
 						title: "导入 YRC 歌词失败",
 						content: String(err),
-					})
+					});
 				}
 			});
 			fileDialog.remove();
@@ -399,7 +487,7 @@ function onSelectMenu(key: string) {
 					notify.error({
 						title: "导入 QRC 歌词失败",
 						content: String(err),
-					})
+					});
 				}
 			});
 			fileDialog.remove();
@@ -418,7 +506,7 @@ function onSelectMenu(key: string) {
 					notify.error({
 						title: "导入 Lyricify Syllable 歌词失败",
 						content: String(err),
-					})
+					});
 				}
 			});
 			fileDialog.remove();
@@ -432,25 +520,27 @@ function onSelectMenu(key: string) {
 				notify.error({
 					title: "保存失败",
 					content: String(err),
-				})
+				});
 			}
 			break;
 		}
 		case "save-to-clipboard": {
 			const output = lyric.toTTML();
-			navigator.clipboard.writeText(output)
+			navigator.clipboard
+				.writeText(output)
 				.then(() => {
 					notify.success({
 						title: "保存到剪贴板成功",
 						content: "已将歌词保存到剪贴板",
 						duration: 3000,
-					})
-				}).catch(err => {
-				notify.error({
-					title: "保存到剪贴板失败",
-					content: String(err),
+					});
 				})
-			});
+				.catch((err) => {
+					notify.error({
+						title: "保存到剪贴板失败",
+						content: String(err),
+					});
+				});
 			break;
 		}
 		case "export-to-lrc": {
@@ -461,7 +551,7 @@ function onSelectMenu(key: string) {
 				notify.error({
 					title: "导出 LRC 歌词失败",
 					content: String(err),
-				})
+				});
 			}
 			break;
 		}
@@ -473,7 +563,7 @@ function onSelectMenu(key: string) {
 				notify.error({
 					title: "导出 ESLyric 歌词失败",
 					content: String(err),
-				})
+				});
 			}
 			break;
 		}
@@ -485,7 +575,7 @@ function onSelectMenu(key: string) {
 				notify.error({
 					title: "导出 YRC 歌词失败",
 					content: String(err),
-				})
+				});
 			}
 			break;
 		}
@@ -497,7 +587,7 @@ function onSelectMenu(key: string) {
 				notify.error({
 					title: "导出 QRC 歌词失败",
 					content: String(err),
-				})
+				});
 			}
 			break;
 		}
@@ -509,7 +599,7 @@ function onSelectMenu(key: string) {
 				notify.error({
 					title: "导出 Lyricify Syllable 歌词失败",
 					content: String(err),
-				})
+				});
 			}
 			break;
 		}
@@ -595,22 +685,29 @@ function onSelectMenu(key: string) {
 		}
 	}
 }
-
 </script>
 
-<style lang="sass">
-.menu-full
+<style lang="css" scoped>
+.menu-full {
 	flex: 1
+}
 
-.menu-slim
-	flex: 1
-	display: none
+.menu-slim {
+	flex: 1;
+	display: none;
+}
 
-@media screen and (max-width: 800px)
-	.app-name
-		display: none
-	.menu-full
-		display: none
-	.menu-slim
-		display: unset
+@media screen and (max-width: 800px) {
+	.app-name {
+		display: none;
+	}
+
+	.menu-full {
+		display: none;
+	}
+
+	.menu-slim {
+		display: unset;
+	}
+}
 </style>

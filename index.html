@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" sizes="any" href="./src-tauri/icons/icon.ico" />
-    <link rel="icon" type="image/svg+xml" href="./src/assets/logo.svg" />
-    <link rel="apple-touch-icon" href="./src/assets/logo.png" sizes="1024x1024">
-    <link rel="mask-icon" href="./src/assets/logo.svg" color="#18a058">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';  script-src * data: blob: 'unsafe-inline' 'unsafe-eval';  connect-src * data: blob: 'unsafe-inline';  img-src * data: blob: 'unsafe-inline';  frame-src * data: blob: ;  style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline'; frame-ancestors * data: blob: 'unsafe-inline';"/>
-    <meta name="theme-color" content="#18a058" />
-    <title>AMLL TTML Tool</title>
-    <style>
-      * { margin: 0; box-sizing: border-box; }
-      #root {
-        width: 100vw;
-        height: 100vh;
-        max-width: 100vw;
-        max-height: 100vh;
-        overflow: hidden;
-      }
-    </style>
-  </head>
 
-  <body>
-    <div id="root">
-      <div style="display: flex; flex-direction: column; height: 100vh; text-align: center; align-items: center;justify-content: center;">
-        <div>AMLL TTML Tool is loading...</div>
-        <div>Resource files are quite big, please be patient...</div>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" sizes="any" href="./src-tauri/icons/icon.ico" />
+  <link rel="icon" type="image/svg+xml" href="./src/assets/logo.svg" />
+  <link rel="apple-touch-icon" href="./src/assets/logo.png" sizes="1024x1024">
+  <link rel="mask-icon" href="./src/assets/logo.svg" color="#18a058">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';  script-src * data: blob: 'unsafe-inline' 'unsafe-eval';  connect-src * data: blob: 'unsafe-inline';  img-src * data: blob: 'unsafe-inline';  frame-src * data: blob: ;  style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline'; frame-ancestors * data: blob: 'unsafe-inline';" />
+  <meta name="theme-color" content="#18a058" />
+  <title>AMLL TTML Tool</title>
+  <style>
+    * {
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    #root {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <div
+      style="display: flex; flex-direction: column; height: 100vh; text-align: center; align-items: center;justify-content: center;">
+      <div>AMLL TTML Tool 正在加载...</div>
+      <div>AMLL TTML Tool is loading...</div>
+      <div>工具资源较大，请稍等片刻...</div>
+      <div>Resource files are quite big, please be patient...</div>
     </div>
-    <script type="module" defer src="/src/main.ts"></script>
-  </body>
+  </div>
+  <script type="module" defer src="/src/main.ts"></script>
+</body>
+
 </html>

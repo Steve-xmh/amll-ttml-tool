@@ -24,11 +24,10 @@
 </template>
 
 <script setup lang="ts">
-import {NButton, NModal, NSpace, useNotification} from 'naive-ui';
-import {useDialogs, useEditingLyric} from '../../store';
+import { NButton, NModal, NSpace, useNotification } from "naive-ui";
+import { useDialogs, useEditingLyric } from "../../store";
 
 const lyric = useEditingLyric();
 const notify = useNotification();
 const dialogs = useDialogs();
-
 </script>

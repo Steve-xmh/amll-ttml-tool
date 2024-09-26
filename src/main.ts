@@ -9,13 +9,11 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {createPinia} from "pinia";
-import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
-import {createApp} from "vue";
+import { createApp } from "vue";
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import Main from "./Main.vue";
-import {i18n} from "./i18n";
-import {PiniaUndo} from "./utils/pinia-undo";
+import { i18n } from "./i18n";
+import { pinia } from "./store";
 
 window.document.addEventListener("keydown", (evt) => {
 	// 阻止非编辑状态下的空格滚动
@@ -27,7 +25,4 @@ window.document.addEventListener("keydown", (evt) => {
 	}
 });
 
-const pinia = createPinia();
-pinia.use(PiniaUndo);
-pinia.use(piniaPluginPersistedstate);
 createApp(Main).use(pinia).use(i18n).mount("#root");

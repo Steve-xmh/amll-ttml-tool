@@ -1,12 +1,10 @@
-import {UAParser} from "ua-parser-js";
-import {watch} from "vue";
+import { watch } from "vue";
 
-const _IS_MAC = new UAParser().getOS().name === "Mac OS";
 
 export type KeyBindingsConfig = string[];
 export interface KeyBindingEvent {
-	downTime: number,
-	downTimeOffset: number,
+	downTime: number;
+	downTimeOffset: number;
 }
 export type KeyBindingCallback = (evt: KeyBindingEvent) => void;
 
@@ -62,7 +60,6 @@ window.addEventListener("keyup", (evt) => {
 		}
 	}
 	pressingKeys.clear();
-
 });
 
 // From https://wangchujiang.com/hotkeys-js/
@@ -84,8 +81,7 @@ export function registerKeyBindings(
 	callback: KeyBindingCallback,
 ) {
 	if (cfg.length === 0) {
-		return () => {
-		};
+		return () => {};
 	}
 	const joined = [...cfg].join(" + ");
 	let set = registeredKeyBindings.get(joined);
@@ -100,7 +96,10 @@ export function registerKeyBindings(
 	};
 }
 
-export function useKeyBinding(cfg: KeyBindingsConfig, callback: KeyBindingCallback) {
+export function useKeyBinding(
+	cfg: KeyBindingsConfig,
+	callback: KeyBindingCallback,
+) {
 	watch(
 		() => cfg,
 		(n, _old, onCleanup) => {

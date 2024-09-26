@@ -11,58 +11,55 @@
 
 <template>
 	<NModal :class="{ 'import-plain-text-modal': true, 'fullscreen': inputs.fullscreen }" :show="dialogs.importFromText"
-			:title="t('importPlainTextModal.title')"
-			content-style="display:flex;gap:16px;align-items:stretch;max-height:100%;overflow:hidden;"
-			preset="card" transform-origin="center"
-			@close="dialogs.importFromText = false">
+		:title="t('importPlainTextModal.title')"
+		content-style="display:flex;gap:16px;align-items:stretch;max-height:100%;overflow:hidden;" preset="card"
+		transform-origin="center" @close="dialogs.importFromText = false">
 		<template #header-extra>
 			<NButton circle quaternary @click="inputs.fullscreen = !inputs.fullscreen">
 				<NIcon size="18">
-					<FullScreenMaximize16Filled/>
+					<FullScreenMaximize16Filled />
 				</NIcon>
 			</NButton>
 		</template>
 		<div class="import-plain-text-editor">
 			<Codemirror v-model:model-value="inputs.textContent"
-						:placeholder="t('importPlainTextModal.textPlaceholder')"
-						style="height: 100%"/>
+				:placeholder="t('importPlainTextModal.textPlaceholder')" style="height: 100%" />
 		</div>
 		<div class="import-plain-text-options">
 			<div>
-				<i18n-t keypath="importPlainTextModal.importMode"/>
-				<NSelect v-model:value="inputs.importMode" :options="importModeOptions"/>
-				<i18n-t keypath="importPlainTextModal.lyricSplitMode"/>
+				<i18n-t keypath="importPlainTextModal.importMode" />
+				<NSelect v-model:value="inputs.importMode" :options="importModeOptions" />
+				<i18n-t keypath="importPlainTextModal.lyricSplitMode" />
 				<NSelect v-model:value="inputs.lyricSplitMode" :disabled="inputs.importMode === 'lyric-only'"
-						 :options="lyricSplitModeOptions"/>
-				<i18n-t keypath="importPlainTextModal.sameLineSeparator"/>
+					:options="lyricSplitModeOptions" />
+				<i18n-t keypath="importPlainTextModal.sameLineSeparator" />
 				<NInput v-model:value="inputs.sameLineSeparator"
-						:disabled="inputs.importMode === 'lyric-only' || inputs.lyricSplitMode === 'interleaved-line'"
-						:placeholder="t('importPlainTextModal.sameLineSeparatorPlaceholder')"/>
-				<i18n-t keypath="importPlainTextModal.swapTransAndRoman"/>
+					:disabled="inputs.importMode === 'lyric-only' || inputs.lyricSplitMode === 'interleaved-line'"
+					:placeholder="t('importPlainTextModal.sameLineSeparatorPlaceholder')" />
+				<i18n-t keypath="importPlainTextModal.swapTransAndRoman" />
 				<NCheckbox v-model:checked="inputs.swapTransAndRoman"
-						   :disabled="inputs.importMode === 'lyric-only' || inputs.importMode === 'lyric-with-translation'"
-						   style="justify-self: flex-end;"/>
-				<i18n-t keypath="importPlainTextModal.wordSeparator"/>
+					:disabled="inputs.importMode === 'lyric-only' || inputs.importMode === 'lyric-with-translation'"
+					style="justify-self: flex-end;" />
+				<i18n-t keypath="importPlainTextModal.wordSeparator" />
 				<NInput v-model:value="inputs.wordSeparator"
-						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
-				<i18n-t keypath="importPlainTextModal.enablePrefixMarkup"/>
-				<NCheckbox v-model:checked="inputs.prefixMarkup" style="justify-self: flex-end;"/>
-				<i18n-t keypath="importPlainTextModal.bgLinePrefix"/>
+					:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
+				<i18n-t keypath="importPlainTextModal.enablePrefixMarkup" />
+				<NCheckbox v-model:checked="inputs.prefixMarkup" style="justify-self: flex-end;" />
+				<i18n-t keypath="importPlainTextModal.bgLinePrefix" />
 				<NInput v-model:value="inputs.bgLinePrefix" :disabled="!inputs.prefixMarkup"
-						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
-				<i18n-t keypath="importPlainTextModal.duetLinePrefix"/>
+					:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
+				<i18n-t keypath="importPlainTextModal.duetLinePrefix" />
 				<NInput v-model:value="inputs.duetLinePrefix" :disabled="!inputs.prefixMarkup"
-						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
-				<i18n-t keypath="importPlainTextModal.emptyBeat"/>
-				<NCheckbox
-					v-model:checked="inputs.emptyBeat" style="justify-self: flex-end;"/>
-				<i18n-t keypath="importPlainTextModal.emptyBeatMark"/>
+					:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
+				<i18n-t keypath="importPlainTextModal.emptyBeat" />
+				<NCheckbox v-model:checked="inputs.emptyBeat" style="justify-self: flex-end;" />
+				<i18n-t keypath="importPlainTextModal.emptyBeatMark" />
 				<NInput v-model:value="inputs.emptyBeatMark" :disabled="!inputs.emptyBeat"
-						:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')"/>
+					:placeholder="t('importPlainTextModal.wordSeparatorPlaceholder')" />
 			</div>
 			<div>
 				<NButton type="primary" @click="importLyric">
-					<i18n-t keypath="importPlainTextModal.importBtn"/>
+					<i18n-t keypath="importPlainTextModal.importBtn" />
 				</NButton>
 			</div>
 		</div>
@@ -70,17 +67,25 @@
 </template>
 
 <script lang="ts" setup>
-import {NButton, NCheckbox, NIcon, NInput, NModal, NSelect, type SelectOption} from 'naive-ui';
-import {FullScreenMaximize16Filled} from "@vicons/fluent";
-import {useDialogs, useEditingLyric} from '../../store';
-import {useI18n} from "vue-i18n";
-import {reactive} from "vue";
-import {Codemirror} from 'vue-codemirror'
-import type {LyricLineWithState} from "../../store/lyric";
+import {
+	NButton,
+	NCheckbox,
+	NIcon,
+	NInput,
+	NModal,
+	NSelect,
+	type SelectOption,
+} from "naive-ui";
+import { FullScreenMaximize16Filled } from "@vicons/fluent";
+import { useDialogs, useEditingLyric } from "../../store";
+import { useI18n } from "vue-i18n";
+import { reactive } from "vue";
+import { Codemirror } from "vue-codemirror";
+import type { LyricLineWithState } from "../../store/lyric";
 
 const lyric = useEditingLyric();
 const dialogs = useDialogs();
-const {t} = useI18n({useScope: "global"});
+const { t } = useI18n({ useScope: "global" });
 
 const inputs = reactive({
 	textContent: "",
@@ -97,24 +102,35 @@ const inputs = reactive({
 	emptyBeatMark: "^",
 });
 
-const importModeOptions: SelectOption[] = [{
-	label: t("importPlainTextModal.lyricOnly"),
-	value: "lyric-only",
-}, {
-	label: t("importPlainTextModal.lyricWithTranslation"),
-	value: "lyric-with-translation",
-}, {
-	label: t("importPlainTextModal.lyricWithTranslationAndRoman"),
-	value: "lyric-with-translation-and-roman",
-}];
+const importModeOptions: SelectOption[] = [
+	{
+		label: t("importPlainTextModal.lyricOnly"),
+		value: "lyric-only",
+	},
+	{
+		label: t("importPlainTextModal.lyricWithTranslation"),
+		value: "lyric-with-translation",
+	},
+	{
+		label: t("importPlainTextModal.lyricWithRoman"),
+		value: "lyric-with-roman",
+	},
+	{
+		label: t("importPlainTextModal.lyricWithTranslationAndRoman"),
+		value: "lyric-with-translation-and-roman",
+	},
+];
 
-const lyricSplitModeOptions: SelectOption[] = [{
-	label: t("importPlainTextModal.interleavedLine"),
-	value: "interleaved-line",
-}, {
-	label: t("importPlainTextModal.sameLineWithSeparator"),
-	value: "same-line-separator",
-}];
+const lyricSplitModeOptions: SelectOption[] = [
+	{
+		label: t("importPlainTextModal.interleavedLine"),
+		value: "interleaved-line",
+	},
+	{
+		label: t("importPlainTextModal.sameLineWithSeparator"),
+		value: "same-line-separator",
+	},
+];
 
 function importLyric() {
 	const origLines = inputs.textContent.split("\n");
@@ -137,11 +153,13 @@ function importLyric() {
 			}
 		}
 		result.push({
-			words: [{
-				word: orig,
-				startTime: 0,
-				endTime: 0,
-			}],
+			words: [
+				{
+					word: orig,
+					startTime: 0,
+					endTime: 0,
+				},
+			],
 			translatedLyric: trans,
 			romanLyric: roman,
 			isBG,
@@ -183,6 +201,30 @@ function importLyric() {
 			}
 			break;
 		}
+		case "lyric-with-roman": {
+			switch (inputs.lyricSplitMode) {
+				case "interleaved-line": {
+					for (let i = 0; i < origLines.length; i += 2) {
+						addLine(origLines[i], "", origLines[i + 1]);
+					}
+					break;
+				}
+				case "same-line-separator": {
+					if (inputs.sameLineSeparator === "") {
+						addAsLyricOnly();
+					} else {
+						for (const origLine of origLines) {
+							const [orig, roman] = origLine.split(inputs.sameLineSeparator);
+							addLine(orig, "", roman);
+						}
+					}
+					break;
+				}
+				default:
+					return;
+			}
+			break;
+		}
 		case "lyric-with-translation-and-roman": {
 			switch (inputs.lyricSplitMode) {
 				case "interleaved-line": {
@@ -196,7 +238,9 @@ function importLyric() {
 						addAsLyricOnly();
 					} else {
 						for (const origLine of origLines) {
-							const [orig, trans, roman] = origLine.split(inputs.sameLineSeparator);
+							const [orig, trans, roman] = origLine.split(
+								inputs.sameLineSeparator,
+							);
 							addLine(orig, trans, roman);
 						}
 					}
@@ -215,15 +259,18 @@ function importLyric() {
 	}
 
 	if (inputs.swapTransAndRoman) {
-		result.forEach(line => {
-			[line.romanLyric, line.translatedLyric] = [line.translatedLyric, line.romanLyric];
+		result.forEach((line) => {
+			[line.romanLyric, line.translatedLyric] = [
+				line.translatedLyric,
+				line.romanLyric,
+			];
 		});
 	}
 
 	if (inputs.wordSeparator.length > 0) {
-		result.forEach(line => {
-			const wholeLine = line.words.map(v => v.word).join("");
-			line.words = wholeLine.split(inputs.wordSeparator).map(word => ({
+		result.forEach((line) => {
+			const wholeLine = line.words.map((v) => v.word).join("");
+			line.words = wholeLine.split(inputs.wordSeparator).map((word) => ({
 				word,
 				startTime: 0,
 				endTime: 0,
@@ -233,8 +280,8 @@ function importLyric() {
 
 	if (inputs.emptyBeat && inputs.emptyBeatMark.trim().length === 1) {
 		const mark = inputs.emptyBeatMark.trim();
-		result.forEach(line => {
-			line.words.forEach(word => {
+		result.forEach((line) => {
+			line.words.forEach((word) => {
 				let processd = word.word;
 				while (processd.endsWith(mark)) {
 					processd = processd.substring(0, processd.length - mark.length);
@@ -250,47 +297,53 @@ function importLyric() {
 	lyric.record();
 	dialogs.importFromText = false;
 }
-
 </script>
 
-<style lang="sass">
-.import-plain-text-modal
-	max-width: max(800px, 80vw)
-	min-height: min(100vh, 500px)
-	max-height: 100vh
+<style lang="css" scoped>
+.import-plain-text-modal {
+	max-width: max(800px, 80vw);
+	min-height: min(100vh, 500px);
+	max-height: 100vh;
 
-	&.fullscreen
-		max-width: unset
-		min-height: unset
-		width: 100vw
-		height: 100vh
+	&.fullscreen {
+		max-width: unset;
+		min-height: unset;
+		width: 100vw;
+		height: 100vh;
+	}
+}
 
-.import-plain-text-editor
-	flex: 2
-	min-width: 0
-	border: solid 1px #4444
-	border-radius: 4px
-	position: relative
-	overflow: hidden
+.import-plain-text-editor {
+	flex: 2;
+	min-width: 0;
+	border: solid 1px #4444;
+	border-radius: 4px;
+	position: relative;
+	overflow: hidden;
 
-	*
-		font-family: 'Fira Code', 'PingFang SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', 'Courier New', Courier, monospace
+	* {
+		font-family: 'Fira Code', 'PingFang SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', 'Courier New', Courier, monospace;
+	}
+}
 
-.import-plain-text-options
-	flex: 2
-	display: flex
-	flex-direction: column
-	justify-content: space-between
+.import-plain-text-options {
+	flex: 2;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 
-	> *:last-child
-		margin-top: 8px
-		align-self: flex-end
+	>*:last-child {
+		margin-top: 8px;
+		align-self: flex-end;
+	}
 
-	> *:first-child
-		display: grid
-		grid-template-columns: auto auto
-		grid-template-rows: auto auto auto
-		align-items: center
-		max-width: 100%
-		gap: 8px
+	>*:first-child {
+		display: grid;
+		grid-template-columns: auto auto;
+		grid-template-rows: auto auto auto;
+		align-items: center;
+		max-width: 100%;
+		gap: 8px;
+	}
+}
 </style>

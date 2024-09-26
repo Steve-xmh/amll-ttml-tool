@@ -9,9 +9,9 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {createI18n, type I18nOptions} from "vue-i18n";
-import {enUS} from "./en-us";
-import {zhCN} from "./zh-cn";
+import { createI18n, type I18nOptions } from "vue-i18n";
+import { enUS } from "./en-us";
+import { zhCN } from "./zh-cn";
 
 type BaseSchema = typeof zhCN;
 

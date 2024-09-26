@@ -12,60 +12,74 @@
 <template>
 	<NLayoutFooter bordered class="audio-player-bar">
 		<NUpload ref="uploadRef" :default-upload="false" :multiple="false" :show-file-list="false" style="width: unset"
-				 @change="onUploadMusic">
+			@change="onUploadMusic">
 			<NButton v-if="!curFile">
-				<i18n-t keypath="audioPlayerBar.loadMusicBtn"/>
+				<i18n-t keypath="audioPlayerBar.loadMusicBtn" />
 			</NButton>
 			<NButton v-else circle quaternary>
 				<NIcon size="18">
-					<MusicNote224Filled/>
+					<MusicNote224Filled />
 				</NIcon>
 			</NButton>
 		</NUpload>
 		<NButton :disabled="!audio.canPlay" circle quaternary
-				 @click="audio.playing ? audioPlayer.pause() : audioPlayer.play()">
+			@click="audio.playing ? audioPlayer.pause() : audioPlayer.play()">
 			<NIcon size="18">
-				<Pause48Filled v-if="audio.playing"/>
-				<Play48Filled v-else/>
+				<Pause48Filled v-if="audio.playing" />
+				<Play48Filled v-else />
 			</NIcon>
 		</NButton>
 		<div>{{ toDuration(audio.currentTime / 1000) }}</div>
 		<NSlider :disabled="!audio.canPlay" :format-tooltip="(v) => toDuration(v)" :max="audioPlayer.duration"
-				 :value="Math.floor(audio.currentTime / 1000)" @update:value="
-                audio.setCurrentTime($event * 1000);
-            "/>
+			:value="Math.floor(audio.currentTime / 1000)" @update:value="
+				audio.setCurrentTime($event * 1000);
+			" />
 		<div class="hide-if-small">{{ toDuration((audio.currentTime - audio.duration) / 1000) }}</div>
 		<NIcon class="hide-if-small" size="18">
-			<TopSpeed24Regular/>
+			<TopSpeed24Regular />
 		</NIcon>
 		<NSlider :format-tooltip="(v) => `${v.toFixed(2)}x`" :max="4" :min="0.25" :step="0.25" :value="settings.speed"
-				 class="hide-if-small" style="max-width: 100px" @update:value="
-                settings.speed = $event;
-            audioPlayer.playbackRate = $event;
-            "/>
+			class="hide-if-small" style="max-width: 100px" @update:value="
+				settings.speed = $event;
+			audioPlayer.playbackRate = $event;
+			" />
 		<NIcon class="hide-if-small" size="18">
-			<Speaker248Filled/>
+			<Speaker248Filled />
 		</NIcon>
-		<NSlider :format-tooltip="(v) => `${(v * 100) | 0}%`" :max="1" :min="0" :step="0.01"
-				 :value="settings.volume" class="hide-if-small" style="max-width: 100px" @update:value="
-                settings.volume = $event;
-            audioPlayer.volume = $event;
-            "/>
+		<NSlider :format-tooltip="(v) => `${(v * 100) | 0}%`" :max="1" :min="0" :step="0.01" :value="settings.volume"
+			class="hide-if-small" style="max-width: 100px" @update:value="
+				settings.volume = $event;
+			audioPlayer.volume = $event;
+			" />
 	</NLayoutFooter>
 </template>
 
 <script setup lang="ts">
-import {NButton, NIcon, NLayoutFooter, NSlider, NUpload, type UploadFileInfo, type UploadInst,} from "naive-ui";
-import {MusicNote224Filled, Pause48Filled, Play48Filled, Speaker248Filled, TopSpeed24Regular,} from "@vicons/fluent";
-import {onMounted, onUnmounted, ref} from "vue";
-import {useAudio, useSettings} from "../store";
-import {useKeyBinding} from "../utils/keybindings";
+import {
+	MusicNote224Filled,
+	Pause48Filled,
+	Play48Filled,
+	Speaker248Filled,
+	TopSpeed24Regular,
+} from "@vicons/fluent";
+import {
+	NButton,
+	NIcon,
+	NLayoutFooter,
+	NSlider,
+	NUpload,
+	type UploadFileInfo,
+	type UploadInst,
+} from "naive-ui";
+import { onMounted, onUnmounted, ref } from "vue";
+import { useAudio, useSettings } from "../store";
+import { useKeyBinding } from "../utils/keybindings";
 
 const curFile = ref<UploadFileInfo>();
 const audioPlayer = ref(new Audio());
 const settings = useSettings();
 const audio = useAudio();
-const uploadRef = ref<UploadInst | null>(null)
+const uploadRef = ref<UploadInst | null>(null);
 
 audio.$onAction((e) => {
 	if (e.name === "setCurrentTime") {
@@ -74,16 +88,16 @@ audio.$onAction((e) => {
 });
 
 settings.$subscribe(
-	(mut) => {
+	() => {
 		audioPlayer.value.playbackRate = Math.max(
 			0.25,
-			Math.min(4, settings.speed)
+			Math.min(4, settings.speed),
 		);
 		audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
 	},
 	{
 		flush: "post",
-	}
+	},
 );
 
 function toDuration(duration: number) {
@@ -120,7 +134,7 @@ onMounted(() => {
 		audio.duration = audioPlayer.value.duration * 1000;
 		audioPlayer.value.playbackRate = Math.max(
 			0.25,
-			Math.min(4, settings.speed)
+			Math.min(4, settings.speed),
 		);
 		audioPlayer.value.volume = Math.max(0, Math.min(1, settings.volume));
 	});
@@ -169,7 +183,7 @@ useKeyBinding(settings.keybindings.seekPlayForward5s, () => {
 	if (audioPlayer.value.seekable) {
 		audioPlayer.value.currentTime = Math.min(
 			audioPlayer.value.duration,
-			audioPlayer.value.currentTime + 5
+			audioPlayer.value.currentTime + 5,
 		);
 	}
 });
@@ -177,7 +191,7 @@ useKeyBinding(settings.keybindings.seekPlayBackward5s, () => {
 	if (audioPlayer.value.seekable) {
 		audioPlayer.value.currentTime = Math.max(
 			0,
-			audioPlayer.value.currentTime - 5
+			audioPlayer.value.currentTime - 5,
 		);
 	}
 });
@@ -185,7 +199,7 @@ useKeyBinding(settings.keybindings.seekPlayForward1s, () => {
 	if (audioPlayer.value.seekable) {
 		audioPlayer.value.currentTime = Math.min(
 			audioPlayer.value.duration,
-			audioPlayer.value.currentTime + 1
+			audioPlayer.value.currentTime + 1,
 		);
 	}
 });
@@ -193,7 +207,7 @@ useKeyBinding(settings.keybindings.seekPlayBackward1s, () => {
 	if (audioPlayer.value.seekable) {
 		audioPlayer.value.currentTime = Math.max(
 			0,
-			audioPlayer.value.currentTime - 1
+			audioPlayer.value.currentTime - 1,
 		);
 	}
 });
@@ -201,7 +215,7 @@ useKeyBinding(settings.keybindings.seekPlayForward100ms, () => {
 	if (audioPlayer.value.seekable) {
 		audioPlayer.value.currentTime = Math.min(
 			audioPlayer.value.duration,
-			audioPlayer.value.currentTime + 0.1
+			audioPlayer.value.currentTime + 0.1,
 		);
 	}
 });
@@ -209,7 +223,7 @@ useKeyBinding(settings.keybindings.seekPlayBackward100ms, () => {
 	if (audioPlayer.value.seekable) {
 		audioPlayer.value.currentTime = Math.max(
 			0,
-			audioPlayer.value.currentTime - 0.1
+			audioPlayer.value.currentTime - 0.1,
 		);
 	}
 });
@@ -232,16 +246,21 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="sass" scoped>
-.audio-player-bar
-	padding: 16px
-	gap: 16px
-	display: flex
-	align-items: center
-	@media screen and (max-width: 768px)
-		gap: 4px
+<style lang="css" scoped>
+.audio-player-bar {
+	padding: 16px;
+	gap: 16px;
+	display: flex;
+	align-items: center;
 
-.hide-if-small
-	@media screen and (max-width: 768px)
-		display: none
+	@media screen and (max-width: 768px) {
+		gap: 4px;
+	}
+}
+
+.hide-if-small {
+	@media screen and (max-width: 768px) {
+		display: none;
+	}
+}
 </style>

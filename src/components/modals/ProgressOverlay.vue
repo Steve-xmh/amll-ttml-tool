@@ -21,12 +21,11 @@
 </template>
 
 <script setup lang="ts">
-import {NCard, NModal, NProgress,} from "naive-ui";
-import {useProgress} from "../../store";
-import {storeToRefs} from "pinia";
-import {useI18n} from "vue-i18n";
+import { NCard, NModal, NProgress } from "naive-ui";
+import { useProgress } from "../../store";
+import { storeToRefs } from "pinia";
+import { useI18n } from "vue-i18n";
 
-const {currentProgresses} = storeToRefs(useProgress());
-const {t} = useI18n({useScope: "global"});
-
+const { currentProgresses } = storeToRefs(useProgress());
+const { t } = useI18n({ useScope: "global" });
 </script>

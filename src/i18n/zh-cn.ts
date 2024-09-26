@@ -127,6 +127,7 @@ export const zhCN = {
 		title: "编辑歌词元数据",
 		selectNew: "请选择新增元数据类型",
 		addNew: "添加新元数据",
+		addAllBatch: "批量添加所有预设元数据",
 		valuePlaceholder: "请输入值",
 		tableHead: {
 			key: "元数据类型",
@@ -236,6 +237,7 @@ export const zhCN = {
 		importMode: "导入模式",
 		lyricOnly: "仅歌词",
 		lyricWithTranslation: "歌词和翻译歌词",
+		lyricWithRoman: "歌词和音译歌词",
 		lyricWithTranslationAndRoman: "歌词和翻译、音译歌词",
 		lyricSplitMode: "歌词分行（翻译和音译）模式",
 		sameLineWithSeparator: "同行分隔",
@@ -438,7 +440,7 @@ export const zhCN = {
 // 将下面的语言代码换成相对应的即可实现指定语言的热重载
 // 注意大小写敏感
 
-import {i18n} from ".";
+import { i18n } from ".";
 
 if (import.meta.hot) {
 	import.meta.hot.accept((newModule) => {

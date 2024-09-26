@@ -10,21 +10,28 @@
   -->
 
 <template>
-	<NConfigProvider :theme="theme">
-		<NDialogProvider>
-			<NNotificationProvider>
-				<App/>
-			</NNotificationProvider>
-		</NDialogProvider>
-	</NConfigProvider>
+    <NConfigProvider :theme="theme">
+        <NDialogProvider>
+            <NNotificationProvider>
+                <App />
+            </NNotificationProvider>
+        </NDialogProvider>
+    </NConfigProvider>
 </template>
 
 <script setup lang="ts">
-import {darkTheme, NConfigProvider, NDialogProvider, NNotificationProvider, useOsTheme} from "naive-ui";
-import {computed} from "vue";
+import {
+    darkTheme,
+    NConfigProvider,
+    NDialogProvider,
+    NNotificationProvider,
+    useOsTheme,
+} from "naive-ui";
+import { computed } from "vue";
 import App from "./App.vue";
 
 const osThemeRef = useOsTheme();
-const theme = computed(() => osThemeRef.value === "dark" ? darkTheme : undefined);
-
+const theme = computed(() =>
+    osThemeRef.value === "dark" ? darkTheme : undefined,
+);
 </script>

@@ -20,7 +20,7 @@
 		">
 		<NCheckbox :checked="props.line.selected" @click="
 			lyric.lyrics[props.line.id].selected = !lyric.lyrics[props.line.id].selected
-			"/>
+			" />
 		<div style="min-width: 3em; text-align: right">
 			{{ props.line.id + 1 }}
 		</div>
@@ -31,43 +31,43 @@
 					whiteSpace: settings.uiLayoutMode === UILayoutMode.Advanced && 'nowrap'
 				}" item-key="id" @sort="onSort">
 					<template #item="{ element }">
-						<LyricWordEditor :line-index="element.lineIndex" :word="element" :word-index="element.id"/>
+						<LyricWordEditor :line-index="element.lineIndex" :word="element" :word-index="element.id" />
 					</template>
 				</Draggable>
-				<NInput v-if="settings.uiLayoutMode === UILayoutMode.Simple" ref="inputRef" :placeholder="t('lyricLineEditor.newWordPlaceholder')"
-								:value="editState.newWord" autosize round style="min-width: 100px;" @change="onAddNewWord"
-								@input="editState.newWord = $event"/>
+				<NInput v-if="settings.uiLayoutMode === UILayoutMode.Simple" ref="inputRef"
+					:placeholder="t('lyricLineEditor.newWordPlaceholder')" :value="editState.newWord" autosize round
+					style="min-width: 100px;" @change="onAddNewWord" @input="editState.newWord = $event" />
 			</div>
 			<div v-if="settings.showTranslateLine">
 				<NInput :placeholder="t('lyricLineEditor.translateLinePlaceholder')" :value="editState.translateLine"
-								round style="min-width: 100px"
-								@change="lyric.modifyTranslatedLine(props.line.id, editState.translateLine)"
-								@input="editState.translateLine = $event"/>
+					round style="min-width: 100px"
+					@change="lyric.modifyTranslatedLine(props.line.id, editState.translateLine)"
+					@input="editState.translateLine = $event" />
 			</div>
 			<div v-if="settings.showRomanLine">
 				<NInput :placeholder="t('lyricLineEditor.romanLinePlaceholder')" :value="editState.romanLine" round
-								style="min-width: 100px" @change="lyric.modifyRomanLine(props.line.id, editState.romanLine)"
-								@input="editState.romanLine = $event"/>
+					style="min-width: 100px" @change="lyric.modifyRomanLine(props.line.id, editState.romanLine)"
+					@input="editState.romanLine = $event" />
 			</div>
 		</div>
 		<div>
 			<NIcon v-if="props.line.isBG" color="#1166FF" size="24">
-				<VideoBackgroundEffect24Filled/>
+				<VideoBackgroundEffect24Filled />
 			</NIcon>
 			<NIcon v-if="props.line.isDuet" color="#63e2b7" size="24">
-				<TextAlignRight24Filled/>
+				<TextAlignRight24Filled />
 			</NIcon>
 		</div>
 		<div style="display: flex; flex-direction: column;">
 			<NButton v-if="settings.uiLayoutMode === UILayoutMode.Advanced" circle quaternary style="margin-left: 4px"
-							 @click="lyric.addNewWord(props.line.id, '')">
+				@click="lyric.addNewWord(props.line.id, '')">
 				<NIcon size="24">
-					<Add24Filled/>
+					<Add24Filled />
 				</NIcon>
 			</NButton>
 			<NButton circle quaternary style="margin-left: 4px" @click="lyric.removeLine(props.line.id)">
 				<NIcon size="24">
-					<Delete24Regular/>
+					<Delete24Regular />
 				</NIcon>
 			</NButton>
 		</div>
@@ -75,14 +75,24 @@
 </template>
 
 <script setup lang="tsx">
-import {type InputInst, NButton, NCheckbox, NIcon, NInput} from "naive-ui";
-import {UILayoutMode, useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
-import {reactive, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
-import Draggable from 'vuedraggable'
-import {Add24Filled, Delete24Regular, TextAlignRight24Filled, VideoBackgroundEffect24Filled} from "@vicons/fluent";
+import {
+	Add24Filled,
+	Delete24Regular,
+	TextAlignRight24Filled,
+	VideoBackgroundEffect24Filled,
+} from "@vicons/fluent";
+import { type InputInst, NButton, NCheckbox, NIcon, NInput } from "naive-ui";
+import { reactive, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import Draggable from "vuedraggable";
+import {
+	UILayoutMode,
+	useEditingLyric,
+	useRightClickLyricLine,
+	useSettings,
+} from "../store";
+import type { LyricLineWithId } from "../store/lyric";
 import LyricWordEditor from "./LyricWordEditor.vue";
-import type {LyricLineWithId} from "../store/lyric";
 
 const props = defineProps<{
 	line: LyricLineWithId;
@@ -95,40 +105,37 @@ const editState = reactive({
 	romanLine: props.line.romanLyric,
 });
 const settings = useSettings();
-const {t} = useI18n({useScope: "global"});
+const { t } = useI18n({ useScope: "global" });
 const inputRef = ref<InputInst | null>(null);
 
-function onSort(e: CustomEvent & {
-	oldIndex: number;
-	newIndex: number;
-}) {
+function onSort(
+	e: CustomEvent & {
+		oldIndex: number;
+		newIndex: number;
+	},
+) {
 	lyric.reorderWord(props.line.id, e.oldIndex, e.newIndex);
 }
 
-watch(() => props.line, () => {
-	editState.translateLine = props.line.translatedLyric;
-	editState.romanLine = props.line.romanLyric;
-}, {
-	flush: "post",
-});
+watch(
+	() => props.line,
+	() => {
+		editState.translateLine = props.line.translatedLyric;
+		editState.romanLine = props.line.romanLyric;
+	},
+	{
+		flush: "post",
+	},
+);
 
 function onAddNewWord() {
 	lyric.addNewWord(props.line.id, editState.newWord);
 	editState.newWord = "";
 }
-
 </script>
 
-<style lang="sass" scoped>
-// .new-word
-// 	opacity: 0
-// 	transition: opacity 0.2s
-
-// 	&:has(:focus)
-// 		opacity: 1
-
-// 	@media screen and (max-width: 768px)
-// 		opacity: 1
-.line:hover .new-word
-	opacity: 1
+<style lang="css" scoped>
+.line:hover .new-word {
+	opacity: 1;
+}
 </style>

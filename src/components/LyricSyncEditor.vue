@@ -12,30 +12,27 @@
 <template>
 	<div class="lyric-sync-editor">
 		<div v-if="lyric.lyrics[currentWord.lineIndex]" ref="syncEditor" class="lyric-line-sync-editor"
-			 @wheel="onSyncEditorScroll">
+			@wheel="onSyncEditorScroll">
 			<template v-if="lyric.lineWithIds[currentWord.lineIndex - 1]">
 				<LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex - 1].words" :key="i"
-							   :word="word"
-							   not-main/>
+					:word="word" not-main />
 			</template>
-			<LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex].words" :key="i" :word="word"/>
+			<LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex].words" :key="i" :word="word" />
 			<template v-if="lyric.lineWithIds[currentWord.lineIndex + 1]">
 				<LyricSyncWord v-for="(word, i) in lyric.lineWithIds[currentWord.lineIndex + 1].words" :key="i"
-							   :word="word"
-							   not-main/>
+					:word="word" not-main />
 			</template>
 		</div>
 		<div v-else class="lyric-line-sync-editor-no-selected">
 			<div style="white-space: pre-line;">
-				<i18n-t keypath="lyricSyncEditor.unselectedTip"/>
+				<i18n-t keypath="lyricSyncEditor.unselectedTip" />
 			</div>
 		</div>
 		<div class="lyric-line-viewer">
-			<DynamicScroller v-slot="{ item, index, active }" :items="lyric.lineWithIds"
-							 :min-item-size="lineMinHeight" key-field="id"
-							 style="width: 100%; position: relative; min-height: fit-content; height: 100%;">
+			<DynamicScroller v-slot="{ item, active }" :items="lyric.lineWithIds" :min-item-size="lineMinHeight"
+				key-field="id" style="width: 100%; position: relative; min-height: fit-content; height: 100%;">
 				<DynamicScrollerItem :active="active" :item="item" watch-data>
-					<LyricSyncLine v-if="active" :line="item"/>
+					<LyricSyncLine v-if="active" :line="item" />
 				</DynamicScrollerItem>
 			</DynamicScroller>
 		</div>
@@ -43,21 +40,24 @@
 </template>
 
 <script lang="ts" setup>
-import {useAudio, useCurrentSyncWord, useDialogs, useEditingLyric, useSettings} from "../store";
-import {computed, nextTick, ref} from "vue";
-import {storeToRefs} from "pinia";
+import { storeToRefs } from "pinia";
+import { computed, nextTick, ref } from "vue";
+import { DynamicScroller, DynamicScrollerItem } from "vue-virtual-scroller";
+import {
+	useAudio,
+	useCurrentSyncWord, useEditingLyric,
+	useSettings
+} from "../store";
+import { type KeyBindingEvent, useKeyBinding } from "../utils/keybindings";
+import type { LyricLine, LyricWord } from "../utils/ttml-types";
 import LyricSyncLine from "./LyricSyncLine.vue";
-import {DynamicScroller, DynamicScrollerItem} from 'vue-virtual-scroller';
 import LyricSyncWord from "./LyricSyncWord.vue";
-import type {LyricLine, LyricWord} from "../utils/ttml-types";
-import {type KeyBindingEvent, useKeyBinding} from "../utils/keybindings";
 
 const currentWord = useCurrentSyncWord();
 const audio = useAudio();
 const settings = useSettings();
-const dialogs = useDialogs();
-const {setCurrentTime} = audio;
-const {currentTimeMS} = storeToRefs(audio);
+const { setCurrentTime } = audio;
+const { currentTimeMS } = storeToRefs(audio);
 const syncEditor = ref<HTMLDivElement>();
 const lyric = useEditingLyric();
 const lineMinHeight = computed(getMinHeight);
@@ -66,7 +66,7 @@ function getMinHeight() {
 	if (settings.showTranslateLine && settings.showRomanLine) {
 		return 95;
 	} else if (settings.showTranslateLine || settings.showRomanLine) {
-		return 66
+		return 66;
 	} else {
 		return 37;
 	}
@@ -80,37 +80,38 @@ function onSyncEditorScroll(evt: WheelEvent) {
 	});
 }
 
-currentWord.$subscribe((mut) => {
-	const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
-	if (evt.key === "wordIndex" && syncEditor.value) {
-		const el = syncEditor.value.children.item(currentWord.wordIndex)
-		nextTick(() => {
-			el?.scrollIntoView({
-				behavior: "smooth",
-				block: "center",
-				inline: "center",
+currentWord.$subscribe(
+	(mut) => {
+		const evt = mut.events instanceof Array ? mut.events[0] : mut.events;
+		if (evt.key === "wordIndex" && syncEditor.value) {
+			const el = syncEditor.value.children.item(currentWord.wordIndex);
+			nextTick(() => {
+				el?.scrollIntoView({
+					behavior: "smooth",
+					block: "center",
+					inline: "center",
+				});
 			});
-		})
-	}
-}, {flush: "post"});
+		}
+	},
+	{ flush: "post" },
+);
 
-function toTimestamp(duration: number) {
-	const isRemainTime = duration < 0;
 
-	const d = Math.abs(duration / 1000);
-	const sec = d % 60;
-	const min = Math.floor((d - sec) / 60);
-	const secFixed = sec.toFixed(3);
-	const secText = "0".repeat(6 - secFixed.length) + secFixed;
-
-	return `${isRemainTime ? "-" : ""}${min}:${secText}`;
+function isBlankWord(
+	lineIndex = currentWord.lineIndex,
+	wordIndex = currentWord.wordIndex,
+) {
+	return (
+		(lyric.lineWithIds[lineIndex]?.words?.[wordIndex]?.word?.trim()?.length ??
+			0) === 0
+	);
 }
 
-function isBlankWord(lineIndex = currentWord.lineIndex, wordIndex = currentWord.wordIndex) {
-	return (lyric.lineWithIds[lineIndex]?.words?.[wordIndex]?.word?.trim()?.length ?? 0) === 0;
-}
-
-function isWordExist(lineIndex = currentWord.lineIndex, wordIndex = currentWord.wordIndex) {
+function isWordExist(
+	lineIndex = currentWord.lineIndex,
+	wordIndex = currentWord.wordIndex,
+) {
 	return !!lyric.lyrics[lineIndex]?.words?.[wordIndex];
 }
 
@@ -138,7 +139,10 @@ function moveRight() {
 		} else {
 			break;
 		}
-	} while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+	} while (
+		isWordExist(lineIndex, wordIndex) &&
+		isBlankWord(lineIndex, wordIndex)
+	);
 	if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
 		currentWord.wordIndex = wordIndex;
 		currentWord.lineIndex = lineIndex;
@@ -162,7 +166,10 @@ function moveLeft() {
 		} else {
 			break;
 		}
-	} while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+	} while (
+		isWordExist(lineIndex, wordIndex) &&
+		isBlankWord(lineIndex, wordIndex)
+	);
 	if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
 		currentWord.wordIndex = wordIndex;
 		currentWord.lineIndex = lineIndex;
@@ -181,7 +188,10 @@ function moveUp() {
 		} else {
 			break;
 		}
-	} while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+	} while (
+		isWordExist(lineIndex, wordIndex) &&
+		isBlankWord(lineIndex, wordIndex)
+	);
 	if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
 		currentWord.wordIndex = wordIndex;
 		currentWord.lineIndex = lineIndex;
@@ -199,7 +209,10 @@ function moveDown() {
 		} else {
 			break;
 		}
-	} while (isWordExist(lineIndex, wordIndex) && isBlankWord(lineIndex, wordIndex));
+	} while (
+		isWordExist(lineIndex, wordIndex) &&
+		isBlankWord(lineIndex, wordIndex)
+	);
 	if (isWordExist(lineIndex, wordIndex) && !isBlankWord(lineIndex, wordIndex)) {
 		currentWord.wordIndex = wordIndex;
 		currentWord.lineIndex = lineIndex;
@@ -235,26 +248,35 @@ useKeyBinding(settings.keybindings.seekRightWord, () => {
 	}
 });
 // 记录当前时间为当前单词的起始时间
-useKeyBinding(settings.keybindings.setCurWordStartTime, (evt: KeyBindingEvent) => {
-	const curWord = getCurrentWord();
-	if (curWord) {
-		const time = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
-		curWord.startTime = time;
-		if ((curWord.emptyBeat ?? 0) > 0) currentWord.emptyBeat = 1;
-		const currentLine = getCurrentLine();
-		if (currentWord.wordIndex === 0 && currentLine) {
-			currentLine.startTime = time;
+useKeyBinding(
+	settings.keybindings.setCurWordStartTime,
+	(evt: KeyBindingEvent) => {
+		const curWord = getCurrentWord();
+		if (curWord) {
+			const time =
+				currentTimeMS.value +
+				settings.timeOffset -
+				Math.round(evt.downTimeOffset);
+			curWord.startTime = time;
+			if ((curWord.emptyBeat ?? 0) > 0) currentWord.emptyBeat = 1;
+			const currentLine = getCurrentLine();
+			if (currentWord.wordIndex === 0 && currentLine) {
+				currentLine.startTime = time;
+			}
+			lyric.record();
 		}
-		lyric.record();
-	}
-});
+	},
+);
 
 function stepWordAndSetTime(evt: KeyBindingEvent) {
 	const curWord = getCurrentWord();
 	const currentLine = getCurrentLine();
 	const curWordIndex = currentWord.wordIndex;
 	if (moveRight()) {
-		const time = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
+		const time =
+			currentTimeMS.value +
+			settings.timeOffset -
+			Math.round(evt.downTimeOffset);
 		let shouldRecord = false;
 		if (curWord) {
 			curWord.endTime = time;
@@ -298,7 +320,10 @@ useKeyBinding(settings.keybindings.stepWordAndSetEndTime, (evt) => {
 	const curWordIndex = currentWord.wordIndex;
 	if (moveRight()) {
 		if (curWord) {
-			curWord.endTime = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
+			curWord.endTime =
+				currentTimeMS.value +
+				settings.timeOffset -
+				Math.round(evt.downTimeOffset);
 			if (currentLine && curWordIndex === currentLine.words.length - 1) {
 				currentLine.endTime = curWord.endTime;
 			}
@@ -310,7 +335,10 @@ useKeyBinding(settings.keybindings.setLineStartTime, (evt) => {
 	const currentLine = getCurrentLine();
 	if (moveRight()) {
 		if (currentLine) {
-			currentLine.startTime = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
+			currentLine.startTime =
+				currentTimeMS.value +
+				settings.timeOffset -
+				Math.round(evt.downTimeOffset);
 			lyric.record();
 		}
 	}
@@ -319,107 +347,124 @@ useKeyBinding(settings.keybindings.setLineEndTime, (evt) => {
 	const currentLine = getCurrentLine();
 	if (moveRight()) {
 		if (currentLine) {
-			currentLine.endTime = currentTimeMS.value + settings.timeOffset - Math.round(evt.downTimeOffset);
+			currentLine.endTime =
+				currentTimeMS.value +
+				settings.timeOffset -
+				Math.round(evt.downTimeOffset);
 			lyric.record();
 		}
 	}
 });
-
 </script>
 
-<style lang="sass">
-.lyric-sync-editor
-	display: flex
-	flex-direction: column
-	height: 100%
-	max-height: 100%
-	overflow: hidden
+<style lang="css" scoped>
+.lyric-sync-editor {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-height: 100%;
+	overflow: hidden;
+}
 
-.lyric-line-sync-editor-no-selected
-	flex: 1
-	align-self: center
-	justify-content: center
-	align-items: center
-	overflow: hidden
-	max-width: 100%
-	min-height: 128px
-	display: flex
-	text-align: center
+.lyric-line-sync-editor-no-selected {
+	flex: 1;
+	align-self: center;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	max-width: 100%;
+	min-height: 128px;
+	display: flex;
+	text-align: center;
+}
 
-.lyric-line-sync-editor
-	flex: 1
-	align-self: stretch
-	overflow: auto hidden
-	max-width: 100%
-	min-height: 128px
-	display: flex
-	align-items: stretch
-	justify-content: center
-	padding: 0 32px
-	white-space: nowrap
-	border-bottom: 1px solid #AAA4
+.lyric-line-sync-editor {
+	flex: 1;
+	align-self: stretch;
+	overflow: auto hidden;
+	max-width: 100%;
+	min-height: 128px;
+	display: flex;
+	align-items: stretch;
+	justify-content: center;
+	padding: 0 32px;
+	white-space: nowrap;
+	border-bottom: 1px solid #AAA4;
 
-	> *
-		display: grid
+	>* {
+		display: grid;
 		grid-template: "emptyBeat emptyBeat" "selectMark selectMark" "selectArrow selectArrow" "word word" "startTime endTime"
-		align-content: center
-		border-left: 1px solid #AAA4
-		padding: 0 12px
-		user-select: none
-		cursor: pointer
+		;
+		align-content: center;
+		border-left: 1px solid #AAA4;
+		padding: 0 12px;
+		user-select: none;
+		cursor: pointer;
+	}
 
-		&:first-child
-			border-left: none
+	&:first-child {
+		border-left: none;
+	}
 
-		> *:nth-child(1)
-			grid-area: word
-			font-size: 32px
-			text-align: center
+	>*:nth-child(1) {
+		grid-area: word;
+		font-size: 32px;
+		text-align: center;
+	}
 
-		> *:nth-child(2)
-			grid-area: startTime
-			font-size: 12px
-			text-align: left
+	>*:nth-child(2) {
+		grid-area: startTime;
+		font-size: 12px;
+		text-align: left;
+	}
 
-		> *:nth-child(3)
-			grid-area: endTime
-			margin-left: 8px
-			font-size: 12px
-			text-align: right
+	>*:nth-child(3) {
+		grid-area: endTime;
+		margin-left: 8px;
+		font-size: 12px;
+		text-align: right;
+	}
 
-		> *:nth-child(4)
-			grid-area: selectMark
-			font-size: 12px
-			text-align: center
-			color: var(--att-theme-color)
-			font-weight: bold
+	>*:nth-child(4) {
+		grid-area: selectMark;
+		font-size: 12px;
+		text-align: center;
+		color: var(--att-theme-color);
+		font-weight: bold;
+	}
 
-		> *:nth-child(5)
-			grid-area: selectArrow
-			align-self: center
-			justify-self: center
-			content: ""
-			width: 0
-			height: 0
-			margin-bottom: 8px
-			border-left: 4px solid transparent
-			border-right: 4px solid transparent
-			border-top: 4px solid var(--att-theme-color)
+	>*:nth-child(5) {
+		grid-area: selectArrow;
+		align-self: center;
+		justify-self: center;
+		content: ""
+		;
+		width: 0;
+		height: 0;
+		margin-bottom: 8px;
+		border-left: 4px solid transparent;
+		border-right: 4px solid transparent;
+		border-top: 4px solid var(--att-theme-color);
+	}
 
-		> *:nth-child(6)
-			grid-area: emptyBeat
-			font-size: 12px
-			text-align: center
-			color: var(--att-theme-color)
-			font-weight: bold
+	>*:nth-child(6) {
+		grid-area: emptyBeat;
+		font-size: 12px;
+		text-align: center;
+		color: var(--att-theme-color);
+		font-weight: bold;
+	}
+}
 
-.word-selected
-	grid-area: selectMark
+.word-selected {
+	grid-area: selectMark;
+}
 
-.lyric-line-viewer
-	flex: 5
-	position: relative
-	align-self: stretch
-	min-height: 0
-	overflow: hidden auto
+.lyric-line-viewer {
+	flex: 5;
+	position: relative;
+	align-self: stretch;
+	min-height: 0;
+	overflow: hidden auto;
+}
 </style>

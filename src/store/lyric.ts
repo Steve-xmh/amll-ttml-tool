@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import type {LyricLine as CoreLyricLine} from "@applemusic-like-lyrics/core";
+import type { LyricLine as CoreLyricLine } from "@applemusic-like-lyrics/core";
 import {
 	type LyricLine as WasmLyricLine,
 	parseEslrc,
@@ -25,14 +25,14 @@ import {
 	stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
 import structuredClone from "@ungap/structured-clone";
-import {defineStore} from "pinia";
-import {toRaw} from "vue";
-import {i18n} from "../i18n";
-import {waitNextTick} from "../utils";
-import {parseLyric} from "../utils/ttml-parser";
-import type {LyricLine, LyricWord, TTMLMetadata} from "../utils/ttml-types";
+import { defineStore } from "pinia";
+import { toRaw } from "vue";
+import { i18n } from "../i18n";
+import { waitNextTick } from "../utils";
+import { parseLyric } from "../utils/ttml-parser";
+import type { LyricLine, LyricWord, TTMLMetadata } from "../utils/ttml-types";
 import exportTTMLText from "../utils/ttml-writer";
-import {useProgress} from "./progress";
+import { useProgress } from "./progress";
 
 export interface LyricWordWithId extends LyricWord {
 	lineIndex: number;
@@ -50,24 +50,11 @@ export interface LyricLineWithId extends LyricLineWithState {
 
 function mapFromWasmLyric(line: WasmLyricLine): LyricLineWithState {
 	return {
+		...line,
 		words: line.words.map((w) => ({
-			startTime: w.startTime,
-			endTime: w.endTime,
-			word: w.word,
+			...w,
 		})),
-		translatedLyric: "",
-		romanLyric: "",
-		isBG: false,
-		isDuet: false,
 		selected: false,
-		startTime: line.words.reduce(
-			(pv, cv) => Math.min(pv, cv.startTime),
-			Number.MAX_VALUE,
-		),
-		endTime: line.words.reduce(
-			(pv, cv) => Math.max(pv, cv.endTime),
-			Number.MIN_VALUE,
-		),
 	};
 }
 
@@ -343,7 +330,8 @@ export const useEditingLyric = defineStore("editing-lyric", {
 				for (const word of line.words) {
 					word.startTime = Math.round(word.startTime);
 					word.endTime = Math.round(word.endTime);
-					if (word.emptyBeat !== undefined) word.emptyBeat = Math.round(word.emptyBeat);
+					if (word.emptyBeat !== undefined)
+						word.emptyBeat = Math.round(word.emptyBeat);
 				}
 			}
 		},
@@ -410,7 +398,6 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			const latinReg = /^[A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
 
 			for (const line of rawLines) {
-
 				const chars = line.words.flatMap((w) => w.word.split(""));
 				console.log(chars);
 				const wordsResult: LyricWord[] = [];
@@ -477,7 +464,7 @@ export const useEditingLyric = defineStore("editing-lyric", {
 			const sel = this.lyrics.filter((line) => line.selected).length;
 			let cur = 0;
 			p.label = i18n.global.t("progressOverlay.loadingJiebaModule");
-			const { cut } = await import("jieba-rs-wasm");
+			const { cut } = await import("jieba-wasm");
 			for (let i = 0; i < this.lyrics.length; i++) {
 				const line: LyricLineWithState = {
 					...toRaw(this.lyrics[i]),

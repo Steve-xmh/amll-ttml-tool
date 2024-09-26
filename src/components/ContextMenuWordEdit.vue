@@ -12,24 +12,24 @@
 <template>
 	<div class="context-menu-word-edit">
 		<div>内容</div>
-		<NInput v-model:value="wordEdit.word" placeholder="" size="small" @blur="onContentBlur"/>
+		<NInput v-model:value="wordEdit.word" placeholder="" size="small" @blur="onContentBlur" />
 		<div>空拍</div>
-		<NInputNumber v-model:value="wordEdit.emptyBeat" :min="0"
-					  :step="1" placeholder="0" size="small" style="max-width: 7em" @blur="onEmptyBeatBlur"/>
+		<NInputNumber v-model:value="wordEdit.emptyBeat" :min="0" :step="1" placeholder="0" size="small"
+			style="max-width: 7em" @blur="onEmptyBeatBlur" />
 		<div>单词开始时间</div>
-		<TimeStampInput v-model:value="wordEdit.startTime"/>
+		<TimeStampInput v-model:value="wordEdit.startTime" />
 		<div>单词结束时间</div>
-		<TimeStampInput v-model:value="wordEdit.endTime"/>
+		<TimeStampInput v-model:value="wordEdit.endTime" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import {NInput, NInputNumber} from "naive-ui";
-import {useEditingLyric, useRightClickLyricLine} from "../store";
-import {onMounted, onUnmounted, reactive, toRaw} from "vue";
-import type {LyricWord} from "../utils/ttml-types";
-import TimeStampInput from "./TimeStampInput.vue";
 import structuredClone from "@ungap/structured-clone";
+import { NInput, NInputNumber } from "naive-ui";
+import { onMounted, onUnmounted, reactive, toRaw } from "vue";
+import { useEditingLyric, useRightClickLyricLine } from "../store";
+import type { LyricWord } from "../utils/ttml-types";
+import TimeStampInput from "./TimeStampInput.vue";
 
 const lyricLineMenu = useRightClickLyricLine();
 const lyric = useEditingLyric();
@@ -38,11 +38,14 @@ const wordEdit = reactive({
 	word: "",
 	emptyBeat: 0,
 	startTime: 0,
-	endTime: 0
+	endTime: 0,
 });
 
 onMounted(() => {
-	const selectedWord: LyricWord | undefined = lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[lyricLineMenu.selectedWord];
+	const selectedWord: LyricWord | undefined =
+		lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[
+		lyricLineMenu.selectedWord
+		];
 
 	console.log("selectedWord", structuredClone(toRaw(selectedWord)));
 
@@ -53,10 +56,15 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	const selectedWord: LyricWord | undefined = lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[lyricLineMenu.selectedWord];
+	const selectedWord: LyricWord | undefined =
+		lyric.lyrics[lyricLineMenu.selectedLine]?.words?.[
+		lyricLineMenu.selectedWord
+		];
 
 	if (selectedWord) {
-		const shouldRecord = wordEdit.startTime !== selectedWord.startTime || wordEdit.endTime !== selectedWord.endTime;
+		const shouldRecord =
+			wordEdit.startTime !== selectedWord.startTime ||
+			wordEdit.endTime !== selectedWord.endTime;
 		selectedWord.startTime = wordEdit.startTime;
 		selectedWord.endTime = wordEdit.endTime;
 		if (shouldRecord) lyric.record();
@@ -64,26 +72,34 @@ onUnmounted(() => {
 });
 
 function onEmptyBeatBlur() {
-	lyric.modifyWordEmptyBeat(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord, wordEdit.emptyBeat);
+	lyric.modifyWordEmptyBeat(
+		lyricLineMenu.selectedLine,
+		lyricLineMenu.selectedWord,
+		wordEdit.emptyBeat,
+	);
 }
 
 function onContentBlur() {
-	lyric.modifyWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord, wordEdit.word);
+	lyric.modifyWord(
+		lyricLineMenu.selectedLine,
+		lyricLineMenu.selectedWord,
+		wordEdit.word,
+	);
 }
-
 </script>
 
-<style scoped lang="sass">
-.context-menu-word-edit
-	width: 100%
-	display: grid
-	padding: 0 1em
-	padding-top: 0.5em
-	grid-template-columns: auto auto
-	gap: 8px
-	align-items: center
+<style lang="css" scoped>
+.context-menu-word-edit {
+	width: 100%;
+	display: grid;
+	padding: 0 1em;
+	padding-top: 0.5em;
+	grid-template-columns: auto auto;
+	gap: 8px;
+	align-items: center;
 
-	> *:nth-child(2n)
-		justify-self: flex-end
+	>*:nth-child(2n) {
+		justify-self: flex-end;
+	}
+}
 </style>
-

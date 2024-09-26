@@ -12,10 +12,10 @@
 <template></template>
 
 <script setup lang="tsx">
-import {NButton, useNotification,} from "naive-ui";
-import {onMounted} from "vue";
-import {i18n} from '../i18n';
-import {registerSW} from "virtual:pwa-register";
+import { NButton, useNotification } from "naive-ui";
+import { registerSW } from "virtual:pwa-register";
+import { onMounted } from "vue";
+import { i18n } from "../i18n";
 
 const notify = useNotification();
 
@@ -25,12 +25,18 @@ onMounted(async () => {
 			const n = notify.info({
 				title: i18n.global.t("serviceWorkerUpdater.needRefresh.title"),
 				content: i18n.global.t("serviceWorkerUpdater.needRefresh.content"),
-				action: () => <NButton text type="primary" onClick={() => {
-					n.destroy();
-					updateSW();
-				}}>
-					{i18n.global.t("serviceWorkerUpdater.needRefresh.updateBtn")}
-				</NButton>
+				action: () => (
+					<NButton
+						text
+						type="primary"
+						onClick={() => {
+							n.destroy();
+							updateSW();
+						}}
+					>
+						{i18n.global.t("serviceWorkerUpdater.needRefresh.updateBtn")}
+					</NButton>
+				),
 			});
 		},
 		onOfflineReady() {

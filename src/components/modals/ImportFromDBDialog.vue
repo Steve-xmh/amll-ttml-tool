@@ -28,25 +28,34 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import {useDialogs, useEditingLyric} from "../../store";
-import {NAlert, NButton, NInputNumber, NModal, NSpace, useNotification} from "naive-ui";
-import {useI18n} from "vue-i18n";
-import {parseLyric} from "../../utils/ttml-parser";
+import { ref } from "vue";
+import { useDialogs, useEditingLyric } from "../../store";
+import {
+	NAlert,
+	NButton,
+	NInputNumber,
+	NModal,
+	NSpace,
+	useNotification,
+} from "naive-ui";
+import { useI18n } from "vue-i18n";
+import { parseLyric } from "../../utils/ttml-parser";
 
 const musicId = ref(0);
 const editingLyric = useEditingLyric();
 const importing = ref(false);
 const notify = useNotification();
 const dialogs = useDialogs();
-const {t} = useI18n({useScope: "global"});
+const { t } = useI18n({ useScope: "global" });
 
 async function onImport() {
 	importing.value = true;
 	const id = musicId.value;
 	try {
 		// https://raw.githubusercontent.com/Steve-xmh/amll-ttml-db/main/lyrics/[MUSIC_ID].ttml
-		const res = await fetch(`https://raw.githubusercontent.com/Steve-xmh/amll-ttml-db/main/lyrics/${id}.ttml`);
+		const res = await fetch(
+			`https://raw.githubusercontent.com/Steve-xmh/amll-ttml-db/main/lyrics/${id}.ttml`,
+		);
 		if (res.status === 200) {
 			const ttml = await res.text();
 			editingLyric.loadLyric(parseLyric(ttml));
@@ -71,5 +80,4 @@ async function onImport() {
 	}
 	importing.value = false;
 }
-
 </script>

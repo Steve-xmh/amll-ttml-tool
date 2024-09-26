@@ -11,34 +11,36 @@
 
 <template>
 	<div class="amll-preview-view">
-		<LyricPlayer ref="playerRef" :align-position="0.2" :current-time="audio.currentTimeMS" :lyric-lines="lyric.lineForPreview" align-anchor="top" enable
-					 enable-blur
-					 enable-scale enable-spring/>
+		<LyricPlayer ref="playerRef" :align-position="0.2" :current-time="audio.currentTimeMS"
+			:lyric-lines="lyric.lineForPreview" align-anchor="top" enable enable-blur enable-scale enable-spring />
 	</div>
 </template>
 
-<style lang="sass">
-.amll-preview-view
-	background-color: #222 !important
-	width: 100% !important
-	height: 100% !important
+<style lang="css" scoped>
+.amll-preview-view {
+	background-color: #222 !important;
+	width: 100% !important;
+	height: 100% !important;
 
-	> *
-		position: absolute !important
-		top: 0 !important
-		left: 0 !important
-		width: 100% !important
-		height: 100% !important
-		mix-blend-mode: plus-lighter
+	>* {
+		position: absolute !important;
+		top: 0 !important;
+		left: 0 !important;
+		width: 100% !important;
+		height: 100% !important;
+		mix-blend-mode: plus-lighter;
 
-		> *
-			box-sizing: content-box !important
+		>* {
+			box-sizing: content-box !important;
+		}
+	}
+}
 </style>
 
 <script setup lang="ts">
-import {LyricPlayer, type LyricPlayerRef} from "@applemusic-like-lyrics/vue";
-import {onMounted, ref} from "vue";
-import {useAudio, useEditingLyric} from "../store";
+import { LyricPlayer, type LyricPlayerRef } from "@applemusic-like-lyrics/vue";
+import { onMounted, ref } from "vue";
+import { useAudio, useEditingLyric } from "../store";
 
 const audio = useAudio();
 const lyric = useEditingLyric();
@@ -48,5 +50,4 @@ onMounted(() => {
 	playerRef.value?.lyricPlayer.value?.calcLayout(true);
 	playerRef.value?.lyricPlayer.value?.update(0);
 });
-
 </script>

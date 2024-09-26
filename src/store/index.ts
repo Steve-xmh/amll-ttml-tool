@@ -9,11 +9,19 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import { PiniaUndo } from "../utils/pinia-undo";
+
 export { useAudio } from "./audio";
 export { useCurrentSyncWord } from "./current-sync-word";
+export { useDialogs } from "./dialogs";
+export { useEditMode } from "./edit-mode";
 export { useEditingLyric } from "./lyric";
 export { useProgress } from "./progress";
-export {useSettings, UILayoutMode} from "./settings";
 export { useRightClickLyricLine } from "./right-click";
-export { useEditMode } from "./edit-mode";
-export { useDialogs } from "./dialogs";
+export { UILayoutMode, useSettings } from "./settings";
+
+export const pinia = createPinia();
+pinia.use(PiniaUndo);
+pinia.use(piniaPluginPersistedstate);

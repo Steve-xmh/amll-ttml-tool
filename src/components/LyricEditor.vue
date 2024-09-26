@@ -11,35 +11,33 @@
 
 <template>
 	<div class="lyric-editor">
-		<div style="overflow: hidden;">
-			<DynamicScroller v-slot="{ item, index, active }" :items="lyric.lineWithIds"
-							 :min-item-size="getMinHeight()"
-							 style="width: 100%; position: relative; min-height: fit-content; height: 100%;">
+		<div style="overflow: auto;">
+			<DynamicScroller v-slot="{ item, index, active }" :items="lyric.lineWithIds" :min-item-size="getMinHeight()"
+				style="width: 100%; position: relative; min-height: fit-content; height: 100%;">
 				<DynamicScrollerItem :active="active" :item="item" watch-data>
 					<div v-if="active" class="line-item" style="padding: 12px" @contextmenu.prevent="
-                        lyricMenu.showMenuForLyric(index, -1, $event.clientX, $event.clientY)
-                        ">
-						<LyricLineEditor :line="item"/>
+						lyricMenu.showMenuForLyric(index, -1, $event.clientX, $event.clientY)
+						">
+						<LyricLineEditor :line="item" />
 					</div>
 				</DynamicScrollerItem>
 			</DynamicScroller>
 		</div>
 		<div style="margin: 12px">
-			<NButton :dashed="lyric.lineWithIds.length > 0" :type="lyric.lineWithIds.length === 0 ? 'primary' : 'default'"
-					 block
-					 @click="onAddNewLine">
-				<i18n-t keypath="lyricEditor.addNewLineBtn"/>
+			<NButton :dashed="lyric.lineWithIds.length > 0"
+				:type="lyric.lineWithIds.length === 0 ? 'primary' : 'default'" block @click="onAddNewLine">
+				<i18n-t keypath="lyricEditor.addNewLineBtn" />
 			</NButton>
 		</div>
 	</div>
 </template>
 
 <script setup lang="tsx">
-import {NButton} from "naive-ui";
-import {useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
+import { NButton } from "naive-ui";
+import { onMounted, onUnmounted } from "vue";
+import { DynamicScroller, DynamicScrollerItem } from "vue-virtual-scroller";
+import { useEditingLyric, useRightClickLyricLine, useSettings } from "../store";
 import LyricLineEditor from "./LyricLineEditor.vue";
-import {DynamicScroller, DynamicScrollerItem} from 'vue-virtual-scroller'
-import {onMounted, onUnmounted} from "vue";
 
 const settings = useSettings();
 
@@ -47,14 +45,14 @@ function getMinHeight() {
 	if (settings.showTranslateLine && settings.showRomanLine) {
 		return 142;
 	} else if (settings.showTranslateLine || settings.showRomanLine) {
-		return 100
+		return 100;
 	} else {
 		return 58;
 	}
 }
 
 const lyric = useEditingLyric();
-const {addNewLine} = lyric;
+const { addNewLine } = lyric;
 const lyricMenu = useRightClickLyricLine();
 
 function onAddNewLine() {
@@ -82,19 +80,21 @@ function onKeyPress(e: KeyboardEvent) {
 
 onMounted(() => {
 	window.addEventListener("keypress", onKeyPress);
-})
+});
 
 onUnmounted(() => {
 	window.removeEventListener("keypress", onKeyPress);
-})
+});
 </script>
 
-<style lang="sass">
-.lyric-editor
-	display: flex
-	flex-direction: column
-	height: 100%
+<style lang="css" scoped>
+.lyric-editor {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
 
-	.line-item
-		border-bottom: 1px solid rgba(170, 170, 170, 0.2666666667)
+	.line-item {
+		border-bottom: 1px solid rgba(170, 170, 170, 0.2666666667);
+	}
+}
 </style>

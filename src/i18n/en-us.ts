@@ -287,7 +287,7 @@ export const enUS = {
 // 将下面的语言代码换成相对应的即可实现指定语言的热重载
 // 注意大小写敏感
 
-import {i18n} from ".";
+import { i18n } from ".";
 
 if (import.meta.hot) {
 	import.meta.hot.accept((newModule) => {

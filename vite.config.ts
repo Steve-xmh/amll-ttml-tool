@@ -94,21 +94,9 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			"@applemusic-like-lyrics/core": path.resolve(
+			"kuromoji": path.resolve(
 				__dirname,
-				"../applemusic-like-lyrics/packages/core/src",
-			),
-			"@applemusic-like-lyrics/vue": path.resolve(
-				__dirname,
-				"../applemusic-like-lyrics/packages/vue/src",
-			),
-			"@applemusic-like-lyrics/bncm": path.resolve(
-				__dirname,
-				"../applemusic-like-lyrics/packages/bncm/src",
-			),
-			"@applemusic-like-lyrics/ttml": path.resolve(
-				__dirname,
-				"../applemusic-like-lyrics/packages/ttml/src",
+				"libs/kuromoji.js",
 			),
 		},
 	},

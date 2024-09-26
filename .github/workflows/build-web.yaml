@@ -15,61 +15,21 @@ jobs:
         uses: actions/checkout@v2.3.4
         with:
           submodules: recursive
-          path: amll-ttml-tool
-      - name: 克隆 AMLL 仓库源代码
-        uses: actions/checkout@v2.3.4
-        with:
-          repository: Steve-xmh/applemusic-like-lyrics
-          ref: dev
-          submodules: recursive
-          path: applemusic-like-lyrics
-      - name: 缓存依赖项目
-        uses: actions/cache@v3
-        with:
-          key: ${{ runner.os }}-cache
-          path: |
-            amll-ttml-tool/node_modules
-            amll-ttml-tool/src-tauri/target
-            amll-ttml-tool/.yarn/cache
-            amll-ttml-tool/.yarn/install-state.gz
-            applemusic-like-lyrics/node_modules
-            applemusic-like-lyrics/target
-            applemusic-like-lyrics/.yarn/cache
-            applemusic-like-lyrics/.yarn/install-state.gz
-      - name: 配置 NodeJS
-        uses: actions/setup-node@v3.0.0
-      - name: 安装 wasm-pack
-        uses: jetli/wasm-pack-action@v0.4.0
+      - name: 安装 PNPM
+        uses: pnpm/action-setup@v4
         with:
           version: latest
-      - name: AMLL - 构建 WS Protocol 模块
-        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
-        working-directory: applemusic-like-lyrics/packages/ws-protocol
-      - name: AMLL - 构建 Lyric 模块
-        run: wasm-pack build --target bundler --release --scope applemusic-like-lyrics
-        working-directory: applemusic-like-lyrics/packages/lyric
-      - name: AMLL - 安装依赖
-        run: yarn install
-        working-directory: applemusic-like-lyrics
-        env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      - name: AMLL - 构建 Core 模块
-        run: yarn build
-        working-directory: applemusic-like-lyrics/packages/core
-      - name: AMLL - 构建 Vue 模块
-        run: yarn build
-        working-directory: applemusic-like-lyrics/packages/vue
-      - name: AMLL - 构建 TTML 模块
-        run: yarn build
-        working-directory: applemusic-like-lyrics/packages/ttml
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - name: 配置 NodeJS
+        uses: actions/setup-node@v3.0.0
       - name: 安装前端依赖
-        run: yarn install
-        working-directory: amll-ttml-tool
-        env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+        run: pnpm i
       - name: 构建网页版本
-        run: yarn build
-        working-directory: amll-ttml-tool
+        run: pnpm build
       - name: 部署到 Github Pages
         uses: crazy-max/ghaction-github-pages@v2.6.0
         with:

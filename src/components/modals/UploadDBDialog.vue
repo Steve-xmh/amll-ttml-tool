@@ -78,16 +78,26 @@
 </template>
 
 <script lang="ts" setup>
-import {NAlert, NButton, NCheckbox, NInput, NModal, NRadio, NSpace, NText, useNotification} from 'naive-ui';
-import {useDialogs, useEditingLyric} from '../../store';
-import {computed, reactive, watchEffect} from "vue";
-import {useI18n} from "vue-i18n";
-import type {TTMLMetadata} from "../../utils/ttml-types";
+import {
+	NAlert,
+	NButton,
+	NCheckbox,
+	NInput,
+	NModal,
+	NRadio,
+	NSpace,
+	NText,
+	useNotification,
+} from "naive-ui";
+import { useDialogs, useEditingLyric } from "../../store";
+import { computed, reactive, watchEffect } from "vue";
+import { useI18n } from "vue-i18n";
+import type { TTMLMetadata } from "../../utils/ttml-types";
 
 const lyric = useEditingLyric();
 const notify = useNotification();
 const dialogs = useDialogs();
-const {t} = useI18n({useScope: "global"});
+const { t } = useI18n({ useScope: "global" });
 
 const submitData = reactive({
 	name: "",
@@ -99,29 +109,44 @@ const submitData = reactive({
 
 function getMetadata(metadata: TTMLMetadata[], key: string) {
 	const result: string[] = [];
-	metadata.filter((v) => v.key === key).map((v) => v.value).forEach(meta => {
-		result.push(...meta);
-	});
+	metadata
+		.filter((v) => v.key === key)
+		.map((v) => v.value)
+		.forEach((meta) => {
+			result.push(...meta);
+		});
 	return result;
 }
 
 const hasMusicId = computed(() => {
 	const platforms = ["ncmMusicId", "qqMusicId", "spotifyId", "appleMusicId"];
 	for (const platform of platforms) {
-		if (getMetadata(lyric.metadata, platform).filter(v => v.trim().length > 0).length > 0) {
+		if (
+			getMetadata(lyric.metadata, platform).filter((v) => v.trim().length > 0)
+				.length > 0
+		) {
 			return true;
 		}
 	}
 	return false;
 });
 const hasMusicName = computed(() => {
-	return getMetadata(lyric.metadata, "musicName").filter(v => v.trim().length > 0).length > 0;
+	return (
+		getMetadata(lyric.metadata, "musicName").filter((v) => v.trim().length > 0)
+			.length > 0
+	);
 });
 const hasArtists = computed(() => {
-	return getMetadata(lyric.metadata, "artists").filter(v => v.trim().length > 0).length > 0;
+	return (
+		getMetadata(lyric.metadata, "artists").filter((v) => v.trim().length > 0)
+			.length > 0
+	);
 });
 const hasAlbum = computed(() => {
-	return getMetadata(lyric.metadata, "album").filter(v => v.trim().length > 0).length > 0;
+	return (
+		getMetadata(lyric.metadata, "album").filter((v) => v.trim().length > 0)
+			.length > 0
+	);
 });
 
 watchEffect(() => {
@@ -143,7 +168,7 @@ watchEffect(() => {
 			submitData.name += t("uploadDBDialog.unknownMusicName");
 		}
 	}
-})
+});
 
 async function uploadAndSubmit() {
 	if (submitData.processing) return;
@@ -154,14 +179,20 @@ async function uploadAndSubmit() {
 			method: "POST",
 			mode: "cors",
 			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
+				"Content-Type": "application/x-www-form-urlencoded",
 			},
-			body: "format=url&lexer=xml&expires=3600&filename=lyric.ttml&content=" + lyricData
-		}).then(v => {
-			console.log(v);
-			return v.text();
-		}).then(v => v.trim() + "/raw");
-		const issueUrl = new URL("https://github.com/Steve-xmh/amll-ttml-db/issues/new");
+			body:
+				"format=url&lexer=xml&expires=3600&filename=lyric.ttml&content=" +
+				lyricData,
+		})
+			.then((v) => {
+				console.log(v);
+				return v.text();
+			})
+			.then((v) => v.trim() + "/raw");
+		const issueUrl = new URL(
+			"https://github.com/Steve-xmh/amll-ttml-db/issues/new",
+		);
 		issueUrl.searchParams.append("labels", "歌词提交/补正");
 		issueUrl.searchParams.append("template", "submit-lyric.yml");
 		issueUrl.searchParams.append("title", "[歌词提交/修正] " + submitData.name);
@@ -179,5 +210,4 @@ async function uploadAndSubmit() {
 	}
 	submitData.processing = false;
 }
-
 </script>

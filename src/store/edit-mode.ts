@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {defineStore} from "pinia";
+import { defineStore } from "pinia";
 
 export interface EditModeStore {
 	editMode: "edit" | "sync" | "amll-preview";

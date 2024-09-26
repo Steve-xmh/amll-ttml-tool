@@ -15,8 +15,8 @@
  * 但是可能会有信息会丢失
  */
 
-import type { LyricLine, LyricWord, TTMLLyric } from "./ttml-types";
 import { msToTimestamp } from "./timestamp";
+import type { LyricLine, LyricWord, TTMLLyric } from "./ttml-types";
 
 export default function exportTTMLText(
 	ttmlLyric: TTMLLyric,

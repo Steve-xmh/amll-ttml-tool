@@ -16,8 +16,13 @@
  * @see https://www.w3.org/TR/2018/REC-ttml1-20181108/
  */
 
-import type { LyricLine, LyricWord, TTMLLyric, TTMLMetadata, } from "./ttml-types";
 import { parseTimespan } from "./timestamp";
+import type {
+	LyricLine,
+	LyricWord,
+	TTMLLyric,
+	TTMLMetadata,
+} from "./ttml-types";
 
 export function parseLyric(ttmlText: string): TTMLLyric {
 	const domParser = new DOMParser();
@@ -68,9 +73,10 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			translatedLyric: "",
 			romanLyric: "",
 			isBG,
-			isDuet:
-				isBG ? isDuet : (!!lineEl.getAttribute("ttm:agent") &&
-					lineEl.getAttribute("ttm:agent") !== mainAgentId),
+			isDuet: isBG
+				? isDuet
+				: !!lineEl.getAttribute("ttm:agent") &&
+					lineEl.getAttribute("ttm:agent") !== mainAgentId,
 			startTime: 0,
 			endTime: 0,
 		};

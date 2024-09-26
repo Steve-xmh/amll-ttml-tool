@@ -11,75 +11,90 @@
 
 <template>
 	<NPopover :arrow="false" :options="lyricLineMenu.selectedWord === -1 ? lineContextMenu : wordOnlyContextMenu"
-						:show="lyricLineMenu.show" :x="lyricLineMenu.x" :y="lyricLineMenu.y" class="context-menu"
-						placement="bottom-start" style="padding: 4px" trigger="manual" @clickoutside="lyricLineMenu.show = false">
+		:show="lyricLineMenu.show" :x="lyricLineMenu.x" :y="lyricLineMenu.y" class="context-menu"
+		placement="bottom-start" style="padding: 4px" trigger="manual" @clickoutside="lyricLineMenu.show = false">
 		<template v-if="settings.uiLayoutMode === UILayoutMode.Simple">
-			<ContextMenuWordEdit v-if="lyricLineMenu.selectedWord !== -1"/>
-			<NDivider v-if="lyricLineMenu.selectedWord !== -1" style="margin: 4px 0"/>
+			<ContextMenuWordEdit v-if="lyricLineMenu.selectedWord !== -1" />
+			<NDivider v-if="lyricLineMenu.selectedWord !== -1" style="margin: 4px 0" />
 			<div class="context-menu-line-edit">
 				<div>行开始时间</div>
-				<TimeStampInput v-model:value="lineInput.lineStartTime" @update:value="onTimeUpdate"/>
+				<TimeStampInput v-model:value="lineInput.lineStartTime" @update:value="onTimeUpdate" />
 				<div>行结束时间</div>
-				<TimeStampInput v-model:value="lineInput.lineEndTime" @update:value="onTimeUpdate"/>
+				<TimeStampInput v-model:value="lineInput.lineEndTime" @update:value="onTimeUpdate" />
 			</div>
-			<NDivider style="margin: 4px 0"/>
+			<NDivider style="margin: 4px 0" />
 		</template>
 		<NEl tag="button"
-				 @click="() => { lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord); lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.deleteWord"/>
+			@click="() => { lyric.removeWord(lyricLineMenu.selectedLine, lyricLineMenu.selectedWord); lyricLineMenu.show = false; }">
+			<i18n-t keypath="contextMenu.deleteWord" />
 		</NEl>
 		<NEl tag="button" @click="() => { dialogs.splitWord = true; lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.splitWord"/>
+			<i18n-t keypath="contextMenu.splitWord" />
 		</NEl>
 		<NEl v-if="lyric.lyrics[lyricLineMenu.selectedLine]?.words?.length > 1" tag="button"
-				 @click="() => { dialogs.concatWords = true; lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.concatWords" @click="showWipNotification"/>
+			@click="() => { dialogs.concatWords = true; lyricLineMenu.show = false; }">
+			<i18n-t keypath="contextMenu.concatWords" @click="showWipNotification" />
 		</NEl>
-		<NDivider style="margin: 4px 0"/>
+		<NDivider style="margin: 4px 0" />
 		<NEl tag="button" @click="() => { lyric.removeLine(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.deleteLine"/>
+			<i18n-t keypath="contextMenu.deleteLine" />
 		</NEl>
 		<NEl tag="button"
-				 @click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.insertBeforeLine"/>
+			@click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine); lyricLineMenu.show = false; }">
+			<i18n-t keypath="contextMenu.insertBeforeLine" />
 		</NEl>
 		<NEl tag="button"
-				 @click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine + 1); lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.insertAfterLine"/>
+			@click="() => { lyric.insertNewLineAt(lyricLineMenu.selectedLine + 1); lyricLineMenu.show = false; }">
+			<i18n-t keypath="contextMenu.insertAfterLine" />
 		</NEl>
 		<NEl tag="button"
-				 @click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isBG = !line.isBG; lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.toggleBGLine"/>
+			@click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isBG = !line.isBG; lyricLineMenu.show = false; }">
+			<i18n-t keypath="contextMenu.toggleBGLine" />
 		</NEl>
 		<NEl tag="button"
-				 @click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isDuet = !line.isDuet; lyricLineMenu.show = false; }">
-			<i18n-t keypath="contextMenu.toggleDuetLine"/>
+			@click="() => { const line = lyric.lyrics[lyricLineMenu.selectedLine]; if (line) line.isDuet = !line.isDuet; lyricLineMenu.show = false; }">
+			<i18n-t keypath="contextMenu.toggleDuetLine" />
 		</NEl>
 	</NPopover>
 </template>
 
 <script setup lang="tsx">
-import {NDivider, NEl, NPopover, useNotification} from "naive-ui";
-import {onMounted, onUnmounted, reactive, watchEffect} from "vue";
-import {UILayoutMode, useDialogs, useEditingLyric, useRightClickLyricLine, useSettings} from "../store";
-import type {DropdownMixedOption} from "naive-ui/es/dropdown/src/interface";
-import {i18n} from '../i18n';
+import { NDivider, NEl, NPopover, useNotification } from "naive-ui";
+import type { DropdownMixedOption } from "naive-ui/es/dropdown/src/interface";
+import { onMounted, onUnmounted, reactive, watchEffect } from "vue";
+import { i18n } from "../i18n";
+import {
+	UILayoutMode,
+	useDialogs,
+	useEditingLyric,
+	useRightClickLyricLine,
+	useSettings,
+} from "../store";
 import ContextMenuWordEdit from "./ContextMenuWordEdit.vue";
 import TimeStampInput from "./TimeStampInput.vue";
 
 const lineContextMenu = [
-	{label: i18n.global.t("contextMenu.deleteLine"), key: 'delete-line'},
-	{label: i18n.global.t("contextMenu.insertBeforeLine"), key: 'insert-before-line'},
-	{label: i18n.global.t("contextMenu.insertAfterLine"), key: 'insert-after-line'},
-	{label: i18n.global.t("contextMenu.toggleBGLine"), key: 'toggle-bg-line'},
-	{label: i18n.global.t("contextMenu.toggleDuetLine"), key: 'toggle-duet-line'},
+	{ label: i18n.global.t("contextMenu.deleteLine"), key: "delete-line" },
+	{
+		label: i18n.global.t("contextMenu.insertBeforeLine"),
+		key: "insert-before-line",
+	},
+	{
+		label: i18n.global.t("contextMenu.insertAfterLine"),
+		key: "insert-after-line",
+	},
+	{ label: i18n.global.t("contextMenu.toggleBGLine"), key: "toggle-bg-line" },
+	{
+		label: i18n.global.t("contextMenu.toggleDuetLine"),
+		key: "toggle-duet-line",
+	},
 ] as DropdownMixedOption[];
 const wordOnlyContextMenu = [
-	{type: "render", render: () => <ContextMenuWordEdit/>},
-	{label: i18n.global.t("contextMenu.deleteWord"), key: 'delete-word'},
-	{label: i18n.global.t("contextMenu.splitWord"), key: 'split-word'},
-	{type: 'divider',},
-	...lineContextMenu
+	{ type: "render", render: () => <ContextMenuWordEdit /> },
+	{ label: i18n.global.t("contextMenu.deleteWord"), key: "delete-word" },
+	{ label: i18n.global.t("contextMenu.splitWord"), key: "split-word" },
+	{ type: "divider" },
+	...lineContextMenu,
 ] as DropdownMixedOption[];
 
 const lyricLineMenu = useRightClickLyricLine();
@@ -120,43 +135,51 @@ onMounted(() => {
 onUnmounted(() => {
 	const line = lyric.lyrics[lyricLineMenu.selectedLine];
 	if (line) {
-		const shouldRecord = line.startTime !== lineInput.lineStartTime || line.endTime !== lineInput.lineEndTime;
+		const shouldRecord =
+			line.startTime !== lineInput.lineStartTime ||
+			line.endTime !== lineInput.lineEndTime;
 		line.startTime = lineInput.lineStartTime;
 		line.endTime = lineInput.lineEndTime;
 		if (shouldRecord) {
 			lyric.record();
 		}
 	}
-})
+});
 </script>
 
-<style lang="sass" scoped>
-.context-menu-line-edit
-	width: 100%
-	display: grid
-	padding: 0.5em 1em
-	grid-template-columns: auto auto
-	gap: 8px
-	align-items: center
+<style lang="css" scoped>
+.context-menu-line-edit {
+	width: 100%;
+	display: grid;
+	padding: 0.5em 1em;
+	grid-template-columns: auto auto;
+	gap: 8px;
+	align-items: center;
 
-	> *:nth-child(2n)
-		justify-self: flex-end
-.context-menu
-	button
-		display: block
-		width: 100%
-		text-align: left
-		border-radius: var(--border-radius-small)
-		font-family: var(--font-family)
-		font-size: var(--font-size)
-		color: var(--text-color-base)
-		background-color: transparent
-		border: none
-		transition: background-color 0.2s ease-in-out
-		cursor: pointer
-		padding: 0.5em 1em
-		margin-top: 2px
+	>*:nth-child(2n) {
+		justify-self: flex-end;
+	}
+}
 
-		&:hover
-			background-color: var(--button-color-2-hover)
+.context-menu {
+	button {
+		display: block;
+		width: 100%;
+		text-align: left;
+		border-radius: var(--border-radius-small);
+		font-family: var(--font-family);
+		font-size: var(--font-size);
+		color: var(--text-color-base);
+		background-color: transparent;
+		border: none;
+		transition: background-color 0.2s ease-in-out;
+		cursor: pointer;
+		padding: 0.5em 1em;
+		margin-top: 2px;
+
+		&:hover {
+			background-color: var(--button-color-2-hover);
+		}
+	}
+}
 </style>
