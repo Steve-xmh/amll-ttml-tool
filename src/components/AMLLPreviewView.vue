@@ -38,6 +38,7 @@
 </style>
 
 <script setup lang="ts">
+import "@applemusic-like-lyrics/core/style.css";
 import { LyricPlayer, type LyricPlayerRef } from "@applemusic-like-lyrics/vue";
 import { onMounted, ref } from "vue";
 import { useAudio, useEditingLyric } from "../store";

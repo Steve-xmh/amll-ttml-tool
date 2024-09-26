@@ -12,8 +12,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@applemusic-like-lyrics/core": "0.2.0-alpha.1",
     "@applemusic-like-lyrics/lyric": "^0.2.4",
-    "@applemusic-like-lyrics/vue": "0.2.0-alpha.0",
+    "@applemusic-like-lyrics/vue": "0.2.0-alpha.1",
     "@extism/extism": "2.0.0-rc8",
     "@pixi/app": "^7.4.2",
     "@pixi/core": "^7.4.2",
@@ -34,7 +35,7 @@
     "jss": "^10.10.0",
     "jss-preset-default": "^10.10.0",
     "kuroshiro": "^1.2.0",
-    "naive-ui": "^2.40.0",
+    "naive-ui": "^2.40.1",
     "pangu": "^4.0.7",
     "pinia": "^2.2.2",
     "pinia-plugin-persistedstate": "^4.0.2",

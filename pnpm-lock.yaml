@@ -8,12 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@applemusic-like-lyrics/core':
+        specifier: 0.2.0-alpha.1
+        version: 0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
       '@applemusic-like-lyrics/lyric':
         specifier: ^0.2.4
         version: 0.2.4
       '@applemusic-like-lyrics/vue':
-        specifier: 0.2.0-alpha.0
-        version: 0.2.0-alpha.0(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))
+        specifier: 0.2.0-alpha.1
+        version: 0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))
       '@extism/extism':
         specifier: 2.0.0-rc8
         version: 2.0.0-rc8
@@ -75,8 +78,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       naive-ui:
-        specifier: ^2.40.0
-        version: 2.40.0(vue@3.5.8(typescript@5.6.2))
+        specifier: ^2.40.1
+        version: 2.40.1(vue@3.5.8(typescript@5.6.2))
       pangu:
         specifier: ^4.0.7
         version: 4.0.7
@@ -245,8 +248,8 @@ packages:
     peerDependencies:
       ajv: '>=8'
 
-  '@applemusic-like-lyrics/core@0.2.0-alpha.0':
-    resolution: {integrity: sha512-5pf2x9B6A3wOVgWYfQI33+QrVOIup8UJ99J4bDtE2Ng4JTMEyxmascDUxqFGHeN1ifV1AOdCbj9x00F3SP1acQ==}
+  '@applemusic-like-lyrics/core@0.2.0-alpha.1':
+    resolution: {integrity: sha512-qE7hMchehQG2WU6bnsKVQuERQAxlvOyvjlyWGBLdslV2mBvchtiK4GX6gFlcBFPZnd88ciT+vweICKDBAG7mBw==}
     peerDependencies:
       '@pixi/app': '*'
       '@pixi/core': '*'
@@ -259,8 +262,8 @@ packages:
   '@applemusic-like-lyrics/lyric@0.2.4':
     resolution: {integrity: sha512-B1N7dMEwEIlgtyqLGVt7EbXJBQLCbv5J/N0YjkgWHu5qM1vMhKSGOXzrBuMDusmr4Z6tfO5iLfOYQUtoSXZyeg==}
 
-  '@applemusic-like-lyrics/vue@0.2.0-alpha.0':
-    resolution: {integrity: sha512-pO6vW16FfRQfHmUporrOQMAOI+yQEZFFG/2VKymCnieqp9IYzz8O8PiIAybdlXIgTktBF1C2AJWeCfgvz44o9Q==}
+  '@applemusic-like-lyrics/vue@0.2.0-alpha.1':
+    resolution: {integrity: sha512-plDL8cKxDsJQa00+g8Ee5ObJQ8mg9O9JAO4Rrx2sPY+A6OElqNLxY5p77X5EKgW5Yqzu7TPMCCcH24uqb6124g==}
     peerDependencies:
       vue: '*'
 
@@ -2019,8 +2022,8 @@ packages:
     resolution: {integrity: sha512-FxAv7HpHrXbh3aPo4o2qxHay2lkLY3x5Mw3KeE4KQE8ysVfziWeRZDwcjauvwBSGEC/nXUPzZy8zeh4HokqOnw==}
     engines: {node: '>=4'}
 
-  caniuse-lite@1.0.30001663:
-    resolution: {integrity: sha512-o9C3X27GLKbLeTYZ6HBOLU1tsAcBZsLis28wrVzddShCS16RujjHp9GDHKZqrB3meE0YjhawvMFsGb/igqiPzA==}
+  caniuse-lite@1.0.30001664:
+    resolution: {integrity: sha512-AmE7k4dXiNKQipgn7a2xg558IRqPN3jMQY/rOsbxDhrd0tyChwbITBfiwtnqz8bi2M5mIWbxAYBvk7W7QBUS2g==}
 
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
@@ -4324,8 +4327,8 @@ packages:
   mute-stream@0.0.5:
     resolution: {integrity: sha512-EbrziT4s8cWPmzr47eYVW3wimS4HsvlnV5ri1xw1aR6JQo/OrJX5rkl32K/QQHdxeabJETtfeaROGhd8W7uBgg==}
 
-  naive-ui@2.40.0:
-    resolution: {integrity: sha512-ym/1+HBL1oU4DR2JLKH3KQpfslt2jrKI6uqEkIdEcgz88F2Ec2xXew8RR/Fd9Gx7Cj4jTAvipnOElEgyrPf3bQ==}
+  naive-ui@2.40.1:
+    resolution: {integrity: sha512-3NkL+vLRQZKQxCHXa+7xiD6oM74OrQELaehDkGYRYpr6kjT+JJB+Z7h+5LC70gn8VkbgCAETv0+uRWF+6MLlgQ==}
     peerDependencies:
       vue: ^3.0.0
 
@@ -6095,7 +6098,7 @@ snapshots:
       jsonpointer: 5.0.1
       leven: 3.1.0
 
-  '@applemusic-like-lyrics/core@0.2.0-alpha.0(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@applemusic-like-lyrics/core@0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
     dependencies:
       '@pixi/app': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/core': 7.4.2
@@ -6110,9 +6113,9 @@ snapshots:
 
   '@applemusic-like-lyrics/lyric@0.2.4': {}
 
-  '@applemusic-like-lyrics/vue@0.2.0-alpha.0(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))':
+  '@applemusic-like-lyrics/vue@0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))':
     dependencies:
-      '@applemusic-like-lyrics/core': 0.2.0-alpha.0(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@applemusic-like-lyrics/core': 0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
       vue: 3.5.8(typescript@5.6.2)
     transitivePeerDependencies:
       - '@pixi/app'
@@ -7962,7 +7965,7 @@ snapshots:
 
   browserslist@4.24.0:
     dependencies:
-      caniuse-lite: 1.0.30001663
+      caniuse-lite: 1.0.30001664
       electron-to-chromium: 1.5.29
       node-releases: 2.0.18
       update-browserslist-db: 1.1.0(browserslist@4.24.0)
@@ -8038,7 +8041,7 @@ snapshots:
 
   camelcase@4.1.0: {}
 
-  caniuse-lite@1.0.30001663: {}
+  caniuse-lite@1.0.30001664: {}
 
   caseless@0.12.0: {}
 
@@ -10784,7 +10787,7 @@ snapshots:
 
   mute-stream@0.0.5: {}
 
-  naive-ui@2.40.0(vue@3.5.8(typescript@5.6.2)):
+  naive-ui@2.40.1(vue@3.5.8(typescript@5.6.2)):
     dependencies:
       '@css-render/plugin-bem': 0.15.14(css-render@0.15.14)
       '@css-render/vue3-ssr': 0.15.14(vue@3.5.8(typescript@5.6.2))
