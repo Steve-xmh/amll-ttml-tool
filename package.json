@@ -12,9 +12,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@applemusic-like-lyrics/core": "0.2.0-alpha.2",
+    "@applemusic-like-lyrics/core": "0.2.0-alpha.3",
     "@applemusic-like-lyrics/lyric": "^0.2.4",
-    "@applemusic-like-lyrics/vue": "0.2.0-alpha.2",
+    "@applemusic-like-lyrics/vue": "0.2.0-alpha.3",
     "@extism/extism": "2.0.0-rc8",
     "@pixi/app": "^7.4.2",
     "@pixi/core": "^7.4.2",
