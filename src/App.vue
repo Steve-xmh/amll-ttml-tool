@@ -125,6 +125,7 @@ onErrorCaptured((err) => {
 		title: i18n.t("runtimeError.title"),
 		content: i18n.t("runtimeError.content", [String(err.stack ?? err)]),
 	});
+	console.error(err);
 	return false;
 });
 

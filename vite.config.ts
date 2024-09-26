@@ -1,10 +1,10 @@
-import {defineConfig, type UserConfig} from "vite";
-import svgLoader from "vite-svg-loader";
 import vue from "@vitejs/plugin-vue";
-import wasm from "vite-plugin-wasm";
-import topLevelAwait from "vite-plugin-top-level-await";
 import path from "path";
-import {VitePWA} from "vite-plugin-pwa";
+import { defineConfig, type UserConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+import topLevelAwait from "vite-plugin-top-level-await";
+import wasm from "vite-plugin-wasm";
+import svgLoader from "vite-svg-loader";
 
 const plugins = [
 	vue({

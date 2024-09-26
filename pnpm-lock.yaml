@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@applemusic-like-lyrics/core':
-        specifier: 0.2.0-alpha.1
-        version: 0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+        specifier: 0.2.0-alpha.2
+        version: 0.2.0-alpha.2(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
       '@applemusic-like-lyrics/lyric':
         specifier: ^0.2.4
         version: 0.2.4
       '@applemusic-like-lyrics/vue':
-        specifier: 0.2.0-alpha.1
-        version: 0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))
+        specifier: 0.2.0-alpha.2
+        version: 0.2.0-alpha.2(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))
       '@extism/extism':
         specifier: 2.0.0-rc8
         version: 2.0.0-rc8
@@ -248,8 +248,8 @@ packages:
     peerDependencies:
       ajv: '>=8'
 
-  '@applemusic-like-lyrics/core@0.2.0-alpha.1':
-    resolution: {integrity: sha512-qE7hMchehQG2WU6bnsKVQuERQAxlvOyvjlyWGBLdslV2mBvchtiK4GX6gFlcBFPZnd88ciT+vweICKDBAG7mBw==}
+  '@applemusic-like-lyrics/core@0.2.0-alpha.2':
+    resolution: {integrity: sha512-ZVFvhWhN+UzlBPxATg01P05wmXIb4Q58bnkkg+JlWX5kjddqs/FJpbCGXdvqJgvquXJdB9ZM4CAD10+35q1o0A==}
     peerDependencies:
       '@pixi/app': '*'
       '@pixi/core': '*'
@@ -262,8 +262,8 @@ packages:
   '@applemusic-like-lyrics/lyric@0.2.4':
     resolution: {integrity: sha512-B1N7dMEwEIlgtyqLGVt7EbXJBQLCbv5J/N0YjkgWHu5qM1vMhKSGOXzrBuMDusmr4Z6tfO5iLfOYQUtoSXZyeg==}
 
-  '@applemusic-like-lyrics/vue@0.2.0-alpha.1':
-    resolution: {integrity: sha512-plDL8cKxDsJQa00+g8Ee5ObJQ8mg9O9JAO4Rrx2sPY+A6OElqNLxY5p77X5EKgW5Yqzu7TPMCCcH24uqb6124g==}
+  '@applemusic-like-lyrics/vue@0.2.0-alpha.2':
+    resolution: {integrity: sha512-b7PZc5eI1WopL7lAc7VUviqNBKLamGmJcs/0Rtw1/oe8Arf/P2gsvNru0+3vC0ujtWlT2z02xgldBd8Q2Y+ulw==}
     peerDependencies:
       vue: '*'
 
@@ -6098,7 +6098,7 @@ snapshots:
       jsonpointer: 5.0.1
       leven: 3.1.0
 
-  '@applemusic-like-lyrics/core@0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@applemusic-like-lyrics/core@0.2.0-alpha.2(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
     dependencies:
       '@pixi/app': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/core': 7.4.2
@@ -6107,15 +6107,16 @@ snapshots:
       '@pixi/filter-bulge-pinch': 5.1.1(@pixi/core@7.4.2)
       '@pixi/filter-color-matrix': 7.4.2(@pixi/core@7.4.2)
       '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@ungap/structured-clone': 1.2.0
       bezier-easing: 2.1.0
       deep-freeze: 0.0.1
       gl-matrix: 4.0.0-beta.2
 
   '@applemusic-like-lyrics/lyric@0.2.4': {}
 
-  '@applemusic-like-lyrics/vue@0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))':
+  '@applemusic-like-lyrics/vue@0.2.0-alpha.2(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(vue@3.5.8(typescript@5.6.2))':
     dependencies:
-      '@applemusic-like-lyrics/core': 0.2.0-alpha.1(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@applemusic-like-lyrics/core': 0.2.0-alpha.2(@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/filter-blur@7.4.2(@pixi/core@7.4.2))(@pixi/filter-bulge-pinch@5.1.1(@pixi/core@7.4.2))(@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
       vue: 3.5.8(typescript@5.6.2)
     transitivePeerDependencies:
       - '@pixi/app'
