@@ -11,6 +11,7 @@
 
 <template>
 	<div v-show="props.word.word.trim().length > 0" ref="elRef" :class="{
+		'lyric-sync-word': true,
 		'lyric-word-not-main': props.notMain,
 		'lyric-word-warn': hasError,
 	}" @click="currentWord.wordIndex = props.word.id; currentWord.emptyBeat = 0;">
@@ -117,6 +118,68 @@ function toTimestamp(duration: number) {
 </script>
 
 <style lang="css" scoped>
+.lyric-sync-word {
+	display: grid;
+	grid-template: "emptyBeat emptyBeat" "selectMark selectMark" "selectArrow selectArrow" "word word" "startTime endTime";
+	align-content: center;
+	border-left: 1px solid #AAA4;
+	padding: 0 12px;
+	user-select: none;
+	cursor: pointer;
+
+	&:first-child {
+		border-left: none;
+	}
+
+	&>*:nth-child(1) {
+		grid-area: word;
+		font-size: 32px;
+		text-align: center;
+	}
+
+	&>*:nth-child(2) {
+		grid-area: startTime;
+		font-size: 12px;
+		text-align: left;
+	}
+
+	&>*:nth-child(3) {
+		grid-area: endTime;
+		margin-left: 8px;
+		font-size: 12px;
+		text-align: right;
+	}
+
+	&>*:nth-child(4) {
+		grid-area: selectMark;
+		font-size: 12px;
+		text-align: center;
+		color: var(--att-theme-color);
+		font-weight: bold;
+	}
+
+	&>*:nth-child(5) {
+		grid-area: selectArrow;
+		align-self: center;
+		justify-self: center;
+		content: "";
+		width: 0;
+		height: 0;
+		margin-bottom: 8px;
+		border-left: 4px solid transparent;
+		border-right: 4px solid transparent;
+		border-top: 4px solid var(--att-theme-color);
+	}
+
+	&>*:nth-child(6) {
+		grid-area: emptyBeat;
+		font-size: 12px;
+		text-align: center;
+		color: var(--att-theme-color);
+		font-weight: bold;
+	}
+}
+
 .lyric-word-warn {
 	color: #EE4444;
 }
