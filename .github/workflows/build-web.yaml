@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
           
       - name: 安装 PNPM
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v4.0.0
         with:
           version: latest
           
@@ -37,7 +37,7 @@ jobs:
         run: pnpm build
         
       - name: 部署到 Github Pages
-        uses: crazy-max/ghaction-github-pages@v2.6.0
+        uses: crazy-max/ghaction-github-pages@v4.0.0
         with:
           target_branch: gh-pages
           build_dir: dist
