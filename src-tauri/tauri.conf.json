@@ -2,63 +2,27 @@
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "AMLL TTML Tool",
-    "version": "0.0.0"
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "targets": "all"
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "clipboard": {
-        "all": false,
-        "writeText": true
-      },
-      "fs": {
-        "all": false,
-        "createDir": true,
-        "exists": true,
-        "writeFile": true
-      },
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "dialog": {
-        "all": false,
-        "open": true,
-        "save": true
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": [
-          "https://*.apple.com/*",
-          "https://*.163.com/*"
-        ]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "net.stevexmh.amll-ttml-tool",
-      "targets": "all"
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
-    },
+  "productName": "AMLL TTML Tool",
+  "mainBinaryName": "AMLL TTML Tool",
+  "version": "0.0.0",
+  "identifier": "net.stevexmh.amll-ttml-tool",
+  "plugins": {},
+  "app": {
+    "withGlobalTauri": false,
     "windows": [
       {
         "fullscreen": false,
@@ -67,6 +31,9 @@
         "width": 800,
         "height": 600
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

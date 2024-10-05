@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Client, getClient, ResponseType } from "@tauri-apps/api/http";
+import { Client, getClient, ResponseType } from "@tauri-apps/plugin-http";
 
 export interface PlaylistSong {
 	attributes: {

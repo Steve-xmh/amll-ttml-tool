@@ -23,7 +23,8 @@
     "@pixi/filter-color-matrix": "^7.4.2",
     "@pixi/sprite": "^7.4.2",
     "@pixi/utils": "^7.4.2",
-    "@tauri-apps/api": "^1.6.0",
+    "@tauri-apps/api": "^2.0.1",
+    "@tauri-apps/plugin-http": "^2.0.0",
     "@vicons/fa": "^0.12.0",
     "@vicons/fluent": "^0.12.0",
     "@vicons/material": "^0.12.0",
@@ -49,7 +50,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
-    "@tauri-apps/cli": "^1.6.2",
+    "@tauri-apps/cli": "^2.0.1",
     "@types/node": "^22.7.2",
     "@types/pangu": "^4.0.2",
     "@types/ua-parser-js": "^0.7.39",
