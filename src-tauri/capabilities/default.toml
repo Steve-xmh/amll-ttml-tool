@@ -1,0 +1,21 @@
+"$schema" = "../gen/schemas/desktop-schema.json"
+identifier = "default"
+description = "enables the default permissions"
+windows = ["main"]
+
+[[permissions]]
+identifier = "core:default"
+[[permissions]]
+identifier = "os:default"
+[[permissions]]
+identifier = "os:allow-os-type"
+[[permissions]]
+identifier = "core:window:default"
+[[permissions]]
+identifier = "core:window:allow-start-dragging"
+[[permissions]]
+identifier = "core:window:allow-toggle-maximize"
+[[permissions]]
+identifier = "core:window:allow-minimize"
+[[permissions]]
+identifier = "core:window:allow-show"

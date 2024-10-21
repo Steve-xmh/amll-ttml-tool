@@ -1,39 +1,41 @@
 {
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "amll-ttml-tool",
+  "version": "0.1.0",
+  "identifier": "com.tauri.dev",
   "build": {
-    "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:1420"
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "AMLL TTML Tool",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "transparent": true,
+        "visible": false,
+        "decorations": false,
+        "titleBarStyle": "Transparent"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
   },
   "bundle": {
     "active": true,
+    "targets": "all",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ],
-    "targets": "all"
-  },
-  "productName": "AMLL TTML Tool",
-  "mainBinaryName": "AMLL TTML Tool",
-  "version": "0.0.0",
-  "identifier": "net.stevexmh.amll-ttml-tool",
-  "plugins": {},
-  "app": {
-    "withGlobalTauri": false,
-    "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "Apple Music-like lyric 插件 TTML 歌词工具",
-        "width": 800,
-        "height": 600
-      }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   }
 }
