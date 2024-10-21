@@ -10,18 +10,16 @@ import {
 	DropdownMenu,
 	Flex,
 	Grid,
-	IconButton,
+	Inset,
 	Select,
 	Separator,
-	Slider,
 	Text,
 	TextField,
 	Theme,
 } from "@radix-ui/themes";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { MusicNote216Filled, Play16Filled } from "@ricons/fluent";
-import { Icon } from "@ricons/utils";
 import { Trans } from "react-i18next";
+import AudioControls from "./components/AudioControls";
 
 const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -47,10 +45,16 @@ const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 		<Separator
 			orientation="vertical"
 			size="4"
-			style={{ height: "unset", alignSelf: "stretch" }}
+			style={{ height: "unset", alignSelf: "stretch", minWidth: "1px" }}
 		/>
 	</>
 );
+
+let controlsPlatform = import.meta.env
+	.TAURI_ENV_PLATFORM as WindowControlsProps["platform"];
+if (import.meta.env.TAURI_ENV_PLATFORM === "darwin") {
+	controlsPlatform = "macos";
+}
 
 function App() {
 	const [darkMode, setDarkMode] = useState(darkMediaQuery.matches);
@@ -63,6 +67,10 @@ function App() {
 		useEffect(() => {
 			const win = getCurrentWindow();
 			win.show();
+			console.log(
+				"import.meta.env.TAURI_ENV_PLATFORM",
+				import.meta.env.TAURI_ENV_PLATFORM,
+			);
 		}, []);
 	}
 
@@ -77,13 +85,12 @@ function App() {
 					className={darkMode ? "dark" : undefined}
 					controlsOrder="platform"
 					windowControlsProps={{
-						platform: import.meta.env
-							.TAURI_ENV_PLATFORM as WindowControlsProps["platform"],
+						platform: controlsPlatform,
 						hide: !import.meta.env.TAURI_ENV_PLATFORM,
 						className: styles.titlebar,
 					}}
 				>
-					<Flex m="2" mb="0" justify="center" gap="2">
+					<Flex m="2" justify="center" gap="2">
 						<DropdownMenu.Root>
 							<DropdownMenu.Trigger>
 								<Button variant="soft">
@@ -92,9 +99,9 @@ function App() {
 								</Button>
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
-								<DropdownMenu.Item>Open</DropdownMenu.Item>
-								<DropdownMenu.Item>Save</DropdownMenu.Item>
-								<DropdownMenu.Item>Close</DropdownMenu.Item>
+								<DropdownMenu.Item>新建 TTML 文件</DropdownMenu.Item>
+								<DropdownMenu.Item>打开 TTML 文件</DropdownMenu.Item>
+								<DropdownMenu.Item>保存 TTML 文件</DropdownMenu.Item>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 						<DropdownMenu.Root>
@@ -105,9 +112,8 @@ function App() {
 								</Button>
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
-								<DropdownMenu.Item>Open</DropdownMenu.Item>
-								<DropdownMenu.Item>Save</DropdownMenu.Item>
-								<DropdownMenu.Item>Close</DropdownMenu.Item>
+								<DropdownMenu.Item>撤销</DropdownMenu.Item>
+								<DropdownMenu.Item>重做</DropdownMenu.Item>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 						<Select.Root defaultValue="edit">
@@ -124,102 +130,97 @@ function App() {
 					</Flex>
 				</WindowTitlebar>
 				<Card m="2">
-					<Flex direction="row" gap="3" align="center">
-						<RibbonSection label="行时间戳">
-							<Grid
-								columns="0fr 1fr"
-								gap="2"
-								gapY="1"
-								flexGrow="1"
-								align="center"
-							>
-								<Text wrap="nowrap" size="1">
-									起始时间
-								</Text>
-								<TextField.Root size="1" style={{ width: "8em" }} />
-								<Text wrap="nowrap" size="1">
-									结束时间
-								</Text>
-								<TextField.Root size="1" style={{ width: "8em" }} />
-							</Grid>
-						</RibbonSection>
-						<RibbonSection label="词时间戳">
-							<Grid
-								columns="0fr 1fr"
-								gap="2"
-								gapY="1"
-								flexGrow="1"
-								align="center"
-							>
-								<Text wrap="nowrap" size="1">
-									起始时间
-								</Text>
-								<TextField.Root size="1" style={{ width: "8em" }} />
-								<Text wrap="nowrap" size="1">
-									结束时间
-								</Text>
-								<TextField.Root size="1" style={{ width: "8em" }} />
-								<Text wrap="nowrap" size="1">
-									空拍数量
-								</Text>
-								<TextField.Root size="1" style={{ width: "8em" }} />
-							</Grid>
-						</RibbonSection>
-						<RibbonSection label="内容">
-							<Grid
-								columns="0fr 1fr"
-								gap="2"
-								gapY="1"
-								flexGrow="1"
-								align="center"
-							>
-								<Text wrap="nowrap" size="1">
-									单词内容
-								</Text>
-								<TextField.Root size="1" style={{ width: "8em" }} />
-								<Text wrap="nowrap" size="1">
-									单词类型
-								</Text>
-								<Select.Root size="1" defaultValue="none">
-									<Select.Trigger />
-									<Select.Content>
-										<Select.Item value="none">普通</Select.Item>
-										<Select.Item value="ruby">注音原词</Select.Item>
-										<Select.Item value="rt">注音发音</Select.Item>
-									</Select.Content>
-								</Select.Root>
-								<Text wrap="nowrap" size="1">
-									脏词
-								</Text>
-								<Checkbox />
-							</Grid>
-						</RibbonSection>
-					</Flex>
+					<Inset>
+						<Flex
+							p="3"
+							direction="row"
+							gap="3"
+							align="center"
+							style={{
+								overflowX: "auto",
+							}}
+						>
+							<RibbonSection label="行时间戳">
+								<Grid
+									columns="0fr 1fr"
+									gap="2"
+									gapY="1"
+									flexGrow="1"
+									align="center"
+								>
+									<Text wrap="nowrap" size="1">
+										起始时间
+									</Text>
+									<TextField.Root size="1" style={{ width: "8em" }} />
+									<Text wrap="nowrap" size="1">
+										结束时间
+									</Text>
+									<TextField.Root size="1" style={{ width: "8em" }} />
+								</Grid>
+							</RibbonSection>
+							<RibbonSection label="词时间戳">
+								<Grid
+									columns="0fr 1fr"
+									gap="2"
+									gapY="1"
+									flexGrow="1"
+									align="center"
+								>
+									<Text wrap="nowrap" size="1">
+										起始时间
+									</Text>
+									<TextField.Root size="1" style={{ width: "8em" }} />
+									<Text wrap="nowrap" size="1">
+										结束时间
+									</Text>
+									<TextField.Root size="1" style={{ width: "8em" }} />
+									<Text wrap="nowrap" size="1">
+										空拍数量
+									</Text>
+									<TextField.Root size="1" style={{ width: "8em" }} />
+								</Grid>
+							</RibbonSection>
+							<RibbonSection label="内容">
+								<Grid
+									columns="0fr 1fr"
+									gap="2"
+									gapY="1"
+									flexGrow="1"
+									align="center"
+								>
+									<Text wrap="nowrap" size="1">
+										单词内容
+									</Text>
+									<TextField.Root size="1" style={{ width: "8em" }} />
+									<Text wrap="nowrap" size="1">
+										单词类型
+									</Text>
+									<Select.Root size="1" defaultValue="none">
+										<Select.Trigger />
+										<Select.Content>
+											<Select.Item value="none">普通</Select.Item>
+											<Select.Item value="ruby">注音原词</Select.Item>
+											<Select.Item value="rt">注音发音</Select.Item>
+										</Select.Content>
+									</Select.Root>
+									<Text wrap="nowrap" size="1">
+										脏词
+									</Text>
+									<Checkbox />
+								</Grid>
+							</RibbonSection>
+						</Flex>
+					</Inset>
 				</Card>
 				<Box
 					m="2"
 					mt="0"
-					style={{
-						flex: "1",
-					}}
+					flexGrow="1"
 				/>
-				<Card m="2" mt="0">
-					<Flex gap="2" align="center">
-						<IconButton variant="soft">
-							<Icon>
-								<MusicNote216Filled />
-							</Icon>
-						</IconButton>
-						<IconButton variant="soft">
-							<Icon>
-								<Play16Filled />
-							</Icon>
-						</IconButton>
-						<Text size="2">00:00.00</Text>
-						<Slider />
-						<Text size="2">00:00.00</Text>
-					</Flex>
-				</Card>
+				<Box flexShrink="1">
+					
+				<AudioControls />
+				</Box>
 			</Flex>
 		</Theme>
 	);

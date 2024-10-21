@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:tsc": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "fmt": "biome format --write ./src",
     "preview": "vite preview",
@@ -20,9 +21,12 @@
     "@tauri-apps/plugin-os": "^2.0.0",
     "i18next": "^23.16.2",
     "i18next-icu": "^2.3.0",
+    "jotai": "^2.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.0.3",
+    "react-virtualized-auto-sizer": "^1.0.24",
+    "react-window": "^1.8.10",
     "tauri-controls": "^0.4.0"
   },
   "devDependencies": {

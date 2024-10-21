@@ -9,7 +9,7 @@
   <link rel="mask-icon" href="./src/assets/logo.svg" color="#18a058">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';  script-src * data: blob: 'unsafe-inline' 'unsafe-eval';  connect-src * data: blob: 'unsafe-inline';  img-src * data: blob: 'unsafe-inline';  frame-src * data: blob: ;  style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline'; frame-ancestors * data: blob: 'unsafe-inline';" />
+    content="default-src * data: blob: filesystem: about: ws: wss: ipc: 'unsafe-inline' 'unsafe-eval'; worker-src * data: blob: ;  script-src * data: blob: 'unsafe-inline' 'unsafe-eval';  connect-src * ipc: data: blob: 'unsafe-inline';  img-src * data: blob: 'unsafe-inline';  frame-src * data: blob: ;  style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';" />
   <meta name="theme-color" content="#18a058" />
   <title>AMLL TTML Tool</title>
   <style>

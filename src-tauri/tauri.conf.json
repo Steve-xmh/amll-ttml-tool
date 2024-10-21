@@ -12,15 +12,15 @@
   "app": {
     "windows": [
       {
-        "title": "AMLL TTML Tool",
+        "title": "",
         "width": 800,
         "height": 600,
         "resizable": true,
         "fullscreen": false,
         "transparent": true,
         "visible": false,
-        "decorations": false,
-        "titleBarStyle": "Transparent"
+        "decorations": true,
+        "titleBarStyle": "Overlay"
       }
     ],
     "security": {
