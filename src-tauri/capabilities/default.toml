@@ -19,3 +19,5 @@ identifier = "core:window:allow-toggle-maximize"
 identifier = "core:window:allow-minimize"
 [[permissions]]
 identifier = "core:window:allow-show"
+[[permissions]]
+identifier = "core:window:allow-close"
