@@ -33,7 +33,7 @@ export const TitleBar: FC = () => {
 			controlsOrder="platform"
 			windowControlsProps={{
 				platform: controlsPlatform,
-				hide: !import.meta.env.TAURI_ENV_PLATFORM,
+				hide: !import.meta.env.TAURI_ENV_PLATFORM || controlsPlatform !== "windows",
 				className: styles.titlebar,
 			}}
 		>

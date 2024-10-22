@@ -15,14 +15,9 @@
         "title": "",
         "width": 800,
         "height": 600,
-        "minWidth": 640,
-        "minHeight": 480,
         "resizable": true,
         "fullscreen": false,
-        "transparent": true,
-        "visible": false,
-        "decorations": true,
-        "titleBarStyle": "Overlay"
+        "visible": false
       }
     ],
     "security": {
