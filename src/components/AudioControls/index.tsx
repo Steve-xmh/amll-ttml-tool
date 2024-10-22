@@ -1,16 +1,28 @@
-import { Card, Flex, IconButton, Inset, Text } from "@radix-ui/themes";
+/*
+ * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ *
+ * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
+ * This source code file is a part of AMLL TTML Tool project.
+ * 本项目的源代码的使用受到 GNU GENERAL PUBLIC LICENSE version 3 许可证的约束，具体可以参阅以下链接。
+ * Use of this source code is governed by the GNU GPLv3 license that can be found through the following link.
+ *
+ * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
+ */
+
+import { Card, Flex, IconButton, Inset, Text, Tooltip } from "@radix-ui/themes";
 import MusicNote216Filled from "@ricons/fluent/MusicNote216Filled";
 import Pause16Filled from "@ricons/fluent/Pause16Filled";
 import Play16Filled from "@ricons/fluent/Play16Filled";
 import { Icon } from "@ricons/utils";
+import { useAtom, useAtomValue } from "jotai";
 import {
+	type FC,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
 	useRef,
-	type FC,
+	useState,
 } from "react";
-import { useAtom, useAtomValue } from "jotai";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
@@ -26,6 +38,7 @@ export const AudioControls: FC = () => {
 	const cachedWaveformRef = useRef<ImageData>();
 	const mouseSeekPosRef = useRef(Number.NaN);
 	const [audio, setAudio] = useAtom(loadedAudioAtom);
+	const [audioLoaded, setAudioLoaded] = useState(false);
 	const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
 	const [currentDuration, setCurrentDuration] = useAtom(currentDurationAtom);
 	const [audioPlaying, setAudioPlaying] = useAtom(audioPlayingAtom);
@@ -67,8 +80,7 @@ export const AudioControls: FC = () => {
 		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
 		const p = audioEl.currentTime / audioEl.duration;
-		const playWidth =
-			canvas.width * p;
+		const playWidth = canvas.width * p;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		const canvasStyles = getComputedStyle(canvas);
 		const fontFillColor =
@@ -85,7 +97,7 @@ export const AudioControls: FC = () => {
 		ctx.fillRect(0, 0, playWidth, canvas.height);
 		const mouseSeekPos = mouseSeekPosRef.current;
 		if (!Number.isNaN(mouseSeekPos)) {
-            const mouseSeekWidth = mouseSeekPos * canvas.width;
+			const mouseSeekWidth = mouseSeekPos * canvas.width;
 			ctx.globalCompositeOperation = "source-over";
 			const seekTimestamp = msToTimestamp(
 				(mouseSeekPos * audioEl.duration * 1000) | 0,
@@ -94,22 +106,22 @@ export const AudioControls: FC = () => {
 			ctx.font = `calc(${fontSize} * ${devicePixelRatio}) ${canvasStyles.fontFamily}`;
 			ctx.strokeStyle = fontFillColor;
 			ctx.fillStyle = fontFillColor;
-            ctx.lineWidth = devicePixelRatio;
-            const padding = devicePixelRatio * 8;
-            let targetPos = mouseSeekWidth + padding;
-            if (targetPos > canvas.width - size.width - padding) {
-                targetPos = mouseSeekWidth - size.width - padding;
-            }
+			ctx.lineWidth = devicePixelRatio;
+			const padding = devicePixelRatio * 8;
+			let targetPos = mouseSeekWidth + padding;
+			if (targetPos > canvas.width - size.width - padding) {
+				targetPos = mouseSeekWidth - size.width - padding;
+			}
 			ctx.fillText(
 				seekTimestamp,
 				targetPos,
 				canvas.height / 2 +
 					(size.actualBoundingBoxAscent - size.actualBoundingBoxDescent) / 2,
 			);
-            ctx.beginPath();
-            ctx.moveTo(mouseSeekWidth, 0);
-            ctx.lineTo(mouseSeekWidth, canvas.height);
-            ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(mouseSeekWidth, 0);
+			ctx.lineTo(mouseSeekWidth, canvas.height);
+			ctx.stroke();
 		}
 	}, []);
 
@@ -128,7 +140,7 @@ export const AudioControls: FC = () => {
 			ctx.lineWidth = 1;
 			const canvasHeightHalf = canvas.height / 2;
 
-            ctx.beginPath();
+			ctx.beginPath();
 			for (let x = 0; x < canvas.width; x++) {
 				const wx = (x / canvas.width) * waveform.length;
 				const wxL = Math.max(0, Math.floor(wx));
@@ -157,9 +169,11 @@ export const AudioControls: FC = () => {
 		if (audioEl && audio.size > 0) {
 			const audioUrl = URL.createObjectURL(audio);
 			audioEl.src = audioUrl;
+			setAudioLoaded(true);
 			return () => {
 				audioEl.src = "";
 				URL.revokeObjectURL(audioUrl);
+				setAudioLoaded(false);
 			};
 		}
 	}, [audio]);
@@ -242,18 +256,28 @@ export const AudioControls: FC = () => {
 			<audio ref={audioRef} style={{ display: "none" }} />
 			<Inset>
 				<Flex align="center" px="2" gapX="2">
-					<IconButton my="2" variant="soft" onClick={onLoadMusic}>
-						<Icon>
-							<MusicNote216Filled />
-						</Icon>
-					</IconButton>
-					<IconButton my="2" ml="0" variant="soft" onClick={onTogglePlay}>
-						<Icon>{audioPlaying ? <Pause16Filled /> : <Play16Filled />}</Icon>
-					</IconButton>
+					<Tooltip content="加载音乐">
+						<IconButton my="2" variant="soft" onClick={onLoadMusic}>
+							<Icon>
+								<MusicNote216Filled />
+							</Icon>
+						</IconButton>
+					</Tooltip>
+					<Tooltip content="暂停 / 播放音乐">
+						<IconButton
+							my="2"
+							ml="0"
+							variant="soft"
+							disabled={!audioLoaded}
+							onClick={onTogglePlay}
+						>
+							<Icon>{audioPlaying ? <Pause16Filled /> : <Play16Filled />}</Icon>
+						</IconButton>
+					</Tooltip>
 					<Text
 						size="2"
 						style={{
-							minWidth: "7em",
+							minWidth: "5em",
 							textAlign: "right",
 						}}
 					>
@@ -275,7 +299,6 @@ export const AudioControls: FC = () => {
 							}}
 							ref={waveformCanvasRef}
 							onMouseMove={(evt) => {
-								console.log(mouseSeekPosRef.current);
 								const rect = evt.currentTarget.getBoundingClientRect();
 								mouseSeekPosRef.current =
 									(evt.clientX - rect.left) / rect.width;
@@ -290,12 +313,19 @@ export const AudioControls: FC = () => {
 								const mouseSeekPos = mouseSeekPosRef.current;
 								if (!Number.isNaN(mouseSeekPos) && audioEl) {
 									audioEl.currentTime = mouseSeekPos * audioEl.duration;
-                                    redrawCachedWaveform();
+									redrawCachedWaveform();
 								}
 							}}
 						/>
 					</Card>
-					<Text size="2">{msToTimestamp(currentDuration)}</Text>
+					<Text
+						size="2"
+						style={{
+							minWidth: "5em",
+						}}
+					>
+						{msToTimestamp(currentDuration)}
+					</Text>
 				</Flex>
 			</Inset>
 		</Card>

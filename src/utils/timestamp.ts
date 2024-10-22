@@ -27,7 +27,7 @@ export function msToTimestamp(timeMS: number): string {
 	if (!Number.isSafeInteger(t) || t < 0) {
 		throw new Error(`Invalid timestamp: ${t}`);
 	}
-	if (t === Infinity) {
+	if (t === Number.POSITIVE_INFINITY) {
 		return "99:99.999";
 	}
 	t = timeMS / 1000;

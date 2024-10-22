@@ -1,0 +1,8 @@
+.titlebar {
+	height: unset;
+	align-self: stretch;
+
+	button {
+		max-height: unset;
+	}
+}

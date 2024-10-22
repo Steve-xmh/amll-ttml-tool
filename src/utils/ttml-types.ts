@@ -20,13 +20,19 @@ export interface TTMLLyric {
 }
 
 export interface LyricWord {
+	// 用来确定唯一一个单词的标识符，导出时不会保存
+	id: string;
 	startTime: number;
 	endTime: number;
 	word: string;
-	emptyBeat?: number;
+	obscene: boolean;
+	wordType: "normal" | "ruby" | "rt";
+	emptyBeat: number;
 }
 
 export interface LyricLine {
+	// 用来确定唯一一个行的标识符，导出时不会保存
+	id: string;
 	words: LyricWord[];
 	translatedLyric: string;
 	romanLyric: string;

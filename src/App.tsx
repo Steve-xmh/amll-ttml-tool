@@ -1,225 +1,58 @@
-import { useEffect, useState, type FC, type PropsWithChildren } from "react";
-import { WindowTitlebar, type WindowControlsProps } from "tauri-controls";
-import styles from "./App.module.css";
+/*
+ * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
+ *
+ * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
+ * This source code file is a part of AMLL TTML Tool project.
+ * 本项目的源代码的使用受到 GNU GENERAL PUBLIC LICENSE version 3 许可证的约束，具体可以参阅以下链接。
+ * Use of this source code is governed by the GNU GPLv3 license that can be found through the following link.
+ *
+ * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
+ */
+
+import { Box, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import {
-	Box,
-	Button,
-	Card,
-	Checkbox,
-	DropdownMenu,
-	Flex,
-	Grid,
-	Inset,
-	Select,
-	Separator,
-	Text,
-	TextField,
-	Theme,
-} from "@radix-ui/themes";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Trans } from "react-i18next";
+import { AnimatePresence } from "framer-motion";
+import { useAtomValue } from "jotai";
+import { useEffect } from "react";
 import AudioControls from "./components/AudioControls";
-
-const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
-	children,
-	label,
-}) => (
-	<>
-		<Flex
-			direction="column"
-			gap="1"
-			style={{
-				alignSelf: "stretch",
-			}}
-		>
-			<Flex flexGrow="1" align="center" justify="center">
-				{children}
-			</Flex>
-			<Text align="center" color="gray" size="1">
-				{label}
-			</Text>
-		</Flex>
-		<Separator
-			orientation="vertical"
-			size="4"
-			style={{ height: "unset", alignSelf: "stretch", minWidth: "1px" }}
-		/>
-	</>
-);
-
-let controlsPlatform = import.meta.env
-	.TAURI_ENV_PLATFORM as WindowControlsProps["platform"];
-if (import.meta.env.TAURI_ENV_PLATFORM === "darwin") {
-	controlsPlatform = "macos";
-}
+import DarkThemeDetector from "./components/DarkThemeDetector";
+import LyricLinesView from "./components/LyricLinesView";
+import RibbonBar from "./components/RibbonBar";
+import { TitleBar } from "./components/TitleBar";
+import { ToolMode, isDarkThemeAtom, toolModeAtom } from "./states";
 
 function App() {
-	const [darkMode, setDarkMode] = useState(darkMediaQuery.matches);
-	darkMediaQuery.onchange = (e) => {
-		setDarkMode(e.matches);
-	};
-
+	const isDarkTheme = useAtomValue(isDarkThemeAtom);
+	const toolMode = useAtomValue(toolModeAtom);
 	if (import.meta.env.TAURI_ENV_PLATFORM) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			const win = getCurrentWindow();
 			win.show();
-			console.log(
-				"import.meta.env.TAURI_ENV_PLATFORM",
-				import.meta.env.TAURI_ENV_PLATFORM,
-			);
 		}, []);
 	}
 
 	return (
 		<Theme
-			appearance={darkMode ? "dark" : "light"}
+			appearance={isDarkTheme ? "dark" : "light"}
+			panelBackground="solid"
 			hasBackground={!import.meta.env.TAURI_ENV_PLATFORM}
-			accentColor={darkMode ? "jade" : "green"}
+			accentColor={isDarkTheme ? "jade" : "green"}
+			style={{
+				"--color-panel": "var(--gray-a2)",
+			}}
 		>
+			<DarkThemeDetector />
 			<Flex direction="column" height="100vh">
-				<WindowTitlebar
-					className={darkMode ? "dark" : undefined}
-					controlsOrder="platform"
-					windowControlsProps={{
-						platform: controlsPlatform,
-						hide: !import.meta.env.TAURI_ENV_PLATFORM,
-						className: styles.titlebar,
-					}}
-				>
-					<Flex m="2" justify="center" gap="2">
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger>
-								<Button variant="soft">
-									<Trans i18nKey="topBar.menu.file">文件</Trans>
-									<DropdownMenu.TriggerIcon />
-								</Button>
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Content>
-								<DropdownMenu.Item>新建 TTML 文件</DropdownMenu.Item>
-								<DropdownMenu.Item>打开 TTML 文件</DropdownMenu.Item>
-								<DropdownMenu.Item>保存 TTML 文件</DropdownMenu.Item>
-							</DropdownMenu.Content>
-						</DropdownMenu.Root>
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger>
-								<Button variant="soft">
-									<Trans i18nKey="topBar.menu.edit">编辑</Trans>
-									<DropdownMenu.TriggerIcon />
-								</Button>
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Content>
-								<DropdownMenu.Item>撤销</DropdownMenu.Item>
-								<DropdownMenu.Item>重做</DropdownMenu.Item>
-							</DropdownMenu.Content>
-						</DropdownMenu.Root>
-						<Select.Root defaultValue="edit">
-							<Select.Trigger />
-							<Select.Content>
-								<Select.Item value="edit">
-									<Trans i18nKey="topBar.modeBtns.edit">编辑模式</Trans>
-								</Select.Item>
-								<Select.Item value="preview">
-									<Trans i18nKey="topBar.modeBtns.preview">预览模式</Trans>
-								</Select.Item>
-							</Select.Content>
-						</Select.Root>
-					</Flex>
-				</WindowTitlebar>
-				<Card m="2">
-					<Inset>
-						<Flex
-							p="3"
-							direction="row"
-							gap="3"
-							align="center"
-							style={{
-								overflowX: "auto",
-							}}
-						>
-							<RibbonSection label="行时间戳">
-								<Grid
-									columns="0fr 1fr"
-									gap="2"
-									gapY="1"
-									flexGrow="1"
-									align="center"
-								>
-									<Text wrap="nowrap" size="1">
-										起始时间
-									</Text>
-									<TextField.Root size="1" style={{ width: "8em" }} />
-									<Text wrap="nowrap" size="1">
-										结束时间
-									</Text>
-									<TextField.Root size="1" style={{ width: "8em" }} />
-								</Grid>
-							</RibbonSection>
-							<RibbonSection label="词时间戳">
-								<Grid
-									columns="0fr 1fr"
-									gap="2"
-									gapY="1"
-									flexGrow="1"
-									align="center"
-								>
-									<Text wrap="nowrap" size="1">
-										起始时间
-									</Text>
-									<TextField.Root size="1" style={{ width: "8em" }} />
-									<Text wrap="nowrap" size="1">
-										结束时间
-									</Text>
-									<TextField.Root size="1" style={{ width: "8em" }} />
-									<Text wrap="nowrap" size="1">
-										空拍数量
-									</Text>
-									<TextField.Root size="1" style={{ width: "8em" }} />
-								</Grid>
-							</RibbonSection>
-							<RibbonSection label="内容">
-								<Grid
-									columns="0fr 1fr"
-									gap="2"
-									gapY="1"
-									flexGrow="1"
-									align="center"
-								>
-									<Text wrap="nowrap" size="1">
-										单词内容
-									</Text>
-									<TextField.Root size="1" style={{ width: "8em" }} />
-									<Text wrap="nowrap" size="1">
-										单词类型
-									</Text>
-									<Select.Root size="1" defaultValue="none">
-										<Select.Trigger />
-										<Select.Content>
-											<Select.Item value="none">普通</Select.Item>
-											<Select.Item value="ruby">注音原词</Select.Item>
-											<Select.Item value="rt">注音发音</Select.Item>
-										</Select.Content>
-									</Select.Root>
-									<Text wrap="nowrap" size="1">
-										脏词
-									</Text>
-									<Checkbox />
-								</Grid>
-							</RibbonSection>
-						</Flex>
-					</Inset>
-				</Card>
-				<Box
-					m="2"
-					mt="0"
-					flexGrow="1"
-				/>
+				<TitleBar />
+				<RibbonBar />
+				<AnimatePresence>
+					{toolMode === ToolMode.Edit && <LyricLinesView key="edit" />}
+					{toolMode !== ToolMode.Edit && <Box flexGrow="1" key="not-edit" />}
+				</AnimatePresence>
 				<Box flexShrink="1">
-					
-				<AudioControls />
+					<AudioControls />
 				</Box>
 			</Flex>
 		</Theme>

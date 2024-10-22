@@ -19,15 +19,19 @@
     "@ricons/utils": "^0.1.6",
     "@tauri-apps/api": "^2.0.3",
     "@tauri-apps/plugin-os": "^2.0.0",
+    "classnames": "^2.5.1",
+    "framer-motion": "^11.11.9",
     "i18next": "^23.16.2",
     "i18next-icu": "^2.3.0",
     "jotai": "^2.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.0.3",
+    "react-viewport-list": "^7.1.2",
     "react-virtualized-auto-sizer": "^1.0.24",
     "react-window": "^1.8.10",
-    "tauri-controls": "^0.4.0"
+    "tauri-controls": "^0.4.0",
+    "uid": "^2.0.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
@@ -36,6 +40,7 @@
     "@types/node": "^22.7.7",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
+    "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^4.3.2",
     "clsx": "^2.1.1",
     "eslint": "^9.11.1",

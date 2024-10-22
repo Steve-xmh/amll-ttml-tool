@@ -16,6 +16,7 @@
  * @see https://www.w3.org/TR/2018/REC-ttml1-20181108/
  */
 
+import { uid } from "uid";
 import { parseTimespan } from "./timestamp";
 import type {
 	LyricLine,
@@ -69,6 +70,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 	function parseParseLine(lineEl: Element, isBG = false, isDuet = false) {
 		const line: LyricLine = {
+			id: uid(),
 			words: [],
 			translatedLyric: "",
 			romanLyric: "",
@@ -90,7 +92,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		} else {
 			line.startTime = line.words.reduce(
 				(pv, cv) => Math.min(pv, cv.startTime),
-				Infinity,
+				Number.POSITIVE_INFINITY,
 			);
 			line.endTime = line.words.reduce((pv, cv) => Math.max(pv, cv.endTime), 0);
 		}
@@ -99,9 +101,13 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			if (wordNode.nodeType === Node.TEXT_NODE) {
 				const word = wordNode.textContent ?? "";
 				line.words.push({
+					id: uid(),
 					word: word,
 					startTime: word.trim().length > 0 ? line.startTime : 0,
 					endTime: word.trim().length > 0 ? line.endTime : 0,
+					wordType: "normal",
+					obscene: false,
+					emptyBeat: 0,
 				});
 			} else if (wordNode.nodeType === Node.ELEMENT_NODE) {
 				const wordEl = wordNode as Element;
@@ -118,9 +124,13 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					}
 				} else if (wordEl.hasAttribute("begin") && wordEl.hasAttribute("end")) {
 					const word: LyricWord = {
+						id: uid(),
 						word: wordNode.textContent ?? "",
 						startTime: parseTimespan(wordEl.getAttribute("begin") ?? ""),
 						endTime: parseTimespan(wordEl.getAttribute("end") ?? ""),
+						wordType: "normal",
+						obscene: false,
+						emptyBeat: 0,
 					};
 					const emptyBeat = wordEl.getAttribute("amll:empty-beat");
 					if (emptyBeat) {

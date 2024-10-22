@@ -10,14 +10,16 @@ export async function genWaveform(
 	const ac = new AudioContext();
 	const decoded = await ac.decodeAudioData(audioData);
 	const waveform = new Float32Array(decoded.length);
+	let max = 0;
 	for (let c = 0; c < decoded.numberOfChannels; c++) {
 		const ch = decoded.getChannelData(c);
 		for (let i = 0; i < decoded.length; i++) {
 			waveform[i] += ch[i];
+			max = Math.max(max, Math.abs(ch[i]));
 		}
 	}
 	for (let i = 0; i < decoded.length; i++) {
-		waveform[i] /= decoded.numberOfChannels;
+		waveform[i] = waveform[i] / decoded.numberOfChannels / max;
 	}
-	return [waveform,decoded.sampleRate];
+	return [waveform, decoded.sampleRate];
 }

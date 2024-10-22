@@ -9,17 +9,16 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-/// <reference types="vite/client" />
+import type { FC } from "react";
+import { ToolMode } from "../../states";
+import { RibbonFrame, RibbonSection } from "./common";
 
-interface ImportMetaEnv {
-	readonly TAURI_ENV_DEBUG?: string;
-	readonly TAURI_ENV_TARGET_TRIPLE?: string;
-	readonly TAURI_ENV_ARCH?: string;
-	readonly TAURI_ENV_PLATFORM?: string;
-	readonly TAURI_ENV_FAMILY?: string;
-	// 更多环境变量...
-}
+export const SyncModeRibbonBar: FC = () => {
+	return (
+		<RibbonFrame toolMode={ToolMode.Sync}>
+			<RibbonSection label="歌词行效果"></RibbonSection>
+		</RibbonFrame>
+	);
+};
 
-interface ImportMeta {
-	readonly env: ImportMetaEnv;
-}
+export default SyncModeRibbonBar;
