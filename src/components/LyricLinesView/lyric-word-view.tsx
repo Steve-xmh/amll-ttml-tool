@@ -119,8 +119,16 @@ export const LyricWordView: FC<{
 				))}
 			{toolMode === ToolMode.Sync && !isWordBlank && (
 				<motion.div className={className}>
-					<div className={styles.startTime}>{msToTimestamp(word.startTime)}</div>
-					<motion.div className={styles.displayWord} layout layoutId={displayWordLayoutId}>{displayWord}</motion.div>
+					<div className={styles.startTime}>
+						{msToTimestamp(word.startTime)}
+					</div>
+					<motion.div
+						className={styles.displayWord}
+						layout
+						layoutId={displayWordLayoutId}
+					>
+						{displayWord}
+					</motion.div>
 					<div className={styles.endTime}>{msToTimestamp(word.endTime)}</div>
 				</motion.div>
 			)}

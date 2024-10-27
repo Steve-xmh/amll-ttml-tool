@@ -96,39 +96,43 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 						/>
 					))}
 				</div>
-				{toolMode === ToolMode.Edit && <IconButton
-					variant="ghost"
-					onClick={(evt) => {
-						evt.preventDefault();
-						evt.stopPropagation();
-						const newWordId = uid();
-						editLyricLines((state) => {
-							state.lyricLines[lineIndex].words.push({
-								id: newWordId,
-								word: "",
-								startTime: 0,
-								endTime: 0,
-								obscene: false,
-								wordType: "normal",
-								emptyBeat: 0,
+				{toolMode === ToolMode.Edit && (
+					<IconButton
+						variant="ghost"
+						onClick={(evt) => {
+							evt.preventDefault();
+							evt.stopPropagation();
+							const newWordId = uid();
+							editLyricLines((state) => {
+								state.lyricLines[lineIndex].words.push({
+									id: newWordId,
+									word: "",
+									startTime: 0,
+									endTime: 0,
+									obscene: false,
+									wordType: "normal",
+									emptyBeat: 0,
+								});
 							});
-						});
-						setSelectedWords(new Set([newWordId]));
-					}}
-				>
-					<Icon>
-						<Add16Filled
-							onPointerEnterCapture={undefined}
-							onPointerLeaveCapture={undefined}
-						/>
-					</Icon>
-				</IconButton>}
-				{
-					toolMode === ToolMode.Sync && <Flex pr="3" gap="1" direction="column" align="stretch">
-					<div className={styles.startTime}>{msToTimestamp(line.startTime)}</div>
-					<div className={styles.endTime}>{msToTimestamp(line.endTime)}</div>
+							setSelectedWords(new Set([newWordId]));
+						}}
+					>
+						<Icon>
+							<Add16Filled
+								onPointerEnterCapture={undefined}
+								onPointerLeaveCapture={undefined}
+							/>
+						</Icon>
+					</IconButton>
+				)}
+				{toolMode === ToolMode.Sync && (
+					<Flex pr="3" gap="1" direction="column" align="stretch">
+						<div className={styles.startTime}>
+							{msToTimestamp(line.startTime)}
+						</div>
+						<div className={styles.endTime}>{msToTimestamp(line.endTime)}</div>
 					</Flex>
-				}
+				)}
 			</motion.div>
 		</Flex>
 	);

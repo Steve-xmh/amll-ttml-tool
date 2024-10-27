@@ -1,6 +1,5 @@
 import { watch } from "vue";
 
-
 export type KeyBindingsConfig = string[];
 export interface KeyBindingEvent {
 	downTime: number;

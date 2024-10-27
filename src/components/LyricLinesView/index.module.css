@@ -24,7 +24,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		
+
 		border-right: solid 1px var(--gray-a5);
 	}
 }
@@ -33,10 +33,11 @@
 	font-size: 1.5em;
 }
 
-.startTime, .endTime {
+.startTime,
+.endTime {
 	padding: 0.05em 0.5em;
 	border-radius: var(--radius-4);
-	color: var(--white-a6)
+	color: var(--white-a6);
 }
 
 .startTime {

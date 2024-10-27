@@ -136,7 +136,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					if (emptyBeat) word.emptyBeat = Number(emptyBeat);
 					const obscene = wordEl.getAttribute("amll:obscene");
 					if (obscene === "true") word.obscene = true;
-					
+
 					line.words.push(word);
 				}
 			}
