@@ -28,6 +28,7 @@ export const useSettings = defineStore("settings", {
 		showingTutorial: true,
 
 		uiLayoutMode: UILayoutMode.Simple,
+		dbUploadApiBaseUrl: "https://dpaste.org/api/",
 
 		keybindings: {
 			resumeOrPause: ["Space"],

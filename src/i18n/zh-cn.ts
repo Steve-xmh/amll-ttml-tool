@@ -89,6 +89,9 @@ export const zhCN = {
 				simple: "简单布局",
 				advanced: "高级布局（实验性）",
 			},
+			dbUploadApiBaseUrl: "歌词数据库上传 API 端点链接",
+			dbUploadApiBaseUrlDesc:
+				"如果您提交歌词后发生机器人访问失败的问题，请考虑使用其他基于 dpaste 的站点以创建歌词文件短链",
 		},
 		keybindings: {
 			resumeOrPause: "播放 / 暂停",
@@ -258,6 +261,7 @@ export const zhCN = {
 		title: "提交歌词到 AMLL 歌词数据库（仅简体中文用户）",
 		chineseUserOnlyWarning:
 			"本功能仅使用 AMLL 歌词数据库的简体中文用户可用，如果您是为了在其他软件上使用歌词而编辑歌词的话，请参考对应的软件提交歌词的方式来提交歌词哦！",
+		issuesWarning: "检测到当前歌词包含以下问题，请全部解决后重试：",
 		noMusicIdWarning:
 			"没有在歌词元数据中找到任何平台的音乐ID！\n请在顶部菜单 编辑 - 编辑歌词元数据 中添加音乐ID！",
 		noMusicNameWarning:
@@ -271,7 +275,7 @@ export const zhCN = {
 		content: [
 			"首先，感谢您的慷慨歌词贡献！",
 			"通过提交，你将默认同意 {0} 并提交到歌词数据库！",
-			"并且歌词将会在以后被 AMLL 插件作为默认 TTML 歌词源获取！",
+			"并且歌词将会在以后被 AMLL 系程序作为默认 TTML 歌词源获取！",
 			"如果您对歌词所有权比较看重的话，请勿提交歌词哦！",
 			"请输入以下提交信息然后跳转到 Github 议题提交页面！",
 		].join("\n"),

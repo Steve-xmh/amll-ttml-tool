@@ -75,6 +75,21 @@
 					<NSelect v-model:value="settings.uiLayoutMode" :options="uiLayoutModeOptions"
 						style="min-width: 16em;" />
 				</div>
+
+				<div />
+				<div />
+
+				<div>
+					<div>
+						<i18n-t keypath="settingsDialog.common.dbUploadApiBaseUrl" />
+					</div>
+					<div class="desc">
+						<i18n-t keypath="settingsDialog.common.dbUploadApiBaseUrlDesc" />
+					</div>
+				</div>
+				<div>
+					<NInput v-model:value="settings.dbUploadApiBaseUrl" style="min-width: 16em;" />
+				</div>
 			</NTabPane>
 			<NTabPane key="shortcut" :name="t('settingsDialog.tab.keybindings')" class="setting-grid">
 				<div>
@@ -219,8 +234,8 @@
 </template>
 
 <script lang="ts" setup>
-import { UILayoutMode, useDialogs, useSettings } from "../../store";
 import {
+	NInput,
 	NInputNumber,
 	NModal,
 	NSelect,
@@ -230,6 +245,7 @@ import {
 	NTabs,
 } from "naive-ui";
 import { useI18n } from "vue-i18n";
+import { UILayoutMode, useDialogs, useSettings } from "../../store";
 import ShortcutInput from "../ShortcutInput.vue";
 
 const dialogs = useDialogs();
