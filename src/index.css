@@ -11,3 +11,15 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.rt-BaseButton:where(.rt-variant-soft) {
+  background-color: var(--accent-a3);
+  
+  &:hover {
+    background-color: var(--accent-a4);
+  }
+}
+
+.rt-BaseButton:where(.rt-variant-soft):where(:active:not([data-state='open'])) {
+  background-color: var(--accent-a5);
+}

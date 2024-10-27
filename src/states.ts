@@ -26,6 +26,7 @@ export enum ToolMode {
 	Preview = "preview",
 }
 
+export const ribbonBarHeightAtom = atom(0);
 export const toolModeAtom = atom(ToolMode.Edit);
 export const darkModeAtom = atom(DarkMode.Auto);
 export const isDarkThemeAtom = atom((get) => {

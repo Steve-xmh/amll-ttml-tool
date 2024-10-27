@@ -12,14 +12,16 @@
 import { Card, Inset } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue } from "jotai";
-import type { FC } from "react";
-import { ToolMode, toolModeAtom } from "../../states";
+import { forwardRef, type FC } from "react";
+import { ribbonBarHeightAtom, ToolMode, toolModeAtom } from "../../states";
 import { EditModeRibbonBar } from "./edit-mode";
 import PreviewModeRibbonBar from "./preview-mode";
 import SyncModeRibbonBar from "./sync-mode";
 
-export const RibbonBar: FC = () => {
+export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const toolMode = useAtomValue(toolModeAtom);
+	const ribbonBarHeight = useAtomValue(ribbonBarHeightAtom);
+
 	return (
 		<Card
 			m="2"
@@ -27,10 +29,19 @@ export const RibbonBar: FC = () => {
 			style={{
 				minHeight: "fit-content",
 			}}
+			ref={ref}
 		>
 			<Inset>
-				<motion.div layout="size">
-					<AnimatePresence mode="wait">
+				<motion.div
+					animate={{
+						height: ribbonBarHeight,
+					}}
+					transition={{
+						type: "spring",
+						duration: 0.5,
+					}}
+				>
+					<AnimatePresence mode="popLayout">
 						{toolMode === ToolMode.Edit && <EditModeRibbonBar key="edit" />}
 						{toolMode === ToolMode.Sync && <SyncModeRibbonBar key="sync" />}
 						{toolMode === ToolMode.Preview && (
@@ -41,6 +52,6 @@ export const RibbonBar: FC = () => {
 			</Inset>
 		</Card>
 	);
-};
+});
 
 export default RibbonBar;

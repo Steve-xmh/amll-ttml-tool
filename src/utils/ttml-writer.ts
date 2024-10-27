@@ -45,9 +45,8 @@ export default function exportTTMLText(
 		const span = doc.createElement("span");
 		span.setAttribute("begin", msToTimestamp(word.startTime));
 		span.setAttribute("end", msToTimestamp(word.endTime));
-		if (word.emptyBeat) {
-			span.setAttribute("amll:empty-beat", `${word.emptyBeat}`);
-		}
+		if (word.obscene) span.setAttribute("amll:obscene", "true");
+		if (word.emptyBeat) span.setAttribute("amll:empty-beat", `${word.emptyBeat}`);
 		span.appendChild(doc.createTextNode(word.word));
 		return span;
 	}

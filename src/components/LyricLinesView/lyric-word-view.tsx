@@ -11,15 +11,19 @@
 
 import { Text, TextField } from "@radix-ui/themes";
 import classNames from "classnames";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type FC, useMemo, useState } from "react";
 import {
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
+	ToolMode,
+	toolModeAtom,
 } from "../../states";
 import type { LyricLine, LyricWord } from "../../utils/ttml-types";
 import styles from "./index.module.css";
+import { motion } from "framer-motion";
+import { msToTimestamp } from "../../utils/timestamp";
 
 export const LyricWordView: FC<{
 	word: LyricWord;
@@ -29,6 +33,7 @@ export const LyricWordView: FC<{
 }> = ({ word, wordIndex, line, lineIndex }) => {
 	const [editing, setEditing] = useState(false);
 	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
+	const toolMode = useAtomValue(toolModeAtom);
 	const setSelectedLines = useSetAtom(selectedLinesAtom);
 	const editLyricLines = useSetAtom(currentLyricLinesAtom);
 
@@ -44,56 +49,82 @@ export const LyricWordView: FC<{
 		return word.word;
 	}, [word.word, isWordBlank]);
 
-	return editing ? (
-		<TextField.Root
-			autoFocus
-			defaultValue={word.word}
-			onBlur={() => {
-				setEditing(false);
-			}}
-			onKeyDown={(evt) => {
-				if (evt.key === "Enter") {
-					setEditing(false);
-					const newWord = evt.currentTarget.value;
-					if (newWord !== word.word) {
-						editLyricLines((state) => {
-							state.lyricLines[lineIndex].words[wordIndex].word = newWord;
-						});
-					}
-				}
-			}}
-		/>
-	) : (
-		<Text
-			className={classNames(
+	const displayWordLayoutId = useMemo(
+		() => `lyric-display-word-${word.id}`,
+		[word.id],
+	);
+
+	const className = useMemo(
+		() =>
+			classNames(
 				styles.lyricWord,
+				toolMode === ToolMode.Edit && styles.edit,
+				toolMode === ToolMode.Sync && styles.sync,
 				selectedWords.has(word.id) && styles.selected,
 				isWordBlank && styles.blank,
+			),
+		[isWordBlank, toolMode, selectedWords, word.id],
+	);
+
+	return (
+		<motion.div layout>
+			{toolMode === ToolMode.Edit &&
+				(editing ? (
+					<TextField.Root
+						autoFocus
+						defaultValue={word.word}
+						onBlur={() => {
+							setEditing(false);
+						}}
+						onKeyDown={(evt) => {
+							if (evt.key === "Enter") {
+								setEditing(false);
+								const newWord = evt.currentTarget.value;
+								if (newWord !== word.word) {
+									editLyricLines((state) => {
+										state.lyricLines[lineIndex].words[wordIndex].word = newWord;
+									});
+								}
+							}
+						}}
+					/>
+				) : (
+					<motion.span
+						layoutId={displayWordLayoutId}
+						className={className}
+						onDoubleClick={() => {
+							setEditing(true);
+						}}
+						onClick={(evt) => {
+							evt.stopPropagation();
+							evt.preventDefault();
+							if (evt.ctrlKey) {
+								setSelectedWords((v) => {
+									const n = new Set(v);
+									if (n.has(word.id)) {
+										n.delete(word.id);
+									} else {
+										n.add(word.id);
+									}
+									return n;
+								});
+							} else {
+								setSelectedLines(new Set([line.id]));
+								setSelectedWords(new Set([word.id]));
+							}
+						}}
+					>
+						{displayWord}
+					</motion.span>
+				))}
+			{toolMode === ToolMode.Sync && !isWordBlank && (
+				<motion.div className={className}>
+					<div className={styles.startTime}>{msToTimestamp(word.startTime)}</div>
+					<motion.div className={styles.displayWord} layout layoutId={displayWordLayoutId}>{displayWord}</motion.div>
+					<div className={styles.endTime}>{msToTimestamp(word.endTime)}</div>
+				</motion.div>
 			)}
-			onDoubleClick={() => {
-				setEditing(true);
-			}}
-			onClick={(evt) => {
-				evt.stopPropagation();
-				evt.preventDefault();
-				if (evt.ctrlKey) {
-					setSelectedWords((v) => {
-						const n = new Set(v);
-						if (n.has(word.id)) {
-							n.delete(word.id);
-						} else {
-							n.add(word.id);
-						}
-						return n;
-					});
-				} else {
-					setSelectedLines(new Set([line.id]));
-					setSelectedWords(new Set([word.id]));
-				}
-			}}
-		>
-			{displayWord}
-		</Text>
+		</motion.div>
 	);
 };
 

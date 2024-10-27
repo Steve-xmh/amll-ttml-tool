@@ -1,8 +1,20 @@
-import { Button, DropdownMenu, Flex, Select } from "@radix-ui/themes";
+import {
+	Box,
+	Button,
+	DropdownMenu,
+	Flex,
+	SegmentedControl,
+	Select,
+	Text,
+} from "@radix-ui/themes";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import type { FC } from "react";
 import { Trans } from "react-i18next";
-import { type WindowControlsProps, WindowTitlebar } from "tauri-controls";
+import {
+	type WindowControlsProps,
+	WindowTitlebar,
+	WindowControls,
+} from "tauri-controls";
 import {
 	ToolMode,
 	currentLyricLinesAtom,
@@ -12,6 +24,7 @@ import {
 } from "../../states";
 import { parseLyric } from "../../utils/ttml-parser";
 import styles from "./index.module.css";
+import classNames from "classnames";
 
 let controlsPlatform = import.meta.env
 	.TAURI_ENV_PLATFORM as WindowControlsProps["platform"];
@@ -25,19 +38,8 @@ export const TitleBar: FC = () => {
 	const newLyricLine = useSetAtom(newLyricLinesAtom);
 	const editLyricLine = useSetAtom(currentLyricLinesAtom);
 	return (
-		<WindowTitlebar
-			className={isDarkTheme ? "dark" : undefined}
-			style={{
-				minHeight: "fit-content",
-			}}
-			controlsOrder="platform"
-			windowControlsProps={{
-				platform: controlsPlatform,
-				hide: !import.meta.env.TAURI_ENV_PLATFORM || controlsPlatform !== "windows",
-				className: styles.titlebar,
-			}}
-		>
-			<Flex m="2" justify="center" gap="2">
+		<Flex width="100%" align="stretch">
+			<Flex flexGrow="1" p="2" pr="0" align="center" gap="2">
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger>
 						<Button variant="soft">
@@ -97,21 +99,56 @@ export const TitleBar: FC = () => {
 						<DropdownMenu.Item>重做</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
-				<Select.Root
-					defaultValue={toolMode}
-					onValueChange={(v) => setToolMode(v as ToolMode)}
-				>
-					<Select.Trigger />
-					<Select.Content>
-						<Select.Item value={ToolMode.Edit}>
-							<Trans i18nKey="topBar.modeBtns.edit">编辑模式</Trans>
-						</Select.Item>
-						<Select.Item value={ToolMode.Preview}>
-							<Trans i18nKey="topBar.modeBtns.preview">预览模式</Trans>
-						</Select.Item>
-					</Select.Content>
-				</Select.Root>
 			</Flex>
-		</WindowTitlebar>
+			<Flex align="center">
+				<SegmentedControl.Root
+					value={toolMode}
+					onValueChange={(v) => setToolMode(v as ToolMode)}
+					// size="1"
+				>
+					<SegmentedControl.Item value={ToolMode.Edit}>
+						<Trans i18nKey="topBar.modeBtns.edit">编辑模式</Trans>
+					</SegmentedControl.Item>
+					<SegmentedControl.Item value={ToolMode.Sync}>
+						<Trans i18nKey="topBar.modeBtns.sync">打轴模式</Trans>
+					</SegmentedControl.Item>
+					<SegmentedControl.Item value={ToolMode.Preview}>
+						<Trans i18nKey="topBar.modeBtns.preview">预览模式</Trans>
+					</SegmentedControl.Item>
+				</SegmentedControl.Root>
+			</Flex>
+			<Flex flexGrow="1" direction="row-reverse" align="stretch">
+				{!import.meta.env.TAURI_ENV_PLATFORM ||
+				controlsPlatform !== "windows" ? (
+					<Flex align="center" p="2">
+						<Text color="gray">AMLL TTML Tools</Text>
+					</Flex>
+				) : (
+					<WindowControls
+						className={classNames(styles.titlebar, isDarkTheme && "dark")}
+						style={{
+							minHeight: "fit-content",
+						}}
+						platform="windows"
+					/>
+				)}
+			</Flex>
+		</Flex>
+		// <WindowTitlebar
+		// 	className={isDarkTheme ? "dark" : undefined}
+		// 	style={{
+		// 		minHeight: "fit-content",
+		// 	}}
+		// 	controlsOrder="platform"
+		// 	windowControlsProps={{
+		// 		platform: controlsPlatform,
+		// 		hide:
+		// 			!import.meta.env.TAURI_ENV_PLATFORM || controlsPlatform !== "windows",
+		// 			hideMethod: "visibility",
+		// 		className: styles.titlebar,
+		// 	}}
+		// >
+
+		// </WindowTitlebar>
 	);
 };

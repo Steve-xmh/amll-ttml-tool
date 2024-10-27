@@ -11,7 +11,9 @@
 
 import { Flex, Separator, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
-import type { FC, PropsWithChildren } from "react";
+import { useSetAtom } from "jotai";
+import { useLayoutEffect, useRef, type FC, type PropsWithChildren } from "react";
+import { ribbonBarHeightAtom } from "../../states";
 
 export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 	children,
@@ -40,23 +42,34 @@ export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 	</>
 );
 
-export const RibbonFrame: FC<PropsWithChildren> = ({ children }) => (
+export const RibbonFrame: FC<PropsWithChildren> = ({ children }) => {
+	const setRibbonBarHeight = useSetAtom(ribbonBarHeightAtom);
+	const frameRef = useRef<HTMLDivElement>(null);
+	
+	useLayoutEffect(() => {
+		if (!frameRef.current) return;
+		setRibbonBarHeight(frameRef.current.clientHeight);
+	}, [setRibbonBarHeight])
+	
+	return <Flex
+		p="3"
+		direction="row"
+		gap="3"
+		align="center"
+		style={{
+			overflowX: "auto",
+			position: "absolute",
+		}}
+		asChild
+	>
 	<motion.div
 		initial={{ x: 10, opacity: 0 }}
 		animate={{ x: 0, opacity: 1 }}
 		exit={{ x: -10, opacity: 0 }}
-		layout="position"
+		layout
+		ref={frameRef}
 	>
-		<Flex
-			p="3"
-			direction="row"
-			gap="3"
-			align="center"
-			style={{
-				overflowX: "auto",
-			}}
-		>
 			{children}
+			</motion.div>
 		</Flex>
-	</motion.div>
-);
+};

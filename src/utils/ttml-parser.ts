@@ -133,9 +133,10 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 						emptyBeat: 0,
 					};
 					const emptyBeat = wordEl.getAttribute("amll:empty-beat");
-					if (emptyBeat) {
-						word.emptyBeat = Number(emptyBeat);
-					}
+					if (emptyBeat) word.emptyBeat = Number(emptyBeat);
+					const obscene = wordEl.getAttribute("amll:obscene");
+					if (obscene === "true") word.obscene = true;
+					
 					line.words.push(word);
 				}
 			}

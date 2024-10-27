@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Box, Flex, Theme } from "@radix-ui/themes";
+import { Box, Button, DropdownMenu, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence } from "framer-motion";
@@ -21,6 +21,7 @@ import LyricLinesView from "./components/LyricLinesView";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { ToolMode, isDarkThemeAtom, toolModeAtom } from "./states";
+import { Trans } from "react-i18next";
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -48,8 +49,8 @@ function App() {
 				<TitleBar />
 				<RibbonBar />
 				<AnimatePresence>
-					{toolMode === ToolMode.Edit && <LyricLinesView key="edit" />}
-					{toolMode !== ToolMode.Edit && <Box flexGrow="1" key="not-edit" />}
+					{toolMode !== ToolMode.Preview && <LyricLinesView key="edit" />}
+					{toolMode === ToolMode.Preview && <Box flexGrow="1" key="not-edit" />}
 				</AnimatePresence>
 				<Box flexShrink="1">
 					<AudioControls />

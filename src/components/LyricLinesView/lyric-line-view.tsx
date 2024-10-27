@@ -13,17 +13,21 @@ import { Flex, IconButton, Text } from "@radix-ui/themes";
 import Add16Filled from "@ricons/fluent/Add16Filled";
 import { Icon } from "@ricons/utils";
 import classNames from "classnames";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import type { FC } from "react";
 import { uid } from "uid";
 import {
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
+	ToolMode,
+	toolModeAtom,
 } from "../../states";
 import type { LyricLine } from "../../utils/ttml-types";
 import styles from "./index.module.css";
 import { LyricWordView } from "./lyric-word-view";
+import { motion } from "framer-motion";
+import { msToTimestamp } from "../../utils/timestamp";
 
 export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 	line,
@@ -32,12 +36,12 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 	const [selectedLines, setSelectedLines] = useAtom(selectedLinesAtom);
 	const setSelectedWords = useSetAtom(selectedWordsAtom);
 	const editLyricLines = useSetAtom(currentLyricLinesAtom);
+	const toolMode = useAtomValue(toolModeAtom);
 
 	return (
 		<Flex
 			mx="2"
 			my="1"
-			p="3"
 			direction="row"
 			className={classNames(
 				styles.lyricLine,
@@ -63,54 +67,69 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 					setSelectedWords(new Set());
 				}
 			}}
+			asChild
 		>
-			<Text
-				style={{
-					minWidth: "2em",
-				}}
-				align="right"
-				color="gray"
-			>
-				{lineIndex}
-			</Text>
-			<Flex gap="1" flexGrow="1" wrap="wrap">
-				{line.words.map((word, wi) => (
-					<LyricWordView
-						key={`lyric-line-word-${wi}`}
-						word={word}
-						wordIndex={wi}
-						line={line}
-						lineIndex={lineIndex}
-					/>
-				))}
-			</Flex>
-			<IconButton
-				variant="ghost"
-				onClick={(evt) => {
-					evt.preventDefault();
-					evt.stopPropagation();
-					const newWordId = uid();
-					editLyricLines((state) => {
-						state.lyricLines[lineIndex].words.push({
-							id: newWordId,
-							word: "",
-							startTime: 0,
-							endTime: 0,
-							obscene: false,
-							wordType: "normal",
-							emptyBeat: 0,
+			<motion.div layout="size" layoutId={`lyric-line-view-index-${lineIndex}`}>
+				<Text
+					style={{
+						minWidth: "2em",
+					}}
+					align="right"
+					color="gray"
+				>
+					{lineIndex}
+				</Text>
+				<div
+					className={classNames(
+						styles.lyricWordsContainer,
+						toolMode === ToolMode.Edit && styles.edit,
+						toolMode === ToolMode.Sync && styles.sync,
+					)}
+				>
+					{line.words.map((word, wi) => (
+						<LyricWordView
+							key={`lyric-line-word-${wi}`}
+							word={word}
+							wordIndex={wi}
+							line={line}
+							lineIndex={lineIndex}
+						/>
+					))}
+				</div>
+				{toolMode === ToolMode.Edit && <IconButton
+					variant="ghost"
+					onClick={(evt) => {
+						evt.preventDefault();
+						evt.stopPropagation();
+						const newWordId = uid();
+						editLyricLines((state) => {
+							state.lyricLines[lineIndex].words.push({
+								id: newWordId,
+								word: "",
+								startTime: 0,
+								endTime: 0,
+								obscene: false,
+								wordType: "normal",
+								emptyBeat: 0,
+							});
 						});
-					});
-					setSelectedWords(new Set([newWordId]));
-				}}
-			>
-				<Icon>
-					<Add16Filled
-						onPointerEnterCapture={undefined}
-						onPointerLeaveCapture={undefined}
-					/>
-				</Icon>
-			</IconButton>
+						setSelectedWords(new Set([newWordId]));
+					}}
+				>
+					<Icon>
+						<Add16Filled
+							onPointerEnterCapture={undefined}
+							onPointerLeaveCapture={undefined}
+						/>
+					</Icon>
+				</IconButton>}
+				{
+					toolMode === ToolMode.Sync && <Flex pr="3" gap="1" direction="column" align="stretch">
+					<div className={styles.startTime}>{msToTimestamp(line.startTime)}</div>
+					<div className={styles.endTime}>{msToTimestamp(line.endTime)}</div>
+					</Flex>
+				}
+			</motion.div>
 		</Flex>
 	);
 };
