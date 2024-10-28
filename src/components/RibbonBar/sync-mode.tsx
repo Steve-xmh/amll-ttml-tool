@@ -9,16 +9,40 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import type { FC } from "react";
-import { ToolMode } from "../../states";
+import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
+import { type FC, forwardRef } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 
-export const SyncModeRibbonBar: FC = () => {
-	return (
-		<RibbonFrame toolMode={ToolMode.Sync}>
-			<RibbonSection label="歌词行效果"></RibbonSection>
-		</RibbonFrame>
-	);
-};
+export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
+	(_props, ref) => {
+		return (
+			<RibbonFrame ref={ref}>
+				<RibbonSection label="时序调整">
+					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
+						<Text wrap="nowrap" size="1">
+							时间戳位移
+						</Text>
+						<TextField.Root
+							type="number"
+							step={1}
+							size="1"
+							style={{
+								width: "8em",
+							}}
+						/>
+					</Grid>
+				</RibbonSection>
+				<RibbonSection label="辅助设置">
+					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
+						<Text wrap="nowrap" size="1">
+							呈现时间戳更新
+						</Text>
+						<Checkbox />
+					</Grid>
+				</RibbonSection>
+			</RibbonFrame>
+		);
+	},
+);
 
 export default SyncModeRibbonBar;

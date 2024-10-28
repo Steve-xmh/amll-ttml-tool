@@ -87,6 +87,16 @@ export const currentLyricLinesAtom = atom(
 		} else {
 			newCtx.undoStack.push(newState);
 		}
+		// 处理某些数字，避免出现小数和部分非法数字，导致 AMLL Lyric 模块导出出错
+		for (const line of newCtx.undoStack[newCtx.index].lyricLines) {
+			line.startTime = (line.startTime || 0) | 0;
+			line.endTime = (line.endTime || 0) | 0;
+			for (const word of line.words) {
+				word.startTime = (word.startTime || 0) | 0;
+				word.endTime = (word.endTime || 0) | 0;
+				word.emptyBeat = (word.emptyBeat || 0) | 0;
+			}
+		}
 		set(lyricLineEditContextAtom, newCtx);
 	},
 );

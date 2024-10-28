@@ -13,30 +13,53 @@ import { Flex, IconButton, Text } from "@radix-ui/themes";
 import Add16Filled from "@ricons/fluent/Add16Filled";
 import { Icon } from "@ricons/utils";
 import classNames from "classnames";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import type { FC } from "react";
+import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { type FC, useEffect, useRef } from "react";
 import { uid } from "uid";
 import {
+	ToolMode,
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	ToolMode,
 	toolModeAtom,
 } from "../../states";
+import { msToTimestamp } from "../../utils/timestamp";
 import type { LyricLine } from "../../utils/ttml-types";
 import styles from "./index.module.css";
 import { LyricWordView } from "./lyric-word-view";
-import { motion } from "framer-motion";
-import { msToTimestamp } from "../../utils/timestamp";
 
 export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 	line,
 	lineIndex,
 }) => {
 	const [selectedLines, setSelectedLines] = useAtom(selectedLinesAtom);
-	const setSelectedWords = useSetAtom(selectedWordsAtom);
+	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
 	const editLyricLines = useSetAtom(currentLyricLinesAtom);
 	const toolMode = useAtomValue(toolModeAtom);
+	const store = useStore();
+	const wordsContainerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const wordsContainerEl = wordsContainerRef.current;
+		if (!wordsContainerEl) return;
+		let scrollToIndex = Number.NaN;
+		let i = 0;
+		for (const word of line.words) {
+			if (selectedWords.has(word.id)) {
+				scrollToIndex = i;
+				break;
+			}
+
+			i++;
+		}
+		if (Number.isNaN(scrollToIndex)) return;
+		const wordEl = wordsContainerEl.children[scrollToIndex] as HTMLElement;
+		if (!wordEl) return;
+		wordsContainerEl.scrollTo({
+			left: wordEl.offsetLeft - wordsContainerEl.clientWidth / 2,
+			behavior: "instant",
+		});
+	}, [line.words, selectedWords]);
 
 	return (
 		<Flex
@@ -62,6 +85,31 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 						}
 						return n;
 					});
+				} else if (evt.shiftKey) {
+					setSelectedLines((v) => {
+						const n = new Set(v);
+						if (n.size > 0) {
+							let minBoundry = Number.NaN;
+							let maxBoundry = Number.NaN;
+							const lyricLines = store.get(currentLyricLinesAtom).lyricLines;
+							lyricLines.forEach((line, i) => {
+								if (n.has(line.id)) {
+									if (Number.isNaN(minBoundry)) minBoundry = i;
+									if (Number.isNaN(maxBoundry)) maxBoundry = i;
+
+									minBoundry = Math.min(minBoundry, i, lineIndex);
+									maxBoundry = Math.max(maxBoundry, i, lineIndex);
+								}
+							});
+							console.log(minBoundry, maxBoundry);
+							for (let i = minBoundry; i <= maxBoundry; i++) {
+								n.add(lyricLines[i].id);
+							}
+						} else {
+							n.add(line.id);
+						}
+						return n;
+					});
 				} else {
 					setSelectedLines(new Set([line.id]));
 					setSelectedWords(new Set());
@@ -69,7 +117,7 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 			}}
 			asChild
 		>
-			<motion.div layout="size" layoutId={`lyric-line-view-index-${lineIndex}`}>
+			<div>
 				<Text
 					style={{
 						minWidth: "2em",
@@ -85,6 +133,7 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 						toolMode === ToolMode.Edit && styles.edit,
 						toolMode === ToolMode.Sync && styles.sync,
 					)}
+					ref={wordsContainerRef}
 				>
 					{line.words.map((word, wi) => (
 						<LyricWordView
@@ -97,33 +146,35 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 					))}
 				</div>
 				{toolMode === ToolMode.Edit && (
-					<IconButton
-						variant="ghost"
-						onClick={(evt) => {
-							evt.preventDefault();
-							evt.stopPropagation();
-							const newWordId = uid();
-							editLyricLines((state) => {
-								state.lyricLines[lineIndex].words.push({
-									id: newWordId,
-									word: "",
-									startTime: 0,
-									endTime: 0,
-									obscene: false,
-									wordType: "normal",
-									emptyBeat: 0,
+					<Flex p="3">
+						<IconButton
+							variant="ghost"
+							onClick={(evt) => {
+								evt.preventDefault();
+								evt.stopPropagation();
+								const newWordId = uid();
+								editLyricLines((state) => {
+									state.lyricLines[lineIndex].words.push({
+										id: newWordId,
+										word: "",
+										startTime: 0,
+										endTime: 0,
+										obscene: false,
+										wordType: "normal",
+										emptyBeat: 0,
+									});
 								});
-							});
-							setSelectedWords(new Set([newWordId]));
-						}}
-					>
-						<Icon>
-							<Add16Filled
-								onPointerEnterCapture={undefined}
-								onPointerLeaveCapture={undefined}
-							/>
-						</Icon>
-					</IconButton>
+								setSelectedWords(new Set([newWordId]));
+							}}
+						>
+							<Icon>
+								<Add16Filled
+									onPointerEnterCapture={undefined}
+									onPointerLeaveCapture={undefined}
+								/>
+							</Icon>
+						</IconButton>
+					</Flex>
 				)}
 				{toolMode === ToolMode.Sync && (
 					<Flex pr="3" gap="1" direction="column" align="stretch">
@@ -133,7 +184,7 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 						<div className={styles.endTime}>{msToTimestamp(line.endTime)}</div>
 					</Flex>
 				)}
-			</motion.div>
+			</div>
 		</Flex>
 	);
 };

@@ -14,6 +14,8 @@
     "locale:gen": "i18next --fail-on-warnings 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "@applemusic-like-lyrics/core": "0.2.0-alpha.3",
+    "@applemusic-like-lyrics/react": "0.2.0-alpha.3",
     "@radix-ui/themes": "^3.1.4",
     "@ricons/fluent": "^0.12.0",
     "@ricons/utils": "^0.1.6",
@@ -30,6 +32,7 @@
     "react-viewport-list": "^7.1.2",
     "react-virtualized-auto-sizer": "^1.0.24",
     "react-window": "^1.8.10",
+    "save-file": "^2.3.1",
     "tauri-controls": "^0.4.0",
     "uid": "^2.0.2"
   },

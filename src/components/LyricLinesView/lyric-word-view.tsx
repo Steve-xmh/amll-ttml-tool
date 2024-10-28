@@ -9,21 +9,20 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Text, TextField } from "@radix-ui/themes";
+import { TextField } from "@radix-ui/themes";
 import classNames from "classnames";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type FC, useMemo, useState } from "react";
 import {
+	ToolMode,
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	ToolMode,
 	toolModeAtom,
 } from "../../states";
+import { msToTimestamp } from "../../utils/timestamp";
 import type { LyricLine, LyricWord } from "../../utils/ttml-types";
 import styles from "./index.module.css";
-import { motion } from "framer-motion";
-import { msToTimestamp } from "../../utils/timestamp";
 
 export const LyricWordView: FC<{
 	word: LyricWord;
@@ -49,11 +48,6 @@ export const LyricWordView: FC<{
 		return word.word;
 	}, [word.word, isWordBlank]);
 
-	const displayWordLayoutId = useMemo(
-		() => `lyric-display-word-${word.id}`,
-		[word.id],
-	);
-
 	const className = useMemo(
 		() =>
 			classNames(
@@ -63,11 +57,11 @@ export const LyricWordView: FC<{
 				selectedWords.has(word.id) && styles.selected,
 				isWordBlank && styles.blank,
 			),
-		[isWordBlank, toolMode, selectedWords, word.id],
+		[isWordBlank, toolMode, selectedWords, word],
 	);
 
 	return (
-		<motion.div layout>
+		<div>
 			{toolMode === ToolMode.Edit &&
 				(editing ? (
 					<TextField.Root
@@ -89,8 +83,7 @@ export const LyricWordView: FC<{
 						}}
 					/>
 				) : (
-					<motion.span
-						layoutId={displayWordLayoutId}
+					<span
 						className={className}
 						onDoubleClick={() => {
 							setEditing(true);
@@ -108,6 +101,30 @@ export const LyricWordView: FC<{
 									}
 									return n;
 								});
+							} else if (evt.shiftKey) {
+								setSelectedWords((v) => {
+									const n = new Set(v);
+									if (n.size > 0) {
+										let minBoundry = Number.NaN;
+										let maxBoundry = Number.NaN;
+										line.words.forEach((word, i) => {
+											if (n.has(word.id)) {
+												if (Number.isNaN(minBoundry)) minBoundry = i;
+												if (Number.isNaN(maxBoundry)) maxBoundry = i;
+
+												minBoundry = Math.min(minBoundry, i, wordIndex);
+												maxBoundry = Math.max(maxBoundry, i, wordIndex);
+											}
+										});
+										console.log(minBoundry, maxBoundry);
+										for (let i = minBoundry; i <= maxBoundry; i++) {
+											n.add(line.words[i].id);
+										}
+									} else {
+										n.add(word.id);
+									}
+									return n;
+								});
 							} else {
 								setSelectedLines(new Set([line.id]));
 								setSelectedWords(new Set([word.id]));
@@ -115,24 +132,26 @@ export const LyricWordView: FC<{
 						}}
 					>
 						{displayWord}
-					</motion.span>
+					</span>
 				))}
 			{toolMode === ToolMode.Sync && !isWordBlank && (
-				<motion.div className={className}>
+				<div
+					className={className}
+					onClick={(evt) => {
+						evt.stopPropagation();
+						evt.preventDefault();
+						setSelectedLines(new Set([line.id]));
+						setSelectedWords(new Set([word.id]));
+					}}
+				>
 					<div className={styles.startTime}>
 						{msToTimestamp(word.startTime)}
 					</div>
-					<motion.div
-						className={styles.displayWord}
-						layout
-						layoutId={displayWordLayoutId}
-					>
-						{displayWord}
-					</motion.div>
+					<div className={styles.displayWord}>{displayWord}</div>
 					<div className={styles.endTime}>{msToTimestamp(word.endTime)}</div>
-				</motion.div>
+				</div>
 			)}
-		</motion.div>
+		</div>
 	);
 };
 

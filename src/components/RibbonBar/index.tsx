@@ -12,8 +12,8 @@
 import { Card, Inset } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue } from "jotai";
-import { forwardRef, type FC } from "react";
-import { ribbonBarHeightAtom, ToolMode, toolModeAtom } from "../../states";
+import { type FC, forwardRef } from "react";
+import { ToolMode, ribbonBarHeightAtom, toolModeAtom } from "../../states";
 import { EditModeRibbonBar } from "./edit-mode";
 import PreviewModeRibbonBar from "./preview-mode";
 import SyncModeRibbonBar from "./sync-mode";
@@ -28,6 +28,7 @@ export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			mb="0"
 			style={{
 				minHeight: "fit-content",
+				flexShrink: "0",
 			}}
 			ref={ref}
 		>

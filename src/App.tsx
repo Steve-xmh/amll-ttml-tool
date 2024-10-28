@@ -9,19 +9,19 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Box, Button, DropdownMenu, Flex, Theme } from "@radix-ui/themes";
+import { Box, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue } from "jotai";
 import { useEffect } from "react";
+import { AMLLWrapper } from "./components/AMLLWrapper/index.tsx";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
 import LyricLinesView from "./components/LyricLinesView";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { ToolMode, isDarkThemeAtom, toolModeAtom } from "./states";
-import { Trans } from "react-i18next";
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -48,10 +48,36 @@ function App() {
 			<Flex direction="column" height="100vh">
 				<TitleBar />
 				<RibbonBar />
-				<AnimatePresence>
-					{toolMode !== ToolMode.Preview && <LyricLinesView key="edit" />}
-					{toolMode === ToolMode.Preview && <Box flexGrow="1" key="not-edit" />}
-				</AnimatePresence>
+				<Box flexGrow="1" overflow="hidden">
+					<AnimatePresence mode="popLayout">
+						{toolMode !== ToolMode.Preview && (
+							<motion.div
+								layout="position"
+								style={{
+									height: "100%",
+								}}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								key="edit"
+							>
+								<LyricLinesView key="edit" />
+							</motion.div>
+						)}
+						{toolMode === ToolMode.Preview && (
+							<Box height="100%" key="amll-preview" p="2" asChild>
+								<motion.div
+									layout="position"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+								>
+									<AMLLWrapper />
+								</motion.div>
+							</Box>
+						)}
+					</AnimatePresence>
+				</Box>
 				<Box flexShrink="1">
 					<AudioControls />
 				</Box>

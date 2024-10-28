@@ -10,26 +10,28 @@
  */
 
 import { Checkbox, Grid, Text } from "@radix-ui/themes";
-import type { FC } from "react";
+import { forwardRef } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 
-export const PreviewModeRibbonBar: FC = () => {
-	return (
-		<RibbonFrame>
-			<RibbonSection label="歌词">
-				<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
-					<Text wrap="nowrap" size="1">
-						显示翻译
-					</Text>
-					<Checkbox />
-					<Text wrap="nowrap" size="1">
-						显示音译
-					</Text>
-					<Checkbox />
-				</Grid>
-			</RibbonSection>
-		</RibbonFrame>
-	);
-};
+export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
+	(_props, ref) => {
+		return (
+			<RibbonFrame ref={ref}>
+				<RibbonSection label="歌词">
+					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
+						<Text wrap="nowrap" size="1">
+							显示翻译
+						</Text>
+						<Checkbox />
+						<Text wrap="nowrap" size="1">
+							显示音译
+						</Text>
+						<Checkbox />
+					</Grid>
+				</RibbonSection>
+			</RibbonFrame>
+		);
+	},
+);
 
 export default PreviewModeRibbonBar;

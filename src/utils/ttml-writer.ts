@@ -126,7 +126,7 @@ export default function exportTTMLText(
 			lineP.setAttribute("itunes:key", `L${++i}`);
 
 			if (isDynamicLyric) {
-				let beginTime = Infinity;
+				let beginTime = Number.POSITIVE_INFINITY;
 				let endTime = 0;
 				for (const word of line.words) {
 					if (word.word.trim().length === 0) {
@@ -155,7 +155,7 @@ export default function exportTTMLText(
 				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
 				if (isDynamicLyric) {
-					let beginTime = Infinity;
+					let beginTime = Number.POSITIVE_INFINITY;
 					let endTime = 0;
 					for (
 						let wordIndex = 0;

@@ -13,10 +13,12 @@ import { Flex, Separator, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useSetAtom } from "jotai";
 import {
-	useLayoutEffect,
-	useRef,
 	type FC,
 	type PropsWithChildren,
+	forwardRef,
+	useImperativeHandle,
+	useLayoutEffect,
+	useRef,
 } from "react";
 import { ribbonBarHeightAtom } from "../../states";
 
@@ -47,36 +49,46 @@ export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 	</>
 );
 
-export const RibbonFrame: FC<PropsWithChildren> = ({ children }) => {
-	const setRibbonBarHeight = useSetAtom(ribbonBarHeightAtom);
-	const frameRef = useRef<HTMLDivElement>(null);
+export const RibbonFrame = forwardRef<HTMLDivElement | null, PropsWithChildren>(
+	({ children }, ref) => {
+		const setRibbonBarHeight = useSetAtom(ribbonBarHeightAtom);
+		const frameRef = useRef<HTMLDivElement>(null);
 
-	useLayoutEffect(() => {
-		if (!frameRef.current) return;
-		setRibbonBarHeight(frameRef.current.clientHeight);
-	}, [setRibbonBarHeight]);
+		useLayoutEffect(() => {
+			if (!frameRef.current) return;
+			const obs = new ResizeObserver(() => {
+				if (!frameRef.current) return;
+				setRibbonBarHeight(frameRef.current.clientHeight);
+			});
+			obs.observe(frameRef.current);
+			return () => obs.disconnect();
+		}, [setRibbonBarHeight]);
 
-	return (
-		<Flex
-			p="3"
-			direction="row"
-			gap="3"
-			align="center"
-			style={{
-				overflowX: "auto",
-				position: "absolute",
-			}}
-			asChild
-		>
-			<motion.div
-				initial={{ x: 10, opacity: 0 }}
-				animate={{ x: 0, opacity: 1 }}
-				exit={{ x: -10, opacity: 0 }}
-				layout
-				ref={frameRef}
+		useImperativeHandle(ref, () => frameRef.current, []);
+
+		return (
+			<Flex
+				p="3"
+				direction="row"
+				gap="3"
+				align="center"
+				style={{
+					overflowX: "auto",
+					overflowY: "visible",
+					// position: "absolute",
+				}}
+				asChild
 			>
-				{children}
-			</motion.div>
-		</Flex>
-	);
-};
+				<motion.div
+					initial={{ x: 10, opacity: 0 }}
+					animate={{ x: 0, opacity: 1 }}
+					exit={{ x: -10, opacity: 0 }}
+					layout
+					ref={frameRef}
+				>
+					{children}
+				</motion.div>
+			</Flex>
+		);
+	},
+);

@@ -10,19 +10,55 @@
  */
 
 import { Box, Flex, Text } from "@radix-ui/themes";
-import { useAtomValue, useSetAtom } from "jotai";
-import type { FC } from "react";
-import { ViewportList } from "react-viewport-list";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
+	type FC,
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useRef,
+} from "react";
+import { ViewportList, type ViewportListRef } from "react-viewport-list";
+import {
+	ToolMode,
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
+	toolModeAtom,
 } from "../../states";
 import { LyricLineView } from "./lyric-line-view";
-export const LyricLinesView: FC = () => {
+export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const editLyric = useAtomValue(currentLyricLinesAtom);
-	const setSelectedLines = useSetAtom(selectedLinesAtom);
+	const [selectedLines, setSelectedLines] = useAtom(selectedLinesAtom);
 	const setSelectedWords = useSetAtom(selectedWordsAtom);
+	const viewRef = useRef<ViewportListRef>(null);
+	const viewElRef = useRef<HTMLDivElement>(null);
+	const toolMode = useAtomValue(toolModeAtom);
+
+	useEffect(() => {
+		if (toolMode !== ToolMode.Sync) return;
+		const viewEl = viewElRef.current;
+		if (!viewEl) return;
+		const viewContainerEl = viewEl.parentElement;
+		if (!viewContainerEl) return;
+		let scrollToIndex = Number.NaN;
+		let i = 0;
+		for (const line of editLyric.lyricLines) {
+			if (selectedLines.has(line.id)) {
+				scrollToIndex = i;
+				break;
+			}
+
+			i++;
+		}
+		if (Number.isNaN(scrollToIndex)) return;
+		viewRef.current?.scrollToIndex({
+			index: scrollToIndex,
+			offset: viewContainerEl.clientHeight / -2 + 50,
+		});
+	}, [editLyric.lyricLines, selectedLines, toolMode]);
+
+	useImperativeHandle(ref, () => viewElRef.current as HTMLDivElement, []);
 
 	if (editLyric.lyricLines.length === 0)
 		return (
@@ -32,6 +68,8 @@ export const LyricLinesView: FC = () => {
 				align="center"
 				justify="center"
 				direction="column"
+				height="100%"
+				ref={ref}
 			>
 				<Text color="gray">没有歌词行</Text>
 				<Text color="gray">
@@ -43,7 +81,8 @@ export const LyricLinesView: FC = () => {
 		<Box
 			flexGrow="1"
 			style={{
-				minHeight: "0",
+				height: "100%",
+				padding: toolMode === ToolMode.Sync ? "50% 0" : undefined,
 				overflowX: "hidden",
 				overflowY: "auto",
 			}}
@@ -52,8 +91,14 @@ export const LyricLinesView: FC = () => {
 				setSelectedWords(new Set());
 				evt.stopPropagation();
 			}}
+			ref={viewElRef}
 		>
-			<ViewportList items={editLyric.lyricLines}>
+			<ViewportList
+				overscan={5}
+				items={editLyric.lyricLines}
+				ref={viewRef}
+				viewportRef={viewElRef}
+			>
 				{(line, i) => (
 					<LyricLineView
 						key={`lyric-line-view-${i}`}
@@ -64,6 +109,6 @@ export const LyricLinesView: FC = () => {
 			</ViewportList>
 		</Box>
 	);
-};
+});
 
 export default LyricLinesView;

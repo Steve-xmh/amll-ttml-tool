@@ -24,11 +24,11 @@ export function parseTimespan(timeSpan: string): number {
 
 export function msToTimestamp(timeMS: number): string {
 	let t = timeMS;
-	if (!Number.isSafeInteger(t) || t < 0) {
-		throw new Error(`Invalid timestamp: ${t}`);
-	}
 	if (t === Number.POSITIVE_INFINITY) {
 		return "99:99.999";
+	}
+	if (!Number.isSafeInteger(t) || t < 0) {
+		throw new Error(`Invalid timestamp: ${t}`);
 	}
 	t = timeMS / 1000;
 	const secs = t % 60;

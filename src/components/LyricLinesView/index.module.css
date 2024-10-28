@@ -80,6 +80,9 @@
 		gap: 0;
 		border-left: solid 1px var(--gray-a5);
 		border-right: solid 1px var(--gray-a5);
+		&::-webkit-scrollbar {
+			border-top: solid 1px var(--gray-a5);
+		}
 	}
 }
 
@@ -93,11 +96,19 @@
 	background-color: var(--accent-a3);
 }
 
-.selected {
+.lyricWord.selected,
+.lyricLine.selected {
 	box-shadow: 0 0 0 2px var(--accent-a11);
 	background-color: var(--accent-a5);
 	&:hover {
 		box-shadow: 0 0 0 2px var(--accent-a11);
 		background-color: var(--accent-a6);
+	}
+}
+
+.lyricWord.selected {
+	.startTime,
+	.endTime {
+		color: var(--white-a10);
 	}
 }
