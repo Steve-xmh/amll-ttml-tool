@@ -1,4 +1,4 @@
-import { watch } from "vue";
+import { type DependencyList, useEffect } from "react";
 
 export type KeyBindingsConfig = string[];
 export interface KeyBindingEvent {
@@ -16,7 +16,6 @@ const pressingKeys = new Set<string>();
 const registeredKeyBindings = new Map<string, Set<KeyBindingCallback>>();
 let downTime = 0;
 window.addEventListener("keydown", (evt) => {
-	console.log("Key down", evt.code);
 	if (isEditing(evt)) {
 		pressingKeys.clear();
 		bufferedKeys.clear();
@@ -34,7 +33,6 @@ window.addEventListener("keyup", (evt) => {
 		bufferedKeys.clear();
 		return;
 	}
-	console.log(pressingKeys.size);
 	if (bufferedKeys.size > 0) {
 		const joined = [...bufferedKeys].join(" + ");
 		bufferedKeys.clear();
@@ -88,7 +86,6 @@ export function registerKeyBindings(
 		set = new Set();
 		registeredKeyBindings.set(joined, set);
 	}
-	console.log("Registering", joined);
 	set.add(callback);
 	return () => {
 		set?.delete(callback);
@@ -98,15 +95,14 @@ export function registerKeyBindings(
 export function useKeyBinding(
 	cfg: KeyBindingsConfig,
 	callback: KeyBindingCallback,
+	deps?: DependencyList,
 ) {
-	watch(
-		() => cfg,
-		(n, _old, onCleanup) => {
-			onCleanup(registerKeyBindings(n, callback));
+	useEffect(
+		() => {
+			return registerKeyBindings(cfg, callback);
 		},
-		{
-			immediate: true,
-		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- 因为调用者可能会传递 deps
+		[cfg, callback, ...(deps || [])],
 	);
 }
 

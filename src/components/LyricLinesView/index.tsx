@@ -82,7 +82,7 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			flexGrow="1"
 			style={{
 				height: "100%",
-				padding: toolMode === ToolMode.Sync ? "50% 0" : undefined,
+				padding: toolMode === ToolMode.Sync ? "50vh 0" : undefined,
 				overflowX: "hidden",
 				overflowY: "auto",
 			}}

@@ -19,6 +19,7 @@ import { AMLLWrapper } from "./components/AMLLWrapper/index.tsx";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
 import LyricLinesView from "./components/LyricLinesView";
+import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { ToolMode, isDarkThemeAtom, toolModeAtom } from "./states";
@@ -44,6 +45,7 @@ function App() {
 				"--color-panel": "var(--gray-a2)",
 			}}
 		>
+			{toolMode === ToolMode.Sync && <SyncKeyBinding />}
 			<DarkThemeDetector />
 			<Flex direction="column" height="100vh">
 				<TitleBar />

@@ -137,7 +137,7 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 				>
 					{line.words.map((word, wi) => (
 						<LyricWordView
-							key={`lyric-line-word-${wi}`}
+							key={`lyric-line-${lineIndex}-word-${wi}`}
 							word={word}
 							wordIndex={wi}
 							line={line}
