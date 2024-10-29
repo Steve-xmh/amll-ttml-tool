@@ -17,7 +17,9 @@ import {
 	currentLyricLinesAtom,
 	isDarkThemeAtom,
 	newLyricLinesAtom,
+	redoLyricLinesAtom,
 	toolModeAtom,
+	undoLyricLinesAtom,
 } from "../../states";
 import { parseLyric } from "../../utils/ttml-parser";
 import exportTTMLText from "../../utils/ttml-writer.ts";
@@ -37,7 +39,7 @@ export const TitleBar: FC = () => {
 	const store = useStore();
 	return (
 		<Flex width="100%" align="stretch">
-			<Flex flexGrow="1" align="center">
+			<Flex flexGrow="1" flexBasis="50vw" align="center">
 				<Flex p="2" pr="0" align="center" gap="2">
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger>
@@ -105,12 +107,30 @@ export const TitleBar: FC = () => {
 							</Button>
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content>
-							<DropdownMenu.Item>撤销</DropdownMenu.Item>
-							<DropdownMenu.Item>重做</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onClick={() => {
+									store.set(undoLyricLinesAtom);
+								}}
+							>
+								撤销
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onClick={() => {
+									store.set(redoLyricLinesAtom);
+								}}
+							>
+								重做
+							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
 				</Flex>
-				<Box flexGrow="1" height="100%" data-tauri-drag-region />
+				<Box
+					flexGrow="1"
+					flexShrink="1"
+					flexBasis="0"
+					height="100%"
+					data-tauri-drag-region
+				/>
 			</Flex>
 			<Flex align="center" flexShrink="0">
 				<SegmentedControl.Root
@@ -119,21 +139,36 @@ export const TitleBar: FC = () => {
 					// size="1"
 				>
 					<SegmentedControl.Item value={ToolMode.Edit}>
-						<Trans i18nKey="topBar.modeBtns.edit">编辑模式</Trans>
+						<Trans i18nKey="topBar.modeBtns.edit">编辑</Trans>
 					</SegmentedControl.Item>
 					<SegmentedControl.Item value={ToolMode.Sync}>
-						<Trans i18nKey="topBar.modeBtns.sync">打轴模式</Trans>
+						<Trans i18nKey="topBar.modeBtns.sync">打轴</Trans>
 					</SegmentedControl.Item>
 					<SegmentedControl.Item value={ToolMode.Preview}>
-						<Trans i18nKey="topBar.modeBtns.preview">预览模式</Trans>
+						<Trans i18nKey="topBar.modeBtns.preview">预览</Trans>
 					</SegmentedControl.Item>
 				</SegmentedControl.Root>
 			</Flex>
-			<Flex flexGrow="1" direction="row" align="stretch">
-				<Box flexGrow="1" height="100%" data-tauri-drag-region />
+			<Flex flexGrow="1" flexBasis="50vw" direction="row" align="stretch">
+				<Box
+					flexGrow="1"
+					flexShrink="1"
+					flexBasis="0"
+					height="100%"
+					data-tauri-drag-region
+				/>
 				{!import.meta.env.TAURI_ENV_PLATFORM ||
 				controlsPlatform !== "windows" ? (
-					<Flex flexBasis="0" align="center" pr="2">
+					<Flex
+						flexBasis="0"
+						align="center"
+						pr="2"
+						display={{
+							xs: "none",
+							sm: "flex",
+							initial: "none",
+						}}
+					>
 						<Text color="gray" wrap="nowrap" size="2">
 							Apple Music-like Lyrics TTML Tool
 						</Text>

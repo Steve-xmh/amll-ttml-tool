@@ -1,12 +1,18 @@
-import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
+import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
+import { type Plugin, defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 import svgLoader from "vite-svg-loader";
 
 const plugins: Plugin[] = [
-	react(),
+	react({
+		babel: {
+			plugins: [jotaiDebugLabel, jotaiReactRefresh],
+		},
+	}),
 	svgLoader(),
 	wasm(),
 	topLevelAwait(),
@@ -75,7 +81,8 @@ export default defineConfig({
 	envPrefix: ["VITE_", "TAURI_"],
 	build: {
 		// Tauri uses Chromium on Windows and WebKit on macOS and Linux
-		target: process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome105" : "safari13",
+		target:
+			process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome105" : "safari13",
 		// don't minify for debug builds
 		minify: !process.env.TAURI_ENV_DEBUG ? "esbuild" : false,
 		// produce sourcemaps for debug builds
@@ -83,5 +90,5 @@ export default defineConfig({
 	},
 	worker: {
 		format: "es",
-	}
+	},
 });

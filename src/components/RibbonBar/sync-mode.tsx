@@ -38,6 +38,11 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							呈现时间戳更新
 						</Text>
 						<Checkbox />
+
+						<Text wrap="nowrap" size="1">
+							触控打轴辅助面板
+						</Text>
+						<Checkbox />
 					</Grid>
 				</RibbonSection>
 			</RibbonFrame>

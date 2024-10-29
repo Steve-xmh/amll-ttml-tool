@@ -106,6 +106,12 @@ export const undoLyricLinesAtom = atom(null, (get, set) => {
 	ctx.index--;
 	set(lyricLineEditContextAtom, { ...ctx });
 });
+export const redoLyricLinesAtom = atom(null, (get, set) => {
+	const ctx = get(lyricLineEditContextAtom);
+	if (ctx.index === ctx.undoStack.length - 1) return;
+	ctx.index++;
+	set(lyricLineEditContextAtom, { ...ctx });
+});
 export const newLyricLinesAtom = atom(
 	null,
 	(

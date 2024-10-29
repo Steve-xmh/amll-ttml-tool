@@ -12,7 +12,7 @@
 import { TextField } from "@radix-ui/themes";
 import classNames from "classnames";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { type FC, useMemo, useState } from "react";
+import { type FC, useEffect, useMemo, useRef, useState } from "react";
 import {
 	ToolMode,
 	currentLyricLinesAtom,
@@ -59,6 +59,51 @@ export const LyricWordView: FC<{
 			),
 		[isWordBlank, toolMode, selectedWords, word],
 	);
+
+	const startTimeRef = useRef<HTMLDivElement>(null);
+	const endTimeRef = useRef<HTMLDivElement>(null);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: 用于呈现时间戳更新效果
+	useEffect(() => {
+		const animation = startTimeRef.current?.animate(
+			[
+				{
+					backgroundColor: "var(--green-a8)",
+				},
+				{
+					backgroundColor: "var(--green-a4)",
+				},
+			],
+			{
+				duration: 500,
+			},
+		);
+
+		return () => {
+			animation?.cancel();
+		};
+	}, [word.startTime]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: 用于呈现时间戳更新效果
+	useEffect(() => {
+		const animation = endTimeRef.current?.animate(
+			[
+				{
+					backgroundColor: "var(--red-a8)",
+				},
+				{
+					backgroundColor: "var(--red-a4)",
+				},
+			],
+			{
+				duration: 500,
+			},
+		);
+
+		return () => {
+			animation?.cancel();
+		};
+	}, [word.endTime]);
 
 	return (
 		<div>
@@ -144,11 +189,13 @@ export const LyricWordView: FC<{
 						setSelectedWords(new Set([word.id]));
 					}}
 				>
-					<div className={styles.startTime}>
+					<div className={classNames(styles.startTime)} ref={startTimeRef}>
 						{msToTimestamp(word.startTime)}
 					</div>
 					<div className={styles.displayWord}>{displayWord}</div>
-					<div className={styles.endTime}>{msToTimestamp(word.endTime)}</div>
+					<div className={classNames(styles.endTime)} ref={endTimeRef}>
+						{msToTimestamp(word.endTime)}
+					</div>
 				</div>
 			)}
 		</div>
