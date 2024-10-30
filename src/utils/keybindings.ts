@@ -1,3 +1,5 @@
+import { atom, useAtomValue } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import { type DependencyList, useEffect } from "react";
 
 export type KeyBindingsConfig = string[];
@@ -8,7 +10,66 @@ export interface KeyBindingEvent {
 export type KeyBindingCallback = (evt: KeyBindingEvent) => void;
 
 export function formatKeyBindings(cfg: KeyBindingsConfig): string {
-	return cfg.join(" + ");
+	return cfg
+		.map((key) => {
+			if (key.startsWith("Key")) return key.substring(3);
+			if (navigator.userAgent.includes("Mac")) {
+				if (key === "Control") return "⌃";
+				if (key === "Alt") return "⌥";
+				if (key === "Shift") return "⇧";
+				if (key === "Meta") return "⌘";
+			} else if (navigator.userAgent.includes("Windows")) {
+				if (key.startsWith("Control")) return "Ctrl";
+				if (key === "Meta") return "Win";
+			}
+			return key;
+		})
+		.join(navigator.userAgent.includes("Mac") ? " " : " + ");
+}
+
+export function formatKeyBindingsAsArray(cfg: KeyBindingsConfig): string[] {
+	return cfg.map((key) => {
+		if (key.startsWith("Key")) return key.substring(3);
+		if (navigator.userAgent.includes("Mac")) {
+			if (key === "Control") return "⌃";
+			if (key === "Alt") return "⌥";
+			if (key === "Shift") return "⇧";
+			if (key === "Meta") return "⌘";
+		} else if (navigator.userAgent.includes("Windows")) {
+			if (key.startsWith("Control")) return "Ctrl";
+			if (key === "Meta") return "Win";
+		}
+		return key;
+	});
+}
+
+export function atomWithKeybindingStorage(
+	storageName: string,
+	defaultValue: KeyBindingsConfig,
+) {
+	const key = `keybindings:${storageName}`;
+	const keyAtom = atomWithStorage(key, defaultValue);
+	const wrapperAtom = atom(
+		(get) => get(keyAtom),
+		async (_get, set, update?: KeyBindingsConfig) => {
+			if (update) {
+				set(keyAtom, update);
+			} else {
+				try {
+					set(keyAtom, await recordShortcut());
+				} catch {
+					set(keyAtom, defaultValue);
+				}
+			}
+		},
+	);
+	return wrapperAtom;
+}
+
+function removeSideOfKeyCode(code: string) {
+	if (code.endsWith("Left")) return code.substring(0, code.length - 4);
+	if (code.endsWith("Right")) return code.substring(0, code.length - 5);
+	return code;
 }
 
 const bufferedKeys = new Set<string>();
@@ -24,8 +85,17 @@ window.addEventListener("keydown", (evt) => {
 	if (pressingKeys.size === 0) {
 		downTime = evt.timeStamp;
 	}
-	pressingKeys.add(evt.code);
-	bufferedKeys.add(evt.code);
+
+	const code = removeSideOfKeyCode(evt.code);
+
+	const joined = [...bufferedKeys].join(" + ").trim();
+	for (const key of registeredKeyBindings.keys()) {
+		if (key.startsWith(code) || (joined.length > 0 && key.startsWith(joined))) {
+			evt.preventDefault();
+		}
+	}
+	pressingKeys.add(code);
+	bufferedKeys.add(code);
 });
 window.addEventListener("keyup", (evt) => {
 	if (isEditing(evt)) {
@@ -33,8 +103,9 @@ window.addEventListener("keyup", (evt) => {
 		bufferedKeys.clear();
 		return;
 	}
+	const code = removeSideOfKeyCode(evt.code);
 	if (bufferedKeys.size > 0) {
-		const joined = [...bufferedKeys].join(" + ");
+		const joined = [...pressingKeys].join(" + ").trim();
 		bufferedKeys.clear();
 		const callbacks = registeredKeyBindings.get(joined);
 
@@ -55,12 +126,21 @@ window.addEventListener("keyup", (evt) => {
 			evt.stopPropagation();
 			evt.stopImmediatePropagation();
 		}
+		evt.preventDefault();
 	}
+	pressingKeys.delete(code);
+});
+window.addEventListener("blur", () => {
 	pressingKeys.clear();
+	bufferedKeys.clear();
+});
+window.addEventListener("focus", () => {
+	pressingKeys.clear();
+	bufferedKeys.clear();
 });
 
 // From https://wangchujiang.com/hotkeys-js/
-function isEditing(event: KeyboardEvent) {
+export function isEditing(event: KeyboardEvent) {
 	const target = (event.target || event.srcElement) as HTMLElement | null;
 	const tagName = target?.tagName;
 	return (
@@ -104,6 +184,22 @@ export function useKeyBinding(
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- 因为调用者可能会传递 deps
 		[cfg, callback, ...(deps || [])],
 	);
+}
+
+export function useKeyBindingAtom(
+	thisAtom: ReturnType<typeof atomWithKeybindingStorage>,
+	callback: KeyBindingCallback,
+	deps?: DependencyList,
+): KeyBindingsConfig {
+	const keyBindings = useAtomValue(thisAtom);
+	useEffect(
+		() => {
+			return registerKeyBindings(keyBindings, callback);
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- 因为调用者可能会传递 deps
+		[keyBindings, callback, ...(deps || [])],
+	);
+	return keyBindings;
 }
 
 let currentKeyDownEvent: ((evt: KeyboardEvent) => void) | undefined = undefined;

@@ -81,6 +81,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					lineEl.getAttribute("ttm:agent") !== mainAgentId,
 			startTime: 0,
 			endTime: 0,
+			ignoreSync: false,
 		};
 		let haveBg = false;
 

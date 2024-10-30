@@ -20,7 +20,7 @@ import {
 	useLayoutEffect,
 	useRef,
 } from "react";
-import { ribbonBarHeightAtom } from "../../states";
+import { ribbonBarHeightAtom } from "../../states/main";
 
 export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 	children,

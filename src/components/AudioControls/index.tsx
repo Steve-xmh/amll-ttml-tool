@@ -29,7 +29,7 @@ import {
 	currentTimeAtom,
 	loadableAudioWaveformAtom,
 	loadedAudioAtom,
-} from "../../states";
+} from "../../states/main";
 import { msToTimestamp } from "../../utils/timestamp";
 
 export const AudioControls: FC = () => {

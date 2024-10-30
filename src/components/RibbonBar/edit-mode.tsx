@@ -24,7 +24,7 @@ import {
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-} from "../../states";
+} from "../../states/main";
 import { msToTimestamp, parseTimespan } from "../../utils/timestamp";
 import type { LyricLine, LyricWord } from "../../utils/ttml-types";
 import { RibbonFrame, RibbonSection } from "./common";

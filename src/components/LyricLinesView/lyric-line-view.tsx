@@ -13,7 +13,7 @@ import { Flex, IconButton, Text } from "@radix-ui/themes";
 import Add16Filled from "@ricons/fluent/Add16Filled";
 import { Icon } from "@ricons/utils";
 import classNames from "classnames";
-import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { type FC, useEffect, useRef } from "react";
 import { uid } from "uid";
 import {
@@ -22,11 +22,14 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 	toolModeAtom,
-} from "../../states";
+} from "../../states/main";
 import { msToTimestamp } from "../../utils/timestamp";
 import type { LyricLine } from "../../utils/ttml-types";
 import styles from "./index.module.css";
 import { LyricWordView } from "./lyric-word-view";
+
+const isDraggingAtom = atom(false);
+const draggingIdAtom = atom("");
 
 export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 	line,
@@ -72,6 +75,81 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 			)}
 			align="center"
 			gapX="4"
+			draggable={toolMode === ToolMode.Edit}
+			onDragStart={(evt) => {
+				evt.dataTransfer.dropEffect = "move";
+				store.set(isDraggingAtom, true);
+				store.set(draggingIdAtom, line.id);
+			}}
+			onDragEnd={() => {
+				store.set(isDraggingAtom, false);
+			}}
+			onDragOver={(evt) => {
+				if (!store.get(isDraggingAtom)) return;
+				if (selectedLines.has(line.id)) return;
+				evt.preventDefault();
+				evt.dataTransfer.dropEffect = "move";
+				const rect = evt.currentTarget.getBoundingClientRect();
+				const innerY = evt.clientY - rect.top;
+				if (innerY < rect.height / 2) {
+					evt.currentTarget.classList.add(styles.dropTop);
+					evt.currentTarget.classList.remove(styles.dropBottom);
+				} else {
+					evt.currentTarget.classList.remove(styles.dropTop);
+					evt.currentTarget.classList.add(styles.dropBottom);
+				}
+			}}
+			onDrop={(evt) => {
+				evt.currentTarget.classList.remove(styles.dropTop);
+				evt.currentTarget.classList.remove(styles.dropBottom);
+				if (!store.get(isDraggingAtom)) return;
+				const rect = evt.currentTarget.getBoundingClientRect();
+				const innerY = evt.clientY - rect.top;
+				const selectedLineIds = selectedLines.has(store.get(draggingIdAtom))
+					? selectedLines
+					: new Set([store.get(draggingIdAtom)]);
+				if (innerY < rect.height / 2) {
+					editLyricLines((state) => {
+						const filteredLines = state.lyricLines.filter(
+							(l) => !selectedLineIds.has(l.id),
+						);
+						const targetLines = state.lyricLines.filter((l) =>
+							selectedLineIds.has(l.id),
+						);
+						const targetIndex = filteredLines.findIndex(
+							(l) => l.id === line.id,
+						);
+						if (targetIndex < 0) return;
+						state.lyricLines = [
+							...filteredLines.slice(0, targetIndex),
+							...targetLines,
+							...filteredLines.slice(targetIndex),
+						];
+					});
+				} else {
+					editLyricLines((state) => {
+						const filteredLines = state.lyricLines.filter(
+							(l) => !selectedLineIds.has(l.id),
+						);
+						const targetLines = state.lyricLines.filter((l) =>
+							selectedLineIds.has(l.id),
+						);
+						const targetIndex = filteredLines.findIndex(
+							(l) => l.id === line.id,
+						);
+						if (targetIndex < 0) return;
+						state.lyricLines = [
+							...filteredLines.slice(0, targetIndex + 1),
+							...targetLines,
+							...filteredLines.slice(targetIndex + 2),
+						];
+					});
+				}
+			}}
+			onDragLeave={(evt) => {
+				evt.currentTarget.classList.remove(styles.dropTop);
+				evt.currentTarget.classList.remove(styles.dropBottom);
+			}}
 			onClick={(evt) => {
 				evt.stopPropagation();
 				evt.preventDefault();
@@ -137,7 +215,7 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 				>
 					{line.words.map((word, wi) => (
 						<LyricWordView
-							key={`lyric-line-${lineIndex}-word-${wi}`}
+							key={`lyric-line-${lineIndex}-word-${word.id}`}
 							word={word}
 							wordIndex={wi}
 							line={line}

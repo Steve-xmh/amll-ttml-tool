@@ -9,10 +9,11 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import structuredClone from "@ungap/structured-clone";
 import { atom } from "jotai";
 import { loadable } from "jotai/utils";
-import { genWaveform } from "./utils/gen-waveform";
-import type { TTMLLyric } from "./utils/ttml-types";
+import { genWaveform } from "../utils/gen-waveform";
+import type { TTMLLyric } from "../utils/ttml-types";
 
 export enum DarkMode {
 	Auto = "auto",
@@ -83,7 +84,7 @@ export const currentLyricLinesAtom = atom(
 		if (newState instanceof Function) {
 			const cloned = structuredClone(oldState);
 			newState(cloned, oldState);
-			newCtx.undoStack.push(cloned);
+			newCtx.undoStack.push(structuredClone(cloned));
 		} else {
 			newCtx.undoStack.push(newState);
 		}
@@ -132,3 +133,5 @@ export const newLyricLinesAtom = atom(
 );
 export const selectedLinesAtom = atom(new Set<string>());
 export const selectedWordsAtom = atom(new Set<string>());
+
+export const saveFileNameAtom = atom("lyric.ttml");

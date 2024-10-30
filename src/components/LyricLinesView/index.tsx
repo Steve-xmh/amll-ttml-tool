@@ -25,7 +25,7 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 	toolModeAtom,
-} from "../../states";
+} from "../../states/main";
 import { LyricLineView } from "./lyric-line-view";
 export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const editLyric = useAtomValue(currentLyricLinesAtom);
@@ -81,9 +81,8 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 		<Box
 			flexGrow="1"
 			style={{
-				height: "100%",
-				padding: toolMode === ToolMode.Sync ? "50vh 0" : undefined,
-				overflowX: "hidden",
+				padding: toolMode === ToolMode.Sync ? "20vh 0" : undefined,
+				maxHeight: "100%",
 				overflowY: "auto",
 			}}
 			onClick={(evt) => {

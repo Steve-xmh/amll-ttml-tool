@@ -7,12 +7,14 @@ import {
 	audioPlayingAtom,
 	currentLyricLinesAtom,
 	currentTimeAtom,
-} from "../../states.ts";
+	isDarkThemeAtom,
+} from "../../states/main.ts";
 
 export const AMLLWrapper: FC = () => {
 	const lyricLines = useAtomValue(currentLyricLinesAtom);
 	const currentTime = useAtomValue(currentTimeAtom);
 	const isPlaying = useAtomValue(audioPlayingAtom);
+	const darkMode = useAtomValue(isDarkThemeAtom);
 
 	return (
 		<Card
@@ -27,6 +29,7 @@ export const AMLLWrapper: FC = () => {
 				style={{
 					height: "100%",
 					boxSizing: "content-box",
+					"--amll-lp-color": darkMode ? "var(--white-12)" : "var(--gray-12)",
 				}}
 				lyricLines={lyricLines.lyricLines}
 				currentTime={currentTime}

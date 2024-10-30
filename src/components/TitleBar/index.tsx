@@ -1,28 +1,17 @@
-import {
-	Box,
-	Button,
-	DropdownMenu,
-	Flex,
-	SegmentedControl,
-	Text,
-} from "@radix-ui/themes";
+import { Box, Flex, SegmentedControl, Text } from "@radix-ui/themes";
 import classNames from "classnames";
-import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
-import type { FC } from "react";
+import { useAtom, useAtomValue } from "jotai";
+import { type FC, useCallback } from "react";
 import { Trans } from "react-i18next";
-import saveFile from "save-file";
 import { WindowControls, type WindowControlsProps } from "tauri-controls";
 import {
-	ToolMode,
-	currentLyricLinesAtom,
-	isDarkThemeAtom,
-	newLyricLinesAtom,
-	redoLyricLinesAtom,
-	toolModeAtom,
-	undoLyricLinesAtom,
-} from "../../states";
-import { parseLyric } from "../../utils/ttml-parser";
-import exportTTMLText from "../../utils/ttml-writer.ts";
+	keySwitchEditModeAtom,
+	keySwitchPreviewModeAtom,
+	keySwitchSyncModeAtom,
+} from "../../states/keybindings.ts";
+import { ToolMode, isDarkThemeAtom, toolModeAtom } from "../../states/main.ts";
+import { useKeyBindingAtom } from "../../utils/keybindings.ts";
+import { TopMenu } from "../TopMenu/index.tsx";
 import styles from "./index.module.css";
 
 let controlsPlatform = import.meta.env
@@ -34,96 +23,25 @@ if (import.meta.env.TAURI_ENV_PLATFORM === "darwin") {
 export const TitleBar: FC = () => {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
 	const [toolMode, setToolMode] = useAtom(toolModeAtom);
-	const newLyricLine = useSetAtom(newLyricLinesAtom);
-	const editLyricLine = useSetAtom(currentLyricLinesAtom);
-	const store = useStore();
+
+	const onSwitchEditMode = useCallback(() => {
+		setToolMode(ToolMode.Edit);
+	}, [setToolMode]);
+	const onSwitchSyncMode = useCallback(() => {
+		setToolMode(ToolMode.Sync);
+	}, [setToolMode]);
+	const onSwitchPreviewMode = useCallback(() => {
+		setToolMode(ToolMode.Preview);
+	}, [setToolMode]);
+
+	useKeyBindingAtom(keySwitchEditModeAtom, onSwitchEditMode);
+	useKeyBindingAtom(keySwitchSyncModeAtom, onSwitchSyncMode);
+	useKeyBindingAtom(keySwitchPreviewModeAtom, onSwitchPreviewMode);
+
 	return (
-		<Flex width="100%" align="stretch">
+		<Flex width="100%" flexBasis="0" align="stretch">
 			<Flex flexGrow="1" flexBasis="50vw" align="center">
-				<Flex p="2" pr="0" align="center" gap="2">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>
-							<Button variant="soft">
-								<Trans i18nKey="topBar.menu.file">文件</Trans>
-								<DropdownMenu.TriggerIcon />
-							</Button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content>
-							<DropdownMenu.Item
-								onClick={() => {
-									newLyricLine();
-								}}
-							>
-								新建 TTML 文件
-							</DropdownMenu.Item>
-							<DropdownMenu.Item
-								onClick={() => {
-									const inputEl = document.createElement("input");
-									inputEl.type = "file";
-									inputEl.accept = ".ttml,*/*";
-									inputEl.addEventListener(
-										"change",
-										async () => {
-											const file = inputEl.files?.[0];
-											if (!file) return;
-											try {
-												const ttmlText = await file.text();
-												const ttmlData = parseLyric(ttmlText);
-												editLyricLine(ttmlData);
-											} catch (e) {
-												console.error("Failed to parse TTML file", e);
-											}
-										},
-										{
-											once: true,
-										},
-									);
-									inputEl.click();
-								}}
-							>
-								打开 TTML 文件
-							</DropdownMenu.Item>
-							<DropdownMenu.Item
-								onClick={() => {
-									try {
-										saveFile(
-											exportTTMLText(store.get(currentLyricLinesAtom)),
-											"lyric.ttml",
-										).catch(console.error);
-									} catch (e) {
-										console.error("Failed to save TTML file", e);
-									}
-								}}
-							>
-								保存 TTML 文件
-							</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>
-							<Button variant="soft">
-								<Trans i18nKey="topBar.menu.edit">编辑</Trans>
-								<DropdownMenu.TriggerIcon />
-							</Button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content>
-							<DropdownMenu.Item
-								onClick={() => {
-									store.set(undoLyricLinesAtom);
-								}}
-							>
-								撤销
-							</DropdownMenu.Item>
-							<DropdownMenu.Item
-								onClick={() => {
-									store.set(redoLyricLinesAtom);
-								}}
-							>
-								重做
-							</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</Flex>
+				<TopMenu />
 				<Box
 					flexGrow="1"
 					flexShrink="1"

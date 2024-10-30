@@ -17,6 +17,7 @@
         "height": 600,
         "resizable": true,
         "fullscreen": false,
+        "dragDropEnabled": false,
         "visible": false
       }
     ],

@@ -9,11 +9,11 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Box, Flex, Theme } from "@radix-ui/themes";
+import { Box, Button, Card, Flex, Grid, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useStore } from "jotai";
 import { useEffect } from "react";
 import { AMLLWrapper } from "./components/AMLLWrapper/index.tsx";
 import AudioControls from "./components/AudioControls";
@@ -22,15 +22,25 @@ import LyricLinesView from "./components/LyricLinesView";
 import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
-import { ToolMode, isDarkThemeAtom, toolModeAtom } from "./states";
+import {
+	ToolMode,
+	isDarkThemeAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
+	toolModeAtom,
+} from "./states/main.ts";
+import { showTouchSyncPanelAtom } from "./states/sync.ts";
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
 	const toolMode = useAtomValue(toolModeAtom);
+	const showTouchSyncPanel = useAtomValue(showTouchSyncPanelAtom);
+	const store = useStore();
 	if (import.meta.env.TAURI_ENV_PLATFORM) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			const win = getCurrentWindow();
+
 			win.show();
 		}, []);
 	}
@@ -43,6 +53,10 @@ function App() {
 			accentColor={isDarkTheme ? "jade" : "green"}
 			style={{
 				"--color-panel": "var(--gray-a2)",
+			}}
+			onClickCapture={() => {
+				store.set(selectedLinesAtom, new Set());
+				store.set(selectedWordsAtom, new Set());
 			}}
 		>
 			{toolMode === ToolMode.Sync && <SyncKeyBinding />}
@@ -57,6 +71,8 @@ function App() {
 								layout="position"
 								style={{
 									height: "100%",
+									maxHeight: "100%",
+									overflowY: "hidden",
 								}}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
@@ -80,7 +96,31 @@ function App() {
 						)}
 					</AnimatePresence>
 				</Box>
-				<Box flexShrink="1">
+				{showTouchSyncPanel && (
+					<Card m="2" mt="0" style={{ flexShrink: "0" }}>
+						<Grid rows="2" columns="3" gap="2">
+							<Button variant="soft" size="4">
+								跳上词
+							</Button>
+							<Button variant="soft" size="4">
+								跳本词
+							</Button>
+							<Button variant="soft" size="4">
+								跳下词
+							</Button>
+							<Button variant="soft" size="4">
+								起始轴
+							</Button>
+							<Button variant="soft" size="4">
+								连续轴
+							</Button>
+							<Button variant="soft" size="4">
+								结束轴
+							</Button>
+						</Grid>
+					</Card>
+				)}
+				<Box flexShrink="0">
 					<AudioControls />
 				</Box>
 			</Flex>

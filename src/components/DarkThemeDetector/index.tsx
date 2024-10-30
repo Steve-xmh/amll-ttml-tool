@@ -11,7 +11,7 @@
 
 import { useAtomValue, useSetAtom } from "jotai";
 import { type FC, useEffect } from "react";
-import { DarkMode, autoDarkModeAtom, darkModeAtom } from "../../states";
+import { DarkMode, autoDarkModeAtom, darkModeAtom } from "../../states/main";
 
 const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 

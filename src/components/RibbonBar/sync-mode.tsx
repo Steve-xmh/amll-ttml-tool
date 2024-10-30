@@ -9,12 +9,30 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
+import { Checkbox, Flex, Grid, Text, TextField } from "@radix-ui/themes";
+import { useAtom } from "jotai";
 import { type FC, forwardRef } from "react";
+import {
+	keySyncEndAtom,
+	keySyncNextAtom,
+	keySyncStartAtom,
+} from "../../states/keybindings.ts";
+import {
+	showTouchSyncPanelAtom,
+	visualizeTimestampUpdateAtom,
+} from "../../states/sync.ts";
+import { KeyBinding } from "../KeyBinding/index.tsx";
 import { RibbonFrame, RibbonSection } from "./common";
 
 export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
+		const [visualizeTimestampUpdate, setVisualizeTimestampUpdate] = useAtom(
+			visualizeTimestampUpdateAtom,
+		);
+		const [showTouchSyncPanel, setShowTouchSyncPanel] = useAtom(
+			showTouchSyncPanelAtom,
+		);
+
 		return (
 			<RibbonFrame ref={ref}>
 				<RibbonSection label="时序调整">
@@ -37,13 +55,44 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						<Text wrap="nowrap" size="1">
 							呈现时间戳更新
 						</Text>
-						<Checkbox />
+						<Checkbox
+							checked={visualizeTimestampUpdate}
+							onCheckedChange={(v) => setVisualizeTimestampUpdate(!!v)}
+						/>
 
 						<Text wrap="nowrap" size="1">
 							触控打轴辅助面板
 						</Text>
-						<Checkbox />
+						<Checkbox
+							checked={showTouchSyncPanel}
+							onCheckedChange={(v) => setShowTouchSyncPanel(!!v)}
+						/>
 					</Grid>
+				</RibbonSection>
+				<RibbonSection label="打轴键位速查">
+					<Flex gap="4">
+						<Grid
+							columns="0fr 0fr"
+							gap="2"
+							gapY="1"
+							flexGrow="1"
+							align="center"
+							justify="center"
+						>
+							<Text wrap="nowrap" size="1">
+								起始轴
+							</Text>
+							<KeyBinding kbdAtom={keySyncStartAtom} />
+							<Text wrap="nowrap" size="1">
+								连续轴
+							</Text>
+							<KeyBinding kbdAtom={keySyncNextAtom} />
+							<Text wrap="nowrap" size="1">
+								结束轴
+							</Text>
+							<KeyBinding kbdAtom={keySyncEndAtom} />
+						</Grid>
+					</Flex>
 				</RibbonSection>
 			</RibbonFrame>
 		);

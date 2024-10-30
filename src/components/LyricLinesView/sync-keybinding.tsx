@@ -1,12 +1,22 @@
 import { type createStore, useStore } from "jotai";
 import { type FC, useCallback } from "react";
 import {
+	keyMoveNextLineAtom,
+	keyMoveNextWordAtom,
+	keyMovePrevLineAtom,
+	keyMovePrevWordAtom,
+	keySyncEndAtom,
+	keySyncNextAtom,
+	keySyncStartAtom,
+} from "../../states/keybindings.ts";
+import {
 	currentLyricLinesAtom,
 	currentTimeAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-} from "../../states.ts";
-import { useKeyBinding } from "../../utils/keybindings.ts";
+} from "../../states/main.ts";
+import { currentEmptyBeatAtom } from "../../states/sync.ts";
+import { useKeyBindingAtom } from "../../utils/keybindings.ts";
 import type { LyricLine, LyricWord } from "../../utils/ttml-types.ts";
 
 function getCurrentLineLocation(store: ReturnType<typeof createStore>):
@@ -67,7 +77,16 @@ function findNextWord(
 	const nextWord = line.words
 		.slice(wordIndex + 1)
 		.find((word) => word.word.trim().length > 0 && word.wordType !== "rt");
-	if (!nextWord) return;
+	if (!nextWord) {
+		const nextLine = lyricLines
+			.slice(lineIndex + 1)
+			.find((line) => !line.ignoreSync);
+		if (!nextLine) return;
+		const nextWordForNextLine = nextLine.words.find(
+			(word) => word.word.trim().length > 0 && word.wordType !== "rt",
+		);
+		return nextWordForNextLine;
+	}
 	return nextWord;
 }
 
@@ -78,19 +97,6 @@ export const SyncKeyBinding: FC = () => {
 		function moveToNextWord(): boolean {
 			const location = getCurrentLocation(store);
 			if (!location) return false;
-			if (location.wordIndex === location.line.words.length - 1) {
-				const lastLineIndex = Math.min(
-					location.lines.length - 1,
-					location.lineIndex + 1,
-				);
-				const lastLine = location.lines[lastLineIndex];
-				if (!lastLine) return false;
-				store.set(selectedLinesAtom, new Set([lastLine.id]));
-				if (lastLine.words.length === 0) {
-					return false;
-				}
-				store.set(selectedWordsAtom, new Set([lastLine.words[0]?.id]));
-			}
 			const nextWord = findNextWord(
 				location.lines,
 				location.lineIndex,
@@ -98,6 +104,7 @@ export const SyncKeyBinding: FC = () => {
 			);
 			if (!nextWord) return false;
 			store.set(selectedWordsAtom, new Set([nextWord.id]));
+			store.set(currentEmptyBeatAtom, 0);
 			return true;
 		},
 		[store],
@@ -135,8 +142,8 @@ export const SyncKeyBinding: FC = () => {
 
 	// 移动打轴光标
 
-	useKeyBinding(
-		["KeyS"],
+	useKeyBindingAtom(
+		keyMoveNextLineAtom,
 		() => {
 			const location = getCurrentLineLocation(store);
 			if (!location) return;
@@ -156,8 +163,8 @@ export const SyncKeyBinding: FC = () => {
 		[store],
 	);
 
-	useKeyBinding(
-		["KeyW"],
+	useKeyBindingAtom(
+		keyMovePrevLineAtom,
 		() => {
 			const location = getCurrentLineLocation(store);
 			if (!location) return;
@@ -174,14 +181,14 @@ export const SyncKeyBinding: FC = () => {
 		[store],
 	);
 
-	useKeyBinding(["KeyD"], moveToNextWord, [store]);
+	useKeyBindingAtom(keyMoveNextWordAtom, moveToNextWord, [store]);
 
-	useKeyBinding(["KeyA"], moveToPrevWord, [store]);
+	useKeyBindingAtom(keyMovePrevWordAtom, moveToPrevWord, [store]);
 
 	// 记录时间戳（主要打轴按键）
 
-	useKeyBinding(
-		["KeyF"],
+	useKeyBindingAtom(
+		keySyncStartAtom,
 		(evt) => {
 			const location = getCurrentLocation(store);
 			if (!location) return;
@@ -197,11 +204,16 @@ export const SyncKeyBinding: FC = () => {
 		},
 		[store],
 	);
-	useKeyBinding(
-		["KeyG"],
+	useKeyBindingAtom(
+		keySyncNextAtom,
 		(evt) => {
 			const location = getCurrentLocation(store);
 			if (!location) return;
+			const emptyBeat = store.get(currentEmptyBeatAtom);
+			if (emptyBeat < location.word.emptyBeat) {
+				store.set(currentEmptyBeatAtom, emptyBeat + 1);
+				return;
+			}
 			const currentTime = Math.max(
 				0,
 				store.get(currentTimeAtom) - evt.downTimeOffset,
@@ -220,8 +232,8 @@ export const SyncKeyBinding: FC = () => {
 		},
 		[store, moveToNextWord],
 	);
-	useKeyBinding(
-		["KeyH"],
+	useKeyBindingAtom(
+		keySyncEndAtom,
 		(evt) => {
 			const location = getCurrentLocation(store);
 			if (!location) return;

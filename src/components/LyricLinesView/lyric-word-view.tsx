@@ -11,7 +11,7 @@
 
 import { TextField } from "@radix-ui/themes";
 import classNames from "classnames";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { type FC, useEffect, useMemo, useRef, useState } from "react";
 import {
 	ToolMode,
@@ -19,10 +19,14 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 	toolModeAtom,
-} from "../../states";
+} from "../../states/main";
+import { visualizeTimestampUpdateAtom } from "../../states/sync.ts";
 import { msToTimestamp } from "../../utils/timestamp";
 import type { LyricLine, LyricWord } from "../../utils/ttml-types";
 import styles from "./index.module.css";
+
+const isDraggingAtom = atom(false);
+const draggingIdAtom = atom("");
 
 export const LyricWordView: FC<{
 	word: LyricWord;
@@ -33,6 +37,8 @@ export const LyricWordView: FC<{
 	const [editing, setEditing] = useState(false);
 	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
 	const toolMode = useAtomValue(toolModeAtom);
+	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
+	const store = useStore();
 	const setSelectedLines = useSetAtom(selectedLinesAtom);
 	const editLyricLines = useSetAtom(currentLyricLinesAtom);
 
@@ -65,6 +71,7 @@ export const LyricWordView: FC<{
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: 用于呈现时间戳更新效果
 	useEffect(() => {
+		if (!visualizeTimestampUpdate) return;
 		const animation = startTimeRef.current?.animate(
 			[
 				{
@@ -82,10 +89,11 @@ export const LyricWordView: FC<{
 		return () => {
 			animation?.cancel();
 		};
-	}, [word.startTime]);
+	}, [word.startTime, visualizeTimestampUpdate]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: 用于呈现时间戳更新效果
 	useEffect(() => {
+		if (!visualizeTimestampUpdate) return;
 		const animation = endTimeRef.current?.animate(
 			[
 				{
@@ -103,7 +111,7 @@ export const LyricWordView: FC<{
 		return () => {
 			animation?.cancel();
 		};
-	}, [word.endTime]);
+	}, [word.endTime, visualizeTimestampUpdate]);
 
 	return (
 		<div>
@@ -112,8 +120,14 @@ export const LyricWordView: FC<{
 					<TextField.Root
 						autoFocus
 						defaultValue={word.word}
-						onBlur={() => {
+						onBlur={(evt) => {
 							setEditing(false);
+							const newWord = evt.currentTarget.value;
+							if (newWord !== word.word) {
+								editLyricLines((state) => {
+									state.lyricLines[lineIndex].words[wordIndex].word = newWord;
+								});
+							}
 						}}
 						onKeyDown={(evt) => {
 							if (evt.key === "Enter") {
@@ -128,7 +142,91 @@ export const LyricWordView: FC<{
 						}}
 					/>
 				) : (
+					// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 					<span
+						draggable={toolMode === ToolMode.Edit}
+						onDragStart={(evt) => {
+							evt.dataTransfer.dropEffect = "move";
+							store.set(isDraggingAtom, true);
+							store.set(draggingIdAtom, word.id);
+							evt.stopPropagation();
+						}}
+						onDragEnd={() => {
+							store.set(isDraggingAtom, false);
+						}}
+						onDragOver={(evt) => {
+							if (!store.get(isDraggingAtom)) return;
+							if (selectedWords.has(line.id)) return;
+							evt.preventDefault();
+							evt.dataTransfer.dropEffect = "move";
+							const rect = evt.currentTarget.getBoundingClientRect();
+							const innerX = evt.clientX - rect.left;
+							if (innerX < rect.width / 2) {
+								evt.currentTarget.classList.add(styles.dropLeft);
+								evt.currentTarget.classList.remove(styles.dropRight);
+							} else {
+								evt.currentTarget.classList.remove(styles.dropLeft);
+								evt.currentTarget.classList.add(styles.dropRight);
+							}
+						}}
+						onDrop={(evt) => {
+							evt.currentTarget.classList.remove(styles.dropLeft);
+							evt.currentTarget.classList.remove(styles.dropRight);
+							if (!store.get(isDraggingAtom)) return;
+							const rect = evt.currentTarget.getBoundingClientRect();
+							const innerX = evt.clientX - rect.left;
+							const targetIds = new Set(selectedWords);
+							const draggingId = store.get(draggingIdAtom);
+							if (!selectedWords.has(draggingId)) {
+								targetIds.clear();
+								targetIds.add(draggingId);
+							}
+							if (innerX < rect.width / 2) {
+								editLyricLines((state) => {
+									const collectedWords = [];
+									for (const line of state.lyricLines) {
+										const words = line.words.filter((w) => targetIds.has(w.id));
+										collectedWords.push(...words);
+										line.words = line.words.filter((w) => !targetIds.has(w.id));
+									}
+									const targetLine = state.lyricLines.find(
+										(l) => l.id === line.id,
+									);
+									if (!targetLine) return;
+									const targetIndex = targetLine.words.findIndex(
+										(w) => w.id === word.id,
+									);
+									if (targetIndex < 0) return;
+									targetLine.words.splice(targetIndex, 0, ...collectedWords);
+								});
+							} else {
+								editLyricLines((state) => {
+									const collectedWords = [];
+									for (const line of state.lyricLines) {
+										const words = line.words.filter((w) => targetIds.has(w.id));
+										collectedWords.push(...words);
+										line.words = line.words.filter((w) => !targetIds.has(w.id));
+									}
+									const targetLine = state.lyricLines.find(
+										(l) => l.id === line.id,
+									);
+									if (!targetLine) return;
+									const targetIndex = targetLine.words.findIndex(
+										(w) => w.id === word.id,
+									);
+									if (targetIndex < 0) return;
+									targetLine.words.splice(
+										targetIndex + 1,
+										0,
+										...collectedWords,
+									);
+								});
+							}
+						}}
+						onDragLeave={(evt) => {
+							evt.currentTarget.classList.remove(styles.dropLeft);
+							evt.currentTarget.classList.remove(styles.dropRight);
+						}}
 						className={className}
 						onDoubleClick={() => {
 							setEditing(true);
@@ -180,6 +278,7 @@ export const LyricWordView: FC<{
 					</span>
 				))}
 			{toolMode === ToolMode.Sync && !isWordBlank && (
+				// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 				<div
 					className={className}
 					onClick={(evt) => {

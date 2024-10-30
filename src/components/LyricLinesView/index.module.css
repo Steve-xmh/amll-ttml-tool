@@ -27,6 +27,14 @@
 
 		border-right: solid 1px var(--gray-a5);
 	}
+
+	&.dropLeft {
+		border-left: solid 3px var(--accent-a11);
+	}
+
+	&.dropRight {
+		border-right: solid 3px var(--accent-a11);
+	}
 }
 
 .displayWord {
@@ -62,6 +70,14 @@
 	box-shadow: var(--base-card-surface-box-shadow);
 	user-select: none;
 	display: flex;
+
+	&.dropTop {
+		border-top: solid 3px var(--accent-a11);
+	}
+
+	&.dropBottom {
+		border-bottom: solid 3px var(--accent-a11);
+	}
 }
 
 .lyricWordsContainer {

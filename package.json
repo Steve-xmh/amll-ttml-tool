@@ -16,11 +16,13 @@
   "dependencies": {
     "@applemusic-like-lyrics/core": "0.2.0-alpha.3",
     "@applemusic-like-lyrics/react": "0.2.0-alpha.3",
+    "@dnd-kit/core": "^6.1.0",
     "@radix-ui/themes": "^3.1.4",
     "@ricons/fluent": "^0.12.0",
     "@ricons/utils": "^0.1.6",
     "@tauri-apps/api": "^2.0.3",
     "@tauri-apps/plugin-os": "^2.0.0",
+    "@ungap/structured-clone": "^1.2.0",
     "classnames": "^2.5.1",
     "framer-motion": "^11.11.9",
     "i18next": "^23.16.2",
