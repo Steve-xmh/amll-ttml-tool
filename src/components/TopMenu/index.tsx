@@ -1,6 +1,5 @@
+import { HomeRegular } from "@fluentui/react-icons";
 import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
-import LineHorizontal320Filled from "@ricons/fluent/es/LineHorizontal320Filled";
-import { Icon } from "@ricons/utils";
 import { useAtom, useSetAtom, useStore } from "jotai";
 import { type FC, useCallback } from "react";
 import { Trans } from "react-i18next";
@@ -10,6 +9,9 @@ import {
 	keyOpenFileAtom,
 	keyRedoAtom,
 	keySaveFileAtom,
+	keySelectAllAtom,
+	keySelectInvertedAtom,
+	keySelectWordsOfMatchedSelectionAtom,
 	keyUndoAtom,
 } from "../../states/keybindings.ts";
 import {
@@ -17,6 +19,8 @@ import {
 	newLyricLinesAtom,
 	redoLyricLinesAtom,
 	saveFileNameAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
 	undoLyricLinesAtom,
 } from "../../states/main.ts";
 import {
@@ -89,14 +93,72 @@ export const TopMenu: FC = () => {
 	}, [store]);
 	const redoKey = useKeyBindingAtom(keyRedoAtom, onRedo, [onRedo]);
 
+	const onSelectAll = useCallback(() => {
+		const lines = store.get(currentLyricLinesAtom).lyricLines;
+		const selectedLineIds = store.get(selectedLinesAtom);
+		const selectedLines = lines.filter((l) => selectedLineIds.has(l.id));
+		const selectedWordIds = store.get(selectedWordsAtom);
+		const selectedWords = lines
+			.flatMap((l) => l.words)
+			.filter((w) => selectedWordIds.has(w.id));
+		if (selectedWords.length > 0) {
+			const tmpWordIds = new Set(selectedWordIds);
+			for (const selLine of selectedLines) {
+				for (const word of selLine.words) {
+					tmpWordIds.delete(word.id);
+				}
+			}
+			console.log(tmpWordIds);
+			if (tmpWordIds.size === 0) {
+				// 选中所有单词
+				store.set(
+					selectedWordsAtom,
+					new Set(selectedLines.flatMap((line) => line.words.map((w) => w.id))),
+				);
+				return;
+			}
+		} else {
+			// 选中所有歌词行
+			store.set(
+				selectedLinesAtom,
+				new Set(store.get(currentLyricLinesAtom).lyricLines.map((l) => l.id)),
+			);
+		}
+		const sel = window.getSelection();
+		if (sel) {
+			if (sel.empty) {
+				// Chrome
+				sel.empty();
+			} else if (sel.removeAllRanges) {
+				// Firefox
+				sel.removeAllRanges();
+			}
+		}
+	}, [store]);
+	const selectAllLinesKey = useKeyBindingAtom(keySelectAllAtom, onSelectAll, [
+		onSelectAll,
+	]);
+
+	const onSelectInverted = useCallback(() => {}, []);
+	const selectInvertedLinesKey = useKeyBindingAtom(
+		keySelectInvertedAtom,
+		onSelectInverted,
+		[onSelectInverted],
+	);
+
+	const onSelectWordsOfMatchedSelection = useCallback(() => {}, []);
+	const selectWordsOfMatchedSelectionKey = useKeyBindingAtom(
+		keySelectWordsOfMatchedSelectionAtom,
+		onSelectWordsOfMatchedSelection,
+		[onSelectWordsOfMatchedSelection],
+	);
+
 	return (
 		<Flex p="2" pr="0" align="center" gap="2">
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					<IconButton variant="soft">
-						<Icon>
-							<LineHorizontal320Filled />
-						</Icon>
+						<HomeRegular />
 					</IconButton>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
@@ -142,6 +204,25 @@ export const TopMenu: FC = () => {
 								shortcut={formatKeyBindings(redoKey)}
 							>
 								重做
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item
+								onClick={onSelectAll}
+								shortcut={formatKeyBindings(selectAllLinesKey)}
+							>
+								全选
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onClick={onSelectInverted}
+								shortcut={formatKeyBindings(selectInvertedLinesKey)}
+							>
+								反选
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onClick={onSelectWordsOfMatchedSelection}
+								shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
+							>
+								选择单词匹配项
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>

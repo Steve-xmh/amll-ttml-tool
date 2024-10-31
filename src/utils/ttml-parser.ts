@@ -106,7 +106,6 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					word: word,
 					startTime: word.trim().length > 0 ? line.startTime : 0,
 					endTime: word.trim().length > 0 ? line.endTime : 0,
-					wordType: "normal",
 					obscene: false,
 					emptyBeat: 0,
 				});
@@ -129,7 +128,6 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 						word: wordNode.textContent ?? "",
 						startTime: parseTimespan(wordEl.getAttribute("begin") ?? ""),
 						endTime: parseTimespan(wordEl.getAttribute("end") ?? ""),
-						wordType: "normal",
 						obscene: false,
 						emptyBeat: 0,
 					};

@@ -9,14 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {
-	Button,
-	Checkbox,
-	Grid,
-	Select,
-	Text,
-	TextField,
-} from "@radix-ui/themes";
+import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
 import { type FC, forwardRef, useLayoutEffect, useMemo, useState } from "react";
 import { uid } from "uid";
@@ -174,6 +167,215 @@ function EditField<
 	);
 }
 
+function CheckboxField<
+	L extends Word extends true ? LyricWord : LyricLine,
+	F extends keyof L,
+	V extends L[F] extends boolean ? boolean : never,
+	Word extends boolean | undefined = undefined,
+>({
+	label,
+	isWordField,
+	fieldName,
+	defaultValue,
+}: {
+	label: string;
+	isWordField: Word;
+	fieldName: F;
+	defaultValue: V;
+}) {
+	const itemAtom = useMemo(
+		() => (isWordField ? selectedWordsAtom : selectedLinesAtom),
+		[isWordField],
+	);
+	const selectedItems = useAtomValue(itemAtom);
+
+	const [lyricLines, editLyricLines] = useAtom(currentLyricLinesAtom);
+
+	const currentValue = useMemo(() => {
+		if (selectedItems.size) {
+			if (isWordField) {
+				const selectedWords = selectedItems as Set<string>;
+				const values = new Set();
+				for (const line of lyricLines.lyricLines) {
+					for (const word of line.words) {
+						if (selectedWords.has(word.id)) {
+							values.add(word[fieldName as keyof LyricWord]);
+						}
+					}
+				}
+				if (values.size === 1)
+					return {
+						multiplieValues: false,
+						value: values.values().next().value as L[F],
+					} as const;
+				return {
+					multiplieValues: true,
+					value: "",
+				} as const;
+			}
+			const selectedLines = selectedItems as Set<string>;
+			const values = new Set();
+			for (const line of lyricLines.lyricLines) {
+				if (selectedLines.has(line.id)) {
+					values.add(line[fieldName as keyof LyricLine]);
+				}
+			}
+			if (values.size === 1)
+				return {
+					multiplieValues: false,
+					value: values.values().next().value as L[F],
+				} as const;
+			return {
+				multiplieValues: true,
+				value: "",
+			} as const;
+		}
+		return undefined;
+	}, [selectedItems, fieldName, isWordField, lyricLines]);
+
+	return (
+		<>
+			<Text wrap="nowrap" size="1">
+				{label}
+			</Text>
+			<Checkbox
+				disabled={selectedItems.size === 0}
+				checked={
+					currentValue
+						? currentValue.multiplieValues
+							? "indeterminate"
+							: (currentValue.value as boolean)
+						: defaultValue
+				}
+				onCheckedChange={(value) => {
+					if (value === "indeterminate") return;
+					editLyricLines((state) => {
+						for (const line of state.lyricLines) {
+							if (isWordField) {
+								for (const word of line.words) {
+									if (selectedItems.has(word.id)) {
+										(word as L)[fieldName] = value as L[F];
+									}
+								}
+							} else {
+								if (selectedItems.has(line.id)) {
+									(line as L)[fieldName] = value as L[F];
+								}
+							}
+						}
+						return state;
+					});
+				}}
+			/>
+		</>
+	);
+}
+
+// function DropdownField<
+// 	L extends Word extends true ? LyricWord : LyricLine,
+// 	F extends keyof L,
+// 	Word extends boolean | undefined = undefined,
+// >({
+// 	label,
+// 	isWordField,
+// 	fieldName,
+// 	children,
+// 	defaultValue,
+// }: {
+// 	label: string;
+// 	isWordField: Word;
+// 	fieldName: F;
+// 	defaultValue: L[F];
+// 	children?: ReactNode | undefined;
+// }) {
+// 	const itemAtom = useMemo(
+// 		() => (isWordField ? selectedWordsAtom : selectedLinesAtom),
+// 		[isWordField],
+// 	);
+// 	const selectedItems = useAtomValue(itemAtom);
+
+// 	const [lyricLines, editLyricLines] = useAtom(currentLyricLinesAtom);
+
+// 	const currentValue = useMemo(() => {
+// 		if (selectedItems.size) {
+// 			if (isWordField) {
+// 				const selectedWords = selectedItems as Set<string>;
+// 				const values = new Set();
+// 				for (const line of lyricLines.lyricLines) {
+// 					for (const word of line.words) {
+// 						if (selectedWords.has(word.id)) {
+// 							values.add(word[fieldName as keyof LyricWord]);
+// 						}
+// 					}
+// 				}
+// 				if (values.size === 1)
+// 					return {
+// 						multiplieValues: false,
+// 						value: values.values().next().value as L[F],
+// 					} as const;
+// 				return {
+// 					multiplieValues: true,
+// 					value: "",
+// 				} as const;
+// 			}
+// 			const selectedLines = selectedItems as Set<string>;
+// 			const values = new Set();
+// 			for (const line of lyricLines.lyricLines) {
+// 				if (selectedLines.has(line.id)) {
+// 					values.add(line[fieldName as keyof LyricLine]);
+// 				}
+// 			}
+// 			if (values.size === 1)
+// 				return {
+// 					multiplieValues: false,
+// 					value: values.values().next().value as L[F],
+// 				} as const;
+// 			return {
+// 				multiplieValues: true,
+// 				value: "",
+// 			} as const;
+// 		}
+// 		return undefined;
+// 	}, [selectedItems, fieldName, isWordField, lyricLines]);
+
+// 	return (
+// 		<>
+// 			<Text wrap="nowrap" size="1">
+// 				{label}
+// 			</Text>
+// 			<Select.Root
+// 				size="1"
+// 				disabled={selectedItems.size === 0}
+// 				defaultValue={defaultValue as string}
+// 				value={(currentValue?.value as string) ?? ""}
+// 				onValueChange={(value) => {
+// 					editLyricLines((state) => {
+// 						for (const line of state.lyricLines) {
+// 							if (isWordField) {
+// 								for (const word of line.words) {
+// 									if (selectedItems.has(word.id)) {
+// 										(word as L)[fieldName] = value as L[F];
+// 									}
+// 								}
+// 							} else {
+// 								if (selectedItems.has(line.id)) {
+// 									(line as L)[fieldName] = value as L[F];
+// 								}
+// 							}
+// 						}
+// 						return state;
+// 					});
+// 				}}
+// 			>
+// 				<Select.Trigger
+// 					placeholder={selectedItems.size > 0 ? "多个值..." : undefined}
+// 				/>
+// 				<Select.Content>{children}</Select.Content>
+// 			</Select.Root>
+// 		</>
+// 	);
+// }
+
 export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
 		const [, editLyricLines] = useAtom(currentLyricLinesAtom);
@@ -214,6 +416,7 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 										endTime: 0,
 										isBG: false,
 										isDuet: false,
+										ignoreSync: false,
 									});
 								})
 							}
@@ -231,7 +434,6 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 											word: "",
 											startTime: 0,
 											endTime: 0,
-											wordType: "normal",
 											obscene: false,
 											emptyBeat: 0,
 										});
@@ -244,7 +446,6 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 													word: "",
 													startTime: 0,
 													endTime: 0,
-													wordType: "normal",
 													obscene: false,
 													emptyBeat: 0,
 												},
@@ -255,6 +456,7 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 											endTime: 0,
 											isBG: false,
 											isDuet: false,
+											ignoreSync: false,
 										});
 									}
 								})
@@ -277,6 +479,16 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							fieldName="endTime"
 							parser={parseTimespan}
 							formatter={msToTimestamp}
+						/>
+					</Grid>
+				</RibbonSection>
+				<RibbonSection label="行属性">
+					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
+						<CheckboxField
+							label="忽略打轴"
+							isWordField={false}
+							fieldName="ignoreSync"
+							defaultValue={false}
 						/>
 					</Grid>
 				</RibbonSection>
@@ -305,7 +517,7 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label="单词内容">
+				<RibbonSection label="单词属性">
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
 							label="单词内容"
@@ -314,21 +526,12 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							parser={(v) => v}
 							formatter={(v) => v}
 						/>
-						<Text wrap="nowrap" size="1">
-							单词类型
-						</Text>
-						<Select.Root size="1" defaultValue="none">
-							<Select.Trigger />
-							<Select.Content>
-								<Select.Item value="none">普通</Select.Item>
-								<Select.Item value="ruby">注音原词</Select.Item>
-								<Select.Item value="rt">注音发音</Select.Item>
-							</Select.Content>
-						</Select.Root>
-						<Text wrap="nowrap" size="1">
-							不雅用语
-						</Text>
-						<Checkbox />
+						<CheckboxField
+							label="不雅用语"
+							isWordField
+							fieldName="obscene"
+							defaultValue={false}
+						/>
 					</Grid>
 				</RibbonSection>
 				<RibbonSection label="次要内容">

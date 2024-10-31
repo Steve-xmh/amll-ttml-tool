@@ -49,9 +49,6 @@ jobs:
     steps:
       - name: 克隆仓库
         uses: actions/checkout@v4.2.0
-        with:
-          fetch-depth: 0
-          submodules: recursive
           
       - name: 缓存 Cargo 产物
         uses: actions/cache@v4.1.0

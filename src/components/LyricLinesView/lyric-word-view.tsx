@@ -156,7 +156,8 @@ export const LyricWordView: FC<{
 						}}
 						onDragOver={(evt) => {
 							if (!store.get(isDraggingAtom)) return;
-							if (selectedWords.has(line.id)) return;
+							if (store.get(draggingIdAtom) === word.id) return;
+							if (selectedWords.has(word.id)) return;
 							evt.preventDefault();
 							evt.dataTransfer.dropEffect = "move";
 							const rect = evt.currentTarget.getBoundingClientRect();

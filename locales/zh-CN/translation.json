@@ -1,0 +1,13 @@
+{
+  "topBar": {
+    "modeBtns": {
+      "edit": "编辑",
+      "sync": "打轴",
+      "preview": "预览"
+    },
+    "menu": {
+      "file": "文件",
+      "edit": "编辑"
+    }
+  }
+}

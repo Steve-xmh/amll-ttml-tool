@@ -38,6 +38,9 @@ function getCurrentLineLocation(store: ReturnType<typeof createStore>):
 	};
 }
 
+const isSynchronizableWord = (word: LyricWord) => word.word.trim().length > 0;
+const isSynchronizableLine = (line: LyricLine) => !line.ignoreSync;
+
 function getCurrentLocation(store: ReturnType<typeof createStore>):
 	| {
 			lines: LyricLine[];
@@ -71,23 +74,29 @@ function findNextWord(
 	lyricLines: LyricLine[],
 	lineIndex: number,
 	wordIndex: number,
-): LyricWord | undefined {
+):
+	| {
+			word: LyricWord;
+			line: LyricLine;
+	  }
+	| undefined {
 	const line = lyricLines[lineIndex];
 	if (!line) return;
-	const nextWord = line.words
-		.slice(wordIndex + 1)
-		.find((word) => word.word.trim().length > 0 && word.wordType !== "rt");
+	const nextWord = line.words.slice(wordIndex + 1).find(isSynchronizableWord);
 	if (!nextWord) {
-		const nextLine = lyricLines
-			.slice(lineIndex + 1)
-			.find((line) => !line.ignoreSync);
+		const nextLine = lyricLines.slice(lineIndex + 1).find(isSynchronizableLine);
 		if (!nextLine) return;
-		const nextWordForNextLine = nextLine.words.find(
-			(word) => word.word.trim().length > 0 && word.wordType !== "rt",
-		);
-		return nextWordForNextLine;
+		const nextWordForNextLine = nextLine.words.find(isSynchronizableWord);
+		if (!nextWordForNextLine) return;
+		return {
+			line: nextLine,
+			word: nextWordForNextLine,
+		};
 	}
-	return nextWord;
+	return {
+		line,
+		word: nextWord,
+	};
 }
 
 export const SyncKeyBinding: FC = () => {
@@ -96,6 +105,7 @@ export const SyncKeyBinding: FC = () => {
 	const moveToNextWord = useCallback(
 		function moveToNextWord(): boolean {
 			const location = getCurrentLocation(store);
+			console.log("location", location);
 			if (!location) return false;
 			const nextWord = findNextWord(
 				location.lines,
@@ -103,7 +113,8 @@ export const SyncKeyBinding: FC = () => {
 				location.wordIndex,
 			);
 			if (!nextWord) return false;
-			store.set(selectedWordsAtom, new Set([nextWord.id]));
+			store.set(selectedWordsAtom, new Set([nextWord.word.id]));
+			store.set(selectedLinesAtom, new Set([nextWord.line.id]));
 			store.set(currentEmptyBeatAtom, 0);
 			return true;
 		},
@@ -117,13 +128,19 @@ export const SyncKeyBinding: FC = () => {
 			if (location.wordIndex === 0) {
 				if (location.lineIndex === 0) return false;
 				const lastLineIndex = Math.max(0, location.lineIndex - 1);
-				const lastLine = location.lines[lastLineIndex];
+				const lastLine = location.lines
+					.slice(0, lastLineIndex)
+					.reverse()
+					.find(isSynchronizableLine);
 				if (!lastLine) return false;
 				store.set(selectedLinesAtom, new Set([lastLine.id]));
 				if (lastLine.words.length === 0) {
 					store.set(selectedWordsAtom, new Set());
 				} else {
-					const lastWord = lastLine.words[lastLine.words.length - 1];
+					const lastWord = lastLine.words
+						.slice()
+						.reverse()
+						.find(isSynchronizableWord);
 					if (!lastWord) return false;
 					store.set(selectedWordsAtom, new Set([lastWord.id]));
 				}
@@ -131,7 +148,7 @@ export const SyncKeyBinding: FC = () => {
 				const nextWord = location.line.words
 					.slice(0, location.wordIndex - 1)
 					.reverse()
-					.find((word) => word.word.trim().length > 0);
+					.find(isSynchronizableWord);
 				if (!nextWord) return false;
 				store.set(selectedWordsAtom, new Set([nextWord.id]));
 			}
@@ -226,7 +243,7 @@ export const SyncKeyBinding: FC = () => {
 					location.lineIndex,
 					location.wordIndex,
 				);
-				if (nextWord) nextWord.startTime = currentTime | 0;
+				if (nextWord) nextWord.word.startTime = currentTime | 0;
 			});
 			moveToNextWord();
 		},

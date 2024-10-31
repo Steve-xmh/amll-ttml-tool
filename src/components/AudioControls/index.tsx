@@ -9,11 +9,12 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import {
+	MusicNote2Filled,
+	PauseFilled,
+	PlayFilled,
+} from "@fluentui/react-icons";
 import { Card, Flex, IconButton, Inset, Text, Tooltip } from "@radix-ui/themes";
-import MusicNote216Filled from "@ricons/fluent/MusicNote216Filled";
-import Pause16Filled from "@ricons/fluent/Pause16Filled";
-import Play16Filled from "@ricons/fluent/Play16Filled";
-import { Icon } from "@ricons/utils";
 import { useAtom, useAtomValue } from "jotai";
 import {
 	type FC,
@@ -129,7 +130,9 @@ export const AudioControls: FC = () => {
 		(waveform: Float32Array) => {
 			const canvas = waveformCanvasRef.current;
 			if (!canvas) return;
-			const ctx = canvas.getContext("2d");
+			const ctx = canvas.getContext("2d", {
+				willReadFrequently: true,
+			});
 			if (!ctx) return;
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			const canvasStyles = getComputedStyle(canvas);
@@ -139,16 +142,22 @@ export const AudioControls: FC = () => {
 			ctx.lineJoin = "round";
 			ctx.lineWidth = 1;
 			const canvasHeightHalf = canvas.height / 2;
+			const samplePerPixel = waveform.length / canvas.width;
 
 			ctx.beginPath();
+			let sampleIndex = 0;
 			for (let x = 0; x < canvas.width; x++) {
-				const wx = (x / canvas.width) * waveform.length;
-				const wxL = Math.max(0, Math.floor(wx));
-				const wxH = Math.min(waveform.length, Math.ceil(wx));
-				const lerp = wx % 1;
-				const y =
-					((waveform[wxH] - waveform[wxL]) * lerp + waveform[wxL]) *
-					canvasHeightHalf;
+				let sumTime = 0;
+				let sum = 0;
+				while (
+					sampleIndex < samplePerPixel * (x + 1) &&
+					sampleIndex < waveform.length
+				) {
+					sum += Math.abs(waveform[sampleIndex]);
+					sampleIndex += 16;
+					sumTime++;
+				}
+				const y = (sum / sumTime) * canvas.height;
 				ctx.moveTo(x, canvasHeightHalf - y);
 				ctx.lineTo(x, canvasHeightHalf + y);
 			}
@@ -258,9 +267,7 @@ export const AudioControls: FC = () => {
 				<Flex align="center" px="2" gapX="2">
 					<Tooltip content="加载音乐">
 						<IconButton my="2" variant="soft" onClick={onLoadMusic}>
-							<Icon>
-								<MusicNote216Filled />
-							</Icon>
+							<MusicNote2Filled />
 						</IconButton>
 					</Tooltip>
 					<Tooltip content="暂停 / 播放音乐">
@@ -271,7 +278,7 @@ export const AudioControls: FC = () => {
 							disabled={!audioLoaded}
 							onClick={onTogglePlay}
 						>
-							<Icon>{audioPlaying ? <Pause16Filled /> : <Play16Filled />}</Icon>
+							{audioPlaying ? <PauseFilled /> : <PlayFilled />}
 						</IconButton>
 					</Tooltip>
 					<Text
@@ -307,6 +314,27 @@ export const AudioControls: FC = () => {
 							onMouseLeave={() => {
 								mouseSeekPosRef.current = Number.NaN;
 								redrawCachedWaveform();
+							}}
+							onTouchStart={(evt) => {
+								const rect = evt.currentTarget.getBoundingClientRect();
+								mouseSeekPosRef.current =
+									(evt.touches[0].clientX - rect.left) / rect.width;
+								redrawCachedWaveform();
+							}}
+							onTouchMove={(evt) => {
+								const rect = evt.currentTarget.getBoundingClientRect();
+								mouseSeekPosRef.current =
+									(evt.touches[0].clientX - rect.left) / rect.width;
+								redrawCachedWaveform();
+							}}
+							onTouchEnd={() => {
+								const audioEl = audioRef.current;
+								const mouseSeekPos = mouseSeekPosRef.current;
+								if (!Number.isNaN(mouseSeekPos) && audioEl) {
+									audioEl.currentTime = mouseSeekPos * audioEl.duration;
+									mouseSeekPosRef.current = Number.NaN;
+									redrawCachedWaveform();
+								}
 							}}
 							onClick={() => {
 								const audioEl = audioRef.current;

@@ -1,6 +1,7 @@
-import "@applemusic-like-lyrics/core/style.css";
+// import "@applemusic-like-lyrics/core/style.css";
 import { LyricPlayer } from "@applemusic-like-lyrics/react";
 import { Card } from "@radix-ui/themes";
+import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import type { FC } from "react";
 import {
@@ -9,6 +10,7 @@ import {
 	currentTimeAtom,
 	isDarkThemeAtom,
 } from "../../states/main.ts";
+import styles from "./index.module.css";
 
 export const AMLLWrapper: FC = () => {
 	const lyricLines = useAtomValue(currentLyricLinesAtom);
@@ -17,19 +19,11 @@ export const AMLLWrapper: FC = () => {
 	const darkMode = useAtomValue(isDarkThemeAtom);
 
 	return (
-		<Card
-			style={{
-				overflow: "hidden",
-				flexGrow: "1",
-				padding: "0",
-				height: "100%",
-			}}
-		>
+		<Card className={classNames(styles.amllWrapper, darkMode && styles.isDark)}>
 			<LyricPlayer
 				style={{
 					height: "100%",
 					boxSizing: "content-box",
-					"--amll-lp-color": darkMode ? "var(--white-12)" : "var(--gray-12)",
 				}}
 				lyricLines={lyricLines.lyricLines}
 				currentTime={currentTime}

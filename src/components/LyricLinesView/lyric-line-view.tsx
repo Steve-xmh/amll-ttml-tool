@@ -9,9 +9,8 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import { AddFilled } from "@fluentui/react-icons";
 import { Flex, IconButton, Text } from "@radix-ui/themes";
-import Add16Filled from "@ricons/fluent/Add16Filled";
-import { Icon } from "@ricons/utils";
 import classNames from "classnames";
 import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { type FC, useEffect, useRef } from "react";
@@ -23,13 +22,14 @@ import {
 	selectedWordsAtom,
 	toolModeAtom,
 } from "../../states/main";
+import { visualizeTimestampUpdateAtom } from "../../states/sync.ts";
 import { msToTimestamp } from "../../utils/timestamp";
 import type { LyricLine } from "../../utils/ttml-types";
 import styles from "./index.module.css";
 import { LyricWordView } from "./lyric-word-view";
 
 const isDraggingAtom = atom(false);
-const draggingIdAtom = atom("");
+export const draggingIdAtom = atom("");
 
 export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 	line,
@@ -38,6 +38,7 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 	const [selectedLines, setSelectedLines] = useAtom(selectedLinesAtom);
 	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
 	const editLyricLines = useSetAtom(currentLyricLinesAtom);
+	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const store = useStore();
 	const wordsContainerRef = useRef<HTMLDivElement>(null);
@@ -64,6 +65,53 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 		});
 	}, [line.words, selectedWords]);
 
+	const startTimeRef = useRef<HTMLDivElement>(null);
+	const endTimeRef = useRef<HTMLDivElement>(null);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: 用于呈现时间戳更新效果
+	useEffect(() => {
+		if (!visualizeTimestampUpdate) return;
+		const animation = startTimeRef.current?.animate(
+			[
+				{
+					backgroundColor: "var(--green-a8)",
+				},
+				{
+					backgroundColor: "var(--green-a4)",
+				},
+			],
+			{
+				duration: 500,
+			},
+		);
+
+		return () => {
+			animation?.cancel();
+		};
+	}, [line.startTime, visualizeTimestampUpdate]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: 用于呈现时间戳更新效果
+	useEffect(() => {
+		if (!visualizeTimestampUpdate) return;
+		const animation = endTimeRef.current?.animate(
+			[
+				{
+					backgroundColor: "var(--red-a8)",
+				},
+				{
+					backgroundColor: "var(--red-a4)",
+				},
+			],
+			{
+				duration: 500,
+			},
+		);
+
+		return () => {
+			animation?.cancel();
+		};
+	}, [line.endTime, visualizeTimestampUpdate]);
+
 	return (
 		<Flex
 			mx="2"
@@ -72,6 +120,9 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 			className={classNames(
 				styles.lyricLine,
 				selectedLines.has(line.id) && styles.selected,
+				toolMode === ToolMode.Sync && styles.sync,
+				toolMode === ToolMode.Edit && styles.edit,
+				line.ignoreSync && styles.ignoreSync,
 			)}
 			align="center"
 			gapX="4"
@@ -86,6 +137,7 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 			}}
 			onDragOver={(evt) => {
 				if (!store.get(isDraggingAtom)) return;
+				if (store.get(draggingIdAtom) === line.id) return;
 				if (selectedLines.has(line.id)) return;
 				evt.preventDefault();
 				evt.dataTransfer.dropEffect = "move";
@@ -238,28 +290,24 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 										startTime: 0,
 										endTime: 0,
 										obscene: false,
-										wordType: "normal",
 										emptyBeat: 0,
 									});
 								});
 								setSelectedWords(new Set([newWordId]));
 							}}
 						>
-							<Icon>
-								<Add16Filled
-									onPointerEnterCapture={undefined}
-									onPointerLeaveCapture={undefined}
-								/>
-							</Icon>
+							<AddFilled />
 						</IconButton>
 					</Flex>
 				)}
 				{toolMode === ToolMode.Sync && (
 					<Flex pr="3" gap="1" direction="column" align="stretch">
-						<div className={styles.startTime}>
+						<div className={styles.startTime} ref={startTimeRef}>
 							{msToTimestamp(line.startTime)}
 						</div>
-						<div className={styles.endTime}>{msToTimestamp(line.endTime)}</div>
+						<div className={styles.endTime} ref={endTimeRef}>
+							{msToTimestamp(line.endTime)}
+						</div>
 					</Flex>
 				)}
 			</div>

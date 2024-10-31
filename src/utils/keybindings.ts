@@ -1,4 +1,4 @@
-import { atom, useAtomValue } from "jotai";
+import { atom, type createStore, useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { type DependencyList, useEffect } from "react";
 
@@ -88,15 +88,16 @@ window.addEventListener("keydown", (evt) => {
 
 	const code = removeSideOfKeyCode(evt.code);
 
-	const joined = [...bufferedKeys].join(" + ").trim();
-	for (const key of registeredKeyBindings.keys()) {
-		if (key.startsWith(code) || (joined.length > 0 && key.startsWith(joined))) {
-			evt.preventDefault();
-		}
-	}
+	// const joined = [...bufferedKeys].join(" + ").trim();
+	// for (const key of registeredKeyBindings.keys()) {
+	// 	if (key.startsWith(code) || (joined.length > 0 && key.startsWith(joined))) {
+	// 		evt.preventDefault();
+	// 	}
+	// }
 	pressingKeys.add(code);
 	bufferedKeys.add(code);
 });
+let invoked = false;
 window.addEventListener("keyup", (evt) => {
 	if (isEditing(evt)) {
 		pressingKeys.clear();
@@ -125,8 +126,15 @@ window.addEventListener("keyup", (evt) => {
 			evt.preventDefault();
 			evt.stopPropagation();
 			evt.stopImmediatePropagation();
+			invoked = true;
 		}
+	} else {
+		invoked = false;
+	}
+	if (invoked) {
 		evt.preventDefault();
+		evt.stopPropagation();
+		evt.stopImmediatePropagation();
 	}
 	pressingKeys.delete(code);
 });
@@ -139,8 +147,36 @@ window.addEventListener("focus", () => {
 	bufferedKeys.clear();
 });
 
+export function forceInvokeKeyBindingAtom(
+	store: ReturnType<typeof createStore>,
+	thisAtom: ReturnType<typeof atomWithKeybindingStorage>,
+	evt?: MouseEvent | KeyboardEvent | TouchEvent,
+) {
+	const keyBinding = store.get(thisAtom);
+	const joined = keyBinding.join(" + ").trim();
+	const callbacks = registeredKeyBindings.get(joined);
+	console.log("forceInvokeKeyBindingAtom", joined, callbacks);
+	if (callbacks) {
+		const downTimeOffset = evt?.timeStamp ?? Date.now();
+		const e: KeyBindingEvent = {
+			downTime,
+			downTimeOffset,
+		};
+		for (const cb of callbacks) {
+			try {
+				cb(e);
+			} catch (err) {
+				console.warn("Error in key binding ", joined, "callback", err);
+			}
+		}
+		evt?.preventDefault();
+		evt?.stopPropagation();
+		evt?.stopImmediatePropagation();
+	}
+}
+
 // From https://wangchujiang.com/hotkeys-js/
-export function isEditing(event: KeyboardEvent) {
+export function isEditing(event: KeyboardEvent | MouseEvent) {
 	const target = (event.target || event.srcElement) as HTMLElement | null;
 	const tagName = target?.tagName;
 	return (
@@ -148,6 +184,20 @@ export function isEditing(event: KeyboardEvent) {
 		tagName === "INPUT" ||
 		tagName === "SELECT" ||
 		tagName === "TEXTAREA" ||
+		!!currentKeyDownEvent ||
+		!!currentKeyUpEvent
+	);
+}
+
+export function isInteracting(event: KeyboardEvent | MouseEvent) {
+	const target = (event.target || event.srcElement) as HTMLElement | null;
+	const tagName = target?.tagName;
+	return (
+		target?.isContentEditable ||
+		tagName === "INPUT" ||
+		tagName === "SELECT" ||
+		tagName === "TEXTAREA" ||
+		tagName === "BUTTON" ||
 		!!currentKeyDownEvent ||
 		!!currentKeyUpEvent
 	);

@@ -26,7 +26,6 @@ export interface LyricWord {
 	endTime: number;
 	word: string;
 	obscene: boolean;
-	wordType: "normal" | "ruby" | "rt";
 	emptyBeat: number;
 }
 

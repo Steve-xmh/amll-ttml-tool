@@ -49,7 +49,7 @@ export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 	</>
 );
 
-export const RibbonFrame = forwardRef<HTMLDivElement | null, PropsWithChildren>(
+export const RibbonFrame = forwardRef<HTMLDivElement, PropsWithChildren>(
 	({ children }, ref) => {
 		const setRibbonBarHeight = useSetAtom(ribbonBarHeightAtom);
 		const frameRef = useRef<HTMLDivElement>(null);
@@ -64,7 +64,7 @@ export const RibbonFrame = forwardRef<HTMLDivElement | null, PropsWithChildren>(
 			return () => obs.disconnect();
 		}, [setRibbonBarHeight]);
 
-		useImperativeHandle(ref, () => frameRef.current, []);
+		useImperativeHandle(ref, () => frameRef.current as HTMLDivElement, []);
 
 		return (
 			<Flex

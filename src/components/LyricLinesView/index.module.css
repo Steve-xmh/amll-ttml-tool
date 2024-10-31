@@ -78,6 +78,15 @@
 	&.dropBottom {
 		border-bottom: solid 3px var(--accent-a11);
 	}
+
+	&.ignoreSync {
+		&.edit {
+			opacity: 0.75;
+		}
+		&.sync {
+			opacity: 0.3;
+		}
+	}
 }
 
 .lyricWordsContainer {

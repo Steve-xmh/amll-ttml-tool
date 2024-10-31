@@ -93,7 +93,7 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			ref={viewElRef}
 		>
 			<ViewportList
-				overscan={5}
+				overscan={10}
 				items={editLyric.lyricLines}
 				ref={viewRef}
 				viewportRef={viewElRef}

@@ -32,6 +32,20 @@ export const keyRedoAtom = atomWithKeybindingStorage(
 	IS_MAC ? ["Shift", CONTROL_KEY, "KeyZ"] : [CONTROL_KEY, "KeyY"],
 );
 
+// 选中
+export const keySelectAllAtom = atomWithKeybindingStorage("selectAll", [
+	CONTROL_KEY,
+	"KeyA",
+]);
+export const keySelectInvertedAtom = atomWithKeybindingStorage("selectNext", [
+	CONTROL_KEY,
+	"KeyI",
+]);
+export const keySelectWordsOfMatchedSelectionAtom = atomWithKeybindingStorage(
+	"selectNext",
+	[CONTROL_KEY, "F2"],
+);
+
 // 模式切换
 export const keySwitchEditModeAtom = atomWithKeybindingStorage(
 	"switchEditMode",

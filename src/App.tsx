@@ -9,12 +9,13 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Box, Button, Card, Flex, Grid, Theme } from "@radix-ui/themes";
+import { Box, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useStore } from "jotai";
 import { useEffect } from "react";
+import styles from "./App.module.css";
 import { AMLLWrapper } from "./components/AMLLWrapper/index.tsx";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
@@ -22,6 +23,7 @@ import LyricLinesView from "./components/LyricLinesView";
 import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
+import { TouchSyncPanel } from "./components/TouchSyncPanel/index.tsx";
 import {
 	ToolMode,
 	isDarkThemeAtom,
@@ -30,6 +32,7 @@ import {
 	toolModeAtom,
 } from "./states/main.ts";
 import { showTouchSyncPanelAtom } from "./states/sync.ts";
+import { isInteracting } from "./utils/keybindings.ts";
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -51,10 +54,10 @@ function App() {
 			panelBackground="solid"
 			hasBackground={!import.meta.env.TAURI_ENV_PLATFORM}
 			accentColor={isDarkTheme ? "jade" : "green"}
-			style={{
-				"--color-panel": "var(--gray-a2)",
-			}}
-			onClickCapture={() => {
+			className={styles.radixTheme}
+			onClick={(evt) => {
+				if (isInteracting(evt.nativeEvent)) return;
+				console.log(evt);
 				store.set(selectedLinesAtom, new Set());
 				store.set(selectedWordsAtom, new Set());
 			}}
@@ -96,30 +99,7 @@ function App() {
 						)}
 					</AnimatePresence>
 				</Box>
-				{showTouchSyncPanel && (
-					<Card m="2" mt="0" style={{ flexShrink: "0" }}>
-						<Grid rows="2" columns="3" gap="2">
-							<Button variant="soft" size="4">
-								跳上词
-							</Button>
-							<Button variant="soft" size="4">
-								跳本词
-							</Button>
-							<Button variant="soft" size="4">
-								跳下词
-							</Button>
-							<Button variant="soft" size="4">
-								起始轴
-							</Button>
-							<Button variant="soft" size="4">
-								连续轴
-							</Button>
-							<Button variant="soft" size="4">
-								结束轴
-							</Button>
-						</Grid>
-					</Card>
-				)}
+				{showTouchSyncPanel && toolMode === ToolMode.Sync && <TouchSyncPanel />}
 				<Box flexShrink="0">
 					<AudioControls />
 				</Box>
