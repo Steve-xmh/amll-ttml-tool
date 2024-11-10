@@ -1,4 +1,6 @@
-// import "@applemusic-like-lyrics/core/style.css";
+// #if !AMLL_LOCAL_EXISTS
+import "@applemusic-like-lyrics/core/style.css";
+// #endif
 import { LyricPlayer } from "@applemusic-like-lyrics/react";
 import { Card } from "@radix-ui/themes";
 import classNames from "classnames";

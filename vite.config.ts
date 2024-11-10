@@ -9,12 +9,16 @@ import { VitePWA } from "vite-plugin-pwa";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 import svgLoader from "vite-svg-loader";
+import ConditionalCompile from "unplugin-preprocessor-directives/vite";
 
 const AMLL_LOCAL_EXISTS = existsSync(
 	resolve(__dirname, "../applemusic-like-lyrics"),
 );
 
+process.env.AMLL_LOCAL_EXISTS = AMLL_LOCAL_EXISTS ? "true" : "false";
+
 const plugins: Plugin[] = [
+	ConditionalCompile(),
 	react({
 		babel: {
 			plugins: [jotaiDebugLabel, jotaiReactRefresh],
@@ -89,7 +93,7 @@ export default defineConfig({
 	server: {
 		strictPort: true,
 	},
-	envPrefix: ["VITE_", "TAURI_"],
+	envPrefix: ["VITE_", "TAURI_", "AMLL_"],
 	build: {
 		// Tauri uses Chromium on Windows and WebKit on macOS and Linux
 		target:
@@ -100,15 +104,11 @@ export default defineConfig({
 		sourcemap: !!process.env.TAURI_ENV_DEBUG,
 	},
 	resolve: {
-		alias: {
+		alias:AMLL_LOCAL_EXISTS ? {
 			// for development, use the local copy of the AMLL library
-			"@applemusic-like-lyrics/core": AMLL_LOCAL_EXISTS
-				? resolve(__dirname, "../applemusic-like-lyrics/packages/core/src")
-				: "@applemusic-like-lyrics/core",
-			"@applemusic-like-lyrics/react": AMLL_LOCAL_EXISTS
-				? resolve(__dirname, "../applemusic-like-lyrics/packages/react/src")
-				: "@applemusic-like-lyrics/react",
-		},
+			"@applemusic-like-lyrics/core": resolve(__dirname, "../applemusic-like-lyrics/packages/core/src"),
+			"@applemusic-like-lyrics/react": resolve(__dirname, "../applemusic-like-lyrics/packages/react/src"),
+		} : undefined,
 	},
 	worker: {
 		format: "es",

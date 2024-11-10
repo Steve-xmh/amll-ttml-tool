@@ -100,7 +100,7 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			>
 				{(line, i) => (
 					<LyricLineView
-						key={`lyric-line-view-${i}`}
+						key={`lyric-line-view-${line.id}`}
 						line={line}
 						lineIndex={i}
 					/>
