@@ -10,7 +10,6 @@
     "lint": "eslint .",
     "fmt": "biome format --write ./src",
     "preview": "vite preview",
-    "preinstall": "npx only-allow pnpm",
     "locale:gen": "i18next --fail-on-warnings 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
@@ -63,5 +62,6 @@
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.3.0",
     "vite-svg-loader": "^5.1.0"
-  }
+  },
+  "packageManager": "pnpm@9.13.0+sha512.beb9e2a803db336c10c9af682b58ad7181ca0fbd0d4119f2b33d5f2582e96d6c0d93c85b23869295b765170fbdaa92890c0da6ada457415039769edf3c959efe"
 }
