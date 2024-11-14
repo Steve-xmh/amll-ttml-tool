@@ -9,17 +9,17 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
-import { useAtom, useAtomValue } from "jotai";
-import { type FC, forwardRef, useLayoutEffect, useMemo, useState } from "react";
-import { uid } from "uid";
 import {
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-} from "../../states/main";
-import { msToTimestamp, parseTimespan } from "../../utils/timestamp";
-import type { LyricLine, LyricWord } from "../../utils/ttml-types";
+} from "$/states/main.ts";
+import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
+import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
+import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
+import { useAtom, useAtomValue } from "jotai";
+import { type FC, forwardRef, useLayoutEffect, useMemo, useState } from "react";
+import { uid } from "uid";
 import { RibbonFrame, RibbonSection } from "./common";
 
 function EditField<

@@ -1,10 +1,10 @@
-import { Kbd } from "@radix-ui/themes";
-import { useAtomValue } from "jotai";
-import type { FC } from "react";
 import {
 	formatKeyBindings,
 	type useKeyBindingAtom,
-} from "../../utils/keybindings.ts";
+} from "$/utils/keybindings.ts";
+import { Kbd } from "@radix-ui/themes";
+import { useAtomValue } from "jotai";
+import type { FC } from "react";
 
 export const KeyBinding: FC<{
 	kbdAtom: Parameters<typeof useKeyBindingAtom>[0];

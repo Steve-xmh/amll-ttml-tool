@@ -1,16 +1,16 @@
+import {
+	keySwitchEditModeAtom,
+	keySwitchPreviewModeAtom,
+	keySwitchSyncModeAtom,
+} from "$/states/keybindings.ts";
+import { ToolMode, isDarkThemeAtom, toolModeAtom } from "$/states/main.ts";
+import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { Box, Flex, SegmentedControl, Text } from "@radix-ui/themes";
 import classNames from "classnames";
 import { useAtom, useAtomValue } from "jotai";
 import { type FC, useCallback } from "react";
 import { Trans } from "react-i18next";
 import { WindowControls, type WindowControlsProps } from "tauri-controls";
-import {
-	keySwitchEditModeAtom,
-	keySwitchPreviewModeAtom,
-	keySwitchSyncModeAtom,
-} from "../../states/keybindings.ts";
-import { ToolMode, isDarkThemeAtom, toolModeAtom } from "../../states/main.ts";
-import { useKeyBindingAtom } from "../../utils/keybindings.ts";
 import { TopMenu } from "../TopMenu/index.tsx";
 import styles from "./index.module.css";
 

@@ -9,27 +9,27 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { AddFilled } from "@fluentui/react-icons";
-import { Flex, IconButton, Text } from "@radix-ui/themes";
-import classNames from "classnames";
-import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
-import { type FC, useEffect, useRef } from "react";
-import { uid } from "uid";
+import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
 import {
 	ToolMode,
 	currentLyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
 	toolModeAtom,
-} from "../../states/main";
-import { visualizeTimestampUpdateAtom } from "../../states/sync.ts";
-import { msToTimestamp } from "../../utils/timestamp";
-import type { LyricLine } from "../../utils/ttml-types";
+} from "$/states/main.ts";
+import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import type { LyricLine } from "$/utils/ttml-types.ts";
+import { AddFilled } from "@fluentui/react-icons";
+import { Flex, IconButton, Text } from "@radix-ui/themes";
+import classNames from "classnames";
+import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { type FC, useEffect, useRef } from "react";
+import { uid } from "uid";
 import styles from "./index.module.css";
 import { LyricWordView } from "./lyric-word-view";
 
 const isDraggingAtom = atom(false);
-export const draggingIdAtom = atom("");
 
 export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 	line,

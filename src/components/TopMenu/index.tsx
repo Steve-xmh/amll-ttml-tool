@@ -1,9 +1,3 @@
-import { HomeRegular } from "@fluentui/react-icons";
-import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
-import { useAtom, useSetAtom, useStore } from "jotai";
-import { type FC, useCallback } from "react";
-import { Trans } from "react-i18next";
-import saveFile from "save-file";
 import {
 	keyNewFileAtom,
 	keyOpenFileAtom,
@@ -13,7 +7,7 @@ import {
 	keySelectInvertedAtom,
 	keySelectWordsOfMatchedSelectionAtom,
 	keyUndoAtom,
-} from "../../states/keybindings.ts";
+} from "$/states/keybindings.ts";
 import {
 	currentLyricLinesAtom,
 	newLyricLinesAtom,
@@ -22,13 +16,17 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 	undoLyricLinesAtom,
-} from "../../states/main.ts";
-import {
-	formatKeyBindings,
-	useKeyBindingAtom,
-} from "../../utils/keybindings.ts";
-import { parseLyric } from "../../utils/ttml-parser.ts";
-import exportTTMLText from "../../utils/ttml-writer.ts";
+} from "$/states/main.ts";
+import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
+import { parseLyric } from "$/utils/ttml-parser.ts";
+import exportTTMLText from "$/utils/ttml-writer.ts";
+import { HomeRegular } from "@fluentui/react-icons";
+import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
+import { open } from "@tauri-apps/plugin-shell";
+import { useAtom, useSetAtom, useStore } from "jotai";
+import { type FC, useCallback } from "react";
+import { Trans } from "react-i18next";
+import saveFile from "save-file";
 
 export const TopMenu: FC = () => {
 	const [saveFileName, setSaveFileName] = useAtom(saveFileNameAtom);
@@ -223,6 +221,40 @@ export const TopMenu: FC = () => {
 								shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
 							>
 								选择单词匹配项
+							</DropdownMenu.Item>
+						</DropdownMenu.SubContent>
+					</DropdownMenu.Sub>
+
+					<DropdownMenu.Sub>
+						<DropdownMenu.SubTrigger>
+							<Trans i18nKey="topBar.menu.edit">帮助</Trans>
+						</DropdownMenu.SubTrigger>
+						<DropdownMenu.SubContent>
+							<DropdownMenu.Item
+								onClick={async () => {
+									if (import.meta.env.TAURI_ENV_PLATFORM) {
+										await open("https://github.com/Steve-xmh/amll-ttml-tool");
+									} else {
+										window.open("https://github.com/Steve-xmh/amll-ttml-tool");
+									}
+								}}
+							>
+								GitHub
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onClick={async () => {
+									if (import.meta.env.TAURI_ENV_PLATFORM) {
+										await open(
+											"https://github.com/Steve-xmh/amll-ttml-tool/wiki",
+										);
+									} else {
+										window.open(
+											"https://github.com/Steve-xmh/amll-ttml-tool/wiki",
+										);
+									}
+								}}
+							>
+								使用说明
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>

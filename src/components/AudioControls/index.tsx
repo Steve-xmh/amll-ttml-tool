@@ -10,6 +10,14 @@
  */
 
 import {
+	audioPlayingAtom,
+	currentDurationAtom,
+	currentTimeAtom,
+	loadableAudioWaveformAtom,
+	loadedAudioAtom,
+} from "$/states/main.ts";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import {
 	MusicNote2Filled,
 	PauseFilled,
 	PlayFilled,
@@ -24,14 +32,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import {
-	audioPlayingAtom,
-	currentDurationAtom,
-	currentTimeAtom,
-	loadableAudioWaveformAtom,
-	loadedAudioAtom,
-} from "../../states/main";
-import { msToTimestamp } from "../../utils/timestamp";
 
 export const AudioControls: FC = () => {
 	const audioRef = useRef<HTMLAudioElement>(null);
@@ -136,9 +136,8 @@ export const AudioControls: FC = () => {
 			if (!ctx) return;
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			const canvasStyles = getComputedStyle(canvas);
-			const secondaryFillColor =
+			ctx.strokeStyle =
 				canvasStyles.getPropertyValue("--accent-a4") || "#00ffa21e";
-			ctx.strokeStyle = secondaryFillColor;
 			ctx.lineJoin = "round";
 			ctx.lineWidth = 1;
 			const canvasHeightHalf = canvas.height / 2;

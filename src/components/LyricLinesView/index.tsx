@@ -9,6 +9,13 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import {
+	ToolMode,
+	currentLyricLinesAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
+	toolModeAtom,
+} from "$/states/main.ts";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
@@ -19,13 +26,6 @@ import {
 	useRef,
 } from "react";
 import { ViewportList, type ViewportListRef } from "react-viewport-list";
-import {
-	ToolMode,
-	currentLyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
-	toolModeAtom,
-} from "../../states/main";
 import { LyricLineView } from "./lyric-line-view";
 export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const editLyric = useAtomValue(currentLyricLinesAtom);

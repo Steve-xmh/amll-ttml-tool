@@ -1,17 +1,17 @@
 // #if !AMLL_LOCAL_EXISTS
 import "@applemusic-like-lyrics/core/style.css";
 // #endif
-import { LyricPlayer } from "@applemusic-like-lyrics/react";
-import { Card } from "@radix-ui/themes";
-import classNames from "classnames";
-import { useAtomValue } from "jotai";
-import type { FC } from "react";
 import {
 	audioPlayingAtom,
 	currentLyricLinesAtom,
 	currentTimeAtom,
 	isDarkThemeAtom,
-} from "../../states/main.ts";
+} from "$/states/main.ts";
+import { LyricPlayer } from "@applemusic-like-lyrics/react";
+import { Card } from "@radix-ui/themes";
+import classNames from "classnames";
+import { useAtomValue } from "jotai";
+import type { FC } from "react";
 import styles from "./index.module.css";
 
 export const AMLLWrapper: FC = () => {

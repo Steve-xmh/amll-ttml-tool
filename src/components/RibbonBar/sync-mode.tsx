@@ -9,18 +9,18 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Checkbox, Flex, Grid, Text, TextField } from "@radix-ui/themes";
-import { useAtom } from "jotai";
-import { type FC, forwardRef } from "react";
 import {
 	keySyncEndAtom,
 	keySyncNextAtom,
 	keySyncStartAtom,
-} from "../../states/keybindings.ts";
+} from "$/states/keybindings.ts";
 import {
 	showTouchSyncPanelAtom,
 	visualizeTimestampUpdateAtom,
-} from "../../states/sync.ts";
+} from "$/states/sync.ts";
+import { Checkbox, Flex, Grid, Text, TextField } from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { type FC, forwardRef } from "react";
 import { KeyBinding } from "../KeyBinding/index.tsx";
 import { RibbonFrame, RibbonSection } from "./common";
 

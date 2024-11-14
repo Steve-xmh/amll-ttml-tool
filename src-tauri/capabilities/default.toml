@@ -21,3 +21,5 @@ identifier = "core:window:allow-minimize"
 identifier = "core:window:allow-show"
 [[permissions]]
 identifier = "core:window:allow-close"
+[[permissions]]
+identifier = "shell:allow-open"

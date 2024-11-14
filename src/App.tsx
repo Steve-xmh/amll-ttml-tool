@@ -11,19 +11,19 @@
 
 import { Box, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
+import { AMLLWrapper } from "$/components/AMLLWrapper";
+import { TouchSyncPanel } from "$/components/TouchSyncPanel";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useStore } from "jotai";
 import { useEffect } from "react";
 import styles from "./App.module.css";
-import { AMLLWrapper } from "./components/AMLLWrapper/index.tsx";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
 import LyricLinesView from "./components/LyricLinesView";
 import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
-import { TouchSyncPanel } from "./components/TouchSyncPanel/index.tsx";
 import {
 	ToolMode,
 	isDarkThemeAtom,

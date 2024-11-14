@@ -9,6 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import { ribbonBarHeightAtom } from "$/states/main.ts";
 import { Flex, Separator, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useSetAtom } from "jotai";
@@ -20,7 +21,6 @@ import {
 	useLayoutEffect,
 	useRef,
 } from "react";
-import { ribbonBarHeightAtom } from "../../states/main";
 
 export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 	children,

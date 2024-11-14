@@ -1,7 +1,7 @@
+import resources from "virtual:i18next-loader";
 import i18n from "i18next";
 import ICU from "i18next-icu";
 import { initReactI18next } from "react-i18next";
-import resources from "virtual:i18next-loader";
 
 declare module "i18next" {
 	// Extend CustomTypeOptions
@@ -22,6 +22,7 @@ i18n
 		interpolation: {
 			escapeValue: false, // react already safes from xss
 		},
-	});
+	})
+	.then(() => {});
 
 export default i18n;

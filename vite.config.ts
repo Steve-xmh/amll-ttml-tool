@@ -104,11 +104,13 @@ export default defineConfig({
 		sourcemap: !!process.env.TAURI_ENV_DEBUG,
 	},
 	resolve: {
-		alias:AMLL_LOCAL_EXISTS ? {
+		alias: Object.assign({
+			"$": resolve(__dirname, "src"),
+		}, AMLL_LOCAL_EXISTS ? {
 			// for development, use the local copy of the AMLL library
 			"@applemusic-like-lyrics/core": resolve(__dirname, "../applemusic-like-lyrics/packages/core/src"),
 			"@applemusic-like-lyrics/react": resolve(__dirname, "../applemusic-like-lyrics/packages/react/src"),
-		} : undefined,
+		} : {}) as Record<string, string>,
 	},
 	worker: {
 		format: "es",
