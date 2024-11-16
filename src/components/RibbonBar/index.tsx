@@ -9,9 +9,9 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { ToolMode, ribbonBarHeightAtom, toolModeAtom } from "$/states/main.ts";
+import { ToolMode, toolModeAtom } from "$/states/main.ts";
 import { Card, Inset } from "@radix-ui/themes";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useAtomValue } from "jotai";
 import { type FC, forwardRef } from "react";
 import { EditModeRibbonBar } from "./edit-mode";
@@ -20,7 +20,6 @@ import SyncModeRibbonBar from "./sync-mode";
 
 export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const toolMode = useAtomValue(toolModeAtom);
-	const ribbonBarHeight = useAtomValue(ribbonBarHeightAtom);
 
 	return (
 		<Card
@@ -33,13 +32,9 @@ export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			ref={ref}
 		>
 			<Inset>
-				<motion.div
-					animate={{
-						height: ribbonBarHeight,
-					}}
-					transition={{
-						type: "spring",
-						duration: 0.5,
+				<div
+					style={{
+						height: "128px",
 					}}
 				>
 					<AnimatePresence mode="popLayout">
@@ -49,7 +44,7 @@ export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 							<PreviewModeRibbonBar key="preview" />
 						)}
 					</AnimatePresence>
-				</motion.div>
+				</div>
 			</Inset>
 		</Card>
 	);

@@ -9,16 +9,13 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { ribbonBarHeightAtom } from "$/states/main.ts";
 import { Flex, Separator, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
-import { useSetAtom } from "jotai";
 import {
 	type FC,
 	type PropsWithChildren,
 	forwardRef,
 	useImperativeHandle,
-	useLayoutEffect,
 	useRef,
 } from "react";
 
@@ -51,18 +48,7 @@ export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 
 export const RibbonFrame = forwardRef<HTMLDivElement, PropsWithChildren>(
 	({ children }, ref) => {
-		const setRibbonBarHeight = useSetAtom(ribbonBarHeightAtom);
 		const frameRef = useRef<HTMLDivElement>(null);
-
-		useLayoutEffect(() => {
-			if (!frameRef.current) return;
-			const obs = new ResizeObserver(() => {
-				if (!frameRef.current) return;
-				setRibbonBarHeight(frameRef.current.clientHeight);
-			});
-			obs.observe(frameRef.current);
-			return () => obs.disconnect();
-		}, [setRibbonBarHeight]);
 
 		useImperativeHandle(ref, () => frameRef.current as HTMLDivElement, []);
 
@@ -75,7 +61,7 @@ export const RibbonFrame = forwardRef<HTMLDivElement, PropsWithChildren>(
 				style={{
 					overflowX: "auto",
 					overflowY: "visible",
-					// position: "absolute",
+					height: "100%",
 				}}
 				asChild
 			>
