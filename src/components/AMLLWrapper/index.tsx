@@ -1,20 +1,14 @@
-// #if !AMLL_LOCAL_EXISTS
+// #if AMLL_LOCAL_EXISTS
+// #warning Using local Apple Music Like Lyrics, skip importing css style
+// #else
 import "@applemusic-like-lyrics/core/style.css";
 // #endif
-import {
-	audioPlayingAtom,
-	currentLyricLinesAtom,
-	currentTimeAtom,
-	isDarkThemeAtom,
-} from "$/states/main.ts";
-import {
-	LyricPlayer,
-	type LyricPlayerRef,
-} from "@applemusic-like-lyrics/react";
-import { Card } from "@radix-ui/themes";
+import {audioPlayingAtom, currentLyricLinesAtom, currentTimeAtom, isDarkThemeAtom,} from "$/states/main.ts";
+import {LyricPlayer, type LyricPlayerRef,} from "@applemusic-like-lyrics/react";
+import {Card} from "@radix-ui/themes";
 import classNames from "classnames";
-import { useAtomValue } from "jotai";
-import { type FC, useEffect, useRef } from "react";
+import {useAtomValue} from "jotai";
+import {type FC, useEffect, useRef} from "react";
 import styles from "./index.module.css";
 
 export const AMLLWrapper: FC = () => {
