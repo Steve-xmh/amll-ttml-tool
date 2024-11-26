@@ -9,6 +9,8 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import { uid } from "uid";
+
 export interface TTMLMetadata {
 	key: string;
 	value: string[];
@@ -29,6 +31,15 @@ export interface LyricWord {
 	emptyBeat: number;
 }
 
+export const newLyricWord = (): LyricWord => ({
+	id: uid(),
+	startTime: 0,
+	endTime: 0,
+	word: "",
+	obscene: false,
+	emptyBeat: 0,
+});
+
 export interface LyricLine {
 	// 用来确定唯一一个行的标识符，导出时不会保存
 	id: string;
@@ -41,3 +52,15 @@ export interface LyricLine {
 	endTime: number;
 	ignoreSync: boolean;
 }
+
+export const newLyricLine = (): LyricLine => ({
+	id: uid(),
+	words: [],
+	translatedLyric: "",
+	romanLyric: "",
+	isBG: false,
+	isDuet: false,
+	startTime: 0,
+	endTime: 0,
+	ignoreSync: false,
+});

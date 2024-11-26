@@ -46,6 +46,12 @@ export const keySelectWordsOfMatchedSelectionAtom = atomWithKeybindingStorage(
 	[CONTROL_KEY, "F2"],
 );
 
+// 删除所选
+export const keyDeleteSelectionAtom = atomWithKeybindingStorage(
+	"deleteSelection",
+	["Delete"],
+);
+
 // 模式切换
 export const keySwitchEditModeAtom = atomWithKeybindingStorage(
 	"switchEditMode",

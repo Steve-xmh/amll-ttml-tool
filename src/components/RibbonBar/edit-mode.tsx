@@ -15,11 +15,14 @@ import {
 	selectedWordsAtom,
 } from "$/states/main.ts";
 import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
-import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
+import {
+	type LyricLine,
+	type LyricWord,
+	newLyricLine,
+} from "$/utils/ttml-types.ts";
 import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
 import { type FC, forwardRef, useLayoutEffect, useMemo, useState } from "react";
-import { uid } from "uid";
 import { RibbonFrame, RibbonSection } from "./common";
 
 function EditField<
@@ -382,87 +385,19 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 
 		return (
 			<RibbonFrame ref={ref}>
-				<RibbonSection label="插入">
-					<Grid
-						columns="0fr 1fr 1fr"
-						gap="1"
-						gapY="1"
-						flexGrow="1"
-						align="center"
-					>
-						<Text wrap="nowrap" size="1">
-							插入
-						</Text>
-						<Button size="1" variant="soft">
-							行
-						</Button>
-						<Button size="1" variant="soft">
-							词
-						</Button>
-						<Text wrap="nowrap" size="1">
-							加入
-						</Text>
+				<RibbonSection label="新建">
+					<Grid columns="1" gap="1" gapY="1" flexGrow="1" align="center">
 						<Button
 							size="1"
 							variant="soft"
 							onClick={() =>
-								editLyricLines((state) => {
-									state.lyricLines.push({
-										id: uid(),
-										words: [],
-										translatedLyric: "",
-										romanLyric: "",
-										startTime: 0,
-										endTime: 0,
-										isBG: false,
-										isDuet: false,
-										ignoreSync: false,
-									});
+								editLyricLines((prev) => {
+									prev.lyricLines.push(newLyricLine());
+									return prev;
 								})
 							}
 						>
-							行
-						</Button>
-						<Button
-							size="1"
-							variant="soft"
-							onClick={() =>
-								editLyricLines((state) => {
-									if (state.lyricLines.length > 0) {
-										state.lyricLines[state.lyricLines.length - 1].words.push({
-											id: uid(),
-											word: "",
-											startTime: 0,
-											endTime: 0,
-											obscene: false,
-											emptyBeat: 0,
-										});
-									} else {
-										state.lyricLines.push({
-											id: uid(),
-											words: [
-												{
-													id: uid(),
-													word: "",
-													startTime: 0,
-													endTime: 0,
-													obscene: false,
-													emptyBeat: 0,
-												},
-											],
-											translatedLyric: "",
-											romanLyric: "",
-											startTime: 0,
-											endTime: 0,
-											isBG: false,
-											isDuet: false,
-											ignoreSync: false,
-										});
-									}
-								})
-							}
-						>
-							词
+							歌词行
 						</Button>
 					</Grid>
 				</RibbonSection>
@@ -484,6 +419,18 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 				</RibbonSection>
 				<RibbonSection label="行属性">
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
+						<CheckboxField
+							label="背景歌词"
+							isWordField={false}
+							fieldName="isBG"
+							defaultValue={false}
+						/>
+						<CheckboxField
+							label="对唱歌词"
+							isWordField={false}
+							fieldName="isDuet"
+							defaultValue={false}
+						/>
 						<CheckboxField
 							label="忽略打轴"
 							isWordField={false}

@@ -1,4 +1,5 @@
 import {
+	keyDeleteSelectionAtom,
 	keyNewFileAtom,
 	keyOpenFileAtom,
 	keyRedoAtom,
@@ -151,6 +152,36 @@ export const TopMenu: FC = () => {
 		[onSelectWordsOfMatchedSelection],
 	);
 
+	const onDeleteSelection = useCallback(() => {
+		const selectedWordIds = store.get(selectedWordsAtom);
+		const selectedLineIds = store.get(selectedLinesAtom);
+		console.log(selectedWordIds, selectedLineIds);
+		if (selectedWordIds.size === 0) {
+			// 删除选中的行
+			store.set(currentLyricLinesAtom, (prev) => {
+				prev.lyricLines = prev.lyricLines.filter(
+					(l) => !selectedLineIds.has(l.id),
+				);
+				return prev;
+			});
+		} else {
+			// 删除选中的单词
+			store.set(currentLyricLinesAtom, (prev) => {
+				for (const line of prev.lyricLines) {
+					line.words = line.words.filter((w) => !selectedWordIds.has(w.id));
+				}
+				return prev;
+			});
+		}
+		store.set(selectedWordsAtom, new Set());
+		store.set(selectedLinesAtom, new Set());
+	}, [store]);
+	const deleteSelectionKey = useKeyBindingAtom(
+		keyDeleteSelectionAtom,
+		onDeleteSelection,
+		[onDeleteSelection],
+	);
+
 	return (
 		<Flex p="2" pr="0" align="center" gap="2">
 			<DropdownMenu.Root>
@@ -183,6 +214,53 @@ export const TopMenu: FC = () => {
 							>
 								保存 TTML 文件
 							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Sub>
+								<DropdownMenu.SubTrigger>导入歌词...</DropdownMenu.SubTrigger>
+								<DropdownMenu.SubContent>
+									<DropdownMenu.Item onClick={onNewFile}>
+										从纯文本导入
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										从 LyRiC 文件导入
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										从 ESLyRiC 文件导入
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										从 QRC 文件导入
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										从 YRC 文件导入
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										从 Lyricify Syllable 文件导入
+									</DropdownMenu.Item>
+								</DropdownMenu.SubContent>
+							</DropdownMenu.Sub>
+							<DropdownMenu.Sub>
+								<DropdownMenu.SubTrigger>导出歌词...</DropdownMenu.SubTrigger>
+								<DropdownMenu.SubContent>
+									<DropdownMenu.Item onClick={onNewFile}>
+										导出到 LyRiC
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										导出到 ESLyRiC
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										导出到 QRC
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										导出到 YRC
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										导出到 Lyricify Syllable
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onClick={onNewFile}>
+										导出到 ASS 字幕
+									</DropdownMenu.Item>
+								</DropdownMenu.SubContent>
+							</DropdownMenu.Sub>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>
 
@@ -221,6 +299,13 @@ export const TopMenu: FC = () => {
 								shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
 							>
 								选择单词匹配项
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item
+								onClick={onDeleteSelection}
+								shortcut={formatKeyBindings(deleteSelectionKey)}
+							>
+								删除所选
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>
