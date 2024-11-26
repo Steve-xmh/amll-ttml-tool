@@ -48,11 +48,6 @@ pnpm tauri dev # 开启 Tauri 桌面版本开发环境
 pnpm tauri build # 构建 Tauri 桌面版本
 ```
 
-## 截图
-
-<img width="912" alt="image" src="https://github.com/Steve-xmh/amll-ttml-tool/assets/39523898/e12220b5-0490-43da-bbbe-44ea2d64eef3">
-<img width="912" alt="image" src="https://github.com/Steve-xmh/amll-ttml-tool/assets/39523898/53b74012-ed11-405c-8411-59bc2036abb9">
-
 ## 贡献
 
 欢迎各种积极的代码/翻译贡献！也欢迎积极提交各种议题和建议！
