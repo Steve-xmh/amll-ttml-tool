@@ -34,7 +34,8 @@ export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			<Inset>
 				<div
 					style={{
-						height: "128px",
+						height: "130px",
+						overflowY: "clip",
 					}}
 				>
 					<AnimatePresence mode="popLayout">

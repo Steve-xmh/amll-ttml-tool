@@ -9,6 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import { playbackRateAtom, volumeAtom } from "$/states/audio.ts";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
@@ -22,7 +23,17 @@ import {
 	PauseFilled,
 	PlayFilled,
 } from "@fluentui/react-icons";
-import { Card, Flex, IconButton, Inset, Text, Tooltip } from "@radix-ui/themes";
+import {
+	Card,
+	Flex,
+	Grid,
+	HoverCard,
+	IconButton,
+	Inset,
+	Slider,
+	Text,
+	Tooltip,
+} from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
 import {
 	type FC,
@@ -43,6 +54,8 @@ export const AudioControls: FC = () => {
 	const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
 	const [currentDuration, setCurrentDuration] = useAtom(currentDurationAtom);
 	const [audioPlaying, setAudioPlaying] = useAtom(audioPlayingAtom);
+	const [volume, setVolume] = useAtom(volumeAtom);
+	const [playbackRate, setPlaybackRate] = useAtom(playbackRateAtom);
 	const waveform = useAtomValue(loadableAudioWaveformAtom);
 
 	const onLoadMusic = () => {
@@ -178,13 +191,29 @@ export const AudioControls: FC = () => {
 			const audioUrl = URL.createObjectURL(audio);
 			audioEl.src = audioUrl;
 			setAudioLoaded(true);
+			setAudioPlaying(false);
 			return () => {
 				audioEl.src = "";
 				URL.revokeObjectURL(audioUrl);
 				setAudioLoaded(false);
+				setAudioPlaying(false);
 			};
 		}
-	}, [audio]);
+	}, [audio, setAudioPlaying]);
+
+	useEffect(() => {
+		const audioEl = audioRef.current;
+		if (audioEl) {
+			audioEl.volume = volume;
+		}
+	}, [volume]);
+
+	useEffect(() => {
+		const audioEl = audioRef.current;
+		if (audioEl) {
+			audioEl.playbackRate = playbackRate;
+		}
+	}, [playbackRate]);
 
 	useLayoutEffect(() => {
 		const audioEl = audioRef.current;
@@ -264,11 +293,44 @@ export const AudioControls: FC = () => {
 			<audio ref={audioRef} style={{ display: "none" }} />
 			<Inset>
 				<Flex align="center" px="2" gapX="2">
-					<Tooltip content="加载音乐">
-						<IconButton my="2" variant="soft" onClick={onLoadMusic}>
-							<MusicNote2Filled />
-						</IconButton>
-					</Tooltip>
+					<HoverCard.Root>
+						<HoverCard.Trigger>
+							<IconButton my="2" variant="soft" onClick={onLoadMusic}>
+								<MusicNote2Filled />
+							</IconButton>
+						</HoverCard.Trigger>
+						<HoverCard.Content>
+							<Flex direction="column" align="center">
+								<Grid columns="0fr 7em 2em" gap="2" align="baseline">
+									<Text wrap="nowrap">音量</Text>
+									<Slider
+										min={0}
+										max={1}
+										defaultValue={[volume]}
+										step={0.01}
+										onValueChange={(v) => setVolume(v[0])}
+									/>
+									<Text wrap="nowrap" color="gray" size="1">
+										{(volume * 100).toFixed()}%
+									</Text>
+									<Text wrap="nowrap">播放速度</Text>
+									<Slider
+										min={0.25}
+										max={4}
+										defaultValue={[playbackRate]}
+										step={0.25}
+										onValueChange={(v) => setPlaybackRate(v[0])}
+									/>
+									<Text wrap="nowrap" color="gray" size="1">
+										{playbackRate.toFixed(2)}x
+									</Text>
+								</Grid>
+								<Text wrap="nowrap" align="center" mt="2" size="1" color="gray">
+									点击图标按钮以加载音乐
+								</Text>
+							</Flex>
+						</HoverCard.Content>
+					</HoverCard.Root>
 					<Tooltip content="暂停 / 播放音乐">
 						<IconButton
 							my="2"
@@ -284,7 +346,7 @@ export const AudioControls: FC = () => {
 						size="2"
 						style={{
 							minWidth: "5em",
-							textAlign: "right",
+							textAlign: "left",
 						}}
 					>
 						{msToTimestamp(currentTime)}
@@ -297,6 +359,7 @@ export const AudioControls: FC = () => {
 							padding: "0",
 						}}
 					>
+						{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 						<canvas
 							style={{
 								width: "100%",

@@ -27,6 +27,7 @@ export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 		<Flex
 			direction="column"
 			gap="1"
+			flexShrink="0"
 			style={{
 				alignSelf: "stretch",
 			}}
@@ -34,7 +35,7 @@ export const RibbonSection: FC<PropsWithChildren<{ label: string }>> = ({
 			<Flex flexGrow="1" align="center" justify="center">
 				{children}
 			</Flex>
-			<Text align="center" color="gray" size="1">
+			<Text align="center" wrap="nowrap" color="gray" size="1">
 				{label}
 			</Text>
 		</Flex>

@@ -9,12 +9,26 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Checkbox, Grid, Text } from "@radix-ui/themes";
+import {
+	lyricWordFadeWidthAtom,
+	showRomanLinesAtom,
+	showTranslationLinesAtom,
+} from "$/states/preview.ts";
+import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
+import { useAtom } from "jotai";
 import { forwardRef } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 
 export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
+		const [showTranslationLine, setShowTranslationLine] = useAtom(
+			showTranslationLinesAtom,
+		);
+		const [showRomanLine, setShowRomanLine] = useAtom(showRomanLinesAtom);
+		const [lyricWordFadeWidth, setLyricWordFadeWidth] = useAtom(
+			lyricWordFadeWidthAtom,
+		);
+
 		return (
 			<RibbonFrame ref={ref}>
 				<RibbonSection label="歌词">
@@ -22,11 +36,34 @@ export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
 						<Text wrap="nowrap" size="1">
 							显示翻译
 						</Text>
-						<Checkbox />
+						<Checkbox
+							checked={showTranslationLine}
+							onCheckedChange={(v) => setShowTranslationLine(!!v)}
+						/>
 						<Text wrap="nowrap" size="1">
 							显示音译
 						</Text>
-						<Checkbox />
+						<Checkbox
+							checked={showRomanLine}
+							onCheckedChange={(v) => setShowRomanLine(!!v)}
+						/>
+					</Grid>
+				</RibbonSection>
+				<RibbonSection label="单词">
+					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
+						<Text wrap="nowrap" size="1">
+							过渡宽度
+						</Text>
+						<TextField.Root
+							min={0}
+							step={0}
+							size="1"
+							style={{
+								width: "4em",
+							}}
+							value={lyricWordFadeWidth}
+							onChange={(e) => setLyricWordFadeWidth(e.target.valueAsNumber)}
+						/>
 					</Grid>
 				</RibbonSection>
 			</RibbonFrame>

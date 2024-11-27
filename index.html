@@ -34,12 +34,19 @@
       max-height: 100vh;
       overflow: hidden;
     }
+
+    @media (prefers-color-scheme: dark) {
+        #loading-holder {
+            background-color: #101211;
+            color: #fff;
+        }
+    }
   </style>
 </head>
 
 <body>
   <div id="root">
-    <div
+      <div id="loading-holder"
       style="display: flex; flex-direction: column; height: 100vh; text-align: center; align-items: center;justify-content: center;">
       <div>AMLL TTML Tool 正在加载...</div>
       <div>AMLL TTML Tool is loading...</div>
