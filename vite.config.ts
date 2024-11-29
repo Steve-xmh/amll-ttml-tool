@@ -1,11 +1,11 @@
 import react from "@vitejs/plugin-react";
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
-import { type Plugin, defineConfig } from "vite";
+import {existsSync} from "node:fs";
+import {resolve} from "node:path";
+import {defineConfig, type Plugin} from "vite";
 import i18nextLoader from "vite-plugin-i18next-loader";
-import { VitePWA } from "vite-plugin-pwa";
+import {VitePWA} from "vite-plugin-pwa";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 import svgLoader from "vite-svg-loader";
@@ -32,7 +32,6 @@ const plugins: Plugin[] = [
 		namespaceResolution: "basename",
 	}),
 	VitePWA({
-		injectRegister: null,
 		disable: !!process.env.TAURI_PLATFORM || !process.env.VITE_DEV,
 		workbox: {
 			globPatterns: ["**/*.{js,css,html,wasm}", "kuromoji-dict-min/*.dat"],
