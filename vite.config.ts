@@ -1,15 +1,16 @@
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+import MillionLint from "@million/lint";
 import react from "@vitejs/plugin-react";
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
-import {existsSync} from "node:fs";
-import {resolve} from "node:path";
-import {defineConfig, type Plugin} from "vite";
+import ConditionalCompile from "unplugin-preprocessor-directives/vite";
+import { type Plugin, defineConfig } from "vite";
 import i18nextLoader from "vite-plugin-i18next-loader";
-import {VitePWA} from "vite-plugin-pwa";
+import { VitePWA } from "vite-plugin-pwa";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 import svgLoader from "vite-svg-loader";
-import ConditionalCompile from "unplugin-preprocessor-directives/vite";
 
 const AMLL_LOCAL_EXISTS = existsSync(
 	resolve(__dirname, "../applemusic-like-lyrics"),
@@ -19,6 +20,7 @@ process.env.AMLL_LOCAL_EXISTS = AMLL_LOCAL_EXISTS ? "true" : "false";
 
 const plugins: Plugin[] = [
 	ConditionalCompile(),
+	MillionLint.vite(),
 	react({
 		babel: {
 			plugins: [jotaiDebugLabel, jotaiReactRefresh],
@@ -103,13 +105,24 @@ export default defineConfig({
 		sourcemap: !!process.env.TAURI_ENV_DEBUG,
 	},
 	resolve: {
-		alias: Object.assign({
-			"$": resolve(__dirname, "src"),
-		}, AMLL_LOCAL_EXISTS ? {
-			// for development, use the local copy of the AMLL library
-			"@applemusic-like-lyrics/core": resolve(__dirname, "../applemusic-like-lyrics/packages/core/src"),
-			"@applemusic-like-lyrics/react": resolve(__dirname, "../applemusic-like-lyrics/packages/react/src"),
-		} : {}) as Record<string, string>,
+		alias: Object.assign(
+			{
+				$: resolve(__dirname, "src"),
+			},
+			AMLL_LOCAL_EXISTS
+				? {
+						// for development, use the local copy of the AMLL library
+						"@applemusic-like-lyrics/core": resolve(
+							__dirname,
+							"../applemusic-like-lyrics/packages/core/src",
+						),
+						"@applemusic-like-lyrics/react": resolve(
+							__dirname,
+							"../applemusic-like-lyrics/packages/react/src",
+						),
+					}
+				: {},
+		) as Record<string, string>,
 	},
 	worker: {
 		format: "es",
