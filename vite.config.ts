@@ -34,9 +34,10 @@ const plugins: Plugin[] = [
 		namespaceResolution: "basename",
 	}),
 	VitePWA({
-		disable: !!process.env.TAURI_PLATFORM || !process.env.VITE_DEV,
+		injectRegister: "script-defer",
+		disable: !!process.env.TAURI_PLATFORM,
 		workbox: {
-			globPatterns: ["**/*.{js,css,html,wasm}", "kuromoji-dict-min/*.dat"],
+			globPatterns: ["**/*.{js,css,html,wasm}"],
 			maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
 		},
 		manifest: {
