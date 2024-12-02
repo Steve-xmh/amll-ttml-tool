@@ -22,6 +22,8 @@
 		"@tauri-apps/plugin-os": "^2.0.0",
 		"@tauri-apps/plugin-shell": "^2.0.1",
 		"@ungap/structured-clone": "^1.2.0",
+		"@vercel/analytics": "^1.4.1",
+		"@vercel/speed-insights": "^1.1.0",
 		"classnames": "^2.5.1",
 		"framer-motion": "^11.11.17",
 		"i18next": "^23.16.8",
