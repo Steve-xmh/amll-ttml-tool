@@ -18,16 +18,17 @@ import {
 	selectedWordsAtom,
 	undoLyricLinesAtom,
 } from "$/states/main.ts";
-import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
-import { parseLyric } from "$/utils/ttml-parser.ts";
+import {formatKeyBindings, useKeyBindingAtom} from "$/utils/keybindings.ts";
+import {parseLyric} from "$/utils/ttml-parser.ts";
 import exportTTMLText from "$/utils/ttml-writer.ts";
-import { HomeRegular } from "@fluentui/react-icons";
-import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
-import { open } from "@tauri-apps/plugin-shell";
-import { useAtom, useSetAtom, useStore } from "jotai";
-import { type FC, useCallback } from "react";
-import { Trans } from "react-i18next";
+import {HomeRegular} from "@fluentui/react-icons";
+import {DropdownMenu, Flex, IconButton, TextField} from "@radix-ui/themes";
+import {open} from "@tauri-apps/plugin-shell";
+import {useAtom, useSetAtom, useStore} from "jotai";
+import {type FC, useCallback} from "react";
+import {Trans} from "react-i18next";
 import saveFile from "save-file";
+import {ImportExportLyric} from "$/components/TopMenu/import-export-lyric.tsx";
 
 export const TopMenu: FC = () => {
 	const [saveFileName, setSaveFileName] = useAtom(saveFileNameAtom);
@@ -68,6 +69,16 @@ export const TopMenu: FC = () => {
 		onOpenFile,
 	]);
 
+	const onOpenFileFromClipboard = async () => {
+		try {
+			const ttmlText = await navigator.clipboard.readText();
+			const ttmlData = parseLyric(ttmlText);
+			editLyricLine(ttmlData);
+		} catch (e) {
+			console.error("Failed to parse TTML file from clipboard", e);
+		}
+	};
+
 	const onSaveFile = useCallback(() => {
 		try {
 			saveFile(
@@ -81,6 +92,16 @@ export const TopMenu: FC = () => {
 	const saveFileKey = useKeyBindingAtom(keySaveFileAtom, onSaveFile, [
 		onSaveFile,
 	]);
+
+	const onSaveFileToClipboard = async () => {
+		try {
+			const lyric = store.get(currentLyricLinesAtom);
+			const ttml = exportTTMLText(lyric);
+			await navigator.clipboard.writeText(ttml);
+		} catch (e) {
+			console.error("Failed to save TTML file into clipboard", e);
+		}
+	};
 
 	const onUndo = useCallback(() => {
 		store.set(undoLyricLinesAtom);
@@ -208,59 +229,20 @@ export const TopMenu: FC = () => {
 							>
 								打开 TTML 文件
 							</DropdownMenu.Item>
+							<DropdownMenu.Item onClick={onOpenFileFromClipboard}>
+								从剪切板打开 TTML 文件
+							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onClick={onSaveFile}
 								shortcut={formatKeyBindings(saveFileKey)}
 							>
 								保存 TTML 文件
 							</DropdownMenu.Item>
+							<DropdownMenu.Item onClick={onSaveFileToClipboard}>
+								保存 TTML 文件到剪切板
+							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
-							<DropdownMenu.Sub>
-								<DropdownMenu.SubTrigger>导入歌词...</DropdownMenu.SubTrigger>
-								<DropdownMenu.SubContent>
-									<DropdownMenu.Item onClick={onNewFile}>
-										从纯文本导入
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										从 LyRiC 文件导入
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										从 ESLyRiC 文件导入
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										从 QRC 文件导入
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										从 YRC 文件导入
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										从 Lyricify Syllable 文件导入
-									</DropdownMenu.Item>
-								</DropdownMenu.SubContent>
-							</DropdownMenu.Sub>
-							<DropdownMenu.Sub>
-								<DropdownMenu.SubTrigger>导出歌词...</DropdownMenu.SubTrigger>
-								<DropdownMenu.SubContent>
-									<DropdownMenu.Item onClick={onNewFile}>
-										导出到 LyRiC
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										导出到 ESLyRiC
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										导出到 QRC
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										导出到 YRC
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										导出到 Lyricify Syllable
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onClick={onNewFile}>
-										导出到 ASS 字幕
-									</DropdownMenu.Item>
-								</DropdownMenu.SubContent>
-							</DropdownMenu.Sub>
+							<ImportExportLyric/>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>
 

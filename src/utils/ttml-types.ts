@@ -9,7 +9,8 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { uid } from "uid";
+import type {LyricLine as AMLLLyricLine} from "@applemusic-like-lyrics/lyric";
+import {uid} from "uid";
 
 export interface TTMLMetadata {
 	key: string;
@@ -40,16 +41,16 @@ export const newLyricWord = (): LyricWord => ({
 	emptyBeat: 0,
 });
 
-export interface LyricLine {
+export interface LyricLine extends AMLLLyricLine {
 	// 用来确定唯一一个行的标识符，导出时不会保存
 	id: string;
-	words: LyricWord[];
-	translatedLyric: string;
-	romanLyric: string;
-	isBG: boolean;
-	isDuet: boolean;
-	startTime: number;
-	endTime: number;
+	// words: LyricWord[];
+	// translatedLyric: string;
+	// romanLyric: string;
+	// isBG: boolean;
+	// isDuet: boolean;
+	// startTime: number;
+	// endTime: number;
 	ignoreSync: boolean;
 }
 

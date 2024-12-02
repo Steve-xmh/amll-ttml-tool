@@ -14,6 +14,7 @@
 	},
 	"dependencies": {
 		"@applemusic-like-lyrics/core": "0.2.0-alpha.4",
+		"@applemusic-like-lyrics/lyric": "^0.2.4",
 		"@applemusic-like-lyrics/react": "0.2.0-alpha.4",
 		"@dnd-kit/core": "^6.2.0",
 		"@million/lint": "^1.0.13",
@@ -21,6 +22,7 @@
 		"@tauri-apps/api": "^2.1.1",
 		"@tauri-apps/plugin-os": "^2.0.0",
 		"@tauri-apps/plugin-shell": "^2.0.1",
+		"@uiw/react-codemirror": "^4.23.6",
 		"@ungap/structured-clone": "^1.2.0",
 		"@vercel/analytics": "^1.4.1",
 		"@vercel/speed-insights": "^1.1.0",
