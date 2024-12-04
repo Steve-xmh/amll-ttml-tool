@@ -9,20 +9,14 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {
-	keySyncEndAtom,
-	keySyncNextAtom,
-	keySyncStartAtom,
-} from "$/states/keybindings.ts";
-import {
-	showTouchSyncPanelAtom,
-	visualizeTimestampUpdateAtom,
-} from "$/states/sync.ts";
-import { Checkbox, Flex, Grid, Text, TextField } from "@radix-ui/themes";
-import { useAtom } from "jotai";
-import { type FC, forwardRef } from "react";
-import { KeyBinding } from "../KeyBinding/index.tsx";
-import { RibbonFrame, RibbonSection } from "./common";
+import {keySyncEndAtom, keySyncNextAtom, keySyncStartAtom,} from "$/states/keybindings.ts";
+import {currentEmptyBeatAtom, showTouchSyncPanelAtom, visualizeTimestampUpdateAtom,} from "$/states/sync.ts";
+import {Checkbox, Flex, Grid, Slider, Text, TextField} from "@radix-ui/themes";
+import {useAtom} from "jotai";
+import {type FC, forwardRef} from "react";
+import {KeyBinding} from "../KeyBinding/index.tsx";
+import {RibbonFrame, RibbonSection} from "./common";
+import {useCurrentLocation} from "$/utils/lyric-states.ts";
 
 export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
@@ -32,10 +26,13 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 		const [showTouchSyncPanel, setShowTouchSyncPanel] = useAtom(
 			showTouchSyncPanelAtom,
 		);
+		const [currentEmptyBeat, setCurrentEmptyBeat] =
+			useAtom(currentEmptyBeatAtom);
+		const currentWordEmptyBeat = useCurrentLocation()?.word.emptyBeat || 0;
 
 		return (
 			<RibbonFrame ref={ref}>
-				<RibbonSection label="时序调整">
+				<RibbonSection label="打轴调整">
 					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<Text wrap="nowrap" size="1">
 							时间戳位移
@@ -48,6 +45,21 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 								width: "8em",
 							}}
 						/>
+						<Text wrap="nowrap" size="1">
+							当前空拍
+						</Text>
+						<Slider
+							value={[currentEmptyBeat]}
+							onValueChange={(v) => setCurrentEmptyBeat(v[0])}
+							min={0}
+							max={currentWordEmptyBeat}
+							step={1}
+							disabled={currentWordEmptyBeat === 0}
+						/>
+						<div/>
+						<Text wrap="nowrap" align="center" size="1">
+							{currentEmptyBeat} / {currentWordEmptyBeat}
+						</Text>
 					</Grid>
 				</RibbonSection>
 				<RibbonSection label="辅助设置">

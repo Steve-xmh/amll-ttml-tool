@@ -1,18 +1,15 @@
-import {
-	keySyncEndAtom,
-	keySyncNextAtom,
-	keySyncStartAtom,
-} from "$/states/keybindings.ts";
-import { forceInvokeKeyBindingAtom } from "$/utils/keybindings.ts";
-import { Button, Card, Grid } from "@radix-ui/themes";
-import { useStore } from "jotai";
-import type { FC } from "react";
+import {keySyncEndAtom, keySyncNextAtom, keySyncStartAtom,} from "$/states/keybindings.ts";
+import {forceInvokeKeyBindingAtom} from "$/utils/keybindings.ts";
+import {Button, Card, Grid} from "@radix-ui/themes";
+import {useStore} from "jotai";
+import type {FC} from "react";
+import styles from "./index.module.css";
 
 export const TouchSyncPanel: FC = () => {
 	const store = useStore();
 	return (
 		<Card m="2" mt="0" style={{ flexShrink: "0" }}>
-			<Grid rows="2" columns="3" gap="2">
+			<Grid rows="2" columns="3" gap="2" className={styles.syncButtons}>
 				<Button variant="soft" size="4">
 					跳上词
 				</Button>
