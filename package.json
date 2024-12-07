@@ -19,6 +19,7 @@
 		"@dnd-kit/core": "^6.2.0",
 		"@million/lint": "^1.0.13",
 		"@radix-ui/themes": "^3.1.6",
+		"@sentry/react": "^8.42.0",
 		"@tauri-apps/api": "^2.1.1",
 		"@tauri-apps/plugin-os": "^2.0.0",
 		"@tauri-apps/plugin-shell": "^2.0.1",

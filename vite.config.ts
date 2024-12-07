@@ -95,7 +95,7 @@ export default defineConfig({
 	server: {
 		strictPort: true,
 	},
-	envPrefix: ["VITE_", "TAURI_", "AMLL_"],
+	envPrefix: ["VITE_", "TAURI_", "AMLL_", "SENTRY_"],
 	build: {
 		// Tauri uses Chromium on Windows and WebKit on macOS and Linux
 		target:
