@@ -10,16 +10,15 @@
 				"minHeight": 480,
 				"resizable": true,
 				"fullscreen": false,
-				"transparent": true,
 				"visible": false,
-				"decorations": false,
 				"center": true,
+				"hiddenTitle": true,
+				"titleBarStyle": "Overlay",
 				"dragDropEnabled": false,
 				"browserExtensionsEnabled": true,
 				"windowEffects": {
 					"effects": [
-						"tabbed",
-						"mica"
+						"sidebar"
 					]
 				}
 			}

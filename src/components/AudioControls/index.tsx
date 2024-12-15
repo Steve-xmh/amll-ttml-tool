@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { playbackRateAtom, volumeAtom } from "$/states/audio.ts";
+import {playbackRateAtom, volumeAtom} from "$/states/audio.ts";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
@@ -17,32 +17,11 @@ import {
 	loadableAudioWaveformAtom,
 	loadedAudioAtom,
 } from "$/states/main.ts";
-import { msToTimestamp } from "$/utils/timestamp.ts";
-import {
-	MusicNote2Filled,
-	PauseFilled,
-	PlayFilled,
-} from "@fluentui/react-icons";
-import {
-	Card,
-	Flex,
-	Grid,
-	HoverCard,
-	IconButton,
-	Inset,
-	Slider,
-	Text,
-	Tooltip,
-} from "@radix-ui/themes";
-import { useAtom, useAtomValue } from "jotai";
-import {
-	type FC,
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from "react";
+import {msToTimestamp} from "$/utils/timestamp.ts";
+import {MusicNote2Filled, PauseFilled, PlayFilled,} from "@fluentui/react-icons";
+import {Card, Flex, Grid, HoverCard, IconButton, Inset, Slider, Text, Tooltip,} from "@radix-ui/themes";
+import {useAtom, useAtomValue} from "jotai";
+import {type FC, useCallback, useEffect, useLayoutEffect, useRef, useState,} from "react";
 
 export const AudioControls: FC = () => {
 	const audioRef = useRef<HTMLAudioElement>(null);
@@ -345,7 +324,7 @@ export const AudioControls: FC = () => {
 					<Text
 						size="2"
 						style={{
-							minWidth: "5em",
+							minWidth: "5.5em",
 							textAlign: "left",
 						}}
 					>
@@ -411,7 +390,7 @@ export const AudioControls: FC = () => {
 					<Text
 						size="2"
 						style={{
-							minWidth: "5em",
+							minWidth: "5.5em",
 						}}
 					>
 						{msToTimestamp(currentDuration)}

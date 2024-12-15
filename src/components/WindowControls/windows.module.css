@@ -1,0 +1,71 @@
+.controls {
+    min-height: 32px;
+    display: flex;
+    align-items: stretch;
+    flex-shrink: 0;
+    flex-grow: 0;
+
+    > button {
+        border: none;
+        background-color: transparent;
+        width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.25s;
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: rgba(0, 0, 0, 0.0373);
+        }
+
+        &:active {
+            background-color: rgba(0, 0, 0, 0.0241);
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            &:hover,
+            &:focus {
+                background-color: rgba(255, 255, 255, 0.0605);
+            }
+
+            &:active {
+                background-color: rgba(255, 255, 255, 0.0419);
+            }
+        }
+
+        &.close {
+            transition: background-color 0.25s, color 0.25s;
+
+            &:hover,
+            &:focus {
+                background-color: #c42b1c;
+                color: white;
+            }
+
+            &:active {
+                background-color: rgba(196, 43, 28, 0.9);
+                color: white;
+            }
+
+            @media (prefers-color-scheme: dark) {
+
+                &:hover,
+                &:focus {
+                    background-color: #c42b1c;
+                    color: white;
+                }
+
+                &:active {
+                    background-color: rgba(196, 43, 29, 0.9);
+                    color: white;
+                }
+            }
+        }
+    }
+}
