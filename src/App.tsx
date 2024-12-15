@@ -35,7 +35,7 @@ import {
 import {showTouchSyncPanelAtom} from "./states/sync.ts";
 import {isInteracting} from "./utils/keybindings.ts";
 import {Dialogs} from "$/components/Dialogs";
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -126,6 +126,7 @@ function App() {
 				</Box>
 			</Flex>
 			<Dialogs/>
+			<ToastContainer theme={isDarkTheme ? "dark" : "light"}/>
 		</Theme>
 	);
 }
