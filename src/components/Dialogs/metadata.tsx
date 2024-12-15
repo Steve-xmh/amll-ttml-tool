@@ -2,7 +2,7 @@ import {useAtom} from "jotai";
 import {metadataEditorDialogAtom} from "$/states/dialogs.ts";
 import {Button, Dialog, DropdownMenu, Flex, IconButton, TextField,} from "@radix-ui/themes";
 import {currentLyricLinesAtom} from "$/states/main.ts";
-import {Add16Filled, Delete16Filled} from "@fluentui/react-icons";
+import {Add16Regular, Delete16Regular, Info16Regular,} from "@fluentui/react-icons";
 import styles from "./metadata.module.css";
 import {Fragment, useCallback, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
@@ -67,12 +67,20 @@ export const MetadataEditor = () => {
 				value: "album",
 			},
 			{
-				// 逐词歌词作者 GitHub ID，例如 Steve-xmh
+				// 逐词歌词作者 GitHub ID，例如 39523898
 				label: t(
 					"metadataDialog.builtinOptions.ttmlAuthorGithub",
 					"逐词歌词作者 GitHub ID",
 				),
 				value: "ttmlAuthorGithub",
+			},
+			{
+				// 逐词歌词作者 GitHub 用户名，例如 Steve-xmh
+				label: t(
+					"metadataDialog.builtinOptions.ttmlAuthorGithubLogin",
+					"逐词歌词作者 GitHub 用户名",
+				),
+				value: "ttmlAuthorGithubLogin",
 			},
 		],
 		[t],
@@ -144,7 +152,7 @@ export const MetadataEditor = () => {
 													});
 												}}
 											>
-												<Delete16Filled/>
+												<Delete16Regular/>
 											</IconButton>
 										</Flex>
 									</td>
@@ -210,7 +218,7 @@ export const MetadataEditor = () => {
 										});
 									}}
 								>
-									<Add16Filled/>
+									<Add16Regular/>
 								</IconButton>
 							</Flex>
 							{builtinOptions.map((v) => (
@@ -260,6 +268,16 @@ export const MetadataEditor = () => {
 						}}
 					>
 						一键添加所有预设键
+					</Button>
+					<Button asChild variant="soft">
+						<a
+							target="_blank"
+							rel="noreferrer"
+							href="https://github.com/Steve-xmh/amll-ttml-tool/wiki/%E6%AD%8C%E8%AF%8D%E5%85%83%E6%95%B0%E6%8D%AE"
+						>
+							<Info16Regular/>
+							了解详情
+						</a>
 					</Button>
 				</Flex>
 			</Dialog.Content>

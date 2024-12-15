@@ -35,6 +35,7 @@ import {
 import {showTouchSyncPanelAtom} from "./states/sync.ts";
 import {isInteracting} from "./utils/keybindings.ts";
 import {Dialogs} from "$/components/Dialogs";
+import {toast} from "react-toastify";
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -49,6 +50,10 @@ function App() {
 			win.show();
 		}, []);
 	}
+
+	useEffect(() => {
+		toast.warn("本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！")
+	}, []);
 
 	useEffect(() => {
 		const onBeforeClose = (evt: BeforeUnloadEvent) => {

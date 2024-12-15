@@ -9,14 +9,16 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { Provider } from "jotai";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import {Analytics} from "@vercel/analytics/react";
+import {SpeedInsights} from "@vercel/speed-insights/react";
+import {Provider} from "jotai";
+import {StrictMode} from "react";
+import {createRoot} from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import * as Sentry from "@sentry/react";
+import {ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 Sentry.init({
 	dsn: import.meta.env.SENTRY_DSN,
@@ -30,5 +32,6 @@ createRoot(document.getElementById("root")!).render(
 		<Provider>
 			<App />
 		</Provider>
+		<ToastContainer/>
 	</StrictMode>,
 );
