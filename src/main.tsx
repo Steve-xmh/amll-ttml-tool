@@ -19,7 +19,7 @@ import "./index.css";
 import * as Sentry from "@sentry/react";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "utils/pwa.ts";
+import "./utils/pwa.ts";
 
 Sentry.init({
 	dsn: import.meta.env.SENTRY_DSN,
