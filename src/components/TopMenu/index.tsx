@@ -29,11 +29,13 @@ import {type FC, useCallback} from "react";
 import {Trans} from "react-i18next";
 import saveFile from "save-file";
 import {ImportExportLyric} from "$/components/TopMenu/import-export-lyric.tsx";
+import {metadataEditorDialogAtom} from "$/states/dialogs.ts";
 
 export const TopMenu: FC = () => {
 	const [saveFileName, setSaveFileName] = useAtom(saveFileNameAtom);
 	const newLyricLine = useSetAtom(newLyricLinesAtom);
 	const editLyricLine = useSetAtom(currentLyricLinesAtom);
+	const setMetadataEditorOpened = useSetAtom(metadataEditorDialogAtom);
 	const store = useStore();
 
 	const onNewFile = useCallback(() => {
@@ -288,6 +290,12 @@ export const TopMenu: FC = () => {
 								shortcut={formatKeyBindings(deleteSelectionKey)}
 							>
 								删除所选
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator/>
+							<DropdownMenu.Item
+								onClick={() => setMetadataEditorOpened(true)}
+							>
+								编辑元数据
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>

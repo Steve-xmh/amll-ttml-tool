@@ -1,0 +1,32 @@
+.metadataTable {
+    width: 100%;
+    white-space: nowrap;
+    border-collapse: collapse;
+
+    tbody tr {
+        /*border-bottom: solid 1px var(--gray-6);*/
+        padding: var(--space-1);
+
+        > td:first-child {
+            text-align: end;
+            vertical-align: center;
+        }
+    }
+}
+
+.metadataInput {
+    flex-grow: 1;
+}
+
+.newItemBtnRow {
+    display: block;
+    padding-left: var(--space-2);
+
+    > button {
+        width: 100%;
+    }
+}
+
+.newItemLine:not(:last-child) {
+    border-bottom: solid 1px var(--gray-6);
+}
