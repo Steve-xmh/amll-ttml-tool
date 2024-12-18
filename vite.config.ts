@@ -16,6 +16,10 @@ const AMLL_LOCAL_EXISTS = existsSync(
 	resolve(__dirname, "../applemusic-like-lyrics"),
 );
 
+const ReactCompilerConfig = {
+	target: "19",
+};
+
 process.env.AMLL_LOCAL_EXISTS = AMLL_LOCAL_EXISTS ? "true" : "false";
 
 const plugins: Plugin[] = [
@@ -23,7 +27,11 @@ const plugins: Plugin[] = [
 	MillionLint.vite(),
 	react({
 		babel: {
-			plugins: [jotaiDebugLabel, jotaiReactRefresh],
+			plugins: [
+				["babel-plugin-react-compiler", ReactCompilerConfig],
+				jotaiDebugLabel,
+				jotaiReactRefresh,
+			],
 		},
 	}),
 	svgLoader(),

@@ -9,36 +9,22 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
-import {
-	ToolMode,
-	currentLyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
-	toolModeAtom,
-} from "$/states/main.ts";
-import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
-import { msToTimestamp } from "$/utils/timestamp.ts";
-import {
-	type LyricLine,
-	newLyricLine,
-	newLyricWord,
-} from "$/utils/ttml-types.ts";
-import {
-	AddFilled,
-	TextAlignRightFilled,
-	VideoBackgroundEffectFilled,
-} from "@fluentui/react-icons";
-import { Button, Flex, IconButton, Text } from "@radix-ui/themes";
+import {draggingIdAtom} from "$/components/LyricLinesView/lyric-line-view-states.ts";
+import {currentLyricLinesAtom, selectedLinesAtom, selectedWordsAtom, ToolMode, toolModeAtom,} from "$/states/main.ts";
+import {visualizeTimestampUpdateAtom} from "$/states/sync.ts";
+import {msToTimestamp} from "$/utils/timestamp.ts";
+import {type LyricLine, newLyricLine, newLyricWord,} from "$/utils/ttml-types.ts";
+import {AddFilled, TextAlignRightFilled, VideoBackgroundEffectFilled,} from "@fluentui/react-icons";
+import {Button, Flex, IconButton, Text} from "@radix-ui/themes";
 import classNames from "classnames";
-import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
-import { type FC, useEffect, useRef, useState } from "react";
+import {atom, useAtom, useAtomValue, useSetAtom, useStore} from "jotai";
+import {type FC, memo, useEffect, useRef, useState} from "react";
 import styles from "./index.module.css";
-import { LyricWordView } from "./lyric-word-view";
+import {LyricWordView} from "./lyric-word-view";
 
 const isDraggingAtom = atom(false);
 
-export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
+export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = memo(({
 	line,
 	lineIndex,
 }) => {
@@ -416,4 +402,4 @@ export const LyricLineView: FC<{ line: LyricLine; lineIndex: number }> = ({
 			)}
 		</>
 	);
-};
+});

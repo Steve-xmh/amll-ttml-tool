@@ -129,12 +129,18 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.3.4(vite@6.0.3(@types/node@22.10.2)(terser@5.37.0))
+      babel-plugin-react-compiler:
+        specifier: 19.0.0-beta-201e55d-20241215
+        version: 19.0.0-beta-201e55d-20241215
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
       eslint:
         specifier: ^9.17.0
         version: 9.17.0
+      eslint-plugin-react-compiler:
+        specifier: 19.0.0-beta-201e55d-20241215
+        version: 19.0.0-beta-201e55d-20241215(eslint@9.17.0)
       eslint-plugin-react-hooks:
         specifier: 5.1.0
         version: 5.1.0(eslint@9.17.0)
@@ -351,6 +357,13 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0
+
+  '@babel/plugin-proposal-private-methods@7.18.6':
+    resolution: {integrity: sha512-nutsvktDItsNn4rpGItSNV2sz1XwS+nfU0Rg8aCx3W3NOKVzdMjJRu0O5OkgDp3ZGICSTbgRpxZoWsxoKRvbeA==}
+    engines: {node: '>=6.9.0'}
+    deprecated: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-methods instead.
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
 
   '@babel/plugin-proposal-private-property-in-object@7.21.0-placeholder-for-preset-env.2':
     resolution: {integrity: sha512-SOSkfJDddaM7mak6cPEpswyTRnuRltl429hMraQEglW+OkovnCzsiszTmsrlY//qLFjCpQDFRvjdm2wA5pPm9w==}
@@ -2845,6 +2858,9 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
+  babel-plugin-react-compiler@19.0.0-beta-201e55d-20241215:
+    resolution: {integrity: sha512-c7YAJNlA8kSoIFx2Buq/CeGmC3MbZYznD3H7Q3cdaRyKtwDSSxbM3VJxEhv7lEo64g48aWSBSiCI3XcRw0y/Jw==}
+
   babel-plugin-syntax-hermes-parser@0.21.1:
     resolution: {integrity: sha512-tUCEa+EykZx3oJXc+PolKz2iwDscCJ2hCONMvEqjAb4jIQH5ZapDd5Brs2Nk4TQpSJ/1Ykz53ksQbevXbF0wxg==}
 
@@ -3291,6 +3307,12 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
+  eslint-plugin-react-compiler@19.0.0-beta-201e55d-20241215:
+    resolution: {integrity: sha512-KTOMW6Z4Eg2r5BPT/BncbwPswfuVH9KPPDVszOTQFXGNlxhExL8IZoSE3blYxk4e0wFDbCcAwe4UlTauQ8lIww==}
+    engines: {node: ^14.17.0 || ^16.0.0 || >= 18.0.0}
+    peerDependencies:
+      eslint: '>=7'
+
   eslint-plugin-react-hooks@5.1.0:
     resolution: {integrity: sha512-mpJRtPgHN2tNAvZ35AMfqeB3Xqeo273QxrHJsbBEPWODRM4r0yB6jfoROqKEYrOn27UtRPpcpHc2UqyBSuUNTw==}
     engines: {node: '>=10'}
@@ -3621,8 +3643,14 @@ packages:
   hermes-estree@0.21.1:
     resolution: {integrity: sha512-ayfESdfG0wZM32uGw0CMfcW6pW6RM8htLXZI56A4rr7hIOjmKw+wd3+71wUc1uQfn90ZyY1NMCbQeMnunrIidg==}
 
+  hermes-estree@0.25.1:
+    resolution: {integrity: sha512-0wUoCcLp+5Ev5pDW2OriHC2MJCbwLwuRx+gAqMTOkGKJJiBCLjtrvy4PWUGn6MIVefecRpzoOZ/UV6iGdOr+Cw==}
+
   hermes-parser@0.21.1:
     resolution: {integrity: sha512-ANsRSBqQHzca7AXbsuwKApSQhAdljPip63MgqLebSVzNUI+A3NDzfiH9Ny4df4fA7Ndso3kPR1V/x1YEc7BYxA==}
+
+  hermes-parser@0.25.1:
+    resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
 
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
@@ -5340,6 +5368,15 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  zod-validation-error@3.4.0:
+    resolution: {integrity: sha512-ZOPR9SVY6Pb2qqO5XHt+MkkTRxGXb4EVtnjc9JpXUOtUB1T9Ru7mZOT361AN3MsetVe7R0a1KZshJDZdgp9miQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      zod: ^3.18.0
+
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
+
 snapshots:
 
   '@ampproject/remapping@2.3.0':
@@ -5579,6 +5616,14 @@ snapshots:
       '@babel/core': 7.26.0
       '@babel/helper-plugin-utils': 7.25.9
       '@babel/traverse': 7.26.4
+    transitivePeerDependencies:
+      - supports-color
+
+  '@babel/plugin-proposal-private-methods@7.18.6(@babel/core@7.26.0)':
+    dependencies:
+      '@babel/core': 7.26.0
+      '@babel/helper-create-class-features-plugin': 7.25.9(@babel/core@7.26.0)
+      '@babel/helper-plugin-utils': 7.25.9
     transitivePeerDependencies:
       - supports-color
 
@@ -8031,6 +8076,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  babel-plugin-react-compiler@19.0.0-beta-201e55d-20241215:
+    dependencies:
+      '@babel/types': 7.26.3
+
   babel-plugin-syntax-hermes-parser@0.21.1:
     dependencies:
       hermes-parser: 0.21.1
@@ -8623,6 +8672,18 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
+  eslint-plugin-react-compiler@19.0.0-beta-201e55d-20241215(eslint@9.17.0):
+    dependencies:
+      '@babel/core': 7.26.0
+      '@babel/parser': 7.26.3
+      '@babel/plugin-proposal-private-methods': 7.18.6(@babel/core@7.26.0)
+      eslint: 9.17.0
+      hermes-parser: 0.25.1
+      zod: 3.24.1
+      zod-validation-error: 3.4.0(zod@3.24.1)
+    transitivePeerDependencies:
+      - supports-color
+
   eslint-plugin-react-hooks@5.1.0(eslint@9.17.0):
     dependencies:
       eslint: 9.17.0
@@ -8984,9 +9045,15 @@ snapshots:
 
   hermes-estree@0.21.1: {}
 
+  hermes-estree@0.25.1: {}
+
   hermes-parser@0.21.1:
     dependencies:
       hermes-estree: 0.21.1
+
+  hermes-parser@0.25.1:
+    dependencies:
+      hermes-estree: 0.25.1
 
   highlight.js@10.7.3: {}
 
@@ -10788,3 +10855,9 @@ snapshots:
       yargs-parser: 21.1.1
 
   yocto-queue@0.1.0: {}
+
+  zod-validation-error@3.4.0(zod@3.24.1):
+    dependencies:
+      zod: 3.24.1
+
+  zod@3.24.1: {}

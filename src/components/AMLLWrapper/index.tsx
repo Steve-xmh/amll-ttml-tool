@@ -9,10 +9,10 @@ import {LyricPlayer, type LyricPlayerRef,} from "@applemusic-like-lyrics/react";
 import {Card} from "@radix-ui/themes";
 import classNames from "classnames";
 import {useAtomValue} from "jotai";
-import {type FC, useEffect, useMemo, useRef} from "react";
+import {memo, useEffect, useMemo, useRef} from "react";
 import styles from "./index.module.css";
 
-export const AMLLWrapper: FC = () => {
+export const AMLLWrapper = memo(() => {
 	const originalLyricLines = useAtomValue(currentLyricLinesAtom);
 	const currentTime = useAtomValue(currentTimeAtom);
 	const isPlaying = useAtomValue(audioPlayingAtom);
@@ -51,4 +51,4 @@ export const AMLLWrapper: FC = () => {
 			/>
 		</Card>
 	);
-};
+});

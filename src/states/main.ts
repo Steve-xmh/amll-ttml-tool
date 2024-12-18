@@ -10,10 +10,13 @@
  */
 
 import structuredClone from "@ungap/structured-clone";
-import { atom } from "jotai";
-import { loadable } from "jotai/utils";
-import { genWaveform } from "../utils/gen-waveform";
-import type { TTMLLyric } from "../utils/ttml-types";
+import {atom} from "jotai";
+import {loadable} from "jotai/utils";
+import {genWaveform} from "../utils/gen-waveform";
+import type {TTMLLyric} from "../utils/ttml-types";
+import {toast} from "react-toastify";
+import warn = toast.warn;
+import loading = toast.loading;
 
 export enum DarkMode {
 	Auto = "auto",
@@ -40,8 +43,13 @@ export const currentDurationAtom = atom(0);
 export const loadedAudioAtom = atom(new Blob([]));
 export const audioWaveformAtom = atom(async (get) => {
 	const audio = get(loadedAudioAtom);
-	if (audio.size > 1024 * 1024 * 64) return new Float32Array();
+	if (audio.size > 1024 * 1024 * 64) {
+		warn("音频文件超过 64MB，为避免卡顿已跳过波形图生成");
+		return new Float32Array();
+	}
+	const tid = loading("正在生成音频波形图...");
 	const [waveform] = await genWaveform(audio);
+	toast.done(tid);
 	return waveform;
 });
 export const loadableAudioWaveformAtom = loadable(audioWaveformAtom);

@@ -9,16 +9,16 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { ToolMode, toolModeAtom } from "$/states/main.ts";
-import { Card, Inset } from "@radix-ui/themes";
-import { AnimatePresence } from "framer-motion";
-import { useAtomValue } from "jotai";
-import { type FC, forwardRef } from "react";
-import { EditModeRibbonBar } from "./edit-mode";
+import {ToolMode, toolModeAtom} from "$/states/main.ts";
+import {Card, Inset} from "@radix-ui/themes";
+import {AnimatePresence} from "framer-motion";
+import {useAtomValue} from "jotai";
+import {forwardRef, memo} from "react";
+import {EditModeRibbonBar} from "./edit-mode";
 import PreviewModeRibbonBar from "./preview-mode";
 import SyncModeRibbonBar from "./sync-mode";
 
-export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
+export const RibbonBar = memo(forwardRef<HTMLDivElement>((_props, ref) => {
 	const toolMode = useAtomValue(toolModeAtom);
 
 	return (
@@ -49,6 +49,6 @@ export const RibbonBar: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			</Inset>
 		</Card>
 	);
-});
+}));
 
 export default RibbonBar;
