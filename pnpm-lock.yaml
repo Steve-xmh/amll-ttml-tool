@@ -65,6 +65,12 @@ importers:
       jotai:
         specifier: ^2.10.3
         version: 2.10.3(@types/react@19.0.1)(react@19.0.0)
+      jotai-optics:
+        specifier: ^0.4.0
+        version: 0.4.0(jotai@2.10.3(@types/react@19.0.1)(react@19.0.0))(optics-ts@2.4.1)
+      optics-ts:
+        specifier: ^2.4.1
+        version: 2.4.1
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -3932,6 +3938,12 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  jotai-optics@0.4.0:
+    resolution: {integrity: sha512-osbEt9AgS55hC4YTZDew2urXKZkaiLmLqkTS/wfW5/l0ib8bmmQ7kBXSFaosV6jDDWSp00IipITcJARFHdp42g==}
+    peerDependencies:
+      jotai: '>=2.0.0'
+      optics-ts: '>=2.0.0'
+
   jotai@2.10.3:
     resolution: {integrity: sha512-Nnf4IwrLhNfuz2JOQLI0V/AgwcpxvVy8Ec8PidIIDeRi4KCFpwTFIpHAAcU+yCgnw/oASYElq9UY0YdUUegsSA==}
     engines: {node: '>=12.20.0'}
@@ -4208,6 +4220,9 @@ packages:
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
+
+  optics-ts@2.4.1:
+    resolution: {integrity: sha512-HaYzMHvC80r7U/LqAd4hQyopDezC60PO2qF5GuIwALut2cl5rK1VWHsqTp0oqoJJWjiv6uXKqsO+Q2OO0C3MmQ==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -9321,6 +9336,11 @@ snapshots:
       filelist: 1.0.4
       minimatch: 3.1.2
 
+  jotai-optics@0.4.0(jotai@2.10.3(@types/react@19.0.1)(react@19.0.0))(optics-ts@2.4.1):
+    dependencies:
+      jotai: 2.10.3(@types/react@19.0.1)(react@19.0.0)
+      optics-ts: 2.4.1
+
   jotai@2.10.3(@types/react@19.0.1)(react@19.0.0):
     optionalDependencies:
       '@types/react': 19.0.1
@@ -9539,6 +9559,8 @@ snapshots:
   once@1.4.0:
     dependencies:
       wrappy: 1.0.2
+
+  optics-ts@2.4.1: {}
 
   optionator@0.9.4:
     dependencies:

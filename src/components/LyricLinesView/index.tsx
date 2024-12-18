@@ -17,7 +17,8 @@ import {
 	toolModeAtom,
 } from "$/states/main.ts";
 import { Box, Flex, Text } from "@radix-ui/themes";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { splitAtom } from "jotai/utils";
 import {
 	type FC,
 	forwardRef,
@@ -27,8 +28,13 @@ import {
 } from "react";
 import { ViewportList, type ViewportListRef } from "react-viewport-list";
 import { LyricLineView } from "./lyric-line-view";
+
+const lyricLinesAtom = splitAtom(
+	atom((get) => get(currentLyricLinesAtom).lyricLines),
+);
+
 export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
-	const editLyric = useAtomValue(currentLyricLinesAtom);
+	const editLyric = useAtomValue(lyricLinesAtom);
 	const [selectedLines, setSelectedLines] = useAtom(selectedLinesAtom);
 	const setSelectedWords = useSetAtom(selectedWordsAtom);
 	const viewRef = useRef<ViewportListRef>(null);
@@ -43,7 +49,7 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 		if (!viewContainerEl) return;
 		let scrollToIndex = Number.NaN;
 		let i = 0;
-		for (const line of editLyric.lyricLines) {
+		for (const line of editLyric) {
 			if (selectedLines.has(line.id)) {
 				scrollToIndex = i;
 				break;
@@ -56,11 +62,11 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			index: scrollToIndex,
 			offset: viewContainerEl.clientHeight / -2 + 50,
 		});
-	}, [editLyric.lyricLines, selectedLines, toolMode]);
+	}, [editLyric, selectedLines, toolMode]);
 
 	useImperativeHandle(ref, () => viewElRef.current as HTMLDivElement, []);
 
-	if (editLyric.lyricLines.length === 0)
+	if (editLyric.length === 0)
 		return (
 			<Flex
 				flexGrow="1"
@@ -94,14 +100,14 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 		>
 			<ViewportList
 				overscan={10}
-				items={editLyric.lyricLines}
+				items={editLyric}
 				ref={viewRef}
 				viewportRef={viewElRef}
 			>
-				{(line, i) => (
+				{(lineAtom, i) => (
 					<LyricLineView
-						key={`lyric-line-view-${line.id}`}
-						line={line}
+						key={`${lineAtom}`}
+						lineAtom={lineAtom}
 						lineIndex={i}
 					/>
 				)}
