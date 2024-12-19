@@ -37,6 +37,12 @@ export const ImportExportLyric = () => {
 						store.set(lyricLinesAtom, {
 							lyricLines: lyricLines.map((line) => ({
 								...line,
+								words: line.words.map((word) => ({
+									...word,
+									id: uid(),
+									obscene: false,
+									emptyBeat: 0,
+								})),
 								ignoreSync: false,
 								id: uid(),
 							})),

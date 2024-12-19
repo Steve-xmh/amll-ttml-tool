@@ -9,10 +9,8 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {audioWaveformAtom} from "$/states/audio.ts";
 import {atom} from "jotai";
 import {withUndo} from "jotai-history";
-import {loadable} from "jotai/utils";
 import type {TTMLLyric} from "../utils/ttml-types";
 
 export enum DarkMode {
@@ -34,11 +32,6 @@ export const isDarkThemeAtom = atom((get) => {
 	return get(darkModeAtom) === DarkMode.Dark;
 });
 export const autoDarkModeAtom = atom(true);
-export const audioPlayingAtom = atom(false);
-export const currentTimeAtom = atom(0);
-export const currentDurationAtom = atom(0);
-export const loadedAudioAtom = atom(new Blob([]));
-export const loadableAudioWaveformAtom = loadable(audioWaveformAtom);
 
 // 歌词行编辑上下文
 export const lyricLinesAtom = atom({

@@ -18,6 +18,7 @@ dist-ssr
 .idea
 .million
 .DS_Store
+*.tsbuildinfo
 *.suo
 *.ntvs*
 *.njsproj

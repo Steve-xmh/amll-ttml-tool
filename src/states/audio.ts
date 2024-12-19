@@ -1,7 +1,6 @@
-import { loadedAudioAtom } from "$/states/main.ts";
 import { genWaveform } from "$/utils/gen-waveform.ts";
 import { atom } from "jotai/index";
-import { atomWithStorage } from "jotai/utils";
+import { atomWithStorage, loadable } from "jotai/utils";
 import { toast } from "react-toastify";
 
 export const audioElAtom = atom<HTMLAudioElement>(
@@ -9,6 +8,10 @@ export const audioElAtom = atom<HTMLAudioElement>(
 );
 export const volumeAtom = atomWithStorage("volume", 0.5);
 export const playbackRateAtom = atomWithStorage("playbackRate", 1);
+export const audioPlayingAtom = atom(false);
+export const loadedAudioAtom = atom(new Blob([]));
+export const currentTimeAtom = atom(0);
+export const currentDurationAtom = atom(0);
 export const audioWaveformAtom = atom(async (get) => {
 	const audio = get(loadedAudioAtom);
 	if (audio.size > 1024 * 1024 * 64) {
@@ -23,3 +26,5 @@ export const audioWaveformAtom = atom(async (get) => {
 		toast.done(tid);
 	}
 });
+
+export const loadableAudioWaveformAtom = loadable(audioWaveformAtom);
