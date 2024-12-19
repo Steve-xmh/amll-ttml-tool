@@ -1,6 +1,6 @@
-import {type createStore, useAtomValue} from "jotai";
+import {lyricLinesAtom, selectedLinesAtom, selectedWordsAtom,} from "$/states/main.ts";
 import type {LyricLine, LyricWord} from "$/utils/ttml-types.ts";
-import {currentLyricLinesAtom, selectedLinesAtom, selectedWordsAtom} from "$/states/main.ts";
+import {type createStore, useAtomValue} from "jotai";
 import {useMemo} from "react";
 
 export interface LineLocationResult {
@@ -19,7 +19,7 @@ export interface LineAndWordLocationResult extends LineLocationResult {
 export function getCurrentLineLocation(
 	store: ReturnType<typeof createStore>,
 ): LineLocationResult | undefined {
-	const lyricLines = store.get(currentLyricLinesAtom).lyricLines;
+	const lyricLines = store.get(lyricLinesAtom).lyricLines;
 	const selectedLineId = [...store.get(selectedLinesAtom)][0]; // 进入打轴模式下一般不会出现多选的情况
 	if (!selectedLineId) return;
 	const lyricLine = lyricLines.findIndex((line) => line.id === selectedLineId);
@@ -34,7 +34,7 @@ export function getCurrentLineLocation(
 export function getCurrentLocation(
 	store: ReturnType<typeof createStore>,
 ): LineAndWordLocationResult | undefined {
-	const lyricLines = store.get(currentLyricLinesAtom).lyricLines;
+	const lyricLines = store.get(lyricLinesAtom).lyricLines;
 	const selectedLineId = [...store.get(selectedLinesAtom)][0]; // 进入打轴模式下一般不会出现多选的情况
 	if (!selectedLineId) return;
 	const lyricLine = lyricLines.findIndex((line) => line.id === selectedLineId);
@@ -42,12 +42,14 @@ export function getCurrentLocation(
 	const selectedWordId = [...store.get(selectedWordsAtom)][0];
 	if (!selectedWordId) return;
 	const lyricWords = lyricLines[lyricLine].words;
-	const lyricWord = lyricWords.findIndex(
-		(word) => word.id === selectedWordId,
-	);
+	const lyricWord = lyricWords.findIndex((word) => word.id === selectedWordId);
 	if (lyricWord === -1) return;
-	const isFirstWord = !lyricWords.slice(0, lyricWord).some(isSynchronizableWord);
-	const isLastWord = !lyricWords.slice(lyricWord + 1).some(isSynchronizableWord);
+	const isFirstWord = !lyricWords
+		.slice(0, lyricWord)
+		.some(isSynchronizableWord);
+	const isLastWord = !lyricWords
+		.slice(lyricWord + 1)
+		.some(isSynchronizableWord);
 	return {
 		lines: lyricLines,
 		line: lyricLines[lyricLine],
@@ -60,7 +62,7 @@ export function getCurrentLocation(
 }
 
 export function useCurrentLocation(): LineAndWordLocationResult | undefined {
-	const lyrics = useAtomValue(currentLyricLinesAtom);
+	const lyrics = useAtomValue(lyricLinesAtom);
 	const selectedLines = useAtomValue(selectedLinesAtom);
 	const selectedWords = useAtomValue(selectedWordsAtom);
 	const result = useMemo(() => {
@@ -73,8 +75,12 @@ export function useCurrentLocation(): LineAndWordLocationResult | undefined {
 			selectedWords.has(word.id),
 		);
 		if (lyricWord === -1) return;
-		const isFirstWord = !lyricWords.slice(0, lyricWord).some(isSynchronizableWord);
-		const isLastWord = !lyricWords.slice(lyricWord + 1).some(isSynchronizableWord);
+		const isFirstWord = !lyricWords
+			.slice(0, lyricWord)
+			.some(isSynchronizableWord);
+		const isLastWord = !lyricWords
+			.slice(lyricWord + 1)
+			.some(isSynchronizableWord);
 		return {
 			lines: lyrics.lyricLines,
 			line: lyrics.lyricLines[lyricLine],
@@ -98,9 +104,9 @@ export function findNextWord(
 	wordIndex: number,
 ):
 	| {
-	word: LyricWord;
-	line: LyricLine;
-}
+			word: LyricWord;
+			line: LyricLine;
+	  }
 	| undefined {
 	const line = lyricLines[lineIndex];
 	if (!line) return;

@@ -1,9 +1,14 @@
-import {useCallback, useLayoutEffect, useRef} from "react";
-import {useAtomValue, useSetAtom} from "jotai";
-import {audioPlayingAtom, currentDurationAtom, currentTimeAtom, loadableAudioWaveformAtom} from "$/states/main.ts";
-import {audioElAtom} from "$/states/audio.ts";
-import {msToTimestamp} from "$/utils/timestamp.ts";
-import {Card} from "@radix-ui/themes";
+import { audioElAtom } from "$/states/audio.ts";
+import {
+	audioPlayingAtom,
+	currentDurationAtom,
+	currentTimeAtom,
+	loadableAudioWaveformAtom,
+} from "$/states/main.ts";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import { Card } from "@radix-ui/themes";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useLayoutEffect, useRef } from "react";
 
 export const AudioSlider = () => {
 	const waveformCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,7 +65,7 @@ export const AudioSlider = () => {
 				seekTimestamp,
 				targetPos,
 				canvas.height / 2 +
-				(size.actualBoundingBoxAscent - size.actualBoundingBoxDescent) / 2,
+					(size.actualBoundingBoxAscent - size.actualBoundingBoxDescent) / 2,
 			);
 			ctx.beginPath();
 			ctx.moveTo(mouseSeekWidth, 0);
@@ -94,7 +99,7 @@ export const AudioSlider = () => {
 				while (
 					sampleIndex < samplePerPixel * (x + 1) &&
 					sampleIndex < waveform.length
-					) {
+				) {
 					sum += Math.abs(waveform[sampleIndex]);
 					sampleIndex += 16;
 					sumTime++;
@@ -128,7 +133,7 @@ export const AudioSlider = () => {
 			frame = requestAnimationFrame(onFrame);
 		};
 		const onLoad = () => {
-			console.log(audioEl.duration);
+			console.log("Music Duration", audioEl.duration);
 			setCurrentDuration((audioEl.duration * 1000) | 0);
 		};
 		const onPlay = () => {

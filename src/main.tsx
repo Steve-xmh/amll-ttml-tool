@@ -20,6 +20,8 @@ import * as Sentry from "@sentry/react";
 import "react-toastify/dist/ReactToastify.css";
 import "./utils/pwa.ts";
 import "./i18n/index.ts";
+import {DevTools} from "jotai-devtools";
+import "jotai-devtools/styles.css";
 
 Sentry.init({
 	dsn: import.meta.env.SENTRY_DSN,
@@ -32,6 +34,7 @@ createRoot(document.getElementById("root")!).render(
 		<Analytics />
 		<Provider>
 			<App />
+			<DevTools position="top-right" />
 		</Provider>
 	</StrictMode>,
 );

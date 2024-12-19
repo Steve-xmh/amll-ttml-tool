@@ -11,13 +11,15 @@
 
 import {
 	ToolMode,
-	currentLyricLinesAtom,
+	lyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
 	toolModeAtom,
 } from "$/states/main.ts";
 import { Box, Flex, Text } from "@radix-ui/themes";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useStore } from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
+import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
 import {
 	type FC,
@@ -29,14 +31,16 @@ import {
 import { ViewportList, type ViewportListRef } from "react-viewport-list";
 import { LyricLineView } from "./lyric-line-view";
 
-const lyricLinesAtom = splitAtom(
-	atom((get) => get(currentLyricLinesAtom).lyricLines),
+const lyricLinesOnlyAtom = splitAtom(
+	focusAtom(lyricLinesAtom, (o) => o.prop("lyricLines")),
 );
 
 export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
-	const editLyric = useAtomValue(lyricLinesAtom);
-	const [selectedLines, setSelectedLines] = useAtom(selectedLinesAtom);
-	const setSelectedWords = useSetAtom(selectedWordsAtom);
+	const editLyric = useAtomValue(lyricLinesOnlyAtom);
+	const store = useStore();
+	const selectedLines = useAtomValue(selectedLinesAtom);
+	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
+	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const viewRef = useRef<ViewportListRef>(null);
 	const viewElRef = useRef<HTMLDivElement>(null);
 	const toolMode = useAtomValue(toolModeAtom);
@@ -49,7 +53,8 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 		if (!viewContainerEl) return;
 		let scrollToIndex = Number.NaN;
 		let i = 0;
-		for (const line of editLyric) {
+		for (const lineAtom of editLyric) {
+			const line = store.get(lineAtom);
 			if (selectedLines.has(line.id)) {
 				scrollToIndex = i;
 				break;
@@ -62,7 +67,7 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 			index: scrollToIndex,
 			offset: viewContainerEl.clientHeight / -2 + 50,
 		});
-	}, [editLyric, selectedLines, toolMode]);
+	}, [editLyric, selectedLines, toolMode, store]);
 
 	useImperativeHandle(ref, () => viewElRef.current as HTMLDivElement, []);
 
@@ -92,8 +97,8 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 				overflowY: "auto",
 			}}
 			onClick={(evt) => {
-				setSelectedLines(new Set());
-				setSelectedWords(new Set());
+				setSelectedLines((o) => o.clear());
+				setSelectedWords((o) => o.clear());
 				evt.stopPropagation();
 			}}
 			ref={viewElRef}

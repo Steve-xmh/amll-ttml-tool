@@ -9,38 +9,34 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { TextField } from "@radix-ui/themes";
+import {lyricLinesAtom, selectedLinesAtom, selectedWordsAtom, ToolMode, toolModeAtom,} from "$/states/main.ts";
+import {visualizeTimestampUpdateAtom} from "$/states/sync.ts";
+import {msToTimestamp} from "$/utils/timestamp.ts";
+import type {LyricLine, LyricWord} from "$/utils/ttml-types.ts";
+import {TextField} from "@radix-ui/themes";
 import classNames from "classnames";
-import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
-import { type FC, useEffect, useMemo, useRef, useState } from "react";
-import {
-	ToolMode,
-	currentLyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
-	toolModeAtom,
-} from "../../states/main";
-import { visualizeTimestampUpdateAtom } from "../../states/sync.ts";
-import { msToTimestamp } from "../../utils/timestamp";
-import type { LyricLine, LyricWord } from "../../utils/ttml-types";
+import {type Atom, atom, useAtom, useAtomValue, useSetAtom, useStore,} from "jotai";
+import {useSetImmerAtom} from "jotai-immer";
+import {type FC, useEffect, useMemo, useRef, useState} from "react";
 import styles from "./index.module.css";
 
 const isDraggingAtom = atom(false);
 const draggingIdAtom = atom("");
 
 export const LyricWordView: FC<{
-	word: LyricWord;
+	wordAtom: Atom<LyricWord>;
 	wordIndex: number;
 	line: LyricLine;
 	lineIndex: number;
-}> = ({ word, wordIndex, line, lineIndex }) => {
+}> = ({ wordAtom, wordIndex, line, lineIndex }) => {
+	const word = useAtomValue(wordAtom);
 	const [editing, setEditing] = useState(false);
 	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
 	const store = useStore();
 	const setSelectedLines = useSetAtom(selectedLinesAtom);
-	const editLyricLines = useSetAtom(currentLyricLinesAtom);
+	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 
 	const isWordBlank = useMemo(
 		() =>

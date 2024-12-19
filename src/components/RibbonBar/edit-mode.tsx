@@ -10,7 +10,7 @@
  */
 
 import {
-	currentLyricLinesAtom,
+	lyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
 } from "$/states/main.ts";
@@ -21,7 +21,8 @@ import {
 	newLyricLine,
 } from "$/utils/ttml-types.ts";
 import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
 import { type FC, forwardRef, useLayoutEffect, useMemo, useState } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 
@@ -52,7 +53,8 @@ function EditField<
 	);
 	const selectedItems = useAtomValue(itemAtom);
 
-	const [lyricLines, editLyricLines] = useAtom(currentLyricLinesAtom);
+	const lyricLines = useAtomValue(lyricLinesAtom);
+	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 
 	const currentValue = useMemo(() => {
 		if (selectedItems.size) {
@@ -192,7 +194,8 @@ function CheckboxField<
 	);
 	const selectedItems = useAtomValue(itemAtom);
 
-	const [lyricLines, editLyricLines] = useAtom(currentLyricLinesAtom);
+	const lyricLines = useAtomValue(lyricLinesAtom);
+	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 
 	const currentValue = useMemo(() => {
 		if (selectedItems.size) {
@@ -208,11 +211,11 @@ function CheckboxField<
 				}
 				if (values.size === 1)
 					return {
-						multiplieValues: false,
+						multipleValues: false,
 						value: values.values().next().value as L[F],
 					} as const;
 				return {
-					multiplieValues: true,
+					multipleValues: true,
 					value: "",
 				} as const;
 			}
@@ -225,11 +228,11 @@ function CheckboxField<
 			}
 			if (values.size === 1)
 				return {
-					multiplieValues: false,
+					multipleValues: false,
 					value: values.values().next().value as L[F],
 				} as const;
 			return {
-				multiplieValues: true,
+				multipleValues: true,
 				value: "",
 			} as const;
 		}
@@ -245,7 +248,7 @@ function CheckboxField<
 				disabled={selectedItems.size === 0}
 				checked={
 					currentValue
-						? currentValue.multiplieValues
+						? currentValue.multipleValues
 							? "indeterminate"
 							: (currentValue.value as boolean)
 						: defaultValue
@@ -381,7 +384,7 @@ function CheckboxField<
 
 export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
-		const [, editLyricLines] = useAtom(currentLyricLinesAtom);
+		const editLyricLines = useSetAtom(lyricLinesAtom);
 
 		return (
 			<RibbonFrame ref={ref}>
@@ -392,8 +395,10 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							variant="soft"
 							onClick={() =>
 								editLyricLines((prev) => {
-									prev.lyricLines.push(newLyricLine());
-									return prev;
+									return {
+										...prev,
+										lyricLines: [...prev.lyricLines, newLyricLine()],
+									};
 								})
 							}
 						>

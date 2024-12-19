@@ -2,18 +2,32 @@
 // #warning Using local Apple Music Like Lyrics, skip importing css style
 // #else
 import "@applemusic-like-lyrics/core/style.css";
+import { audioElAtom } from "$/states/audio.ts";
 // #endif
-import {audioPlayingAtom, currentLyricLinesAtom, currentTimeAtom, isDarkThemeAtom,} from "$/states/main.ts";
-import {lyricWordFadeWidthAtom, showRomanLinesAtom, showTranslationLinesAtom,} from "$/states/preview.ts";
-import {LyricPlayer, type LyricPlayerRef,} from "@applemusic-like-lyrics/react";
-import {Card} from "@radix-ui/themes";
+import {
+	audioPlayingAtom,
+	currentTimeAtom,
+	isDarkThemeAtom,
+	lyricLinesAtom,
+} from "$/states/main.ts";
+import {
+	lyricWordFadeWidthAtom,
+	showRomanLinesAtom,
+	showTranslationLinesAtom,
+} from "$/states/preview.ts";
+import {
+	LyricPlayer,
+	type LyricPlayerRef,
+} from "@applemusic-like-lyrics/react";
+import { Card } from "@radix-ui/themes";
+import structuredClone from "@ungap/structured-clone";
 import classNames from "classnames";
-import {useAtomValue} from "jotai";
-import {memo, useEffect, useMemo, useRef} from "react";
+import { useAtomValue } from "jotai";
+import { memo, useEffect, useMemo, useRef } from "react";
 import styles from "./index.module.css";
 
 export const AMLLWrapper = memo(() => {
-	const originalLyricLines = useAtomValue(currentLyricLinesAtom);
+	const originalLyricLines = useAtomValue(lyricLinesAtom);
 	const currentTime = useAtomValue(currentTimeAtom);
 	const isPlaying = useAtomValue(audioPlayingAtom);
 	const darkMode = useAtomValue(isDarkThemeAtom);
@@ -21,13 +35,16 @@ export const AMLLWrapper = memo(() => {
 	const showRomanLines = useAtomValue(showRomanLinesAtom);
 	const wordFadeWidth = useAtomValue(lyricWordFadeWidthAtom);
 	const playerRef = useRef<LyricPlayerRef>(null);
+	const store = useStore();
 
 	const lyricLines = useMemo(() => {
-		return originalLyricLines.lyricLines.map((line) => ({
-			...line,
-			translatedLyric: showTranslationLines ? line.translatedLyric : "",
-			romanLyric: showRomanLines ? line.romanLyric : "",
-		}));
+		return structuredClone(
+			originalLyricLines.lyricLines.map((line) => ({
+				...line,
+				translatedLyric: showTranslationLines ? line.translatedLyric : "",
+				romanLyric: showRomanLines ? line.romanLyric : "",
+			})),
+		);
 	}, [originalLyricLines, showTranslationLines, showRomanLines]);
 
 	useEffect(() => {
@@ -42,6 +59,10 @@ export const AMLLWrapper = memo(() => {
 				style={{
 					height: "100%",
 					boxSizing: "content-box",
+				}}
+				onLyricLineClick={(evt) => {
+					store.get(audioElAtom).currentTime =
+						evt.line.getLine().startTime / 1000;
 				}}
 				lyricLines={lyricLines}
 				currentTime={currentTime}

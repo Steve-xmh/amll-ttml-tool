@@ -1,3 +1,5 @@
+import {ImportExportLyric} from "$/components/TopMenu/import-export-lyric.tsx";
+import {metadataEditorDialogAtom} from "$/states/dialogs.ts";
 import {
 	keyDeleteSelectionAtom,
 	keyNewFileAtom,
@@ -10,13 +12,12 @@ import {
 	keyUndoAtom,
 } from "$/states/keybindings.ts";
 import {
-	currentLyricLinesAtom,
+	lyricLinesAtom,
 	newLyricLinesAtom,
-	redoLyricLinesAtom,
 	saveFileNameAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	undoLyricLinesAtom,
+	undoableLyricLinesAtom,
 } from "$/states/main.ts";
 import {formatKeyBindings, useKeyBindingAtom} from "$/utils/keybindings.ts";
 import {parseLyric} from "$/utils/ttml-parser.ts";
@@ -24,18 +25,17 @@ import exportTTMLText from "$/utils/ttml-writer.ts";
 import {HomeRegular} from "@fluentui/react-icons";
 import {DropdownMenu, Flex, IconButton, TextField} from "@radix-ui/themes";
 import {open} from "@tauri-apps/plugin-shell";
-import {useAtom, useSetAtom, useStore} from "jotai";
+import {useAtom, useAtomValue, useSetAtom, useStore} from "jotai";
 import {type FC, useCallback} from "react";
 import {Trans} from "react-i18next";
 import saveFile from "save-file";
-import {ImportExportLyric} from "$/components/TopMenu/import-export-lyric.tsx";
-import {metadataEditorDialogAtom} from "$/states/dialogs.ts";
 
 export const TopMenu: FC = () => {
 	const [saveFileName, setSaveFileName] = useAtom(saveFileNameAtom);
 	const newLyricLine = useSetAtom(newLyricLinesAtom);
-	const editLyricLine = useSetAtom(currentLyricLinesAtom);
+	const setLyricLines = useSetAtom(lyricLinesAtom);
 	const setMetadataEditorOpened = useSetAtom(metadataEditorDialogAtom);
+	const undoLyricLines = useAtomValue(undoableLyricLinesAtom);
 	const store = useStore();
 
 	const onNewFile = useCallback(() => {
@@ -55,7 +55,7 @@ export const TopMenu: FC = () => {
 				try {
 					const ttmlText = await file.text();
 					const ttmlData = parseLyric(ttmlText);
-					editLyricLine(ttmlData);
+					setLyricLines(ttmlData);
 					setSaveFileName(file.name);
 				} catch (e) {
 					console.error("Failed to parse TTML file", e);
@@ -66,7 +66,7 @@ export const TopMenu: FC = () => {
 			},
 		);
 		inputEl.click();
-	}, [editLyricLine, setSaveFileName]);
+	}, [setLyricLines, setSaveFileName]);
 	const openFileKey = useKeyBindingAtom(keyOpenFileAtom, onOpenFile, [
 		onOpenFile,
 	]);
@@ -75,7 +75,7 @@ export const TopMenu: FC = () => {
 		try {
 			const ttmlText = await navigator.clipboard.readText();
 			const ttmlData = parseLyric(ttmlText);
-			editLyricLine(ttmlData);
+			setLyricLines(ttmlData);
 		} catch (e) {
 			console.error("Failed to parse TTML file from clipboard", e);
 		}
@@ -83,10 +83,9 @@ export const TopMenu: FC = () => {
 
 	const onSaveFile = useCallback(() => {
 		try {
-			saveFile(
-				exportTTMLText(store.get(currentLyricLinesAtom)),
-				saveFileName,
-			).catch(console.error);
+			saveFile(exportTTMLText(store.get(lyricLinesAtom)), saveFileName).catch(
+				console.error,
+			);
 		} catch (e) {
 			console.error("Failed to save TTML file", e);
 		}
@@ -97,7 +96,7 @@ export const TopMenu: FC = () => {
 
 	const onSaveFileToClipboard = async () => {
 		try {
-			const lyric = store.get(currentLyricLinesAtom);
+			const lyric = store.get(lyricLinesAtom);
 			const ttml = exportTTMLText(lyric);
 			await navigator.clipboard.writeText(ttml);
 		} catch (e) {
@@ -106,17 +105,17 @@ export const TopMenu: FC = () => {
 	};
 
 	const onUndo = useCallback(() => {
-		store.set(undoLyricLinesAtom);
-	}, [store]);
+		undoLyricLines.undo();
+	}, [undoLyricLines]);
 	const undoKey = useKeyBindingAtom(keyUndoAtom, onUndo, [onUndo]);
 
 	const onRedo = useCallback(() => {
-		store.set(redoLyricLinesAtom);
-	}, [store]);
+		undoLyricLines.redo();
+	}, [undoLyricLines]);
 	const redoKey = useKeyBindingAtom(keyRedoAtom, onRedo, [onRedo]);
 
 	const onSelectAll = useCallback(() => {
-		const lines = store.get(currentLyricLinesAtom).lyricLines;
+		const lines = store.get(lyricLinesAtom).lyricLines;
 		const selectedLineIds = store.get(selectedLinesAtom);
 		const selectedLines = lines.filter((l) => selectedLineIds.has(l.id));
 		const selectedWordIds = store.get(selectedWordsAtom);
@@ -143,7 +142,7 @@ export const TopMenu: FC = () => {
 			// 选中所有歌词行
 			store.set(
 				selectedLinesAtom,
-				new Set(store.get(currentLyricLinesAtom).lyricLines.map((l) => l.id)),
+				new Set(store.get(lyricLinesAtom).lyricLines.map((l) => l.id)),
 			);
 		}
 		const sel = window.getSelection();
@@ -181,7 +180,7 @@ export const TopMenu: FC = () => {
 		console.log(selectedWordIds, selectedLineIds);
 		if (selectedWordIds.size === 0) {
 			// 删除选中的行
-			store.set(currentLyricLinesAtom, (prev) => {
+			store.set(lyricLinesAtom, (prev) => {
 				prev.lyricLines = prev.lyricLines.filter(
 					(l) => !selectedLineIds.has(l.id),
 				);
@@ -189,7 +188,7 @@ export const TopMenu: FC = () => {
 			});
 		} else {
 			// 删除选中的单词
-			store.set(currentLyricLinesAtom, (prev) => {
+			store.set(lyricLinesAtom, (prev) => {
 				for (const line of prev.lyricLines) {
 					line.words = line.words.filter((w) => !selectedWordIds.has(w.id));
 				}
@@ -244,7 +243,7 @@ export const TopMenu: FC = () => {
 								保存 TTML 文件到剪切板
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
-							<ImportExportLyric/>
+							<ImportExportLyric />
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>
 
@@ -256,12 +255,14 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.Item
 								onClick={onUndo}
 								shortcut={formatKeyBindings(undoKey)}
+								disabled={undoLyricLines.canUndo}
 							>
 								撤销
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onClick={onRedo}
 								shortcut={formatKeyBindings(redoKey)}
+								disabled={undoLyricLines.canRedo}
 							>
 								重做
 							</DropdownMenu.Item>
@@ -291,10 +292,8 @@ export const TopMenu: FC = () => {
 							>
 								删除所选
 							</DropdownMenu.Item>
-							<DropdownMenu.Separator/>
-							<DropdownMenu.Item
-								onClick={() => setMetadataEditorOpened(true)}
-							>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onClick={() => setMetadataEditorOpened(true)}>
 								编辑元数据
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>

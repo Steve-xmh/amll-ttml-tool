@@ -1,6 +1,5 @@
-import {DropdownMenu} from "@radix-ui/themes";
-import {useSetAtom, useStore} from "jotai";
-import {importFromTextDialogAtom} from "$/states/dialogs.ts";
+import { importFromTextDialogAtom } from "$/states/dialogs.ts";
+import { lyricLinesAtom, saveFileNameAtom } from "$/states/main.ts";
 import {
 	type LyricLine,
 	parseEslrc,
@@ -13,11 +12,12 @@ import {
 	stringifyLrc,
 	stringifyLys,
 	stringifyQrc,
-	stringifyYrc
+	stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
-import {currentLyricLinesAtom, saveFileNameAtom} from "$/states/main.ts";
+import { DropdownMenu } from "@radix-ui/themes";
+import { useSetAtom, useStore } from "jotai";
 import saveFile from "save-file";
-import {uid} from "uid";
+import { uid } from "uid";
 
 export const ImportExportLyric = () => {
 	const store = useStore();
@@ -34,7 +34,7 @@ export const ImportExportLyric = () => {
 					try {
 						const lyricText = await file.text();
 						const lyricLines = parser(lyricText);
-						store.set(currentLyricLinesAtom, {
+						store.set(lyricLinesAtom, {
 							lyricLines: lyricLines.map((line) => ({
 								...line,
 								ignoreSync: false,
@@ -57,18 +57,18 @@ export const ImportExportLyric = () => {
 		};
 	const onExportLyric =
 		(stringifier: (lines: LyricLine[]) => string, extension: string) =>
-			async () => {
-				const lyric = store.get(currentLyricLinesAtom).lyricLines;
-				const saveFileName = store.get(saveFileNameAtom);
-				const baseName = saveFileName.replace(/\.[^.]*$/, "");
-				const fileName = `${baseName}.${extension}`;
-				try {
-					const data = stringifier(lyric);
-					await saveFile(data, fileName);
-				} catch (e) {
-					console.error(`Failed to export lyric with format "${extension}"`, e);
-				}
-			};
+		async () => {
+			const lyric = store.get(lyricLinesAtom).lyricLines;
+			const saveFileName = store.get(saveFileNameAtom);
+			const baseName = saveFileName.replace(/\.[^.]*$/, "");
+			const fileName = `${baseName}.${extension}`;
+			try {
+				const data = stringifier(lyric);
+				await saveFile(data, fileName);
+			} catch (e) {
+				console.error(`Failed to export lyric with format "${extension}"`, e);
+			}
+		};
 	const setImportFromTextDialog = useSetAtom(importFromTextDialogAtom);
 
 	return (

@@ -9,33 +9,33 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {Box, Flex, Theme} from "@radix-ui/themes";
+import { Box, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import {AMLLWrapper} from "$/components/AMLLWrapper";
-import {TouchSyncPanel} from "$/components/TouchSyncPanel";
-import {getCurrentWindow} from "@tauri-apps/api/window";
-import {AnimatePresence, motion} from "framer-motion";
-import {useAtomValue, useStore} from "jotai";
-import {useEffect} from "react";
+import { AMLLWrapper } from "$/components/AMLLWrapper";
+import { Dialogs } from "$/components/Dialogs";
+import { TouchSyncPanel } from "$/components/TouchSyncPanel";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { AnimatePresence, motion } from "framer-motion";
+import { useAtomValue, useStore } from "jotai";
+import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import styles from "./App.module.css";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
 import LyricLinesView from "./components/LyricLinesView";
-import {SyncKeyBinding} from "./components/LyricLinesView/sync-keybinding.tsx";
+import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
-import {TitleBar} from "./components/TitleBar";
+import { TitleBar } from "./components/TitleBar";
 import {
-	currentLyricLinesAtom,
+	ToolMode,
 	isDarkThemeAtom,
+	lyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	ToolMode,
 	toolModeAtom,
 } from "./states/main.ts";
-import {showTouchSyncPanelAtom} from "./states/sync.ts";
-import {isInteracting} from "./utils/keybindings.ts";
-import {Dialogs} from "$/components/Dialogs";
-import {toast, ToastContainer} from "react-toastify";
+import { showTouchSyncPanelAtom } from "./states/sync.ts";
+import { isInteracting } from "./utils/keybindings.ts";
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -52,21 +52,25 @@ function App() {
 	}
 
 	useEffect(() => {
-		toast.warn("本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！")
+		toast.warn("本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！");
 	}, []);
 
 	useEffect(() => {
 		const onBeforeClose = (evt: BeforeUnloadEvent) => {
-			const currentLyricLines = store.get(currentLyricLinesAtom);
-			if (currentLyricLines.lyricLines.length + currentLyricLines.metadata.length > 0) {
+			const currentLyricLines = store.get(lyricLinesAtom);
+			if (
+				currentLyricLines.lyricLines.length +
+					currentLyricLines.metadata.length >
+				0
+			) {
 				evt.preventDefault();
 				evt.returnValue = false;
 			}
-		}
+		};
 		window.addEventListener("beforeunload", onBeforeClose);
 		return () => {
 			window.removeEventListener("beforeunload", onBeforeClose);
-		}
+		};
 	}, [store]);
 
 	return (
@@ -125,8 +129,8 @@ function App() {
 					<AudioControls />
 				</Box>
 			</Flex>
-			<Dialogs/>
-			<ToastContainer theme={isDarkTheme ? "dark" : "light"}/>
+			<Dialogs />
+			<ToastContainer theme={isDarkTheme ? "dark" : "light"} />
 		</Theme>
 	);
 }

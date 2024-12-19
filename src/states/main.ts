@@ -9,11 +9,11 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { audioWaveformAtom } from "$/states/audio.ts";
-import structuredClone from "@ungap/structured-clone";
-import { atom } from "jotai";
-import { loadable } from "jotai/utils";
-import type { TTMLLyric } from "../utils/ttml-types";
+import {audioWaveformAtom} from "$/states/audio.ts";
+import {atom} from "jotai";
+import {withUndo} from "jotai-history";
+import {loadable} from "jotai/utils";
+import type {TTMLLyric} from "../utils/ttml-types";
 
 export enum DarkMode {
 	Auto = "auto",
@@ -41,70 +41,16 @@ export const loadedAudioAtom = atom(new Blob([]));
 export const loadableAudioWaveformAtom = loadable(audioWaveformAtom);
 
 // 歌词行编辑上下文
-export const undoStackSizeAtom = atom(256);
-export const lyricLineEditContextAtom = atom({
-	undoStack: [
-		{
-			lyricLines: [],
-			metadata: [],
-		},
-	] as TTMLLyric[],
-	index: 0,
+export const lyricLinesAtom = atom({
+	lyricLines: [],
+	metadata: [],
+} as TTMLLyric);
+export const undoableLyricLinesAtom = withUndo(lyricLinesAtom, 256);
+export const undoLyricLinesAtom = atom(null, (get) => {
+	get(undoableLyricLinesAtom).undo();
 });
-export const currentLyricLinesAtom = atom(
-	(get) => {
-		const ctx = get(lyricLineEditContextAtom);
-		return ctx.undoStack[ctx.index];
-	},
-	(
-		get,
-		set,
-		newState:
-			| TTMLLyric
-			| ((newState: TTMLLyric, oldRefState: TTMLLyric) => void),
-	) => {
-		const ctx = get(lyricLineEditContextAtom);
-		const oldState = ctx.undoStack[ctx.index];
-		const undoStackSize = get(undoStackSizeAtom);
-		const newCtx = {
-			...ctx,
-			undoStack: ctx.undoStack.slice(
-				Math.max(0, ctx.index - undoStackSize),
-				ctx.index + 1,
-			),
-		};
-		newCtx.index = newCtx.undoStack.length;
-		if (newState instanceof Function) {
-			const cloned = structuredClone(oldState);
-			newState(cloned, oldState);
-			newCtx.undoStack.push(structuredClone(cloned));
-		} else {
-			newCtx.undoStack.push(newState);
-		}
-		// 处理某些数字，避免出现小数和部分非法数字，导致 AMLL Lyric 模块导出出错
-		for (const line of newCtx.undoStack[newCtx.index].lyricLines) {
-			line.startTime = (line.startTime || 0) | 0;
-			line.endTime = (line.endTime || 0) | 0;
-			for (const word of line.words) {
-				word.startTime = (word.startTime || 0) | 0;
-				word.endTime = (word.endTime || 0) | 0;
-				word.emptyBeat = (word.emptyBeat || 0) | 0;
-			}
-		}
-		set(lyricLineEditContextAtom, newCtx);
-	},
-);
-export const undoLyricLinesAtom = atom(null, (get, set) => {
-	const ctx = get(lyricLineEditContextAtom);
-	if (ctx.index === 0) return;
-	ctx.index--;
-	set(lyricLineEditContextAtom, { ...ctx });
-});
-export const redoLyricLinesAtom = atom(null, (get, set) => {
-	const ctx = get(lyricLineEditContextAtom);
-	if (ctx.index === ctx.undoStack.length - 1) return;
-	ctx.index++;
-	set(lyricLineEditContextAtom, { ...ctx });
+export const redoLyricLinesAtom = atom(null, (get) => {
+	get(undoableLyricLinesAtom).redo();
 });
 export const newLyricLinesAtom = atom(
 	null,
@@ -116,10 +62,7 @@ export const newLyricLinesAtom = atom(
 			metadata: [],
 		},
 	) => {
-		set(lyricLineEditContextAtom, {
-			undoStack: [newState],
-			index: 0,
-		});
+		set(lyricLinesAtom, newState);
 		set(selectedLinesAtom, new Set());
 		set(selectedWordsAtom, new Set());
 	},

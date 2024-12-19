@@ -1,11 +1,12 @@
-import {useAtom} from "jotai";
 import {metadataEditorDialogAtom} from "$/states/dialogs.ts";
-import {Button, Dialog, DropdownMenu, Flex, IconButton, TextField,} from "@radix-ui/themes";
-import {currentLyricLinesAtom} from "$/states/main.ts";
+import {lyricLinesAtom} from "$/states/main.ts";
 import {Add16Regular, Delete16Regular, Info16Regular,} from "@fluentui/react-icons";
-import styles from "./metadata.module.css";
+import {Button, Dialog, DropdownMenu, Flex, IconButton, TextField,} from "@radix-ui/themes";
+import {useAtom} from "jotai";
+import {useImmerAtom} from "jotai-immer";
 import {Fragment, useCallback, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
+import styles from "./metadata.module.css";
 
 interface SelectOption {
 	label: string;
@@ -17,12 +18,27 @@ export const MetadataEditor = () => {
 		metadataEditorDialogAtom,
 	);
 	const [customKey, setCustomKey] = useState("");
-	const [lyricLines, setLyricLines] = useAtom(currentLyricLinesAtom);
+	const [lyricLines, setLyricLines] = useImmerAtom(lyricLinesAtom);
 
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	const builtinOptions: SelectOption[] = useMemo(
 		() => [
+			{
+				// 歌词所匹配的歌曲名
+				label: t("metadataDialog.builtinOptions.musicName", "歌曲名称"),
+				value: "musicName",
+			},
+			{
+				// 歌词所匹配的歌手名
+				label: t("metadataDialog.builtinOptions.artists", "歌曲的艺术家"),
+				value: "artists",
+			},
+			{
+				// 歌词所匹配的专辑名
+				label: t("metadataDialog.builtinOptions.album", "歌曲的专辑名"),
+				value: "album",
+			},
 			{
 				// 歌词所匹配的网易云音乐 ID
 				label: t("metadataDialog.builtinOptions.ncmMusicId", "网易云音乐 ID"),
@@ -50,21 +66,6 @@ export const MetadataEditor = () => {
 				// 歌词所匹配的 ISRC 编码
 				label: t("metadataDialog.builtinOptions.isrc", "歌曲的 ISRC 号码"),
 				value: "isrc",
-			},
-			{
-				// 歌词所匹配的歌曲名
-				label: t("metadataDialog.builtinOptions.musicName", "歌曲名称"),
-				value: "musicName",
-			},
-			{
-				// 歌词所匹配的歌手名
-				label: t("metadataDialog.builtinOptions.artists", "歌曲的艺术家"),
-				value: "artists",
-			},
-			{
-				// 歌词所匹配的专辑名
-				label: t("metadataDialog.builtinOptions.album", "歌曲的专辑名"),
-				value: "album",
 			},
 			{
 				// 逐词歌词作者 GitHub ID，例如 39523898
@@ -104,78 +105,78 @@ export const MetadataEditor = () => {
 				<Dialog.Title>元数据编辑器</Dialog.Title>
 				<table className={styles.metadataTable}>
 					<thead>
-					<tr>
-						<th style={{width: "1%"}}>元数据类型</th>
-						<th>值</th>
-					</tr>
+						<tr>
+							<th style={{ width: "1%" }}>元数据类型</th>
+							<th>值</th>
+						</tr>
 					</thead>
 					<tbody>
-					{lyricLines.metadata.length === 0 && (
-						<tr
-							style={{
-								height: "4em",
-							}}
-						>
-							<td
-								colSpan={2}
-								style={{color: "var(--gray-9)", textAlign: "center"}}
+						{lyricLines.metadata.length === 0 && (
+							<tr
+								style={{
+									height: "4em",
+								}}
 							>
-								无任何元数据
-							</td>
-						</tr>
-					)}
-					{lyricLines.metadata.map((v, i) => (
-						<Fragment key={`metadata-${v.key}`}>
-							{v.value.map((vv, ii) => (
-								<tr key={`metadata-${v.key}-${ii}`}>
-									<td>{ii === 0 && toDisplayKey(v.key)}</td>
-									<td>
-										<Flex gap="1" ml="2" mt="1">
-											<TextField.Root
-												value={vv}
-												className={styles.metadataInput}
-												onChange={(e) => {
-													const newValue = e.currentTarget.value;
-													setLyricLines((prev) => {
-														prev.metadata[i].value[ii] = newValue;
-													});
-												}}
-											/>
-											<IconButton
-												variant="soft"
-												onClick={() => {
-													setLyricLines((prev) => {
-														prev.metadata[i].value.splice(ii, 1);
-														if (prev.metadata[i].value.length === 0) {
-															prev.metadata.splice(i, 1);
-														}
-													});
-												}}
-											>
-												<Delete16Regular/>
-											</IconButton>
-										</Flex>
-									</td>
-								</tr>
-							))}
-							<tr className={styles.newItemLine}>
-								<td/>
-								<td className={styles.newItemBtnRow}>
-									<Button
-										variant="soft"
-										my="1"
-										onClick={() => {
-											setLyricLines((prev) => {
-												prev.metadata[i].value.push("");
-											});
-										}}
-									>
-										添加
-									</Button>
+								<td
+									colSpan={2}
+									style={{ color: "var(--gray-9)", textAlign: "center" }}
+								>
+									无任何元数据
 								</td>
 							</tr>
-						</Fragment>
-					))}
+						)}
+						{lyricLines.metadata.map((v, i) => (
+							<Fragment key={`metadata-${v.key}`}>
+								{v.value.map((vv, ii) => (
+									<tr key={`metadata-${v.key}-${ii}`}>
+										<td>{ii === 0 && toDisplayKey(v.key)}</td>
+										<td>
+											<Flex gap="1" ml="2" mt="1">
+												<TextField.Root
+													value={vv}
+													className={styles.metadataInput}
+													onChange={(e) => {
+														const newValue = e.currentTarget.value;
+														setLyricLines((prev) => {
+															prev.metadata[i].value[ii] = newValue;
+														});
+													}}
+												/>
+												<IconButton
+													variant="soft"
+													onClick={() => {
+														setLyricLines((prev) => {
+															prev.metadata[i].value.splice(ii, 1);
+															if (prev.metadata[i].value.length === 0) {
+																prev.metadata.splice(i, 1);
+															}
+														});
+													}}
+												>
+													<Delete16Regular />
+												</IconButton>
+											</Flex>
+										</td>
+									</tr>
+								))}
+								<tr className={styles.newItemLine}>
+									<td />
+									<td className={styles.newItemBtnRow}>
+										<Button
+											variant="soft"
+											my="1"
+											onClick={() => {
+												setLyricLines((prev) => {
+													prev.metadata[i].value.push("");
+												});
+											}}
+										>
+											添加
+										</Button>
+									</td>
+								</tr>
+							</Fragment>
+						))}
 					</tbody>
 				</table>
 				<Flex gap="1">
@@ -187,7 +188,7 @@ export const MetadataEditor = () => {
 						>
 							<Button variant="soft">
 								添加新键值
-								<DropdownMenu.TriggerIcon/>
+								<DropdownMenu.TriggerIcon />
 							</Button>
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content>
@@ -218,7 +219,7 @@ export const MetadataEditor = () => {
 										});
 									}}
 								>
-									<Add16Regular/>
+									<Add16Regular />
 								</IconButton>
 							</Flex>
 							{builtinOptions.map((v) => (
@@ -275,7 +276,7 @@ export const MetadataEditor = () => {
 							rel="noreferrer"
 							href="https://github.com/Steve-xmh/amll-ttml-tool/wiki/%E6%AD%8C%E8%AF%8D%E5%85%83%E6%95%B0%E6%8D%AE"
 						>
-							<Info16Regular/>
+							<Info16Regular />
 							了解详情
 						</a>
 					</Button>

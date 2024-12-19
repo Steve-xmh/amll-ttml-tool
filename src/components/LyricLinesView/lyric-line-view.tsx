@@ -9,39 +9,20 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
-import {
-	ToolMode,
-	currentLyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
-	toolModeAtom,
-} from "$/states/main.ts";
-import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
-import { msToTimestamp } from "$/utils/timestamp.ts";
-import {
-	type LyricLine,
-	newLyricLine,
-	newLyricWord,
-} from "$/utils/ttml-types.ts";
-import {
-	AddFilled,
-	TextAlignRightFilled,
-	VideoBackgroundEffectFilled,
-} from "@fluentui/react-icons";
-import { Button, Flex, IconButton, Text } from "@radix-ui/themes";
+import {draggingIdAtom} from "$/components/LyricLinesView/lyric-line-view-states.ts";
+import {lyricLinesAtom, selectedLinesAtom, selectedWordsAtom, ToolMode, toolModeAtom,} from "$/states/main.ts";
+import {visualizeTimestampUpdateAtom} from "$/states/sync.ts";
+import {msToTimestamp} from "$/utils/timestamp.ts";
+import {type LyricLine, newLyricLine, newLyricWord,} from "$/utils/ttml-types.ts";
+import {AddFilled, TextAlignRightFilled, VideoBackgroundEffectFilled,} from "@fluentui/react-icons";
+import {Button, Flex, IconButton, Text} from "@radix-ui/themes";
 import classNames from "classnames";
-import {
-	type Atom,
-	atom,
-	useAtom,
-	useAtomValue,
-	useSetAtom,
-	useStore,
-} from "jotai";
-import { type FC, memo, useEffect, useRef, useState } from "react";
+import {type Atom, atom, useAtom, useAtomValue, useSetAtom, useStore,} from "jotai";
+import {useSetImmerAtom} from "jotai-immer";
+import {splitAtom} from "jotai/utils";
+import {type FC, Fragment, memo, useEffect, useMemo, useRef, useState,} from "react";
 import styles from "./index.module.css";
-import { LyricWordView } from "./lyric-word-view";
+import {LyricWordView} from "./lyric-word-view";
 
 const isDraggingAtom = atom(false);
 
@@ -50,9 +31,22 @@ export const LyricLineView: FC<{
 	lineIndex: number;
 }> = memo(({ lineAtom, lineIndex }) => {
 	const line = useAtomValue(lineAtom);
-	const [selectedLines, setSelectedLines] = useAtom(selectedLinesAtom);
+	const setSelectedLines = useSetAtom(selectedLinesAtom);
+	const lineSelectedAtom = useMemo(() => {
+		const a = atom((get) => get(selectedLinesAtom).has(line.id));
+		if (import.meta.env.DEV) {
+			a.debugLabel = `lineSelectedAtom-${line.id}`;
+		}
+		return a;
+	}, [line.id]);
+	const wordsAtom = useMemo(
+		() => splitAtom(atom((get) => get(lineAtom).words)),
+		[lineAtom],
+	);
+	const words = useAtomValue(wordsAtom);
+	const lineSelected = useAtomValue(lineSelectedAtom);
 	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
-	const editLyricLines = useSetAtom(currentLyricLinesAtom);
+	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const store = useStore();
@@ -141,12 +135,7 @@ export const LyricLineView: FC<{
 					}}
 					onClick={() => {
 						editLyricLines((state) => {
-							const newLine = newLyricLine();
-							state.lyricLines = [
-								...state.lyricLines.slice(0, lineIndex),
-								newLine,
-								...state.lyricLines.slice(lineIndex),
-							];
+							state.lyricLines.splice(lineIndex, 0, newLyricLine());
 						});
 						// setInsertMode(InsertMode.None);
 						setEnableInsert(false);
@@ -161,7 +150,7 @@ export const LyricLineView: FC<{
 				direction="row"
 				className={classNames(
 					styles.lyricLine,
-					selectedLines.has(line.id) && styles.selected,
+					lineSelected && styles.selected,
 					toolMode === ToolMode.Sync && styles.sync,
 					toolMode === ToolMode.Edit && styles.edit,
 					line.ignoreSync && styles.ignoreSync,
@@ -180,7 +169,7 @@ export const LyricLineView: FC<{
 				onDragOver={(evt) => {
 					if (!store.get(isDraggingAtom)) return;
 					if (store.get(draggingIdAtom) === line.id) return;
-					if (selectedLines.has(line.id)) return;
+					if (lineSelected) return;
 					evt.preventDefault();
 					evt.dataTransfer.dropEffect = "move";
 					const rect = evt.currentTarget.getBoundingClientRect();
@@ -199,6 +188,7 @@ export const LyricLineView: FC<{
 					if (!store.get(isDraggingAtom)) return;
 					const rect = evt.currentTarget.getBoundingClientRect();
 					const innerY = evt.clientY - rect.top;
+					const selectedLines = store.get(selectedLinesAtom);
 					const selectedLineIds = selectedLines.has(store.get(draggingIdAtom))
 						? selectedLines
 						: new Set([store.get(draggingIdAtom)]);
@@ -263,7 +253,7 @@ export const LyricLineView: FC<{
 							if (n.size > 0) {
 								let minBoundry = Number.NaN;
 								let maxBoundry = Number.NaN;
-								const lyricLines = store.get(currentLyricLinesAtom).lyricLines;
+								const lyricLines = store.get(lyricLinesAtom).lyricLines;
 								lyricLines.forEach((line, i) => {
 									if (n.has(line.id)) {
 										if (Number.isNaN(minBoundry)) minBoundry = i;
@@ -311,8 +301,8 @@ export const LyricLineView: FC<{
 						)}
 						ref={wordsContainerRef}
 					>
-						{line.words.map((word, wi) => (
-							<>
+						{words.map((wordAtom, wi) => (
+							<Fragment key={`${wordAtom}`}>
 								{enableInsert && (
 									<IconButton
 										size="1"
@@ -321,12 +311,11 @@ export const LyricLineView: FC<{
 											evt.preventDefault();
 											evt.stopPropagation();
 											editLyricLines((state) => {
-												const newWord = newLyricWord();
-												state.lyricLines[lineIndex].words = [
-													...state.lyricLines[lineIndex].words.slice(0, wi),
-													newWord,
-													...state.lyricLines[lineIndex].words.slice(wi),
-												];
+												state.lyricLines[lineIndex].words.splice(
+													wi,
+													0,
+													newLyricWord(),
+												);
 											});
 										}}
 									>
@@ -334,13 +323,12 @@ export const LyricLineView: FC<{
 									</IconButton>
 								)}
 								<LyricWordView
-									key={`lyric-line-${lineIndex}-word-${word.id}`}
-									word={word}
+									wordAtom={wordAtom}
 									wordIndex={wi}
 									line={line}
 									lineIndex={lineIndex}
 								/>
-							</>
+							</Fragment>
 						))}
 						{enableInsert && (
 							<IconButton
@@ -367,18 +355,6 @@ export const LyricLineView: FC<{
 									evt.preventDefault();
 									evt.stopPropagation();
 									setEnableInsert((v) => !v);
-									// const newWordId = uid();
-									// editLyricLines((state) => {
-									// 	state.lyricLines[lineIndex].words.push({
-									// 		id: newWordId,
-									// 		word: "",
-									// 		startTime: 0,
-									// 		endTime: 0,
-									// 		obscene: false,
-									// 		emptyBeat: 0,
-									// 	});
-									// });
-									// setSelectedWords(new Set([newWordId]));
 								}}
 							>
 								<AddFilled />
@@ -408,12 +384,7 @@ export const LyricLineView: FC<{
 					}}
 					onClick={() => {
 						editLyricLines((state) => {
-							const newLine = newLyricLine();
-							state.lyricLines = [
-								...state.lyricLines.slice(0, lineIndex + 1),
-								newLine,
-								...state.lyricLines.slice(lineIndex + 1),
-							];
+							state.lyricLines.splice(lineIndex + 1, 0, newLyricLine());
 						});
 						// setInsertMode(InsertMode.None);
 						setEnableInsert(false);

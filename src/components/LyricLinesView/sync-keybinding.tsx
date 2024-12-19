@@ -1,5 +1,3 @@
-import {useStore} from "jotai";
-import {type FC, useCallback} from "react";
 import {
 	keyMoveNextLineAtom,
 	keyMoveNextWordAtom,
@@ -9,7 +7,7 @@ import {
 	keySyncNextAtom,
 	keySyncStartAtom,
 } from "$/states/keybindings.ts";
-import {currentLyricLinesAtom, currentTimeAtom, selectedLinesAtom, selectedWordsAtom,} from "$/states/main.ts";
+import {currentTimeAtom, lyricLinesAtom, selectedLinesAtom, selectedWordsAtom,} from "$/states/main.ts";
 import {currentEmptyBeatAtom} from "$/states/sync.ts";
 import {useKeyBindingAtom} from "$/utils/keybindings.ts";
 import {
@@ -17,8 +15,11 @@ import {
 	getCurrentLineLocation,
 	getCurrentLocation,
 	isSynchronizableLine,
-	isSynchronizableWord
+	isSynchronizableWord,
 } from "$/utils/lyric-states.ts";
+import {produce} from "immer";
+import {useStore} from "jotai";
+import {type FC, useCallback} from "react";
 
 export const SyncKeyBinding: FC = () => {
 	const store = useStore();
@@ -132,13 +133,15 @@ export const SyncKeyBinding: FC = () => {
 			if (!location) return;
 			const currentTime =
 				Math.max(0, store.get(currentTimeAtom) - evt.downTimeOffset) | 0;
-			store.set(currentLyricLinesAtom, (state) => {
-				const line = state.lyricLines[location.lineIndex];
-				if (location.isFirstWord) {
-					line.startTime = currentTime;
-				}
-				line.words[location.wordIndex].startTime = currentTime;
-			});
+			store.set(lyricLinesAtom, (state) =>
+				produce(state, (state) => {
+					const line = state.lyricLines[location.lineIndex];
+					if (location.isFirstWord) {
+						line.startTime = currentTime;
+					}
+					line.words[location.wordIndex].startTime = currentTime;
+				}),
+			);
 		},
 		[store],
 	);
@@ -154,22 +157,24 @@ export const SyncKeyBinding: FC = () => {
 			}
 			const currentTime =
 				Math.max(0, store.get(currentTimeAtom) - evt.downTimeOffset) | 0;
-			store.set(currentLyricLinesAtom, (state) => {
-				const curLine = state.lyricLines[location.lineIndex];
-				curLine.words[location.wordIndex].endTime = currentTime;
-				const nextWord = findNextWord(
-					state.lyricLines,
-					location.lineIndex,
-					location.wordIndex,
-				);
-				if (nextWord) {
-					if (curLine !== nextWord.line) {
-						curLine.endTime = currentTime;
-						nextWord.line.startTime = currentTime;
+			store.set(lyricLinesAtom, (state) =>
+				produce(state, (state) => {
+					const curLine = state.lyricLines[location.lineIndex];
+					curLine.words[location.wordIndex].endTime = currentTime;
+					const nextWord = findNextWord(
+						state.lyricLines,
+						location.lineIndex,
+						location.wordIndex,
+					);
+					if (nextWord) {
+						if (curLine !== nextWord.line) {
+							curLine.endTime = currentTime;
+							nextWord.line.startTime = currentTime;
+						}
+						nextWord.word.startTime = currentTime;
 					}
-					nextWord.word.startTime = currentTime;
-				}
-			});
+				}),
+			);
 			moveToNextWord();
 		},
 		[store, moveToNextWord],
@@ -181,13 +186,15 @@ export const SyncKeyBinding: FC = () => {
 			if (!location) return;
 			const currentTime =
 				Math.max(0, store.get(currentTimeAtom) - evt.downTimeOffset) | 0;
-			store.set(currentLyricLinesAtom, (state) => {
-				const line = state.lyricLines[location.lineIndex];
-				line.words[location.wordIndex].endTime = currentTime;
-				if (location.isLastWord) {
-					line.endTime = currentTime;
-				}
-			});
+			store.set(lyricLinesAtom, (state) =>
+				produce(state, (state) => {
+					const line = state.lyricLines[location.lineIndex];
+					line.words[location.wordIndex].endTime = currentTime;
+					if (location.isLastWord) {
+						line.endTime = currentTime;
+					}
+				}),
+			);
 			moveToNextWord();
 		},
 		[store, moveToNextWord],
