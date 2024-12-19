@@ -22,7 +22,7 @@ import {
 import { Card } from "@radix-ui/themes";
 import structuredClone from "@ungap/structured-clone";
 import classNames from "classnames";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useStore } from "jotai";
 import { memo, useEffect, useMemo, useRef } from "react";
 import styles from "./index.module.css";
 
