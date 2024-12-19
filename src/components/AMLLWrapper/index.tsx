@@ -2,14 +2,13 @@
 // #warning Using local Apple Music Like Lyrics, skip importing css style
 // #else
 import "@applemusic-like-lyrics/core/style.css";
-import { audioElAtom } from "$/states/audio.ts";
-// #endif
 import {
+	audioElAtom,
 	audioPlayingAtom,
 	currentTimeAtom,
-	isDarkThemeAtom,
-	lyricLinesAtom,
-} from "$/states/main.ts";
+} from "$/states/audio.ts";
+// #endif
+import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
 import {
 	lyricWordFadeWidthAtom,
 	showRomanLinesAtom,

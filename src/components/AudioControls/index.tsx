@@ -9,14 +9,35 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {audioElAtom, playbackRateAtom, volumeAtom} from "$/states/audio.ts";
-import {audioPlayingAtom, currentDurationAtom, currentTimeAtom, loadedAudioAtom,} from "$/states/main.ts";
-import {msToTimestamp} from "$/utils/timestamp.ts";
-import {MusicNote2Filled, PauseFilled, PlayFilled,} from "@fluentui/react-icons";
-import {Card, Flex, Grid, HoverCard, IconButton, Inset, Slider, Text, Tooltip,} from "@radix-ui/themes";
-import {useAtom, useAtomValue} from "jotai";
-import {type FC, memo, useCallback, useEffect, useState} from "react";
-import {AudioSlider} from "$/components/AudioControls/audio-slider.tsx";
+import { AudioSlider } from "$/components/AudioControls/audio-slider.tsx";
+import {
+	audioElAtom,
+	audioPlayingAtom,
+	currentDurationAtom,
+	currentTimeAtom,
+	loadedAudioAtom,
+	playbackRateAtom,
+	volumeAtom,
+} from "$/states/audio.ts";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import {
+	MusicNote2Filled,
+	PauseFilled,
+	PlayFilled,
+} from "@fluentui/react-icons";
+import {
+	Card,
+	Flex,
+	Grid,
+	HoverCard,
+	IconButton,
+	Inset,
+	Slider,
+	Text,
+	Tooltip,
+} from "@radix-ui/themes";
+import { useAtom, useAtomValue } from "jotai";
+import { type FC, memo, useCallback, useEffect, useState } from "react";
 
 export const AudioControls: FC = memo(() => {
 	const audioEl = useAtomValue(audioElAtom);
@@ -46,7 +67,7 @@ export const AudioControls: FC = memo(() => {
 			},
 		);
 		inputEl.click();
-	}, [audioEl, setAudio]);
+	}, [setAudio]);
 
 	const onTogglePlay = useCallback(() => {
 		if (audioEl.paused) audioEl.play();
@@ -138,7 +159,7 @@ export const AudioControls: FC = memo(() => {
 					>
 						{msToTimestamp(currentTime)}
 					</Text>
-					<AudioSlider/>
+					<AudioSlider />
 					<Text
 						size="2"
 						style={{

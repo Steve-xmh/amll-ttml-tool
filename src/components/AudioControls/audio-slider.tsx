@@ -1,14 +1,14 @@
-import { audioElAtom } from "$/states/audio.ts";
 import {
+	audioElAtom,
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
 	loadableAudioWaveformAtom,
-} from "$/states/main.ts";
-import { msToTimestamp } from "$/utils/timestamp.ts";
-import { Card } from "@radix-ui/themes";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useLayoutEffect, useRef } from "react";
+} from "$/states/audio.ts";
+import {msToTimestamp} from "$/utils/timestamp.ts";
+import {Card} from "@radix-ui/themes";
+import {useAtomValue, useSetAtom} from "jotai";
+import {useCallback, useLayoutEffect, useRef} from "react";
 
 export const AudioSlider = () => {
 	const waveformCanvasRef = useRef<HTMLCanvasElement>(null);

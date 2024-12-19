@@ -1,3 +1,4 @@
+import {currentTimeAtom} from "$/states/audio.ts";
 import {
 	keyMoveNextLineAtom,
 	keyMoveNextWordAtom,
@@ -7,7 +8,7 @@ import {
 	keySyncNextAtom,
 	keySyncStartAtom,
 } from "$/states/keybindings.ts";
-import {currentTimeAtom, lyricLinesAtom, selectedLinesAtom, selectedWordsAtom,} from "$/states/main.ts";
+import {lyricLinesAtom, selectedLinesAtom, selectedWordsAtom,} from "$/states/main.ts";
 import {currentEmptyBeatAtom} from "$/states/sync.ts";
 import {useKeyBindingAtom} from "$/utils/keybindings.ts";
 import {
