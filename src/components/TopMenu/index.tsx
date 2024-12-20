@@ -1,5 +1,8 @@
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
-import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
+import {
+	metadataEditorDialogAtom,
+	settingsDialogAtom,
+} from "$/states/dialogs.ts";
 import {
 	keyDeleteSelectionAtom,
 	keyNewFileAtom,
@@ -35,6 +38,7 @@ export const TopMenu: FC = () => {
 	const newLyricLine = useSetAtom(newLyricLinesAtom);
 	const setLyricLines = useSetAtom(lyricLinesAtom);
 	const setMetadataEditorOpened = useSetAtom(metadataEditorDialogAtom);
+	const setSettingsDialogOpened = useSetAtom(settingsDialogAtom);
 	const undoLyricLines = useAtomValue(undoableLyricLinesAtom);
 	const store = useStore();
 
@@ -297,7 +301,7 @@ export const TopMenu: FC = () => {
 								编辑元数据
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
-							<DropdownMenu.Item onClick={() => setMetadataEditorOpened(true)}>
+							<DropdownMenu.Item onClick={() => setSettingsDialogOpened(true)}>
 								首选项
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>

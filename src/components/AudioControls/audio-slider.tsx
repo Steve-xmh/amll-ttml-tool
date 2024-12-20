@@ -5,10 +5,10 @@ import {
 	currentTimeAtom,
 	loadableAudioWaveformAtom,
 } from "$/states/audio.ts";
-import {msToTimestamp} from "$/utils/timestamp.ts";
-import {Card} from "@radix-ui/themes";
-import {useAtomValue, useSetAtom} from "jotai";
-import {useCallback, useLayoutEffect, useRef} from "react";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import { Card } from "@radix-ui/themes";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useLayoutEffect, useRef } from "react";
 
 export const AudioSlider = () => {
 	const waveformCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -150,11 +150,13 @@ export const AudioSlider = () => {
 		};
 		const onSeeked = () => {
 			setCurrentTime((audioEl.currentTime * 1000) | 0);
+			redrawCachedWaveform();
 		};
 		audioEl.addEventListener("loadedmetadata", onLoad);
 		audioEl.addEventListener("play", onPlay);
 		audioEl.addEventListener("pause", onPause);
 		audioEl.addEventListener("seeked", onSeeked);
+		audioEl.addEventListener("timeupdate", onSeeked);
 		setAudioPlaying(!audioEl.paused);
 
 		return () => {
@@ -162,6 +164,7 @@ export const AudioSlider = () => {
 			audioEl.removeEventListener("play", onPlay);
 			audioEl.removeEventListener("pause", onPause);
 			audioEl.removeEventListener("seeked", onSeeked);
+			audioEl.removeEventListener("timeupdate", onSeeked);
 		};
 	}, [
 		audioEl,

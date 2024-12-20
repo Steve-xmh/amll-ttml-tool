@@ -1,5 +1,7 @@
 import { atomWithKeybindingStorage } from "../utils/keybindings.ts";
 
+// https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values
+
 const IS_MAC = navigator.userAgent.includes("Mac");
 const CONTROL_KEY = IS_MAC ? "Meta" : "Control";
 
@@ -84,3 +86,28 @@ export const keySyncStartAtom = atomWithKeybindingStorage("syncStart", [
 ]);
 export const keySyncNextAtom = atomWithKeybindingStorage("syncNext", ["KeyG"]);
 export const keySyncEndAtom = atomWithKeybindingStorage("syncEnd", ["KeyH"]);
+
+// 音频控制
+export const keyPlayPauseAtom = atomWithKeybindingStorage("playPause", [
+	"Space",
+]);
+export const keySeekForwardAtom = atomWithKeybindingStorage("seekForward", [
+	"ArrowRight",
+]);
+export const keySeekBackwardAtom = atomWithKeybindingStorage("seekBackward", [
+	"ArrowLeft",
+]);
+export const keyVolumeUpAtom = atomWithKeybindingStorage("volumeUp", [
+	"ArrowUp",
+]);
+export const keyVolumeDownAtom = atomWithKeybindingStorage("volumeDown", [
+	"ArrowDown",
+]);
+export const keyPlaybackRateUpAtom = atomWithKeybindingStorage(
+	"playbackRateUp",
+	["BracketRight"],
+);
+export const keyPlaybackRateDownAtom = atomWithKeybindingStorage(
+	"playbackRateDown",
+	["BracketLeft"],
+);

@@ -19,6 +19,16 @@ import {
 	playbackRateAtom,
 	volumeAtom,
 } from "$/states/audio.ts";
+import {
+	keyPlayPauseAtom,
+	keyPlaybackRateDownAtom,
+	keyPlaybackRateUpAtom,
+	keySeekBackwardAtom,
+	keySeekForwardAtom,
+	keyVolumeDownAtom,
+	keyVolumeUpAtom,
+} from "$/states/keybindings.ts";
+import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import {
 	MusicNote2Filled,
@@ -36,8 +46,76 @@ import {
 	Text,
 	Tooltip,
 } from "@radix-ui/themes";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useStore } from "jotai";
 import { type FC, memo, useCallback, useEffect, useState } from "react";
+
+const AudioPlaybackKeyBinding = memo(() => {
+	const store = useStore();
+
+	useKeyBindingAtom(
+		keyPlayPauseAtom,
+		() => {
+			const audioEl = store.get(audioElAtom);
+			if (audioEl.paused) audioEl.play().then(() => {});
+			else audioEl.pause();
+		},
+		[store],
+	);
+
+	useKeyBindingAtom(
+		keySeekForwardAtom,
+		() => {
+			const audioEl = store.get(audioElAtom);
+			audioEl.currentTime += 5;
+			store.set(currentTimeAtom, (audioEl.currentTime * 1000) | 0);
+		},
+		[store],
+	);
+
+	useKeyBindingAtom(
+		keySeekBackwardAtom,
+		() => {
+			const audioEl = store.get(audioElAtom);
+			audioEl.currentTime -= 5;
+			store.set(currentTimeAtom, (audioEl.currentTime * 1000) | 0);
+		},
+		[store],
+	);
+
+	useKeyBindingAtom(
+		keyVolumeUpAtom,
+		() => {
+			store.set(volumeAtom, (v) => Math.min(1, v + 0.1));
+		},
+		[store],
+	);
+
+	useKeyBindingAtom(
+		keyVolumeDownAtom,
+		() => {
+			store.set(volumeAtom, (v) => Math.max(0, v - 0.1));
+		},
+		[store],
+	);
+
+	useKeyBindingAtom(
+		keyPlaybackRateUpAtom,
+		() => {
+			store.set(playbackRateAtom, (v) => Math.min(4, v + 0.25));
+		},
+		[store],
+	);
+
+	useKeyBindingAtom(
+		keyPlaybackRateDownAtom,
+		() => {
+			store.set(playbackRateAtom, (v) => Math.max(0.25, v - 0.25));
+		},
+		[store],
+	);
+
+	return null;
+});
 
 export const AudioControls: FC = memo(() => {
 	const audioEl = useAtomValue(audioElAtom);
@@ -100,6 +178,7 @@ export const AudioControls: FC = memo(() => {
 	return (
 		<Card m="2" mt="0">
 			<Inset>
+				<AudioPlaybackKeyBinding />
 				<Flex align="center" px="2" gapX="2">
 					<HoverCard.Root>
 						<HoverCard.Trigger>

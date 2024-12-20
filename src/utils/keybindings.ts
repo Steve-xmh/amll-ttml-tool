@@ -66,7 +66,11 @@ export function atomWithKeybindingStorage(
 	return wrapperAtom;
 }
 
+const blackListedKeys = new Set(["Bracket", "Arrow"]);
 function removeSideOfKeyCode(code: string) {
+	for (const key of blackListedKeys) {
+		if (code.startsWith(key)) return code;
+	}
 	if (code.endsWith("Left")) return code.substring(0, code.length - 4);
 	if (code.endsWith("Right")) return code.substring(0, code.length - 5);
 	return code;
@@ -109,6 +113,7 @@ window.addEventListener("keyup", (evt) => {
 		const joined = [...pressingKeys].join(" + ").trim();
 		bufferedKeys.clear();
 		const callbacks = registeredKeyBindings.get(joined);
+		console.log("key up", joined, callbacks);
 
 		if (callbacks) {
 			const downTimeOffset = evt.timeStamp - downTime;
