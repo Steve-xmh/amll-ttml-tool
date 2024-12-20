@@ -11,18 +11,16 @@
 
 import { Box, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { AMLLWrapper } from "$/components/AMLLWrapper";
-import { Dialogs } from "$/components/Dialogs";
+import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
 import { TouchSyncPanel } from "$/components/TouchSyncPanel";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useStore } from "jotai";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import styles from "./App.module.css";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
-import LyricLinesView from "./components/LyricLinesView";
 import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
@@ -36,6 +34,10 @@ import {
 } from "./states/main.ts";
 import { showTouchSyncPanelAtom } from "./states/sync.ts";
 import { isInteracting } from "./utils/keybindings.ts";
+
+const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
+const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
+const Dialogs = lazy(() => import("./components/Dialogs"));
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -95,32 +97,35 @@ function App() {
 				<Box flexGrow="1" overflow="hidden">
 					<AnimatePresence mode="popLayout">
 						{toolMode !== ToolMode.Preview && (
-							<motion.div
-								layout="position"
-								style={{
-									height: "100%",
-									maxHeight: "100%",
-									overflowY: "hidden",
-								}}
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-								key="edit"
-							>
-								<LyricLinesView key="edit" />
-							</motion.div>
-						)}
-						{toolMode === ToolMode.Preview && (
-							<Box height="100%" key="amll-preview" p="2" asChild>
+							<SuspensePlaceHolder key="edit">
 								<motion.div
 									layout="position"
+									style={{
+										height: "100%",
+										maxHeight: "100%",
+										overflowY: "hidden",
+									}}
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}
 								>
-									<AMLLWrapper />
+									<LyricLinesView key="edit" />
 								</motion.div>
-							</Box>
+							</SuspensePlaceHolder>
+						)}
+						{toolMode === ToolMode.Preview && (
+							<SuspensePlaceHolder key="amll-preview">
+								<Box height="100%" key="amll-preview" p="2" asChild>
+									<motion.div
+										layout="position"
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+									>
+										<AMLLWrapper />
+									</motion.div>
+								</Box>
+							</SuspensePlaceHolder>
 						)}
 					</AnimatePresence>
 				</Box>
@@ -129,7 +134,9 @@ function App() {
 					<AudioControls />
 				</Box>
 			</Flex>
-			<Dialogs />
+			<Suspense fallback={null}>
+				<Dialogs />
+			</Suspense>
 			<ToastContainer theme={isDarkTheme ? "dark" : "light"} />
 		</Theme>
 	);

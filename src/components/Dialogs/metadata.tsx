@@ -1,11 +1,22 @@
-import {metadataEditorDialogAtom} from "$/states/dialogs.ts";
-import {lyricLinesAtom} from "$/states/main.ts";
-import {Add16Regular, Delete16Regular, Info16Regular,} from "@fluentui/react-icons";
-import {Button, Dialog, DropdownMenu, Flex, IconButton, TextField,} from "@radix-ui/themes";
-import {useAtom} from "jotai";
-import {useImmerAtom} from "jotai-immer";
-import {Fragment, useCallback, useMemo, useState} from "react";
-import {useTranslation} from "react-i18next";
+import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
+import { lyricLinesAtom } from "$/states/main.ts";
+import {
+	Add16Regular,
+	Delete16Regular,
+	Info16Regular,
+} from "@fluentui/react-icons";
+import {
+	Button,
+	Dialog,
+	DropdownMenu,
+	Flex,
+	IconButton,
+	TextField,
+} from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { useImmerAtom } from "jotai-immer";
+import { Fragment, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./metadata.module.css";
 
 interface SelectOption {
@@ -179,11 +190,17 @@ export const MetadataEditor = () => {
 						))}
 					</tbody>
 				</table>
-				<Flex gap="1">
+				<Flex
+					gap="1"
+					direction={{
+						sm: "row",
+						initial: "column",
+					}}
+				>
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger
 							style={{
-								flex: "1",
+								flex: "1 0 auto",
 							}}
 						>
 							<Button variant="soft">
@@ -249,7 +266,7 @@ export const MetadataEditor = () => {
 					</DropdownMenu.Root>
 					<Button
 						style={{
-							flex: "1",
+							flex: "1 0 auto",
 						}}
 						variant="soft"
 						onClick={() => {

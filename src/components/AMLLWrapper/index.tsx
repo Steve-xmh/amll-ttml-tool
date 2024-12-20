@@ -2,12 +2,12 @@
 // #warning Using local Apple Music Like Lyrics, skip importing css style
 // #else
 import "@applemusic-like-lyrics/core/style.css";
+// #endif
 import {
 	audioElAtom,
 	audioPlayingAtom,
 	currentTimeAtom,
 } from "$/states/audio.ts";
-// #endif
 import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
 import {
 	lyricWordFadeWidthAtom,
@@ -72,3 +72,5 @@ export const AMLLWrapper = memo(() => {
 		</Card>
 	);
 });
+
+export default AMLLWrapper;

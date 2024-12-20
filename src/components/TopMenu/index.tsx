@@ -1,5 +1,5 @@
-import {ImportExportLyric} from "$/components/TopMenu/import-export-lyric.tsx";
-import {metadataEditorDialogAtom} from "$/states/dialogs.ts";
+import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
+import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
 import {
 	keyDeleteSelectionAtom,
 	keyNewFileAtom,
@@ -19,15 +19,15 @@ import {
 	selectedWordsAtom,
 	undoableLyricLinesAtom,
 } from "$/states/main.ts";
-import {formatKeyBindings, useKeyBindingAtom} from "$/utils/keybindings.ts";
-import {parseLyric} from "$/utils/ttml-parser.ts";
+import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
+import { parseLyric } from "$/utils/ttml-parser.ts";
 import exportTTMLText from "$/utils/ttml-writer.ts";
-import {HomeRegular} from "@fluentui/react-icons";
-import {DropdownMenu, Flex, IconButton, TextField} from "@radix-ui/themes";
-import {open} from "@tauri-apps/plugin-shell";
-import {useAtom, useAtomValue, useSetAtom, useStore} from "jotai";
-import {type FC, useCallback} from "react";
-import {Trans} from "react-i18next";
+import { HomeRegular } from "@fluentui/react-icons";
+import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
+import { open } from "@tauri-apps/plugin-shell";
+import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { type FC, useCallback } from "react";
+import { Trans } from "react-i18next";
 import saveFile from "save-file";
 
 export const TopMenu: FC = () => {
@@ -296,12 +296,16 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.Item onClick={() => setMetadataEditorOpened(true)}>
 								编辑元数据
 							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onClick={() => setMetadataEditorOpened(true)}>
+								首选项
+							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>
 
 					<DropdownMenu.Sub>
 						<DropdownMenu.SubTrigger>
-							<Trans i18nKey="topBar.menu.edit">帮助</Trans>
+							<Trans i18nKey="topBar.menu.help">帮助</Trans>
 						</DropdownMenu.SubTrigger>
 						<DropdownMenu.SubContent>
 							<DropdownMenu.Item

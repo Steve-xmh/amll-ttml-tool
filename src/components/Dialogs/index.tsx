@@ -1,11 +1,13 @@
-import {ImportFromText} from "$/components/TopMenu/import-from-text.tsx";
-import {MetadataEditor} from "$/components/Dialogs/metadata.tsx";
+import { ImportFromText } from "$/components/Dialogs/import-from-text.tsx";
+import { MetadataEditor } from "$/components/Dialogs/metadata.tsx";
 
 export const Dialogs = () => {
 	return (
 		<>
-			<ImportFromText/>
-			<MetadataEditor/>
+			<ImportFromText />
+			<MetadataEditor />
 		</>
 	);
 };
+
+export default Dialogs;

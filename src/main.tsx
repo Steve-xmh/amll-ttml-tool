@@ -34,7 +34,7 @@ createRoot(document.getElementById("root")!).render(
 		<Analytics />
 		<Provider>
 			<App />
-			<DevTools position="top-right" />
+			<DevTools position="bottom-right" />
 		</Provider>
 	</StrictMode>,
 );
