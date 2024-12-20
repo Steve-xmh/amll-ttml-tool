@@ -41,7 +41,7 @@ export const RibbonBar = memo(
 							overflowY: "clip",
 						}}
 					>
-						<AnimatePresence mode="popLayout">
+						<AnimatePresence mode="wait">
 							{toolMode === ToolMode.Edit && (
 								<SuspensePlaceHolder key="edit">
 									<EditModeRibbonBar />

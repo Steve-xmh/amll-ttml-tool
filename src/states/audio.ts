@@ -14,6 +14,7 @@ export const currentTimeAtom = atom(0);
 export const currentDurationAtom = atom(0);
 export const audioWaveformAtom = atom(async (get) => {
 	const audio = get(loadedAudioAtom);
+	if (audio.size === 0) return new Float32Array();
 	if (audio.size > 1024 * 1024 * 64) {
 		toast.warn("音频文件超过 64MB，为避免卡顿已跳过波形图生成");
 		return new Float32Array();

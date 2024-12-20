@@ -95,7 +95,7 @@ function App() {
 				<TitleBar />
 				<RibbonBar />
 				<Box flexGrow="1" overflow="hidden">
-					<AnimatePresence mode="popLayout">
+					<AnimatePresence mode="wait">
 						{toolMode !== ToolMode.Preview && (
 							<SuspensePlaceHolder key="edit">
 								<motion.div
