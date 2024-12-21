@@ -4,6 +4,7 @@
 		"windows": [
 			{
 				"title": "",
+				"label": "main",
 				"width": 800,
 				"height": 600,
 				"minWidth": 640,
@@ -12,14 +13,13 @@
 				"fullscreen": false,
 				"visible": false,
 				"center": true,
+				"devtools": true,
 				"hiddenTitle": true,
 				"titleBarStyle": "Overlay",
 				"dragDropEnabled": false,
 				"browserExtensionsEnabled": true,
 				"windowEffects": {
-					"effects": [
-						"sidebar"
-					]
+					"effects": ["sidebar"]
 				}
 			}
 		]

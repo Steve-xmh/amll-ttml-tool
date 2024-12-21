@@ -3,7 +3,8 @@
 	"app": {
 		"windows": [
 			{
-				"title": "",
+				"title": "AMLL TTML Tools",
+				"label": "main",
 				"width": 800,
 				"height": 600,
 				"minWidth": 640,
@@ -14,13 +15,11 @@
 				"visible": false,
 				"decorations": false,
 				"center": true,
+				"devtools": true,
 				"dragDropEnabled": false,
 				"browserExtensionsEnabled": true,
 				"windowEffects": {
-					"effects": [
-						"tabbed",
-						"mica"
-					]
+					"effects": ["tabbed", "mica"]
 				}
 			}
 		]
