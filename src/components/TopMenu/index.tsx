@@ -29,6 +29,7 @@ import { HomeRegular } from "@fluentui/react-icons";
 import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
 import { open } from "@tauri-apps/plugin-shell";
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
 import { type FC, useCallback } from "react";
 import { Trans } from "react-i18next";
 import saveFile from "save-file";
@@ -37,6 +38,7 @@ export const TopMenu: FC = () => {
 	const [saveFileName, setSaveFileName] = useAtom(saveFileNameAtom);
 	const newLyricLine = useSetAtom(newLyricLinesAtom);
 	const setLyricLines = useSetAtom(lyricLinesAtom);
+	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const setMetadataEditorOpened = useSetAtom(metadataEditorDialogAtom);
 	const setSettingsDialogOpened = useSetAtom(settingsDialogAtom);
 	const undoLyricLines = useAtomValue(undoableLyricLinesAtom);
@@ -133,7 +135,6 @@ export const TopMenu: FC = () => {
 					tmpWordIds.delete(word.id);
 				}
 			}
-			console.log(tmpWordIds);
 			if (tmpWordIds.size === 0) {
 				// 选中所有单词
 				store.set(
@@ -184,24 +185,22 @@ export const TopMenu: FC = () => {
 		console.log(selectedWordIds, selectedLineIds);
 		if (selectedWordIds.size === 0) {
 			// 删除选中的行
-			store.set(lyricLinesAtom, (prev) => {
+			editLyricLines((prev) => {
 				prev.lyricLines = prev.lyricLines.filter(
 					(l) => !selectedLineIds.has(l.id),
 				);
-				return prev;
 			});
 		} else {
 			// 删除选中的单词
-			store.set(lyricLinesAtom, (prev) => {
+			editLyricLines((prev) => {
 				for (const line of prev.lyricLines) {
 					line.words = line.words.filter((w) => !selectedWordIds.has(w.id));
 				}
-				return prev;
 			});
 		}
 		store.set(selectedWordsAtom, new Set());
 		store.set(selectedLinesAtom, new Set());
-	}, [store]);
+	}, [store, editLyricLines]);
 	const deleteSelectionKey = useKeyBindingAtom(
 		keyDeleteSelectionAtom,
 		onDeleteSelection,

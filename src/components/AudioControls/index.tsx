@@ -66,7 +66,7 @@ const AudioPlaybackKeyBinding = memo(() => {
 		keySeekForwardAtom,
 		() => {
 			const audioEl = store.get(audioElAtom);
-			audioEl.currentTime += 5;
+			audioEl.currentTime = Math.min(audioEl.duration, audioEl.currentTime + 5);
 			store.set(currentTimeAtom, (audioEl.currentTime * 1000) | 0);
 		},
 		[store],
@@ -76,7 +76,7 @@ const AudioPlaybackKeyBinding = memo(() => {
 		keySeekBackwardAtom,
 		() => {
 			const audioEl = store.get(audioElAtom);
-			audioEl.currentTime -= 5;
+			audioEl.currentTime = Math.max(0, audioEl.currentTime - 5);
 			store.set(currentTimeAtom, (audioEl.currentTime * 1000) | 0);
 		},
 		[store],
