@@ -226,7 +226,7 @@ export default function exportTTMLText(
 	}
 
 	ttRoot.appendChild(body);
-	console.log(ttRoot);
+	console.log("ttml document built", ttRoot);
 
 	if (pretty) {
 		const xsltDoc = new DOMParser().parseFromString(

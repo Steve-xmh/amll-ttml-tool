@@ -137,7 +137,7 @@ export const AudioControls: FC = memo(() => {
 				const file = inputEl.files?.[0];
 				if (!file) return;
 
-				console.log("Loading audio", file);
+				console.log("loading audio", file);
 				setAudio(file);
 			},
 			{

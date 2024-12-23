@@ -133,7 +133,7 @@ export const AudioSlider = () => {
 			frame = requestAnimationFrame(onFrame);
 		};
 		const onLoad = () => {
-			console.log("Music Duration", audioEl.duration);
+			console.log("music duration", audioEl.duration);
 			setCurrentDuration((audioEl.duration * 1000) | 0);
 		};
 		const onPlay = () => {

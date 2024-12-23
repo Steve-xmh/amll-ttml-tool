@@ -22,6 +22,9 @@ import "./utils/pwa.ts";
 import "./i18n/index.ts";
 import { DevTools } from "jotai-devtools";
 import "jotai-devtools/styles.css";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 Sentry.init({
 	dsn: import.meta.env.SENTRY_DSN,

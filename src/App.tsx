@@ -84,7 +84,6 @@ function App() {
 			className={styles.radixTheme}
 			onClick={(evt) => {
 				if (isInteracting(evt.nativeEvent)) return;
-				console.log(evt);
 				store.set(selectedLinesAtom, new Set());
 				store.set(selectedWordsAtom, new Set());
 			}}

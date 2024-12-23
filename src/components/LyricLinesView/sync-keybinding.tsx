@@ -1,4 +1,4 @@
-import {currentTimeAtom} from "$/states/audio.ts";
+import { currentTimeAtom } from "$/states/audio.ts";
 import {
 	keyMoveNextLineAtom,
 	keyMoveNextWordAtom,
@@ -8,9 +8,13 @@ import {
 	keySyncNextAtom,
 	keySyncStartAtom,
 } from "$/states/keybindings.ts";
-import {lyricLinesAtom, selectedLinesAtom, selectedWordsAtom,} from "$/states/main.ts";
-import {currentEmptyBeatAtom} from "$/states/sync.ts";
-import {useKeyBindingAtom} from "$/utils/keybindings.ts";
+import {
+	lyricLinesAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
+} from "$/states/main.ts";
+import { currentEmptyBeatAtom } from "$/states/sync.ts";
+import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import {
 	findNextWord,
 	getCurrentLineLocation,
@@ -18,9 +22,9 @@ import {
 	isSynchronizableLine,
 	isSynchronizableWord,
 } from "$/utils/lyric-states.ts";
-import {produce} from "immer";
-import {useStore} from "jotai";
-import {type FC, useCallback} from "react";
+import { produce } from "immer";
+import { useStore } from "jotai";
+import { type FC, useCallback } from "react";
 
 export const SyncKeyBinding: FC = () => {
 	const store = useStore();
@@ -28,7 +32,7 @@ export const SyncKeyBinding: FC = () => {
 	const moveToNextWord = useCallback(
 		function moveToNextWord(): boolean {
 			const location = getCurrentLocation(store);
-			console.log("location", location);
+			console.log("moveToNextWord.location", location);
 			if (!location) return false;
 			const nextWord = findNextWord(
 				location.lines,

@@ -23,7 +23,14 @@ import {
 import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
-import { type FC, forwardRef, useLayoutEffect, useMemo, useState } from "react";
+import {
+	type FC,
+	forwardRef,
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 
 function EditField<
@@ -57,32 +64,16 @@ function EditField<
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 
 	const currentValue = useMemo(() => {
-		if (selectedItems.size) {
-			if (isWordField) {
-				const selectedWords = selectedItems as Set<string>;
-				const values = new Set();
-				for (const line of lyricLines.lyricLines) {
-					for (const word of line.words) {
-						if (selectedWords.has(word.id)) {
-							values.add(word[fieldName as keyof LyricWord]);
-						}
-					}
-				}
-				if (values.size === 1)
-					return {
-						multiplieValues: false,
-						value: formatter(values.values().next().value as L[F]),
-					} as const;
-				return {
-					multiplieValues: true,
-					value: "",
-				} as const;
-			}
-			const selectedLines = selectedItems as Set<string>;
+		if (selectedItems.size === 0) return undefined;
+
+		if (isWordField) {
+			const selectedWords = selectedItems as Set<string>;
 			const values = new Set();
 			for (const line of lyricLines.lyricLines) {
-				if (selectedLines.has(line.id)) {
-					values.add(line[fieldName as keyof LyricLine]);
+				for (const word of line.words) {
+					if (selectedWords.has(word.id)) {
+						values.add(word[fieldName as keyof LyricWord]);
+					}
 				}
 			}
 			if (values.size === 1)
@@ -95,17 +86,68 @@ function EditField<
 				value: "",
 			} as const;
 		}
-		return undefined;
+		const selectedLines = selectedItems as Set<string>;
+		const values = new Set();
+		for (const line of lyricLines.lyricLines) {
+			if (selectedLines.has(line.id)) {
+				values.add(line[fieldName as keyof LyricLine]);
+			}
+		}
+		if (values.size === 1)
+			return {
+				multiplieValues: false,
+				value: formatter(values.values().next().value as L[F]),
+			} as const;
+		return {
+			multiplieValues: true,
+			value: "",
+		} as const;
 	}, [selectedItems, fieldName, formatter, isWordField, lyricLines]);
 
+	const onInputFinished = useCallback(
+		(rawValue: string) => {
+			try {
+				const value = parser(rawValue);
+				editLyricLines((state) => {
+					for (const line of state.lyricLines) {
+						if (isWordField) {
+							for (const word of line.words) {
+								if (selectedItems.has(word.id)) {
+									(word as L)[fieldName] = value;
+								}
+							}
+						} else {
+							if (selectedItems.has(line.id)) {
+								(line as L)[fieldName] = value;
+							}
+						}
+					}
+					return state;
+				});
+			} catch (err) {
+				console.warn("EditField.onInputFinished", err);
+				setFieldInput(currentValue?.value);
+			}
+		},
+		[
+			editLyricLines,
+			currentValue,
+			fieldName,
+			isWordField,
+			selectedItems,
+			parser,
+		],
+	);
+
 	useLayoutEffect(() => {
+		// console.log("EditField.useLayoutEffect currentValue Updated", currentValue);
 		setFieldInput(currentValue?.value);
 		if (currentValue?.multiplieValues) {
 			setFieldPlaceholder("多个值...");
 		} else {
 			setFieldPlaceholder("");
 		}
-	}, [currentValue]);
+	}, [currentValue?.value, currentValue?.multiplieValues]);
 
 	return (
 		<>
@@ -118,54 +160,16 @@ function EditField<
 				value={fieldInput ?? ""}
 				placeholder={fieldPlaceholder}
 				disabled={fieldInput === undefined}
-				onChange={(evt) => setFieldInput(evt.target.value)}
+				onChange={(evt) => setFieldInput(evt.currentTarget.value)}
 				onKeyDown={(evt) => {
 					if (evt.key !== "Enter") return;
-					try {
-						const value = parser(evt.currentTarget.value);
-						editLyricLines((state) => {
-							for (const line of state.lyricLines) {
-								if (isWordField) {
-									for (const word of line.words) {
-										if (selectedItems.has(word.id)) {
-											(word as L)[fieldName] = value;
-										}
-									}
-								} else {
-									if (selectedItems.has(line.id)) {
-										(line as L)[fieldName] = value;
-									}
-								}
-							}
-							return state;
-						});
-					} catch {
-						setFieldInput(currentValue?.value);
-					}
+					// console.log("EditField.onKeyDown", evt);
+					onInputFinished(evt.currentTarget.value);
 				}}
 				onBlur={(evt) => {
-					if (evt.target.value === currentValue?.value) return;
-					try {
-						const value = parser(evt.target.value);
-						editLyricLines((state) => {
-							for (const line of state.lyricLines) {
-								if (isWordField) {
-									for (const word of line.words) {
-										if (selectedItems.has(word.id)) {
-											(word as L)[fieldName] = value;
-										}
-									}
-								} else {
-									if (selectedItems.has(line.id)) {
-										(line as L)[fieldName] = value;
-									}
-								}
-							}
-							return state;
-						});
-					} catch {
-						setFieldInput(currentValue?.value);
-					}
+					if (evt.currentTarget.value === currentValue?.value) return;
+					// console.log("EditField.onBlur", evt);
+					onInputFinished(evt.currentTarget.value);
 				}}
 			/>
 		</>

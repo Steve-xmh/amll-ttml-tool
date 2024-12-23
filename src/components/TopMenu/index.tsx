@@ -182,7 +182,7 @@ export const TopMenu: FC = () => {
 	const onDeleteSelection = useCallback(() => {
 		const selectedWordIds = store.get(selectedWordsAtom);
 		const selectedLineIds = store.get(selectedLinesAtom);
-		console.log(selectedWordIds, selectedLineIds);
+		console.log("deleting selections", selectedWordIds, selectedLineIds);
 		if (selectedWordIds.size === 0) {
 			// 删除选中的行
 			editLyricLines((prev) => {

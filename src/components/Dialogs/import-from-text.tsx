@@ -270,7 +270,10 @@ export const ImportFromText = () => {
 	);
 
 	function handleEditorWillMount(monaco: Monaco) {
-		console.log(monaco.languages.getLanguages());
+		console.log(
+			"monaco.languages.getLanguages()",
+			monaco.languages.getLanguages(),
+		);
 	}
 
 	function handleEditorDidMount(

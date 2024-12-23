@@ -49,7 +49,7 @@ export function atomWithKeybindingStorage(
 ) {
 	const key = `keybindings:${storageName}`;
 	const keyAtom = atomWithStorage(key, defaultValue);
-	const wrapperAtom = atom(
+	return atom(
 		(get) => get(keyAtom),
 		async (_get, set, update?: KeyBindingsConfig) => {
 			if (update) {
@@ -63,7 +63,6 @@ export function atomWithKeybindingStorage(
 			}
 		},
 	);
-	return wrapperAtom;
 }
 
 const blackListedKeys = new Set(["Bracket", "Arrow"]);
@@ -113,7 +112,7 @@ window.addEventListener("keyup", (evt) => {
 		const joined = [...pressingKeys].join(" + ").trim();
 		bufferedKeys.clear();
 		const callbacks = registeredKeyBindings.get(joined);
-		console.log("key up", joined, callbacks);
+		console.log("keybinding.keyUp", joined, callbacks);
 
 		if (callbacks) {
 			const downTimeOffset = evt.timeStamp - downTime;

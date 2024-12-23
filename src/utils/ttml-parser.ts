@@ -32,7 +32,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		"application/xml",
 	);
 
-	console.log(ttmlDoc);
+	console.log("ttml document parsed", ttmlDoc);
 
 	let mainAgentId = "v1";
 
@@ -172,7 +172,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		parseParseLine(lineEl);
 	}
 
-	console.log(lyricLines, metadata);
+	console.log("finished ttml load", lyricLines, metadata);
 
 	return {
 		metadata,

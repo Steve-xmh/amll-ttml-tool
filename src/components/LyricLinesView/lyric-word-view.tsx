@@ -9,15 +9,28 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {lyricLinesAtom, selectedLinesAtom, selectedWordsAtom, ToolMode, toolModeAtom,} from "$/states/main.ts";
-import {visualizeTimestampUpdateAtom} from "$/states/sync.ts";
-import {msToTimestamp} from "$/utils/timestamp.ts";
-import type {LyricLine, LyricWord} from "$/utils/ttml-types.ts";
-import {TextField} from "@radix-ui/themes";
+import {
+	ToolMode,
+	lyricLinesAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
+	toolModeAtom,
+} from "$/states/main.ts";
+import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
+import { TextField } from "@radix-ui/themes";
 import classNames from "classnames";
-import {type Atom, atom, useAtom, useAtomValue, useSetAtom, useStore,} from "jotai";
-import {useSetImmerAtom} from "jotai-immer";
-import {type FC, useEffect, useMemo, useRef, useState} from "react";
+import {
+	type Atom,
+	atom,
+	useAtom,
+	useAtomValue,
+	useSetAtom,
+	useStore,
+} from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
+import { type FC, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./index.module.css";
 
 const isDraggingAtom = atom(false);
@@ -256,7 +269,6 @@ export const LyricWordView: FC<{
 												maxBoundry = Math.max(maxBoundry, i, wordIndex);
 											}
 										});
-										console.log(minBoundry, maxBoundry);
 										for (let i = minBoundry; i <= maxBoundry; i++) {
 											n.add(line.words[i].id);
 										}

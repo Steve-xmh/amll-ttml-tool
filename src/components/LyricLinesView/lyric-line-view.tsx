@@ -292,7 +292,6 @@ export const LyricLineView: FC<{
 										maxBoundry = Math.max(maxBoundry, i, lineIndex);
 									}
 								});
-								console.log(minBoundry, maxBoundry);
 								for (let i = minBoundry; i <= maxBoundry; i++) {
 									n.add(lyricLines[i].id);
 								}
