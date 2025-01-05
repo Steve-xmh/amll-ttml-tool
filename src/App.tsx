@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Box, Flex, Theme } from "@radix-ui/themes";
+import { Box, Button, Flex, Text, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
 import { TouchSyncPanel } from "$/components/TouchSyncPanel";

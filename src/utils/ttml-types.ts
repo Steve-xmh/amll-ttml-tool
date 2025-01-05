@@ -9,8 +9,11 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import type {LyricLine as AMLLLyricLine, LyricWord as AMLLLyricWord} from "@applemusic-like-lyrics/lyric";
-import {uid} from "uid";
+import type {
+	LyricLine as AMLLLyricLine,
+	LyricWord as AMLLLyricWord,
+} from "@applemusic-like-lyrics/lyric";
+import { uid } from "uid";
 
 export interface TTMLMetadata {
 	key: string;

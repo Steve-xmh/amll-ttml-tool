@@ -13,7 +13,7 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 } from "$/states/main.ts";
-import { currentEmptyBeatAtom } from "$/states/sync.ts";
+import { currentEmptyBeatAtom, syncTimeOffsetAtom } from "$/states/sync.ts";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import {
 	findNextWord,
@@ -134,10 +134,14 @@ export const SyncKeyBinding: FC = () => {
 	useKeyBindingAtom(
 		keySyncStartAtom,
 		(evt) => {
+			const syncTimeOffset = store.get(syncTimeOffsetAtom);
 			const location = getCurrentLocation(store);
 			if (!location) return;
 			const currentTime =
-				Math.max(0, store.get(currentTimeAtom) - evt.downTimeOffset) | 0;
+				Math.max(
+					0,
+					store.get(currentTimeAtom) - evt.downTimeOffset + syncTimeOffset,
+				) | 0;
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const line = state.lyricLines[location.lineIndex];
@@ -153,6 +157,7 @@ export const SyncKeyBinding: FC = () => {
 	useKeyBindingAtom(
 		keySyncNextAtom,
 		(evt) => {
+			const syncTimeOffset = store.get(syncTimeOffsetAtom);
 			const location = getCurrentLocation(store);
 			if (!location) return;
 			const emptyBeat = store.get(currentEmptyBeatAtom);
@@ -161,7 +166,10 @@ export const SyncKeyBinding: FC = () => {
 				return;
 			}
 			const currentTime =
-				Math.max(0, store.get(currentTimeAtom) - evt.downTimeOffset) | 0;
+				Math.max(
+					0,
+					store.get(currentTimeAtom) - evt.downTimeOffset + syncTimeOffset,
+				) | 0;
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const curLine = state.lyricLines[location.lineIndex];
@@ -187,10 +195,14 @@ export const SyncKeyBinding: FC = () => {
 	useKeyBindingAtom(
 		keySyncEndAtom,
 		(evt) => {
+			const syncTimeOffset = store.get(syncTimeOffsetAtom);
 			const location = getCurrentLocation(store);
 			if (!location) return;
 			const currentTime =
-				Math.max(0, store.get(currentTimeAtom) - evt.downTimeOffset) | 0;
+				Math.max(
+					0,
+					store.get(currentTimeAtom) - evt.downTimeOffset + syncTimeOffset,
+				) | 0;
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const line = state.lyricLines[location.lineIndex];

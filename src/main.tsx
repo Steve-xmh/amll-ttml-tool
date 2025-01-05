@@ -18,7 +18,7 @@ import App from "./App.tsx";
 import "./index.css";
 import * as Sentry from "@sentry/react";
 import "react-toastify/dist/ReactToastify.css";
-import "./utils/pwa.ts";
+import "./utils/pwa.tsx";
 import "./i18n/index.ts";
 import { DevTools } from "jotai-devtools";
 import "jotai-devtools/styles.css";

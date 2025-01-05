@@ -16,6 +16,7 @@ export const visualizeTimestampUpdateAtom = atomWithStorage(
 	"visualizeTimestampUpdate",
 	false,
 );
+export const syncTimeOffsetAtom = atomWithStorage("syncTimeOffset", 0);
 
 export const currentEmptyBeatAtom = atom(0);
 

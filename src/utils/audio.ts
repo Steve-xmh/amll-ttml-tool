@@ -10,8 +10,8 @@ export const loadAudio = (src: typeof audio.src): Promise<void> => {
 		const onError = () => {
 			reject();
 			audio.removeEventListener("load", onLoad);
-		}
-		audio.addEventListener("load", onLoad, {once: true});
-		audio.addEventListener("error", onError, {once: true});
+		};
+		audio.addEventListener("load", onLoad, { once: true });
+		audio.addEventListener("error", onError, { once: true });
 	});
-}
+};

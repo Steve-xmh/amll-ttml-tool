@@ -1,8 +1,12 @@
-import {keySyncEndAtom, keySyncNextAtom, keySyncStartAtom,} from "$/states/keybindings.ts";
-import {forceInvokeKeyBindingAtom} from "$/utils/keybindings.ts";
-import {Button, Card, Grid} from "@radix-ui/themes";
-import {useStore} from "jotai";
-import type {FC} from "react";
+import {
+	keySyncEndAtom,
+	keySyncNextAtom,
+	keySyncStartAtom,
+} from "$/states/keybindings.ts";
+import { forceInvokeKeyBindingAtom } from "$/utils/keybindings.ts";
+import { Button, Card, Grid } from "@radix-ui/themes";
+import { useStore } from "jotai";
+import type { FC } from "react";
 import styles from "./index.module.css";
 
 export const TouchSyncPanel: FC = () => {

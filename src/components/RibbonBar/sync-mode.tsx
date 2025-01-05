@@ -9,14 +9,30 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {keySyncEndAtom, keySyncNextAtom, keySyncStartAtom,} from "$/states/keybindings.ts";
-import {currentEmptyBeatAtom, showTouchSyncPanelAtom, visualizeTimestampUpdateAtom,} from "$/states/sync.ts";
-import {Checkbox, Flex, Grid, Slider, Text, TextField} from "@radix-ui/themes";
-import {useAtom} from "jotai";
-import {type FC, forwardRef} from "react";
-import {KeyBinding} from "../KeyBinding/index.tsx";
-import {RibbonFrame, RibbonSection} from "./common";
-import {useCurrentLocation} from "$/utils/lyric-states.ts";
+import {
+	keySyncEndAtom,
+	keySyncNextAtom,
+	keySyncStartAtom,
+} from "$/states/keybindings.ts";
+import {
+	currentEmptyBeatAtom,
+	showTouchSyncPanelAtom,
+	syncTimeOffsetAtom,
+	visualizeTimestampUpdateAtom,
+} from "$/states/sync.ts";
+import {
+	Checkbox,
+	Flex,
+	Grid,
+	Slider,
+	Text,
+	TextField,
+} from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { type FC, forwardRef } from "react";
+import { KeyBinding } from "../KeyBinding/index.tsx";
+import { RibbonFrame, RibbonSection } from "./common";
+import { useCurrentLocation } from "$/utils/lyric-states.ts";
 
 export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
@@ -26,6 +42,7 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 		const [showTouchSyncPanel, setShowTouchSyncPanel] = useAtom(
 			showTouchSyncPanelAtom,
 		);
+		const [syncTimeOffset, setSyncTimeOffset] = useAtom(syncTimeOffsetAtom);
 		const [currentEmptyBeat, setCurrentEmptyBeat] =
 			useAtom(currentEmptyBeatAtom);
 		const currentWordEmptyBeat = useCurrentLocation()?.word.emptyBeat || 0;
@@ -44,7 +61,12 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							style={{
 								width: "8em",
 							}}
-						/>
+							value={syncTimeOffset}
+							onChange={(e) => setSyncTimeOffset(e.target.valueAsNumber)}
+						>
+							<TextField.Slot />
+							<TextField.Slot>ms</TextField.Slot>
+						</TextField.Root>
 						<Text wrap="nowrap" size="1">
 							当前空拍
 						</Text>
@@ -56,7 +78,7 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							step={1}
 							disabled={currentWordEmptyBeat === 0}
 						/>
-						<div/>
+						<div />
 						<Text wrap="nowrap" align="center" size="1">
 							{currentEmptyBeat} / {currentWordEmptyBeat}
 						</Text>

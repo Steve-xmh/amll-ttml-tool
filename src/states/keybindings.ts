@@ -4,6 +4,7 @@ import { atomWithKeybindingStorage } from "../utils/keybindings.ts";
 
 const IS_MAC = navigator.userAgent.includes("Mac");
 const CONTROL_KEY = IS_MAC ? "Meta" : "Control";
+const DELETE_KEY = IS_MAC ? "Backspace" : "Delete";
 
 // 文件
 export const keyNewFileAtom = atomWithKeybindingStorage("newFile", [
@@ -51,7 +52,7 @@ export const keySelectWordsOfMatchedSelectionAtom = atomWithKeybindingStorage(
 // 删除所选
 export const keyDeleteSelectionAtom = atomWithKeybindingStorage(
 	"deleteSelection",
-	["Delete"],
+	[DELETE_KEY],
 );
 
 // 模式切换

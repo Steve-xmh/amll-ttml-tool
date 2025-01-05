@@ -18,6 +18,7 @@ export function formatKeyBindings(cfg: KeyBindingsConfig): string {
 				if (key === "Alt") return "⌥";
 				if (key === "Shift") return "⇧";
 				if (key === "Meta") return "⌘";
+				if (key === "Backspace") return "⌫";
 			} else if (navigator.userAgent.includes("Windows")) {
 				if (key.startsWith("Control")) return "Ctrl";
 				if (key === "Meta") return "Win";

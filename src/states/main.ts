@@ -9,9 +9,9 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {atom} from "jotai";
-import {withUndo} from "jotai-history";
-import type {TTMLLyric} from "../utils/ttml-types";
+import { atom } from "jotai";
+import { withUndo } from "jotai-history";
+import type { TTMLLyric } from "../utils/ttml-types";
 
 export enum DarkMode {
 	Auto = "auto",

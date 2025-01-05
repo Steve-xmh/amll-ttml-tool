@@ -1,7 +1,13 @@
-import {type ReactNode, useCallback, useLayoutEffect, useMemo, useState,} from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
 import styles from "./index.module.css";
-import {WindowsSystemsControls} from "./windows.tsx";
-import {MacOSSystemsControls} from "./macos.tsx";
+import { WindowsSystemsControls } from "./windows.tsx";
+import { MacOSSystemsControls } from "./macos.tsx";
 
 export type WindowControlsVariant = "windows" | "macos";
 
@@ -111,11 +117,11 @@ export default function WindowControls(props: WindowControlsProps) {
 		<div className={styles.windowControls}>
 			{placeLeft && systemControls}
 			<div className={styles.slot}>{props.startChildren}</div>
-			<div className={styles.spacer} data-tauri-drag-region/>
+			<div className={styles.spacer} data-tauri-drag-region />
 			<div className={styles.slot} data-tauri-drag-region>
 				{props.titleChildren}
 			</div>
-			<div className={styles.spacer} data-tauri-drag-region/>
+			<div className={styles.spacer} data-tauri-drag-region />
 			<div className={styles.slot}>{props.endChildren}</div>
 			{!placeLeft && systemControls}
 		</div>

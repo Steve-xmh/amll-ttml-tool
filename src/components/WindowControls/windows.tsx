@@ -3,9 +3,9 @@
  */
 
 import classNames from "classnames";
-import type {SystemControlProps} from "./index.tsx";
+import type { SystemControlProps } from "./index.tsx";
 import styles from "./windows.module.css";
-import {useRef} from "react";
+import { useRef } from "react";
 
 export function WindowsSystemsControls(props: SystemControlProps) {
 	const snapOverlayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -43,8 +43,8 @@ export function WindowsSystemsControls(props: SystemControlProps) {
 					if (snapOverlayRef.current !== null)
 						clearTimeout(snapOverlayRef.current);
 					snapOverlayRef.current = setTimeout(async () => {
-						const {invoke} = await import("@tauri-apps/api/core");
-						const {getCurrentWindow} = await import("@tauri-apps/api/window");
+						const { invoke } = await import("@tauri-apps/api/core");
+						const { getCurrentWindow } = await import("@tauri-apps/api/window");
 						const win = getCurrentWindow();
 						await win.setFocus();
 						await invoke("plugin:decorum|show_snap_overlay");
