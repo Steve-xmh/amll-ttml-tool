@@ -90,8 +90,8 @@ export const TopMenu: FC = () => {
 	const onSaveFile = useCallback(() => {
 		try {
 			const ttmlText = exportTTMLText(store.get(lyricLinesAtom));
-			const encodedData = new TextEncoder().encode(ttmlText);
-			saveFile(encodedData, saveFileName).catch(console.error);
+			const b = new Blob([ttmlText], { type: "text/plain" });
+			saveFile(b, saveFileName).catch(console.error);
 		} catch (e) {
 			console.error("Failed to save TTML file", e);
 		}

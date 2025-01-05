@@ -70,7 +70,8 @@ export const ImportExportLyric = () => {
 			const fileName = `${baseName}.${extension}`;
 			try {
 				const data = stringifier(lyric);
-				await saveFile(data, fileName);
+				const b = new Blob([data], { type: "text/plain" });
+				await saveFile(b, fileName);
 			} catch (e) {
 				console.error(`Failed to export lyric with format "${extension}"`, e);
 			}
