@@ -3,7 +3,7 @@
 
 <div align=center>
 
-![](./public/logo.svg)
+<img src="./public/logo.svg" align="center" width="256">
 
 # Apple Music-like Lyrics TTML Tool
 
