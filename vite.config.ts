@@ -1,9 +1,9 @@
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
 import MillionLint from "@million/lint";
 import react from "@vitejs/plugin-react";
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import ConditionalCompile from "unplugin-preprocessor-directives/vite";
 import { type Plugin, defineConfig } from "vite";
 import i18nextLoader from "vite-plugin-i18next-loader";
@@ -24,6 +24,7 @@ process.env.AMLL_LOCAL_EXISTS = AMLL_LOCAL_EXISTS ? "true" : "false";
 
 const plugins: Plugin[] = [
 	ConditionalCompile(),
+	topLevelAwait(),
 	MillionLint.vite(),
 	react({
 		babel: {
@@ -37,7 +38,6 @@ const plugins: Plugin[] = [
 	}),
 	svgLoader(),
 	wasm(),
-	topLevelAwait(),
 	i18nextLoader({
 		paths: ["./locales"],
 		namespaceResolution: "basename",
@@ -108,7 +108,7 @@ export default defineConfig({
 	build: {
 		// Tauri uses Chromium on Windows and WebKit on macOS and Linux
 		target:
-			process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome105" : "safari13",
+			process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome105" : "safari15",
 		// don't minify for debug builds
 		minify: !process.env.TAURI_ENV_DEBUG ? "esbuild" : false,
 		// produce sourcemaps for debug builds
