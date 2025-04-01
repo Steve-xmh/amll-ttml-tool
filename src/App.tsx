@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -9,15 +9,17 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Box, Button, Flex, Text, Theme } from "@radix-ui/themes";
-import "@radix-ui/themes/styles.css";
 import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
 import { TouchSyncPanel } from "$/components/TouchSyncPanel";
+import { Box, Flex, Theme } from "@radix-ui/themes";
+import "@radix-ui/themes/styles.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { platform, version } from "@tauri-apps/plugin-os";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useStore } from "jotai";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import semverGt from "semver/functions/gt";
 import styles from "./App.module.css";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
@@ -43,13 +45,24 @@ function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const showTouchSyncPanel = useAtomValue(showTouchSyncPanelAtom);
+	const [hasBackground, setHasBackground] = useState(false);
 	const store = useStore();
+
 	if (import.meta.env.TAURI_ENV_PLATFORM) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			const win = getCurrentWindow();
+			(async () => {
+				const win = getCurrentWindow();
+				if (platform() === "windows") {
+					if (semverGt("10.0.22000", version())) {
+						setHasBackground(true);
+						await win.clearEffects();
+					}
+				}
+				await new Promise((r) => requestAnimationFrame(r));
 
-			win.show();
+				await win.show();
+			})();
 		}, []);
 	}
 
@@ -79,7 +92,7 @@ function App() {
 		<Theme
 			appearance={isDarkTheme ? "dark" : "light"}
 			panelBackground="solid"
-			hasBackground={!import.meta.env.TAURI_ENV_PLATFORM}
+			hasBackground={hasBackground}
 			accentColor={isDarkTheme ? "jade" : "green"}
 			className={styles.radixTheme}
 			onClick={(evt) => {

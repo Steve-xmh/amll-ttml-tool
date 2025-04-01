@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -46,6 +46,7 @@ import {
 	Fragment,
 	memo,
 	useEffect,
+	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -128,6 +129,12 @@ export const LyricLineView: FC<{
 			animation?.cancel();
 		};
 	}, [line.startTime, visualizeTimestampUpdate]);
+
+	useLayoutEffect(() => {
+		if (toolMode !== ToolMode.Edit) {
+			setEnableInsert(false);
+		}
+	}, [toolMode]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: 用于呈现时间戳更新效果
 	useEffect(() => {
@@ -323,56 +330,69 @@ export const LyricLineView: FC<{
 					</Flex>
 					<div
 						className={classNames(
-							styles.lyricWordsContainer,
+							styles.lyricLineContainer,
 							toolMode === ToolMode.Edit && styles.edit,
 							toolMode === ToolMode.Sync && styles.sync,
 						)}
 						ref={wordsContainerRef}
 					>
-						{words.map((wordAtom, wi) => (
-							<Fragment key={`${wordAtom}`}>
-								{enableInsert && (
-									<IconButton
-										size="1"
-										variant="soft"
-										onClick={(evt) => {
-											evt.preventDefault();
-											evt.stopPropagation();
-											editLyricLines((state) => {
-												state.lyricLines[lineIndex].words.splice(
-													wi,
-													0,
-													newLyricWord(),
-												);
-											});
-										}}
-									>
-										<AddFilled />
-									</IconButton>
-								)}
-								<LyricWordView
-									wordAtom={wordAtom}
-									wordIndex={wi}
-									line={line}
-									lineIndex={lineIndex}
-								/>
-							</Fragment>
-						))}
-						{enableInsert && (
-							<IconButton
-								size="1"
-								variant="soft"
-								onClick={(evt) => {
-									evt.preventDefault();
-									evt.stopPropagation();
-									editLyricLines((state) => {
-										state.lyricLines[lineIndex].words.push(newLyricWord());
-									});
-								}}
-							>
-								<AddFilled />
-							</IconButton>
-						)}
+						<div
+							className={classNames(
+								styles.lyricWordsContainer,
+								toolMode === ToolMode.Edit && styles.edit,
+								toolMode === ToolMode.Sync && styles.sync,
+							)}
+							ref={wordsContainerRef}
+						>
+							{words.map((wordAtom, wi) => (
+								<Fragment key={`${wordAtom}`}>
+									{enableInsert && (
+										<IconButton
+											size="1"
+											variant="soft"
+											onClick={(evt) => {
+												evt.preventDefault();
+												evt.stopPropagation();
+												editLyricLines((state) => {
+													state.lyricLines[lineIndex].words.splice(
+														wi,
+														0,
+														newLyricWord(),
+													);
+												});
+											}}
+										>
+											<AddFilled />
+										</IconButton>
+									)}
+									<LyricWordView
+										wordAtom={wordAtom}
+										wordIndex={wi}
+										line={line}
+										lineIndex={lineIndex}
+									/>
+								</Fragment>
+							))}
+							{enableInsert && (
+								<IconButton
+									size="1"
+									variant="soft"
+									onClick={(evt) => {
+										evt.preventDefault();
+										evt.stopPropagation();
+										editLyricLines((state) => {
+											state.lyricLines[lineIndex].words.push(newLyricWord());
+										});
+									}}
+								>
+									<AddFilled />
+								</IconButton>
+							)}
+						</div>
+						<div>
+							翻译：{line.translatedLyric || <Text color="gray">无</Text>}
+						</div>
+						<div>音译：{line.romanLyric || <Text color="gray">无</Text>}</div>
 					</div>
 					{toolMode === ToolMode.Edit && (
 						<Flex p="3">

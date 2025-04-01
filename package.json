@@ -47,6 +47,7 @@
 		"react-virtualized-auto-sizer": "^1.0.25",
 		"react-window": "^1.8.11",
 		"save-file": "^2.3.1",
+		"semver": "^7.7.1",
 		"tauri-controls": "^0.4.0",
 		"uid": "^2.0.2",
 		"workbox-window": "^7.3.0"
@@ -60,6 +61,7 @@
 		"@types/react": "^19.0.8",
 		"@types/react-dom": "^19.0.3",
 		"@types/react-window": "^1.8.8",
+		"@types/semver": "^7.7.0",
 		"@types/ungap__structured-clone": "^1.2.0",
 		"@vitejs/plugin-react": "^4.3.4",
 		"babel-plugin-react-compiler": "19.0.0-beta-decd7b8-20250118",

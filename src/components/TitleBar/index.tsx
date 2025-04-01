@@ -1,3 +1,4 @@
+import WindowControls from "$/components/WindowControls";
 import {
 	keySwitchEditModeAtom,
 	keySwitchPreviewModeAtom,
@@ -9,8 +10,8 @@ import { SegmentedControl, Text } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { type FC, useCallback } from "react";
 import { Trans } from "react-i18next";
-import WindowControls from "$/components/WindowControls";
 import { TopMenu } from "../TopMenu/index.tsx";
+import styles from "./index.module.css";
 
 export const TitleBar: FC = () => {
 	const [toolMode, setToolMode] = useAtom(toolModeAtom);
@@ -52,7 +53,9 @@ export const TitleBar: FC = () => {
 			endChildren={
 				!import.meta.env.TAURI_ENV_PLATFORM && (
 					<Text color="gray" wrap="nowrap" size="2" mr="2">
-						Apple Music-like Lyrics TTML Tool
+						<span className={styles.title}>
+							Apple Music-like Lyrics TTML Tool
+						</span>
 					</Text>
 				)
 			}

@@ -160,7 +160,7 @@ export function forceInvokeKeyBindingAtom(
 	const keyBinding = store.get(thisAtom);
 	const joined = keyBinding.join(" + ").trim();
 	const callbacks = registeredKeyBindings.get(joined);
-	console.log("forceInvokeKeyBindingAtom", joined, callbacks);
+	// console.log("forceInvokeKeyBindingAtom", joined, callbacks);
 	if (callbacks) {
 		const downTimeOffset = evt?.timeStamp ?? Date.now();
 		const e: KeyBindingEvent = {
@@ -182,29 +182,39 @@ export function forceInvokeKeyBindingAtom(
 
 // From https://wangchujiang.com/hotkeys-js/
 export function isEditing(event: KeyboardEvent | MouseEvent) {
-	const target = (event.target || event.srcElement) as HTMLElement | null;
-	const tagName = target?.tagName;
+	const checkElement = (target: HTMLElement | null) => {
+		const tagName = target?.tagName;
+		return (
+			target?.isContentEditable ||
+			tagName === "INPUT" ||
+			tagName === "SELECT" ||
+			tagName === "TEXTAREA" ||
+			!!currentKeyDownEvent ||
+			!!currentKeyUpEvent
+		);
+	};
 	return (
-		target?.isContentEditable ||
-		tagName === "INPUT" ||
-		tagName === "SELECT" ||
-		tagName === "TEXTAREA" ||
-		!!currentKeyDownEvent ||
-		!!currentKeyUpEvent
+		checkElement((event.target || event.srcElement) as HTMLElement | null) ||
+		checkElement(document.activeElement as HTMLElement | null)
 	);
 }
 
 export function isInteracting(event: KeyboardEvent | MouseEvent) {
-	const target = (event.target || event.srcElement) as HTMLElement | null;
-	const tagName = target?.tagName;
+	const checkElement = (target: HTMLElement | null) => {
+		const tagName = target?.tagName;
+		return (
+			target?.isContentEditable ||
+			tagName === "INPUT" ||
+			tagName === "SELECT" ||
+			tagName === "TEXTAREA" ||
+			tagName === "BUTTON" ||
+			!!currentKeyDownEvent ||
+			!!currentKeyUpEvent
+		);
+	};
 	return (
-		target?.isContentEditable ||
-		tagName === "INPUT" ||
-		tagName === "SELECT" ||
-		tagName === "TEXTAREA" ||
-		tagName === "BUTTON" ||
-		!!currentKeyDownEvent ||
-		!!currentKeyUpEvent
+		checkElement((event.target || event.srcElement) as HTMLElement | null) ||
+		checkElement(document.activeElement as HTMLElement | null)
 	);
 }
 

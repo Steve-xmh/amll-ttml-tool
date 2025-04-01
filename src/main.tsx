@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -9,20 +9,20 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import * as Sentry from "@sentry/react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { enableMapSet } from "immer";
 import { Provider } from "jotai";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
-import * as Sentry from "@sentry/react";
-import "react-toastify/dist/ReactToastify.css";
-import "./utils/pwa.tsx";
-import "./i18n/index.ts";
 import { DevTools } from "jotai-devtools";
 import "jotai-devtools/styles.css";
-import { enableMapSet } from "immer";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "react-toastify/dist/ReactToastify.css";
+import App from "./App.tsx";
+import "./i18n/index.ts";
+import "./index.css";
+import "./utils/pwa.tsx";
 
 enableMapSet();
 
