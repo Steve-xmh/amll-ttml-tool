@@ -31,20 +31,14 @@ import {
 } from "@fluentui/react-icons";
 import { Button, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import classNames from "classnames";
-import {
-	type Atom,
-	atom,
-	useAtom,
-	useAtomValue,
-	useSetAtom,
-	useStore,
-} from "jotai";
+import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import { splitAtom } from "jotai/utils";
 import {
 	type FC,
 	Fragment,
 	memo,
+	type RefObject,
 	useEffect,
 	useLayoutEffect,
 	useMemo,
@@ -56,31 +50,15 @@ import { LyricWordView } from "./lyric-word-view";
 
 const isDraggingAtom = atom(false);
 
-export const LyricLineView: FC<{
+const LyricLineScroller = ({
+	lineAtom,
+	wordsContainerRef,
+}: {
 	lineAtom: Atom<LyricLine>;
-	lineIndex: number;
-}> = memo(({ lineAtom, lineIndex }) => {
+	wordsContainerRef: RefObject<HTMLDivElement | null>;
+}) => {
 	const line = useAtomValue(lineAtom);
-	const setSelectedLines = useSetAtom(selectedLinesAtom);
-	const lineSelectedAtom = useMemo(() => {
-		const a = atom((get) => get(selectedLinesAtom).has(line.id));
-		if (import.meta.env.DEV) {
-			a.debugLabel = `lineSelectedAtom-${line.id}`;
-		}
-		return a;
-	}, [line.id]);
-	const wordsAtom = useMemo(
-		() => splitAtom(atom((get) => get(lineAtom).words)),
-		[lineAtom],
-	);
-	const words = useAtomValue(wordsAtom);
-	const lineSelected = useAtomValue(lineSelectedAtom);
-	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
-	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
-	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
-	const toolMode = useAtomValue(toolModeAtom);
-	const store = useStore();
-	const wordsContainerRef = useRef<HTMLDivElement>(null);
+	const selectedWords = useAtomValue(selectedWordsAtom);
 
 	useEffect(() => {
 		const wordsContainerEl = wordsContainerRef.current;
@@ -102,7 +80,36 @@ export const LyricLineView: FC<{
 			left: wordEl.offsetLeft - wordsContainerEl.clientWidth / 2,
 			behavior: "instant",
 		});
-	}, [line.words, selectedWords]);
+	}, [line.words, selectedWords, wordsContainerRef.current]);
+
+	return null;
+};
+
+export const LyricLineView: FC<{
+	lineAtom: Atom<LyricLine>;
+	lineIndex: number;
+}> = memo(({ lineAtom, lineIndex }) => {
+	const line = useAtomValue(lineAtom);
+	const setSelectedLines = useSetAtom(selectedLinesAtom);
+	const lineSelectedAtom = useMemo(() => {
+		const a = atom((get) => get(selectedLinesAtom).has(line.id));
+		if (import.meta.env.DEV) {
+			a.debugLabel = `lineSelectedAtom-${line.id}`;
+		}
+		return a;
+	}, [line.id]);
+	const wordsAtom = useMemo(
+		() => splitAtom(atom((get) => get(lineAtom).words)),
+		[lineAtom],
+	);
+	const words = useAtomValue(wordsAtom);
+	const lineSelected = useAtomValue(lineSelectedAtom);
+	const setSelectedWords = useSetAtom(selectedWordsAtom);
+	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
+	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
+	const toolMode = useAtomValue(toolModeAtom);
+	const store = useStore();
+	const wordsContainerRef = useRef<HTMLDivElement>(null);
 
 	const startTimeRef = useRef<HTMLDivElement>(null);
 	const endTimeRef = useRef<HTMLDivElement>(null);
@@ -160,6 +167,10 @@ export const LyricLineView: FC<{
 
 	return (
 		<>
+			<LyricLineScroller
+				lineAtom={lineAtom}
+				wordsContainerRef={wordsContainerRef}
+			/>
 			{enableInsert && (
 				<Button
 					mx="2"

@@ -58,7 +58,12 @@ const LyricWorldViewEdit = ({
 	const store = useStore();
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const setSelectedLines = useSetAtom(selectedLinesAtom);
-	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
+	const isWordSelectedAtom = useMemo(
+		() => atom((get) => get(selectedWordsAtom).has(get(wordAtom).id)),
+		[wordAtom],
+	);
+	const isWordSelected = useAtomValue(isWordSelectedAtom);
+	const setSelectedWords = useSetAtom(selectedWordsAtom);
 	const [editing, setEditing] = useState(false);
 	const toolMode = useAtomValue(toolModeAtom);
 
@@ -70,10 +75,10 @@ const LyricWorldViewEdit = ({
 			classNames(
 				styles.lyricWord,
 				styles.edit,
-				selectedWords.has(word.id) && styles.selected,
+				isWordSelected && styles.selected,
 				isWordBlank && styles.blank,
 			),
-		[isWordBlank, selectedWords, word],
+		[isWordBlank, isWordSelected],
 	);
 
 	return editing ? (
@@ -105,7 +110,7 @@ const LyricWorldViewEdit = ({
 		<ContextMenu.Root
 			onOpenChange={(open) => {
 				if (!open) return;
-				if (selectedWords.has(word.id)) return;
+				if (isWordSelected) return;
 				setSelectedWords(new Set([word.id]));
 				setSelectedLines(new Set([line.id]));
 			}}
@@ -126,7 +131,7 @@ const LyricWorldViewEdit = ({
 					onDragOver={(evt) => {
 						if (!store.get(isDraggingAtom)) return;
 						if (store.get(draggingIdAtom) === word.id) return;
-						if (selectedWords.has(word.id)) return;
+						if (isWordSelected) return;
 						evt.preventDefault();
 						evt.dataTransfer.dropEffect = "move";
 						const rect = evt.currentTarget.getBoundingClientRect();
@@ -145,9 +150,9 @@ const LyricWorldViewEdit = ({
 						if (!store.get(isDraggingAtom)) return;
 						const rect = evt.currentTarget.getBoundingClientRect();
 						const innerX = evt.clientX - rect.left;
-						const targetIds = new Set(selectedWords);
+						const targetIds = new Set(store.get(selectedWordsAtom));
 						const draggingId = store.get(draggingIdAtom);
-						if (!selectedWords.has(draggingId)) {
+						if (!isWordSelected) {
 							targetIds.clear();
 							targetIds.add(draggingId);
 						}
