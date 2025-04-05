@@ -29,7 +29,7 @@ import {
 	TextAlignRightFilled,
 	VideoBackgroundEffectFilled,
 } from "@fluentui/react-icons";
-import { Button, Flex, IconButton, Text } from "@radix-ui/themes";
+import { Button, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import classNames from "classnames";
 import {
 	type Atom,
@@ -388,6 +388,29 @@ export const LyricLineView: FC<{
 									<AddFilled />
 								</IconButton>
 							)}
+							<TextField.Root
+								placeholder="插入单词…"
+								className={classNames(
+									styles.insertWordField,
+									words.length === 0 && styles.empty,
+								)}
+								style={{
+									alignSelf: "center",
+								}}
+								onKeyDown={(evt) => {
+									if (evt.code === "Enter") {
+										evt.preventDefault();
+										evt.stopPropagation();
+										editLyricLines((state) => {
+											state.lyricLines[lineIndex].words.push({
+												...newLyricWord(),
+												word: evt.currentTarget.value,
+											});
+										});
+										evt.currentTarget.value = "";
+									}
+								}}
+							/>
 						</div>
 						<div>
 							翻译：{line.translatedLyric || <Text color="gray">无</Text>}

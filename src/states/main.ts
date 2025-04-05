@@ -45,6 +45,11 @@ export const undoLyricLinesAtom = atom(null, (get) => {
 export const redoLyricLinesAtom = atom(null, (get) => {
 	get(undoableLyricLinesAtom).redo();
 });
+export const splitWordStateAtom = atom({
+	wordIndex: -1,
+	lineIndex: -1,
+	word: "",
+});
 export const newLyricLinesAtom = atom(
 	null,
 	(

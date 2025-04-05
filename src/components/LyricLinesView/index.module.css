@@ -87,6 +87,24 @@
 			opacity: 0.3;
 		}
 	}
+
+	&:hover {
+		.insertWordField {
+			opacity: 1;
+		}
+	}
+}
+
+.insertWordField {
+	opacity: 0;
+	transition: opacity 0.2s ease-in-out;
+
+	&:has(> input:active),
+	&:has(> input:focus),
+	&:has(> input:hover),
+	&.empty {
+		opacity: 1;
+	}
 }
 
 .lyricLineContainer {

@@ -32,6 +32,7 @@ import {
 import { useSetImmerAtom } from "jotai-immer";
 import { type FC, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./index.module.css";
+import { LyricWordMenu } from "./lyric-word-menu";
 
 const isDraggingAtom = atom(false);
 const draggingIdAtom = atom("");
@@ -101,7 +102,14 @@ const LyricWorldViewEdit = ({
 			}}
 		/>
 	) : (
-		<ContextMenu.Root>
+		<ContextMenu.Root
+			onOpenChange={(open) => {
+				if (!open) return;
+				if (selectedWords.has(word.id)) return;
+				setSelectedWords(new Set([word.id]));
+				setSelectedLines(new Set([line.id]));
+			}}
+		>
 			<ContextMenu.Trigger>
 				{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 				<span
@@ -192,7 +200,7 @@ const LyricWorldViewEdit = ({
 					onClick={(evt) => {
 						evt.stopPropagation();
 						evt.preventDefault();
-						if (evt.ctrlKey) {
+						if (evt.ctrlKey || evt.metaKey) {
 							setSelectedWords((v) => {
 								const n = new Set(v);
 								if (n.has(word.id)) {
@@ -234,9 +242,11 @@ const LyricWorldViewEdit = ({
 					{displayWord}
 				</span>
 			</ContextMenu.Trigger>
-			<ContextMenu.Content>
-				<ContextMenu.Item>拆分单词</ContextMenu.Item>
-			</ContextMenu.Content>
+			<LyricWordMenu
+				wordAtom={wordAtom}
+				wordIndex={wordIndex}
+				lineIndex={lineIndex}
+			/>
 		</ContextMenu.Root>
 	);
 };

@@ -14,8 +14,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { enableMapSet } from "immer";
 import { Provider } from "jotai";
-import { DevTools } from "jotai-devtools";
-import "jotai-devtools/styles.css";
+// import { DevTools } from "jotai-devtools";
+// import "jotai-devtools/styles.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "react-toastify/dist/ReactToastify.css";
@@ -37,7 +37,7 @@ createRoot(document.getElementById("root")!).render(
 		<Analytics />
 		<Provider>
 			<App />
-			<DevTools position="bottom-right" />
+			{/* <DevTools position="bottom-right" /> */}
 		</Provider>
 	</StrictMode>,
 );
