@@ -2,6 +2,7 @@ import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx"
 import {
 	metadataEditorDialogAtom,
 	settingsDialogAtom,
+	submitToAMLLDBDialogAtom,
 } from "$/states/dialogs.ts";
 import {
 	keyDeleteSelectionAtom,
@@ -247,6 +248,14 @@ export const TopMenu: FC = () => {
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<ImportExportLyric />
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item
+								disabled
+								onClick={() => store.set(submitToAMLLDBDialogAtom, true)}
+								shortcut="复活赛进行中"
+							>
+								上传到 AMLL 歌词数据库
+							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>
 
