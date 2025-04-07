@@ -415,7 +415,7 @@ export const LyricLineView: FC<{
 										alignSelf: "center",
 									}}
 									onKeyDown={(evt) => {
-										if (evt.code === "Enter") {
+										if (evt.key === "Enter") {
 											evt.preventDefault();
 											evt.stopPropagation();
 											editLyricLines((state) => {

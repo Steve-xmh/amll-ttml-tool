@@ -33,6 +33,8 @@ import {
 } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 
+const MULTIPLE_VALUES = Symbol("multiple-values");
+
 function EditField<
 	L extends Word extends true ? LyricWord : LyricLine,
 	F extends keyof L,
@@ -79,14 +81,8 @@ function EditField<
 						}
 					}
 					if (values.size === 1)
-						return {
-							multiplieValues: false,
-							value: formatter(values.values().next().value as L[F]),
-						} as const;
-					return {
-						multiplieValues: true,
-						value: "",
-					} as const;
+						return formatter(values.values().next().value as L[F]);
+					return MULTIPLE_VALUES;
 				}
 				const selectedLines = selectedItems as Set<string>;
 				const values = new Set();
@@ -96,14 +92,8 @@ function EditField<
 					}
 				}
 				if (values.size === 1)
-					return {
-						multiplieValues: false,
-						value: formatter(values.values().next().value as L[F]),
-					} as const;
-				return {
-					multiplieValues: true,
-					value: "",
-				} as const;
+					return formatter(values.values().next().value as L[F]);
+				return MULTIPLE_VALUES;
 			}),
 		[fieldName, formatter, isWordField, itemAtom],
 	);
@@ -133,7 +123,7 @@ function EditField<
 				});
 			} catch (err) {
 				console.warn("EditField.onInputFinished", err);
-				setFieldInput(currentValue?.value);
+				if (typeof currentValue === "string") setFieldInput(currentValue);
 			}
 		},
 		[
@@ -149,13 +139,14 @@ function EditField<
 
 	useLayoutEffect(() => {
 		// console.log("EditField.useLayoutEffect currentValue Updated", currentValue);
-		setFieldInput(currentValue?.value);
-		if (currentValue?.multiplieValues) {
+		if (currentValue === MULTIPLE_VALUES) {
+			setFieldInput("");
 			setFieldPlaceholder("多个值...");
 		} else {
+			setFieldInput(currentValue);
 			setFieldPlaceholder("");
 		}
-	}, [currentValue?.value, currentValue?.multiplieValues]);
+	}, [currentValue]);
 
 	return (
 		<>
@@ -175,7 +166,7 @@ function EditField<
 					onInputFinished(evt.currentTarget.value);
 				}}
 				onBlur={(evt) => {
-					if (evt.currentTarget.value === currentValue?.value) return;
+					if (evt.currentTarget.value === currentValue) return;
 					// console.log("EditField.onBlur", evt);
 					onInputFinished(evt.currentTarget.value);
 				}}
@@ -204,52 +195,49 @@ function CheckboxField<
 		() => (isWordField ? selectedWordsAtom : selectedLinesAtom),
 		[isWordField],
 	);
-	const selectedItems = useAtomValue(itemAtom);
 
-	const lyricLines = useAtomValue(lyricLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
+	const store = useStore();
 
-	const currentValue = useMemo(() => {
-		if (selectedItems.size) {
-			if (isWordField) {
-				const selectedWords = selectedItems as Set<string>;
-				const values = new Set();
-				for (const line of lyricLines.lyricLines) {
-					for (const word of line.words) {
-						if (selectedWords.has(word.id)) {
-							values.add(word[fieldName as keyof LyricWord]);
+	const currentValueAtom = useMemo(
+		() =>
+			atom((get) => {
+				const selectedItems = get(itemAtom);
+				const lyricLines = get(lyricLinesAtom);
+				if (selectedItems.size) {
+					if (isWordField) {
+						const selectedWords = selectedItems as Set<string>;
+						const values = new Set();
+						for (const line of lyricLines.lyricLines) {
+							for (const word of line.words) {
+								if (selectedWords.has(word.id)) {
+									values.add(word[fieldName as keyof LyricWord]);
+								}
+							}
+						}
+						if (values.size === 1) return values.values().next().value as L[F];
+						return MULTIPLE_VALUES;
+					}
+					const selectedLines = selectedItems as Set<string>;
+					const values = new Set();
+					for (const line of lyricLines.lyricLines) {
+						if (selectedLines.has(line.id)) {
+							values.add(line[fieldName as keyof LyricLine]);
 						}
 					}
+					if (values.size === 1) return values.values().next().value as L[F];
+					return MULTIPLE_VALUES;
 				}
-				if (values.size === 1)
-					return {
-						multipleValues: false,
-						value: values.values().next().value as L[F],
-					} as const;
-				return {
-					multipleValues: true,
-					value: "",
-				} as const;
-			}
-			const selectedLines = selectedItems as Set<string>;
-			const values = new Set();
-			for (const line of lyricLines.lyricLines) {
-				if (selectedLines.has(line.id)) {
-					values.add(line[fieldName as keyof LyricLine]);
-				}
-			}
-			if (values.size === 1)
-				return {
-					multipleValues: false,
-					value: values.values().next().value as L[F],
-				} as const;
-			return {
-				multipleValues: true,
-				value: "",
-			} as const;
-		}
-		return undefined;
-	}, [selectedItems, fieldName, isWordField, lyricLines]);
+				return undefined;
+			}),
+		[itemAtom, fieldName, isWordField],
+	);
+	const currentValue = useAtomValue(currentValueAtom);
+	const isDisabledAtom = useMemo(
+		() => atom((get) => get(itemAtom).size === 0),
+		[itemAtom],
+	);
+	const isDisabled = useAtomValue(isDisabledAtom);
 
 	return (
 		<>
@@ -257,17 +245,18 @@ function CheckboxField<
 				{label}
 			</Text>
 			<Checkbox
-				disabled={selectedItems.size === 0}
+				disabled={isDisabled}
 				checked={
 					currentValue
-						? currentValue.multipleValues
+						? currentValue === MULTIPLE_VALUES
 							? "indeterminate"
-							: (currentValue.value as boolean)
+							: (currentValue as boolean)
 						: defaultValue
 				}
 				onCheckedChange={(value) => {
 					if (value === "indeterminate") return;
 					editLyricLines((state) => {
+						const selectedItems = store.get(itemAtom);
 						for (const line of state.lyricLines) {
 							if (isWordField) {
 								for (const word of line.words) {
