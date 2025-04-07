@@ -92,6 +92,11 @@ window.addEventListener("keydown", (evt) => {
 
 	const code = removeSideOfKeyCode(evt.code);
 
+	// 阻止空格滚动
+	if (evt.keyCode === 32 && evt.target === document.body) {
+		evt.preventDefault();
+	}
+
 	// const joined = [...bufferedKeys].join(" + ").trim();
 	// for (const key of registeredKeyBindings.keys()) {
 	// 	if (key.startsWith(code) || (joined.length > 0 && key.startsWith(joined))) {
