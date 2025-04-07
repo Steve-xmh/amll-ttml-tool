@@ -34,6 +34,31 @@ import { type FC, forwardRef } from "react";
 import { KeyBinding } from "../KeyBinding/index.tsx";
 import { RibbonFrame, RibbonSection } from "./common";
 
+const EmptyBeatField = () => {
+	const [currentEmptyBeat, setCurrentEmptyBeat] = useAtom(currentEmptyBeatAtom);
+	const currentWordEmptyBeat = useCurrentLocation()?.word.emptyBeat || 0;
+
+	return (
+		<>
+			<Text wrap="nowrap" size="1">
+				当前空拍
+			</Text>
+			<Slider
+				value={[currentEmptyBeat]}
+				onValueChange={(v) => setCurrentEmptyBeat(v[0])}
+				min={0}
+				max={currentWordEmptyBeat}
+				step={1}
+				disabled={currentWordEmptyBeat === 0}
+			/>
+			<div />
+			<Text wrap="nowrap" align="center" size="1">
+				{currentEmptyBeat} / {currentWordEmptyBeat}
+			</Text>
+		</>
+	);
+};
+
 export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
 		const [visualizeTimestampUpdate, setVisualizeTimestampUpdate] = useAtom(
@@ -43,9 +68,6 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 			showTouchSyncPanelAtom,
 		);
 		const [syncTimeOffset, setSyncTimeOffset] = useAtom(syncTimeOffsetAtom);
-		const [currentEmptyBeat, setCurrentEmptyBeat] =
-			useAtom(currentEmptyBeatAtom);
-		const currentWordEmptyBeat = useCurrentLocation()?.word.emptyBeat || 0;
 
 		return (
 			<RibbonFrame ref={ref}>
@@ -67,21 +89,7 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							<TextField.Slot />
 							<TextField.Slot>ms</TextField.Slot>
 						</TextField.Root>
-						<Text wrap="nowrap" size="1">
-							当前空拍
-						</Text>
-						<Slider
-							value={[currentEmptyBeat]}
-							onValueChange={(v) => setCurrentEmptyBeat(v[0])}
-							min={0}
-							max={currentWordEmptyBeat}
-							step={1}
-							disabled={currentWordEmptyBeat === 0}
-						/>
-						<div />
-						<Text wrap="nowrap" align="center" size="1">
-							{currentEmptyBeat} / {currentWordEmptyBeat}
-						</Text>
+						<EmptyBeatField />
 					</Grid>
 				</RibbonSection>
 				<RibbonSection label="辅助设置">

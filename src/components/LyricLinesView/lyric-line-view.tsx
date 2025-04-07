@@ -90,7 +90,7 @@ export const LyricLineView: FC<{
 	lineIndex: number;
 }> = memo(({ lineAtom, lineIndex }) => {
 	const line = useAtomValue(lineAtom);
-	const setSelectedLines = useSetAtom(selectedLinesAtom);
+	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const lineSelectedAtom = useMemo(() => {
 		const a = atom((get) => get(selectedLinesAtom).has(line.id));
 		if (import.meta.env.DEV) {
@@ -104,7 +104,7 @@ export const LyricLineView: FC<{
 	);
 	const words = useAtomValue(wordsAtom);
 	const lineSelected = useAtomValue(lineSelectedAtom);
-	const setSelectedWords = useSetAtom(selectedWordsAtom);
+	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
 	const toolMode = useAtomValue(toolModeAtom);
@@ -286,23 +286,20 @@ export const LyricLineView: FC<{
 					evt.preventDefault();
 					if (evt.ctrlKey) {
 						setSelectedLines((v) => {
-							const n = new Set(v);
-							if (n.has(line.id)) {
-								n.delete(line.id);
+							if (v.has(line.id)) {
+								v.delete(line.id);
 							} else {
-								n.add(line.id);
+								v.add(line.id);
 							}
-							return n;
 						});
 					} else if (evt.shiftKey) {
 						setSelectedLines((v) => {
-							const n = new Set(v);
-							if (n.size > 0) {
+							if (v.size > 0) {
 								let minBoundry = Number.NaN;
 								let maxBoundry = Number.NaN;
 								const lyricLines = store.get(lyricLinesAtom).lyricLines;
 								lyricLines.forEach((line, i) => {
-									if (n.has(line.id)) {
+									if (v.has(line.id)) {
 										if (Number.isNaN(minBoundry)) minBoundry = i;
 										if (Number.isNaN(maxBoundry)) maxBoundry = i;
 
@@ -311,16 +308,24 @@ export const LyricLineView: FC<{
 									}
 								});
 								for (let i = minBoundry; i <= maxBoundry; i++) {
-									n.add(lyricLines[i].id);
+									v.add(lyricLines[i].id);
 								}
 							} else {
-								n.add(line.id);
+								v.add(line.id);
 							}
-							return n;
 						});
 					} else {
-						setSelectedLines(new Set([line.id]));
-						setSelectedWords(new Set());
+						setSelectedLines((state) => {
+							if (!state.has(line.id) || state.size !== 1) {
+								state.clear();
+								state.add(line.id);
+							}
+						});
+						setSelectedWords((state) => {
+							if (state.size !== 0) {
+								state.clear();
+							}
+						});
 					}
 				}}
 				asChild
@@ -356,7 +361,7 @@ export const LyricLineView: FC<{
 							ref={wordsContainerRef}
 						>
 							{words.map((wordAtom, wi) => (
-								<Fragment key={`${wordAtom}`}>
+								<Fragment key={`word-${wordAtom}-${wi}`}>
 									{enableInsert && (
 										<IconButton
 											size="1"
@@ -399,29 +404,31 @@ export const LyricLineView: FC<{
 									<AddFilled />
 								</IconButton>
 							)}
-							<TextField.Root
-								placeholder="插入单词…"
-								className={classNames(
-									styles.insertWordField,
-									words.length === 0 && styles.empty,
-								)}
-								style={{
-									alignSelf: "center",
-								}}
-								onKeyDown={(evt) => {
-									if (evt.code === "Enter") {
-										evt.preventDefault();
-										evt.stopPropagation();
-										editLyricLines((state) => {
-											state.lyricLines[lineIndex].words.push({
-												...newLyricWord(),
-												word: evt.currentTarget.value,
+							{toolMode === ToolMode.Edit && (
+								<TextField.Root
+									placeholder="插入单词…"
+									className={classNames(
+										styles.insertWordField,
+										words.length === 0 && styles.empty,
+									)}
+									style={{
+										alignSelf: "center",
+									}}
+									onKeyDown={(evt) => {
+										if (evt.code === "Enter") {
+											evt.preventDefault();
+											evt.stopPropagation();
+											editLyricLines((state) => {
+												state.lyricLines[lineIndex].words.push({
+													...newLyricWord(),
+													word: evt.currentTarget.value,
+												});
 											});
-										});
-										evt.currentTarget.value = "";
-									}
-								}}
-							/>
+											evt.currentTarget.value = "";
+										}
+									}}
+								/>
+							)}
 						</div>
 						<div>
 							翻译：{line.translatedLyric || <Text color="gray">无</Text>}

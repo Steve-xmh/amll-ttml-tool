@@ -21,18 +21,12 @@ import { msToTimestamp } from "$/utils/timestamp.ts";
 import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
 import { ContextMenu, TextField } from "@radix-ui/themes";
 import classNames from "classnames";
-import {
-	type Atom,
-	atom,
-	useAtom,
-	useAtomValue,
-	useSetAtom,
-	useStore,
-} from "jotai";
-import { useSetImmerAtom } from "jotai-immer";
-import { type FC, useEffect, useMemo, useRef, useState } from "react";
+import { type Atom, atom, useAtomValue, useStore } from "jotai";
+import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
+import { type FC, memo, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./index.module.css";
 import { LyricWordMenu } from "./lyric-word-menu";
+import { useAtomCallback } from "jotai/utils";
 
 const isDraggingAtom = atom(false);
 const draggingIdAtom = atom("");
@@ -57,13 +51,13 @@ const LyricWorldViewEdit = ({
 	const word = useAtomValue(wordAtom);
 	const store = useStore();
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
-	const setSelectedLines = useSetAtom(selectedLinesAtom);
+	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const isWordSelectedAtom = useMemo(
 		() => atom((get) => get(selectedWordsAtom).has(get(wordAtom).id)),
 		[wordAtom],
 	);
 	const isWordSelected = useAtomValue(isWordSelectedAtom);
-	const setSelectedWords = useSetAtom(selectedWordsAtom);
+	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const [editing, setEditing] = useState(false);
 	const toolMode = useAtomValue(toolModeAtom);
 
@@ -111,8 +105,14 @@ const LyricWorldViewEdit = ({
 			onOpenChange={(open) => {
 				if (!open) return;
 				if (isWordSelected) return;
-				setSelectedWords(new Set([word.id]));
-				setSelectedLines(new Set([line.id]));
+				setSelectedWords((state) => {
+					state.clear();
+					state.add(word.id);
+				});
+				setSelectedLines((state) => {
+					state.clear();
+					state.add(line.id);
+				});
 			}}
 		>
 			<ContextMenu.Trigger>
@@ -207,22 +207,19 @@ const LyricWorldViewEdit = ({
 						evt.preventDefault();
 						if (evt.ctrlKey || evt.metaKey) {
 							setSelectedWords((v) => {
-								const n = new Set(v);
-								if (n.has(word.id)) {
-									n.delete(word.id);
+								if (v.has(word.id)) {
+									v.delete(word.id);
 								} else {
-									n.add(word.id);
+									v.add(word.id);
 								}
-								return n;
 							});
 						} else if (evt.shiftKey) {
 							setSelectedWords((v) => {
-								const n = new Set(v);
-								if (n.size > 0) {
+								if (v.size > 0) {
 									let minBoundry = Number.NaN;
 									let maxBoundry = Number.NaN;
 									line.words.forEach((word, i) => {
-										if (n.has(word.id)) {
+										if (v.has(word.id)) {
 											if (Number.isNaN(minBoundry)) minBoundry = i;
 											if (Number.isNaN(maxBoundry)) maxBoundry = i;
 
@@ -231,16 +228,25 @@ const LyricWorldViewEdit = ({
 										}
 									});
 									for (let i = minBoundry; i <= maxBoundry; i++) {
-										n.add(line.words[i].id);
+										v.add(line.words[i].id);
 									}
 								} else {
-									n.add(word.id);
+									v.add(word.id);
 								}
-								return n;
 							});
 						} else {
-							setSelectedLines(new Set([line.id]));
-							setSelectedWords(new Set([word.id]));
+							setSelectedLines((state) => {
+								if (!state.has(line.id) || state.size !== 1) {
+									state.clear();
+									state.add(line.id);
+								}
+							});
+							setSelectedWords((state) => {
+								if (!state.has(word.id) || state.size !== 1) {
+									state.clear();
+									state.add(word.id);
+								}
+							});
 						}
 					}}
 				>
@@ -263,8 +269,13 @@ const LyricWorldViewSync: FC<{
 	lineIndex: number;
 }> = ({ wordAtom, line }) => {
 	const word = useAtomValue(wordAtom);
-	const [selectedWords, setSelectedWords] = useAtom(selectedWordsAtom);
-	const setSelectedLines = useSetAtom(selectedLinesAtom);
+	const isWordSelectedAtom = useMemo(
+		() => atom((get) => get(selectedWordsAtom).has(get(wordAtom).id)),
+		[wordAtom],
+	);
+	const isWordSelected = useAtomValue(isWordSelectedAtom);
+	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
+	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
 	const isWordBlank = useWordBlank(word.word);
 	const displayWord = useDisplayWord(word.word, isWordBlank);
@@ -321,10 +332,10 @@ const LyricWorldViewSync: FC<{
 			classNames(
 				styles.lyricWord,
 				styles.sync,
-				selectedWords.has(word.id) && styles.selected,
+				isWordSelected && styles.selected,
 				isWordBlank && styles.blank,
 			),
-		[isWordBlank, selectedWords, word],
+		[isWordBlank, isWordSelected, word],
 	);
 
 	return (
@@ -334,8 +345,14 @@ const LyricWorldViewSync: FC<{
 			onClick={(evt) => {
 				evt.stopPropagation();
 				evt.preventDefault();
-				setSelectedLines(new Set([line.id]));
-				setSelectedWords(new Set([word.id]));
+				setSelectedLines((state) => {
+					state.clear();
+					state.add(line.id);
+				});
+				setSelectedWords((state) => {
+					state.clear();
+					state.add(word.id);
+				});
 			}}
 		>
 			<div className={classNames(styles.startTime)} ref={startTimeRef}>
@@ -361,7 +378,7 @@ export const LyricWordView: FC<{
 	wordIndex: number;
 	line: LyricLine;
 	lineIndex: number;
-}> = ({ wordAtom, wordIndex, line, lineIndex }) => {
+}> = memo(({ wordAtom, wordIndex, line, lineIndex }) => {
 	const word = useAtomValue(wordAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 
@@ -387,6 +404,6 @@ export const LyricWordView: FC<{
 			)}
 		</div>
 	);
-};
+});
 
 export default LyricWordView;

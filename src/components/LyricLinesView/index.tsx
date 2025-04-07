@@ -17,7 +17,7 @@ import {
 	toolModeAtom,
 } from "$/states/main.ts";
 import { Box, Flex, Text } from "@radix-ui/themes";
-import { useAtomValue, useStore } from "jotai";
+import { atom, useAtomValue, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
@@ -26,6 +26,7 @@ import {
 	forwardRef,
 	useEffect,
 	useImperativeHandle,
+	useMemo,
 	useRef,
 } from "react";
 import { ViewportList, type ViewportListRef } from "react-viewport-list";
@@ -37,37 +38,50 @@ const lyricLinesOnlyAtom = splitAtom(
 
 export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const editLyric = useAtomValue(lyricLinesOnlyAtom);
-	const store = useStore();
-	const selectedLines = useAtomValue(selectedLinesAtom);
 	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const viewRef = useRef<ViewportListRef>(null);
 	const viewElRef = useRef<HTMLDivElement>(null);
 	const toolMode = useAtomValue(toolModeAtom);
 
+	const scrollToIndexAtom = useMemo(
+		() =>
+			atom((get) => {
+				if (toolMode !== ToolMode.Sync) return;
+				const viewEl = viewElRef.current;
+				if (!viewEl) return;
+				const viewContainerEl = viewEl.parentElement;
+				if (!viewContainerEl) return;
+				const selectedLines = get(selectedLinesAtom);
+				let scrollToIndex = Number.NaN;
+				let i = 0;
+				for (const lineAtom of editLyric) {
+					const line = get(lineAtom);
+					if (selectedLines.has(line.id)) {
+						scrollToIndex = i;
+						break;
+					}
+
+					i++;
+				}
+				if (Number.isNaN(scrollToIndex)) return;
+				return scrollToIndex;
+			}),
+		[editLyric, toolMode],
+	);
+	const scrollToIndex = useAtomValue(scrollToIndexAtom);
+
 	useEffect(() => {
-		if (toolMode !== ToolMode.Sync) return;
+		if (scrollToIndex === undefined) return;
 		const viewEl = viewElRef.current;
 		if (!viewEl) return;
 		const viewContainerEl = viewEl.parentElement;
 		if (!viewContainerEl) return;
-		let scrollToIndex = Number.NaN;
-		let i = 0;
-		for (const lineAtom of editLyric) {
-			const line = store.get(lineAtom);
-			if (selectedLines.has(line.id)) {
-				scrollToIndex = i;
-				break;
-			}
-
-			i++;
-		}
-		if (Number.isNaN(scrollToIndex)) return;
 		viewRef.current?.scrollToIndex({
 			index: scrollToIndex,
 			offset: viewContainerEl.clientHeight / -2 + 50,
 		});
-	}, [editLyric, selectedLines, toolMode, store]);
+	}, [scrollToIndex]);
 
 	useImperativeHandle(ref, () => viewElRef.current as HTMLDivElement, []);
 

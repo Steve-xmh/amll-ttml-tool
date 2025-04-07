@@ -8,8 +8,12 @@ import {
 import { newLyricWord } from "$/utils/ttml-types";
 import type { LyricWord } from "@applemusic-like-lyrics/lyric";
 import { ContextMenu, Dialog } from "@radix-ui/themes";
-import { useAtomValue, useSetAtom, type Atom } from "jotai";
+import { atom, useAtomValue, useSetAtom, useStore, type Atom } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
+import { useMemo } from "react";
+
+const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);
+const selectedWordsSizeAtom = atom((get) => get(selectedWordsAtom).size);
 
 export const LyricWordMenu = ({
 	wordIndex,
@@ -20,8 +24,9 @@ export const LyricWordMenu = ({
 	wordAtom: Atom<LyricWord>;
 	lineIndex: number;
 }) => {
-	const selectedWords = useAtomValue(selectedWordsAtom);
-	const selectedLines = useAtomValue(selectedLinesAtom);
+	const store = useStore();
+	const selectedWordsSize = useAtomValue(selectedWordsSizeAtom);
+	const selectedLinesSize = useAtomValue(selectedLinesSizeAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const setOpenSplitWordDialog = useSetAtom(splitWordDialogAtom);
 	const word = useAtomValue(wordAtom);
@@ -30,9 +35,10 @@ export const LyricWordMenu = ({
 	return (
 		<ContextMenu.Content>
 			<ContextMenu.Item
-				disabled={selectedWords.size === 0}
+				disabled={selectedWordsSize === 0}
 				onClick={() => {
 					editLyricLines((state) => {
+						const selectedWords = store.get(selectedWordsAtom);
 						for (const line of state.lyricLines) {
 							line.words = line.words.filter((w) => !selectedWords.has(w.id));
 						}
@@ -42,7 +48,7 @@ export const LyricWordMenu = ({
 				删除所选单词
 			</ContextMenu.Item>
 			<ContextMenu.Item
-				disabled={selectedWords.size !== 1}
+				disabled={selectedWordsSize !== 1}
 				onClick={() => {
 					setSplitState({
 						wordIndex,
@@ -55,9 +61,10 @@ export const LyricWordMenu = ({
 				拆分此单词/在此处替换单词
 			</ContextMenu.Item>
 			<ContextMenu.Item
-				disabled={!(selectedWords.size > 1 && selectedLines.size === 1)}
+				disabled={!(selectedWordsSize > 1 && selectedLinesSize === 1)}
 				onClick={() => {
 					editLyricLines((state) => {
+						const selectedWords = store.get(selectedWordsAtom);
 						const line = state.lyricLines[lineIndex];
 						if (line) {
 							let firstIndex = -1;

@@ -54,7 +54,7 @@ export const SyncKeyBinding: FC = () => {
 			if (!location) return false;
 			if (location.wordIndex === 0) {
 				if (location.lineIndex === 0) return false;
-				const lastLineIndex = Math.max(0, location.lineIndex - 1);
+				const lastLineIndex = Math.max(0, location.lineIndex);
 				const lastLine = location.lines
 					.slice(0, lastLineIndex)
 					.reverse()
@@ -72,12 +72,12 @@ export const SyncKeyBinding: FC = () => {
 					store.set(selectedWordsAtom, new Set([lastWord.id]));
 				}
 			} else {
-				const nextWord = location.line.words
-					.slice(0, location.wordIndex - 1)
+				const prevWord = location.line.words
+					.slice(0, location.wordIndex)
 					.reverse()
 					.find(isSynchronizableWord);
-				if (!nextWord) return false;
-				store.set(selectedWordsAtom, new Set([nextWord.id]));
+				if (!prevWord) return false;
+				store.set(selectedWordsAtom, new Set([prevWord.id]));
 			}
 			return true;
 		},

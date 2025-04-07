@@ -21,7 +21,7 @@ import {
 	newLyricLine,
 } from "$/utils/ttml-types.ts";
 import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
-import { useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
@@ -58,55 +58,62 @@ function EditField<
 		() => (isWordField ? selectedWordsAtom : selectedLinesAtom),
 		[isWordField],
 	);
-	const selectedItems = useAtomValue(itemAtom);
 
-	const lyricLines = useAtomValue(lyricLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 
-	const currentValue = useMemo(() => {
-		if (selectedItems.size === 0) return undefined;
+	const currentValueAtom = useMemo(
+		() =>
+			atom((get) => {
+				const selectedItems = get(itemAtom);
+				const lyricLines = get(lyricLinesAtom);
+				if (selectedItems.size === 0) return undefined;
 
-		if (isWordField) {
-			const selectedWords = selectedItems as Set<string>;
-			const values = new Set();
-			for (const line of lyricLines.lyricLines) {
-				for (const word of line.words) {
-					if (selectedWords.has(word.id)) {
-						values.add(word[fieldName as keyof LyricWord]);
+				if (isWordField) {
+					const selectedWords = selectedItems as Set<string>;
+					const values = new Set();
+					for (const line of lyricLines.lyricLines) {
+						for (const word of line.words) {
+							if (selectedWords.has(word.id)) {
+								values.add(word[fieldName as keyof LyricWord]);
+							}
+						}
+					}
+					if (values.size === 1)
+						return {
+							multiplieValues: false,
+							value: formatter(values.values().next().value as L[F]),
+						} as const;
+					return {
+						multiplieValues: true,
+						value: "",
+					} as const;
+				}
+				const selectedLines = selectedItems as Set<string>;
+				const values = new Set();
+				for (const line of lyricLines.lyricLines) {
+					if (selectedLines.has(line.id)) {
+						values.add(line[fieldName as keyof LyricLine]);
 					}
 				}
-			}
-			if (values.size === 1)
+				if (values.size === 1)
+					return {
+						multiplieValues: false,
+						value: formatter(values.values().next().value as L[F]),
+					} as const;
 				return {
-					multiplieValues: false,
-					value: formatter(values.values().next().value as L[F]),
+					multiplieValues: true,
+					value: "",
 				} as const;
-			return {
-				multiplieValues: true,
-				value: "",
-			} as const;
-		}
-		const selectedLines = selectedItems as Set<string>;
-		const values = new Set();
-		for (const line of lyricLines.lyricLines) {
-			if (selectedLines.has(line.id)) {
-				values.add(line[fieldName as keyof LyricLine]);
-			}
-		}
-		if (values.size === 1)
-			return {
-				multiplieValues: false,
-				value: formatter(values.values().next().value as L[F]),
-			} as const;
-		return {
-			multiplieValues: true,
-			value: "",
-		} as const;
-	}, [selectedItems, fieldName, formatter, isWordField, lyricLines]);
+			}),
+		[fieldName, formatter, isWordField, itemAtom],
+	);
+	const currentValue = useAtomValue(currentValueAtom);
+	const store = useStore();
 
 	const onInputFinished = useCallback(
 		(rawValue: string) => {
 			try {
+				const selectedItems = store.get(itemAtom);
 				const value = parser(rawValue);
 				editLyricLines((state) => {
 					for (const line of state.lyricLines) {
@@ -130,11 +137,12 @@ function EditField<
 			}
 		},
 		[
+			itemAtom,
+			store,
 			editLyricLines,
 			currentValue,
 			fieldName,
 			isWordField,
-			selectedItems,
 			parser,
 		],
 	);
