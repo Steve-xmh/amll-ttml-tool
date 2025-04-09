@@ -14,6 +14,7 @@ import {
 	selectedWordsAtom,
 } from "$/states/main.ts";
 import { currentEmptyBeatAtom, syncTimeOffsetAtom } from "$/states/sync.ts";
+import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import {
 	findNextWord,
@@ -140,7 +141,9 @@ export const SyncKeyBinding: FC = () => {
 			const currentTime =
 				Math.max(
 					0,
-					store.get(currentTimeAtom) - evt.downTimeOffset + syncTimeOffset,
+					audioEngine.musicCurrentTime * 1000 -
+						evt.downTimeOffset +
+						syncTimeOffset,
 				) | 0;
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
@@ -168,7 +171,9 @@ export const SyncKeyBinding: FC = () => {
 			const currentTime =
 				Math.max(
 					0,
-					store.get(currentTimeAtom) - evt.downTimeOffset + syncTimeOffset,
+					audioEngine.musicCurrentTime * 1000 -
+						evt.downTimeOffset +
+						syncTimeOffset,
 				) | 0;
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
@@ -201,7 +206,9 @@ export const SyncKeyBinding: FC = () => {
 			const currentTime =
 				Math.max(
 					0,
-					store.get(currentTimeAtom) - evt.downTimeOffset + syncTimeOffset,
+					audioEngine.musicCurrentTime * 1000 -
+						evt.downTimeOffset +
+						syncTimeOffset,
 				) | 0;
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {

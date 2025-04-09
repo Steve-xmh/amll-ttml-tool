@@ -3,11 +3,7 @@
 // #else
 import "@applemusic-like-lyrics/core/style.css";
 // #endif
-import {
-	audioElAtom,
-	audioPlayingAtom,
-	currentTimeAtom,
-} from "$/states/audio.ts";
+import { audioPlayingAtom, currentTimeAtom } from "$/states/audio.ts";
 import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
 import {
 	lyricWordFadeWidthAtom,
@@ -24,6 +20,7 @@ import classNames from "classnames";
 import { useAtomValue, useStore } from "jotai";
 import { memo, useEffect, useMemo, useRef } from "react";
 import styles from "./index.module.css";
+import { audioEngine } from "$/utils/audio";
 
 export const AMLLWrapper = memo(() => {
 	const originalLyricLines = useAtomValue(lyricLinesAtom);
@@ -34,7 +31,6 @@ export const AMLLWrapper = memo(() => {
 	const showRomanLines = useAtomValue(showRomanLinesAtom);
 	const wordFadeWidth = useAtomValue(lyricWordFadeWidthAtom);
 	const playerRef = useRef<LyricPlayerRef>(null);
-	const store = useStore();
 
 	const lyricLines = useMemo(() => {
 		return structuredClone(
@@ -60,8 +56,7 @@ export const AMLLWrapper = memo(() => {
 					boxSizing: "content-box",
 				}}
 				onLyricLineClick={(evt) => {
-					store.get(audioElAtom).currentTime =
-						evt.line.getLine().startTime / 1000;
+					audioEngine.seekMusic(evt.line.getLine().startTime / 1000);
 				}}
 				lyricLines={lyricLines}
 				currentTime={currentTime}

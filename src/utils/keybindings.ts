@@ -118,7 +118,7 @@ window.addEventListener("keyup", (evt) => {
 		const joined = [...pressingKeys].join(" + ").trim();
 		bufferedKeys.clear();
 		const callbacks = registeredKeyBindings.get(joined);
-		console.log("keybinding.keyUp", joined, callbacks);
+		// console.log("keybinding.keyUp", joined, callbacks);
 
 		if (callbacks) {
 			const downTimeOffset = evt.timeStamp - downTime;

@@ -1,5 +1,6 @@
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
 import {
+	latencyTestDialogAtom,
 	metadataEditorDialogAtom,
 	settingsDialogAtom,
 	submitToAMLLDBDialogAtom,
@@ -311,6 +312,19 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onClick={() => setSettingsDialogOpened(true)}>
 								首选项
+							</DropdownMenu.Item>
+						</DropdownMenu.SubContent>
+					</DropdownMenu.Sub>
+
+					<DropdownMenu.Sub>
+						<DropdownMenu.SubTrigger>工具</DropdownMenu.SubTrigger>
+						<DropdownMenu.SubContent>
+							<DropdownMenu.Item
+								onClick={() => {
+									store.set(latencyTestDialogAtom, true);
+								}}
+							>
+								音频/输入延迟测试
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>
 					</DropdownMenu.Sub>

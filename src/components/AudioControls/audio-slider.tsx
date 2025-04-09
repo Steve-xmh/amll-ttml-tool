@@ -1,21 +1,19 @@
 import {
-	audioElAtom,
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
-	loadableAudioWaveformAtom,
 } from "$/states/audio.ts";
+import { audioEngine } from "$/utils/audio";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import { Card } from "@radix-ui/themes";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback, useLayoutEffect, useRef } from "react";
 
 export const AudioSlider = () => {
 	const waveformCanvasRef = useRef<HTMLCanvasElement>(null);
 	const cachedWaveformRef = useRef<ImageData>(null);
-	const waveform = useAtomValue(loadableAudioWaveformAtom);
 	const mouseSeekPosRef = useRef(Number.NaN);
-	const audioEl = useAtomValue(audioElAtom);
+	const isPressingRef = useRef(false);
 
 	const setCurrentTime = useSetAtom(currentTimeAtom);
 	const setCurrentDuration = useSetAtom(currentDurationAtom);
@@ -28,7 +26,7 @@ export const AudioSlider = () => {
 			willReadFrequently: true,
 		});
 		if (!ctx) return;
-		const p = audioEl.currentTime / audioEl.duration;
+		const p = audioEngine.musicCurrentTime / audioEngine.musicDuration;
 		const playWidth = canvas.width * p;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		const canvasStyles = getComputedStyle(canvas);
@@ -49,7 +47,7 @@ export const AudioSlider = () => {
 			const mouseSeekWidth = mouseSeekPos * canvas.width;
 			ctx.globalCompositeOperation = "source-over";
 			const seekTimestamp = msToTimestamp(
-				(mouseSeekPos * audioEl.duration * 1000) | 0,
+				(mouseSeekPos * audioEngine.musicDuration * 1000) | 0,
 			);
 			const size = ctx.measureText(seekTimestamp);
 			ctx.font = `calc(${fontSize} * ${devicePixelRatio}) ${canvasStyles.fontFamily}`;
@@ -72,7 +70,7 @@ export const AudioSlider = () => {
 			ctx.lineTo(mouseSeekWidth, canvas.height);
 			ctx.stroke();
 		}
-	}, [audioEl]);
+	}, []);
 
 	const redrawWaveform = useCallback(
 		(waveform: Float32Array) => {
@@ -123,18 +121,17 @@ export const AudioSlider = () => {
 	useLayoutEffect(() => {
 		let frame = 0;
 		const onFrame = () => {
-			if (audioEl.paused) {
+			if (!audioEngine.musicPlaying) {
 				cancelAnimationFrame(frame);
 				frame = 0;
 				return;
 			}
 			redrawCachedWaveform();
-			setCurrentTime((audioEl.currentTime * 1000) | 0);
+			setCurrentTime((audioEngine.musicCurrentTime * 1000) | 0);
 			frame = requestAnimationFrame(onFrame);
 		};
 		const onLoad = () => {
-			console.log("music duration", audioEl.duration);
-			setCurrentDuration((audioEl.duration * 1000) | 0);
+			setCurrentDuration((audioEngine.musicDuration * 1000) | 0);
 		};
 		const onPlay = () => {
 			setAudioPlaying(true);
@@ -142,32 +139,29 @@ export const AudioSlider = () => {
 		};
 		const onPause = () => {
 			setAudioPlaying(false);
-			setCurrentTime((audioEl.currentTime * 1000) | 0);
+			setCurrentTime((audioEngine.musicCurrentTime * 1000) | 0);
 			if (frame !== 0) {
 				cancelAnimationFrame(frame);
 				frame = 0;
 			}
 		};
 		const onSeeked = () => {
-			setCurrentTime((audioEl.currentTime * 1000) | 0);
+			setCurrentTime((audioEngine.musicCurrentTime * 1000) | 0);
 			redrawCachedWaveform();
 		};
-		audioEl.addEventListener("loadedmetadata", onLoad);
-		audioEl.addEventListener("play", onPlay);
-		audioEl.addEventListener("pause", onPause);
-		audioEl.addEventListener("seeked", onSeeked);
-		audioEl.addEventListener("timeupdate", onSeeked);
-		setAudioPlaying(!audioEl.paused);
+		audioEngine.addEventListener("music-load", onLoad);
+		audioEngine.addEventListener("music-resume", onPlay);
+		audioEngine.addEventListener("music-pause", onPause);
+		audioEngine.addEventListener("music-seeked", onSeeked);
+		setAudioPlaying(audioEngine.musicPlaying);
 
 		return () => {
-			audioEl.removeEventListener("loadedmetadata", onLoad);
-			audioEl.removeEventListener("play", onPlay);
-			audioEl.removeEventListener("pause", onPause);
-			audioEl.removeEventListener("seeked", onSeeked);
-			audioEl.removeEventListener("timeupdate", onSeeked);
+			audioEngine.removeEventListener("music-load", onLoad);
+			audioEngine.removeEventListener("music-resume", onPlay);
+			audioEngine.removeEventListener("music-pause", onPause);
+			audioEngine.removeEventListener("music-seeked", onSeeked);
 		};
 	}, [
-		audioEl,
 		setAudioPlaying,
 		setCurrentDuration,
 		setCurrentTime,
@@ -175,9 +169,20 @@ export const AudioSlider = () => {
 	]);
 
 	useLayoutEffect(() => {
-		if (waveform.state !== "hasData") return;
-		redrawWaveform(waveform.data);
-	}, [redrawWaveform, waveform]);
+		const onMusicUnload = () => {
+			redrawWaveform(new Float32Array(0));
+		};
+		const onMusicLoad = () => {
+			redrawWaveform(audioEngine.musicWaveform);
+		};
+		audioEngine.addEventListener("music-unload", onMusicUnload);
+		audioEngine.addEventListener("music-load", onMusicLoad);
+
+		return () => {
+			audioEngine.removeEventListener("music-unload", onMusicUnload);
+			audioEngine.removeEventListener("music-load", onMusicLoad);
+		};
+	}, [redrawWaveform]);
 
 	useLayoutEffect(() => {
 		const canvas = waveformCanvasRef.current;
@@ -185,14 +190,23 @@ export const AudioSlider = () => {
 		const obs = new ResizeObserver((entries) => {
 			canvas.width = entries[0].contentRect.width * devicePixelRatio;
 			canvas.height = entries[0].contentRect.height * devicePixelRatio;
-			if (waveform.state !== "hasData") return;
-			redrawWaveform(waveform.data);
+			redrawWaveform(audioEngine.musicWaveform);
 		});
 		obs.observe(canvas);
 		return () => {
 			obs.disconnect();
 		};
-	}, [redrawWaveform, waveform]);
+	}, [redrawWaveform]);
+
+	const onTrySeekMusicWhenDragging = useCallback(() => {
+		const mouseSeekPos = mouseSeekPosRef.current;
+		if (!Number.isNaN(mouseSeekPos)) {
+			audioEngine.seekMusic(
+				Math.max(0, mouseSeekPos * audioEngine.musicDuration),
+			);
+			redrawCachedWaveform();
+		}
+	}, [redrawCachedWaveform]);
 
 	return (
 		<Card
@@ -203,7 +217,6 @@ export const AudioSlider = () => {
 				padding: "0",
 			}}
 		>
-			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 			<canvas
 				style={{
 					width: "100%",
@@ -214,38 +227,41 @@ export const AudioSlider = () => {
 				onMouseMove={(evt) => {
 					const rect = evt.currentTarget.getBoundingClientRect();
 					mouseSeekPosRef.current = (evt.clientX - rect.left) / rect.width;
+					// if (isPressingRef.current) onTrySeekMusicWhenDragging();
 					redrawCachedWaveform();
 				}}
 				onMouseLeave={() => {
 					mouseSeekPosRef.current = Number.NaN;
+					isPressingRef.current = false;
 					redrawCachedWaveform();
 				}}
 				onTouchStart={(evt) => {
 					const rect = evt.currentTarget.getBoundingClientRect();
 					mouseSeekPosRef.current =
 						(evt.touches[0].clientX - rect.left) / rect.width;
+					isPressingRef.current = true;
+					onTrySeekMusicWhenDragging();
 					redrawCachedWaveform();
 				}}
 				onTouchMove={(evt) => {
 					const rect = evt.currentTarget.getBoundingClientRect();
 					mouseSeekPosRef.current =
 						(evt.touches[0].clientX - rect.left) / rect.width;
+					// if (isPressingRef.current) onTrySeekMusicWhenDragging();
 					redrawCachedWaveform();
 				}}
 				onTouchEnd={() => {
-					const mouseSeekPos = mouseSeekPosRef.current;
-					if (!Number.isNaN(mouseSeekPos) && audioEl) {
-						audioEl.currentTime = mouseSeekPos * audioEl.duration;
-						mouseSeekPosRef.current = Number.NaN;
-						redrawCachedWaveform();
-					}
+					isPressingRef.current = false;
+					// onTrySeekMusicWhenDragging();
+					mouseSeekPosRef.current = Number.NaN;
 				}}
-				onClick={() => {
-					const mouseSeekPos = mouseSeekPosRef.current;
-					if (!Number.isNaN(mouseSeekPos) && audioEl) {
-						audioEl.currentTime = mouseSeekPos * audioEl.duration;
-						redrawCachedWaveform();
-					}
+				onMouseDown={() => {
+					isPressingRef.current = true;
+					onTrySeekMusicWhenDragging();
+				}}
+				onMouseUp={() => {
+					isPressingRef.current = false;
+					// onTrySeekMusicWhenDragging();
 				}}
 			/>
 		</Card>

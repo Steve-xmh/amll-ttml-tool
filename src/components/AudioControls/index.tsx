@@ -15,7 +15,6 @@ import {
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
-	loadedAudioAtom,
 	playbackRateAtom,
 	volumeAtom,
 } from "$/states/audio.ts";
@@ -28,6 +27,7 @@ import {
 	keyVolumeDownAtom,
 	keyVolumeUpAtom,
 } from "$/states/keybindings.ts";
+import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import {
@@ -118,8 +118,6 @@ const AudioPlaybackKeyBinding = memo(() => {
 });
 
 export const AudioControls: FC = memo(() => {
-	const audioEl = useAtomValue(audioElAtom);
-	const [audio, setAudio] = useAtom(loadedAudioAtom);
 	const [audioLoaded, setAudioLoaded] = useState(false);
 	const currentTime = useAtomValue(currentTimeAtom);
 	const currentDuration = useAtomValue(currentDurationAtom);
@@ -136,44 +134,66 @@ export const AudioControls: FC = memo(() => {
 			() => {
 				const file = inputEl.files?.[0];
 				if (!file) return;
-
-				console.log("loading audio", file);
-				setAudio(file);
+				audioEngine.loadMusic(file);
 			},
 			{
 				once: true,
 			},
 		);
 		inputEl.click();
-	}, [setAudio]);
+	}, []);
 
 	const onTogglePlay = useCallback(() => {
-		if (audioEl.paused) audioEl.play();
-		else audioEl.pause();
-	}, [audioEl]);
+		if (audioEngine.musicPlaying) {
+			audioEngine.pauseMusic();
+		} else {
+			audioEngine.resumeOrSeekMusic();
+		}
+	}, []);
 
 	useEffect(() => {
-		if (audio.size > 0) {
-			const audioUrl = URL.createObjectURL(audio);
-			audioEl.src = audioUrl;
+		const onMusicLoad = () => {
 			setAudioLoaded(true);
 			setAudioPlaying(false);
-			return () => {
-				audioEl.src = "";
-				URL.revokeObjectURL(audioUrl);
-				setAudioLoaded(false);
-				setAudioPlaying(false);
-			};
-		}
-	}, [audioEl, audio, setAudioPlaying]);
+		};
+		const onMusicUnload = () => {
+			setAudioLoaded(false);
+			setAudioPlaying(false);
+		};
+		const onMusicPause = () => {
+			setAudioPlaying(false);
+		};
+		const onMusicResume = () => {
+			setAudioPlaying(true);
+		};
+		const onVolumeChange = () => {
+			setVolume(audioEngine.volume);
+		};
+		setAudioLoaded(audioEngine.musicLoaded);
+		setAudioPlaying(audioEngine.musicPlaying);
+		setVolume(audioEngine.volume);
+		setPlaybackRate(audioEngine.musicPlayBackRate);
+		audioEngine.addEventListener("music-load", onMusicLoad);
+		audioEngine.addEventListener("music-unload", onMusicUnload);
+		audioEngine.addEventListener("music-pause", onMusicPause);
+		audioEngine.addEventListener("music-resume", onMusicResume);
+		audioEngine.addEventListener("volume-change", onVolumeChange);
+		return () => {
+			audioEngine.removeEventListener("music-load", onMusicLoad);
+			audioEngine.removeEventListener("music-unload", onMusicUnload);
+			audioEngine.removeEventListener("music-pause", onMusicPause);
+			audioEngine.removeEventListener("music-resume", onMusicResume);
+			audioEngine.removeEventListener("volume-change", onVolumeChange);
+		};
+	}, [setAudioPlaying, setVolume, setPlaybackRate]);
 
 	useEffect(() => {
-		audioEl.volume = volume;
-	}, [audioEl, volume]);
+		audioEngine.volume = volume;
+	}, [volume]);
 
 	useEffect(() => {
-		audioEl.playbackRate = playbackRate;
-	}, [audioEl, playbackRate]);
+		audioEngine.musicPlayBackRate = playbackRate;
+	}, [playbackRate]);
 
 	return (
 		<Card m="2" mt="0">
@@ -202,10 +222,10 @@ export const AudioControls: FC = memo(() => {
 									</Text>
 									<Text wrap="nowrap">播放速度</Text>
 									<Slider
-										min={0.25}
-										max={4}
+										min={0.05}
+										max={2}
 										defaultValue={[playbackRate]}
-										step={0.25}
+										step={0.05}
 										onValueChange={(v) => setPlaybackRate(v[0])}
 									/>
 									<Text wrap="nowrap" color="gray" size="1">
