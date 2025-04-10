@@ -34,10 +34,16 @@ export const LatencyTestDialog = memo(() => {
 	const [latencyBPM, setLatencyBPM] = useAtom(latencyTestBPMAtom);
 	const [start, setStart] = useState(false);
 	const [curBeat, setCurBeat] = useState(-1);
-	const [hitOffset, setHitOffset] = useState<number | null>(null);
+	const [hitOffset, setHitOffset] = useState<{
+		cur: number;
+		min: number;
+		max: number;
+	} | null>(null);
 	const syncJudgeMode = useAtomValue(syncJudgeModeAtom);
 	const nextBeatTime = useRef(0);
 	const curBeatTime = useRef(0);
+	const hitOffsetsRef = useRef<number[]>([]);
+	const visualizerRef = useRef<HTMLCanvasElement>(null);
 	const beepDuration = 1000 / (latencyBPM / 60);
 
 	useEffect(() => {
@@ -45,7 +51,18 @@ export const LatencyTestDialog = memo(() => {
 			setCurBeat(-1);
 			return;
 		}
+		setHitOffset(null);
 		let canceled = false;
+
+		const canvas = visualizerRef.current;
+		if (!canvas) return;
+		canvas.width = canvas.clientWidth * window.devicePixelRatio;
+		canvas.height = canvas.clientHeight * window.devicePixelRatio;
+		const mid = (canvas.width - 2 * window.devicePixelRatio) / 2;
+		const ctx = canvas.getContext("2d");
+		if (!ctx) return;
+
+		hitOffsetsRef.current = [];
 
 		(async () => {
 			const beep1 = () => {
@@ -82,7 +99,7 @@ export const LatencyTestDialog = memo(() => {
 					setCurBeat(beat);
 					curNode = ++beat % 4 === 0 ? beep1() : beep2();
 					beat %= 4;
-					curBeatTime.current = currentTime;
+					curBeatTime.current = nextBeatTime.current;
 					nextBeatTime.current = currentTime + dur;
 					audioEngine.playNode(
 						curNode,
@@ -90,6 +107,40 @@ export const LatencyTestDialog = memo(() => {
 						nextBeatTime.current + nodeDur,
 					);
 				}
+
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+				ctx.fillStyle = "rgba(255, 0, 0, 0.1)";
+				for (const diff of hitOffsetsRef.current) {
+					const offset = (diff / dur) * canvas.width;
+					ctx.fillRect(
+						mid + offset,
+						0,
+						2 * window.devicePixelRatio,
+						canvas.height,
+					);
+				}
+
+				ctx.fillStyle = "green";
+				ctx.fillRect(mid, 0, 2 * window.devicePixelRatio, canvas.height);
+
+				const nextDiff = (curBeatTime.current - currentTime) / dur;
+				ctx.fillStyle = "yellow";
+				ctx.fillRect(
+					mid + nextDiff * canvas.width,
+					0,
+					window.devicePixelRatio,
+					canvas.height,
+				);
+				const curDiff = (nextBeatTime.current - currentTime) / dur;
+				ctx.fillStyle = "yellow";
+				ctx.fillRect(
+					mid + curDiff * canvas.width,
+					0,
+					window.devicePixelRatio,
+					canvas.height,
+				);
+
 				await new Promise((r) => requestAnimationFrame(r));
 			}
 
@@ -105,7 +156,9 @@ export const LatencyTestDialog = memo(() => {
 		keySyncNextAtom,
 		(evt) => {
 			if (!start) return;
-			let hitTime = audioEngine.ctxCurrentTime - audioEngine.ctxOutputLatency;
+			const currentTime = audioEngine.ctxCurrentTime;
+			const outputLatency = audioEngine.ctxOutputLatency;
+			let hitTime = currentTime + outputLatency;
 			switch (syncJudgeMode) {
 				case SyncJudgeMode.FirstKeyDownTime:
 					hitTime -= evt.downTimeOffset / 1000;
@@ -116,6 +169,7 @@ export const LatencyTestDialog = memo(() => {
 					hitTime -= evt.downTimeOffset / 2000;
 					break;
 			}
+			console.log("hitTime", { hitTime, currentTime, outputLatency });
 			const curDiff = curBeatTime.current - hitTime;
 			const nextDiff = nextBeatTime.current - hitTime;
 			let diff = 0;
@@ -124,8 +178,25 @@ export const LatencyTestDialog = memo(() => {
 			} else {
 				diff = nextDiff;
 			}
+			hitOffsetsRef.current.push(diff);
+			if (hitOffsetsRef.current.length > 100) {
+				hitOffsetsRef.current.shift();
+			}
 			// 正值为快，负值为慢
-			setHitOffset((diff * 1000) | 0);
+			setHitOffset((old) => {
+				const v = (diff * 1000) | 0;
+				if (old === null)
+					return {
+						cur: v,
+						min: v,
+						max: v,
+					};
+				return {
+					cur: v,
+					min: Math.min(old.min, v),
+					max: Math.max(old.max, v),
+				};
+			});
 		},
 		[start],
 	);
@@ -153,30 +224,51 @@ export const LatencyTestDialog = memo(() => {
 						<BeepVisualizer enable={curBeat === 3} />
 					</Flex>
 					<Flex
+						gap="4"
 						style={{
 							alignSelf: "center",
 						}}
 					>
+						<Text>
+							{hitOffset === null ? "最快延迟" : `${hitOffset.max}ms`}
+						</Text>
+
 						<Text
 							color={
 								hitOffset === null
 									? "gray"
-									: hitOffset > 0
+									: hitOffset.cur > 0
 										? "blue"
-										: hitOffset < 0
+										: hitOffset.cur < 0
 											? "red"
 											: "green"
 							}
 						>
 							{hitOffset === null
 								? "未测量"
-								: hitOffset > 0
-									? `快 ${hitOffset}ms`
-									: hitOffset < 0
-										? `慢 ${hitOffset}ms`
+								: hitOffset.cur > 0
+									? `快 ${hitOffset.cur}ms`
+									: hitOffset.cur < 0
+										? `慢 ${hitOffset.cur}ms`
 										: "完美 0ms"}
 						</Text>
+
+						<Text>
+							{hitOffset === null ? "最慢延迟" : `${-hitOffset.min}ms`}
+						</Text>
 					</Flex>
+
+					<canvas
+						style={{
+							width: "14em",
+							height: "1em",
+							margin: "1em",
+							borderRadius: "var(--radius-2)",
+							boxShadow: "var(--shadow-2)",
+							alignSelf: "center",
+						}}
+						ref={visualizerRef}
+					/>
 
 					<Text as="label" size="2">
 						<Flex direction="column" gap="2">
