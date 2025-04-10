@@ -1,10 +1,14 @@
-import { latencyTestBPMAtom } from "$/states/config";
+import {
+	SyncJudgeMode,
+	latencyTestBPMAtom,
+	syncJudgeModeAtom,
+} from "$/states/config";
 import { latencyTestDialogAtom } from "$/states/dialogs.ts";
 import { keySyncNextAtom } from "$/states/keybindings";
 import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings";
 import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { memo, useEffect, useRef, useState } from "react";
 
 const BeepVisualizer = ({
@@ -31,6 +35,7 @@ export const LatencyTestDialog = memo(() => {
 	const [start, setStart] = useState(false);
 	const [curBeat, setCurBeat] = useState(-1);
 	const [hitOffset, setHitOffset] = useState<number | null>(null);
+	const syncJudgeMode = useAtomValue(syncJudgeModeAtom);
 	const nextBeatTime = useRef(0);
 	const curBeatTime = useRef(0);
 	const beepDuration = 1000 / (latencyBPM / 60);
@@ -100,10 +105,17 @@ export const LatencyTestDialog = memo(() => {
 		keySyncNextAtom,
 		(evt) => {
 			if (!start) return;
-			const hitTime =
-				audioEngine.ctxCurrentTime -
-				evt.downTimeOffset / 1000 -
-				audioEngine.ctxOutputLatency;
+			let hitTime = audioEngine.ctxCurrentTime - audioEngine.ctxOutputLatency;
+			switch (syncJudgeMode) {
+				case SyncJudgeMode.FirstKeyDownTime:
+					hitTime -= evt.downTimeOffset / 1000;
+					break;
+				case SyncJudgeMode.LastKeyUpTime:
+					break;
+				case SyncJudgeMode.MiddleKeyTime:
+					hitTime -= evt.downTimeOffset / 2000;
+					break;
+			}
 			const curDiff = curBeatTime.current - hitTime;
 			const nextDiff = nextBeatTime.current - hitTime;
 			let diff = 0;

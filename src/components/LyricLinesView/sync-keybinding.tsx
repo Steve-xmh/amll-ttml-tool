@@ -1,4 +1,4 @@
-import { currentTimeAtom } from "$/states/audio.ts";
+import { SyncJudgeMode, syncJudgeModeAtom } from "$/states/config.ts";
 import {
 	keyMoveNextLineAtom,
 	keyMoveNextWordAtom,
@@ -15,7 +15,10 @@ import {
 } from "$/states/main.ts";
 import { currentEmptyBeatAtom, syncTimeOffsetAtom } from "$/states/sync.ts";
 import { audioEngine } from "$/utils/audio";
-import { useKeyBindingAtom } from "$/utils/keybindings.ts";
+import {
+	type KeyBindingEvent,
+	useKeyBindingAtom,
+} from "$/utils/keybindings.ts";
 import {
 	findNextWord,
 	getCurrentLineLocation,
@@ -29,6 +32,25 @@ import { type FC, useCallback } from "react";
 
 export const SyncKeyBinding: FC = () => {
 	const store = useStore();
+
+	const calcJudgeTime = useCallback(
+		(evt: KeyBindingEvent) => {
+			const syncTimeOffset = store.get(syncTimeOffsetAtom);
+			const currentTime = Math.max(
+				0,
+				audioEngine.musicCurrentTime * 1000 + syncTimeOffset,
+			);
+			switch (store.get(syncJudgeModeAtom)) {
+				case SyncJudgeMode.FirstKeyDownTime:
+					return (currentTime - evt.downTimeOffset) | 0;
+				case SyncJudgeMode.LastKeyUpTime:
+					return currentTime | 0;
+				case SyncJudgeMode.MiddleKeyTime:
+					return (currentTime - evt.downTimeOffset / 2) | 0;
+			}
+		},
+		[store],
+	);
 
 	const moveToNextWord = useCallback(
 		function moveToNextWord(): boolean {
@@ -160,7 +182,6 @@ export const SyncKeyBinding: FC = () => {
 	useKeyBindingAtom(
 		keySyncNextAtom,
 		(evt) => {
-			const syncTimeOffset = store.get(syncTimeOffsetAtom);
 			const location = getCurrentLocation(store);
 			if (!location) return;
 			const emptyBeat = store.get(currentEmptyBeatAtom);
@@ -168,13 +189,7 @@ export const SyncKeyBinding: FC = () => {
 				store.set(currentEmptyBeatAtom, emptyBeat + 1);
 				return;
 			}
-			const currentTime =
-				Math.max(
-					0,
-					audioEngine.musicCurrentTime * 1000 -
-						evt.downTimeOffset +
-						syncTimeOffset,
-				) | 0;
+			const currentTime = calcJudgeTime(evt);
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const curLine = state.lyricLines[location.lineIndex];
@@ -200,16 +215,9 @@ export const SyncKeyBinding: FC = () => {
 	useKeyBindingAtom(
 		keySyncEndAtom,
 		(evt) => {
-			const syncTimeOffset = store.get(syncTimeOffsetAtom);
 			const location = getCurrentLocation(store);
 			if (!location) return;
-			const currentTime =
-				Math.max(
-					0,
-					audioEngine.musicCurrentTime * 1000 -
-						evt.downTimeOffset +
-						syncTimeOffset,
-				) | 0;
+			const currentTime = calcJudgeTime(evt);
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const line = state.lyricLines[location.lineIndex];
