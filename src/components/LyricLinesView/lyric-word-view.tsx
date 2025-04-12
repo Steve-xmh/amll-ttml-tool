@@ -23,7 +23,16 @@ import { ContextMenu, TextField } from "@radix-ui/themes";
 import classNames from "classnames";
 import { type Atom, atom, useAtomValue, useStore } from "jotai";
 import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
-import { type FC, memo, useEffect, useMemo, useRef, useState } from "react";
+import {
+	type FC,
+	memo,
+	type SyntheticEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import styles from "./index.module.css";
 import { LyricWordMenu } from "./lyric-word-menu";
 import { useAtomCallback } from "jotai/utils";
@@ -75,29 +84,26 @@ const LyricWorldViewEdit = ({
 		[isWordBlank, isWordSelected],
 	);
 
+	const onEnter = useCallback(
+		(evt: SyntheticEvent<HTMLInputElement>) => {
+			setEditing(false);
+			const newWord = evt.currentTarget.value;
+			if (newWord !== word.word) {
+				editLyricLines((state) => {
+					state.lyricLines[lineIndex].words[wordIndex].word = newWord;
+				});
+			}
+		},
+		[editLyricLines, lineIndex, word.word, wordIndex],
+	);
+
 	return editing ? (
 		<TextField.Root
 			autoFocus
 			defaultValue={word.word}
-			onBlur={(evt) => {
-				setEditing(false);
-				const newWord = evt.currentTarget.value;
-				if (newWord !== word.word) {
-					editLyricLines((state) => {
-						state.lyricLines[lineIndex].words[wordIndex].word = newWord;
-					});
-				}
-			}}
+			onBlur={onEnter}
 			onKeyDown={(evt) => {
-				if (evt.key === "Enter") {
-					setEditing(false);
-					const newWord = evt.currentTarget.value;
-					if (newWord !== word.word) {
-						editLyricLines((state) => {
-							state.lyricLines[lineIndex].words[wordIndex].word = newWord;
-						});
-					}
-				}
+				if (evt.key === "Enter") onEnter(evt);
 			}}
 		/>
 	) : (

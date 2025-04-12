@@ -39,6 +39,8 @@ import {
 	Fragment,
 	memo,
 	type RefObject,
+	type SyntheticEvent,
+	useCallback,
 	useEffect,
 	useLayoutEffect,
 	useMemo,
@@ -84,6 +86,69 @@ const LyricLineScroller = ({
 
 	return null;
 };
+
+const SubLineEdit = memo(
+	({
+		lineAtom,
+		lineIndex,
+		type,
+	}: {
+		lineAtom: Atom<LyricLine>;
+		lineIndex: number;
+		type: "translatedLyric" | "romanLyric";
+	}) => {
+		const editLyricLines = useSetImmerAtom(lyricLinesAtom);
+		const line = useAtomValue(lineAtom);
+		const [editing, setEditing] = useState(false);
+
+		const onEnter = useCallback(
+			(evt: SyntheticEvent<HTMLInputElement>) => {
+				setEditing(false);
+				const newValue = evt.currentTarget.value;
+				if (newValue !== line[type]) {
+					editLyricLines((state) => {
+						state.lyricLines[lineIndex][type] = newValue;
+					});
+				}
+			},
+			[editLyricLines, line, lineIndex, type],
+		);
+
+		const label = useMemo(
+			() => (type === "translatedLyric" ? "翻译：" : "音译："),
+			[type],
+		);
+
+		return (
+			<Flex align="baseline">
+				<Text size="2">{label}</Text>
+				{editing ? (
+					<TextField.Root
+						autoFocus
+						size="1"
+						defaultValue={line[type]}
+						onBlur={onEnter}
+						onKeyDown={(evt) => {
+							if (evt.key === "Enter") onEnter(evt);
+						}}
+					/>
+				) : (
+					<Button
+						size="2"
+						color="gray"
+						variant="ghost"
+						onClick={(evt) => {
+							evt.stopPropagation();
+							setEditing(true);
+						}}
+					>
+						{line[type] || <Text color="gray">无</Text>}
+					</Button>
+				)}
+			</Flex>
+		);
+	},
+);
 
 export const LyricLineView: FC<{
 	lineAtom: Atom<LyricLine>;
@@ -430,10 +495,20 @@ export const LyricLineView: FC<{
 								/>
 							)}
 						</div>
-						<div>
-							翻译：{line.translatedLyric || <Text color="gray">无</Text>}
-						</div>
-						<div>音译：{line.romanLyric || <Text color="gray">无</Text>}</div>
+						{toolMode === ToolMode.Edit && (
+							<>
+								<SubLineEdit
+									lineAtom={lineAtom}
+									lineIndex={lineIndex}
+									type="translatedLyric"
+								/>
+								<SubLineEdit
+									lineAtom={lineAtom}
+									lineIndex={lineIndex}
+									type="romanLyric"
+								/>
+							</>
+						)}
 					</div>
 					{toolMode === ToolMode.Edit && (
 						<Flex p="3">
