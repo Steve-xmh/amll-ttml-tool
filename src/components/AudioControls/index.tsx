@@ -55,31 +55,28 @@ const AudioPlaybackKeyBinding = memo(() => {
 	useKeyBindingAtom(
 		keyPlayPauseAtom,
 		() => {
-			const audioEl = store.get(audioElAtom);
-			if (audioEl.paused) audioEl.play().then(() => {});
-			else audioEl.pause();
+			if (audioEngine.musicPlaying) audioEngine.pauseMusic();
+			else audioEngine.resumeOrSeekMusic();
 		},
-		[store],
+		[],
 	);
 
 	useKeyBindingAtom(
 		keySeekForwardAtom,
 		() => {
-			const audioEl = store.get(audioElAtom);
-			audioEl.currentTime = Math.min(audioEl.duration, audioEl.currentTime + 5);
-			store.set(currentTimeAtom, (audioEl.currentTime * 1000) | 0);
+			audioEngine.seekMusic(
+				Math.min(audioEngine.musicCurrentTime + 5, audioEngine.musicDuration),
+			);
 		},
-		[store],
+		[],
 	);
 
 	useKeyBindingAtom(
 		keySeekBackwardAtom,
 		() => {
-			const audioEl = store.get(audioElAtom);
-			audioEl.currentTime = Math.max(0, audioEl.currentTime - 5);
-			store.set(currentTimeAtom, (audioEl.currentTime * 1000) | 0);
+			audioEngine.seekMusic(Math.max(audioEngine.musicCurrentTime - 5, 0));
 		},
-		[store],
+		[],
 	);
 
 	useKeyBindingAtom(
