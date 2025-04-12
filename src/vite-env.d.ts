@@ -17,6 +17,11 @@ declare module "virtual:i18next-loader" {
 	export default value;
 }
 
+declare module "virtual:buildmeta" {
+	export const BUILD_TIME: string;
+	export const GIT_COMMIT: string;
+}
+
 interface ImportMetaEnv {
 	readonly TAURI_ENV_DEBUG?: string;
 	readonly TAURI_ENV_TARGET_TRIPLE?: string;

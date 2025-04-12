@@ -4,6 +4,7 @@ import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { exec } from "node:child_process";
 import ConditionalCompile from "unplugin-preprocessor-directives/vite";
 import { type Plugin, defineConfig } from "vite";
 import i18nextLoader from "vite-plugin-i18next-loader";
@@ -42,6 +43,36 @@ const plugins: Plugin[] = [
 		paths: ["./locales"],
 		namespaceResolution: "basename",
 	}),
+	{
+		name: "buildmeta",
+		async resolveId(id) {
+			if (id === "virtual:buildmeta") {
+				return id;
+			}
+		},
+		async load(id) {
+			if (id === "virtual:buildmeta") {
+				let gitCommit = "unknown";
+
+				try {
+					gitCommit = await new Promise<string>((resolve, reject) =>
+						exec("git rev-parse HEAD", (err, stdout) => {
+							if (err) {
+								reject(err);
+							} else {
+								resolve(stdout.trim());
+							}
+						}),
+					);
+				} catch {}
+
+				return `
+					export const BUILD_TIME = "${new Date().toISOString()}";
+					export const GIT_COMMIT = "${gitCommit}";
+				`;
+			}
+		},
+	},
 	VitePWA({
 		injectRegister: null,
 		disable: !!process.env.TAURI_PLATFORM,
