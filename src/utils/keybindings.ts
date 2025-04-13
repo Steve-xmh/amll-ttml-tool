@@ -105,6 +105,8 @@ window.addEventListener("keydown", (evt) => {
 	// }
 	pressingKeys.add(code);
 	bufferedKeys.add(code);
+}, {
+	passive: true,
 });
 let invoked = false;
 window.addEventListener("keyup", (evt) => {
@@ -147,6 +149,8 @@ window.addEventListener("keyup", (evt) => {
 		evt.stopImmediatePropagation();
 	}
 	pressingKeys.delete(code);
+},  {
+	passive: true,
 });
 window.addEventListener("blur", () => {
 	pressingKeys.clear();

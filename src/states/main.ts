@@ -9,8 +9,8 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { atom } from "jotai";
-import { withUndo } from "jotai-history";
+import { atom, type SetStateAction } from "jotai";
+import { REDO, UNDO, withHistory } from "jotai-history";
 import type { TTMLLyric } from "../utils/ttml-types";
 
 export enum DarkMode {
@@ -38,12 +38,22 @@ export const lyricLinesAtom = atom({
 	lyricLines: [],
 	metadata: [],
 } as TTMLLyric);
-export const undoableLyricLinesAtom = withUndo(lyricLinesAtom, 256);
-export const undoLyricLinesAtom = atom(null, (get) => {
-	get(undoableLyricLinesAtom).undo();
+const trackChangeAtom = atom(
+	(get) => {
+		const current = get(lyricLinesAtom);
+		console.log("lyricLines atom changed", current);
+		return current;
+	},
+	(_get, set, value: SetStateAction<TTMLLyric>) => {
+		set(lyricLinesAtom, value);
+	},
+);
+export const undoableLyricLinesAtom = withHistory(trackChangeAtom, 256);
+export const undoLyricLinesAtom = atom(null, (_get, set) => {
+	set(undoableLyricLinesAtom, UNDO);
 });
-export const redoLyricLinesAtom = atom(null, (get) => {
-	get(undoableLyricLinesAtom).redo();
+export const redoLyricLinesAtom = atom(null, (_get, set) => {
+	set(undoableLyricLinesAtom, REDO);
 });
 export const splitWordStateAtom = atom({
 	wordIndex: -1,

@@ -68,18 +68,21 @@ importers:
       immer:
         specifier: ^10.1.1
         version: 10.1.1
+      jieba-wasm:
+        specifier: ^2.2.0
+        version: 2.2.0
       jotai:
-        specifier: ^2.11.1
-        version: 2.11.1(@types/react@19.0.8)(react@19.0.0)
+        specifier: ^2.12.2
+        version: 2.12.2(@types/react@19.0.8)(react@19.0.0)
       jotai-history:
-        specifier: ^0.2.1
-        version: 0.2.1(jotai@2.11.1(@types/react@19.0.8)(react@19.0.0))
+        specifier: ^0.4.2
+        version: 0.4.2(jotai@2.12.2(@types/react@19.0.8)(react@19.0.0))
       jotai-immer:
         specifier: ^0.4.1
-        version: 0.4.1(immer@10.1.1)(jotai@2.11.1(@types/react@19.0.8)(react@19.0.0))
+        version: 0.4.1(immer@10.1.1)(jotai@2.12.2(@types/react@19.0.8)(react@19.0.0))
       jotai-optics:
         specifier: ^0.4.0
-        version: 0.4.0(jotai@2.11.1(@types/react@19.0.8)(react@19.0.0))(optics-ts@2.4.1)
+        version: 0.4.0(jotai@2.12.2(@types/react@19.0.8)(react@19.0.0))(optics-ts@2.4.1)
       monaco-editor:
         specifier: ^0.52.2
         version: 0.52.2
@@ -1366,23 +1369,23 @@ packages:
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
     engines: {node: '>=8'}
 
-  '@mantine/code-highlight@7.17.3':
-    resolution: {integrity: sha512-O4Dzjlkl/S5bNgxrIue5/iBZEvRYno5u3uE5IwEghvlYdpq6nAKi3/Pho+ON6mndj0lLnyVU1ekzmnoAtEDxSg==}
+  '@mantine/code-highlight@7.17.4':
+    resolution: {integrity: sha512-Ewi4X/4a5Lbty7MmOg5OTOv7QexxuVA5dwUZ79zWEvqB3e/AHzGK//5Nb92x78FvmuEZ9M0rK5eRtWTT/+4zeA==}
     peerDependencies:
-      '@mantine/core': 7.17.3
-      '@mantine/hooks': 7.17.3
+      '@mantine/core': 7.17.4
+      '@mantine/hooks': 7.17.4
       react: ^18.x || ^19.x
       react-dom: ^18.x || ^19.x
 
-  '@mantine/core@7.17.3':
-    resolution: {integrity: sha512-N/AfV5eMnfEMx9WzI7AU5pNFBEzAfT/KtE2XDKS+0ht6RifUmolIxyIvoGMYz2yUEsCBMJZqmBq33Rabf5W7Ug==}
+  '@mantine/core@7.17.4':
+    resolution: {integrity: sha512-Ea4M/98jxgIWCuxCdM0YIotVYjfLTGQsfIA6zDg0LsClgjo/ZLnnh4zbi+bLNgM+GGjP4ju7gv4MZvaTKuLO8g==}
     peerDependencies:
-      '@mantine/hooks': 7.17.3
+      '@mantine/hooks': 7.17.4
       react: ^18.x || ^19.x
       react-dom: ^18.x || ^19.x
 
-  '@mantine/hooks@7.17.3':
-    resolution: {integrity: sha512-6o65Rbfl8jd1C1nF9icvungqL0qZViEOmrZgkyKXxBYkC3x91fz4zftwQgNjt1tZHWDNO6Bo4GpRjJyAdwl48g==}
+  '@mantine/hooks@7.17.4':
+    resolution: {integrity: sha512-PBcJxDAfGm8k1/JJmaDcxzRVQ3JSE1iXGktbgGz+qEOJmCxwbbAYe+CtGFFgi1xX2bPZ+7dtRr/+XFhnKtt/aw==}
     peerDependencies:
       react: ^18.x || ^19.x
 
@@ -3333,8 +3336,8 @@ packages:
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
-  effect@3.14.5:
-    resolution: {integrity: sha512-X3/365UyPLyXGgS+kcqh7OTDJJVmjC6n2dDPBSppjwOpS7PV5d/UdBStwvCfkuz7kFajwLkd5KFhjDUtTl5SRA==}
+  effect@3.14.8:
+    resolution: {integrity: sha512-cHV6Mc2gb1e6l+CxhCeZm1JOzE4C9Mp7MhqHNFuAcSds2c2f23ZAb1ef4gBRHMIcdJ5sr3KGm+Xn+4z/UByE8w==}
 
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
@@ -4067,16 +4070,20 @@ packages:
   javascript-stringify@2.1.0:
     resolution: {integrity: sha512-JVAfqNPTvNq3sB/VHQJAFxN/sPgKnsKrCwyRt15zwNCdrMMJDdcEOdubuy+DuJYYdm0ox1J4uzEuYKkN+9yhVg==}
 
+  jieba-wasm@2.2.0:
+    resolution: {integrity: sha512-IwxgUf+EMutjLair3k41i0ApM33qeHNY9EFBKlI5/XtHcISkGt5YPmUvpDJe3hUflwRYhy9g29ZzTetGZw6XgQ==}
+
   jotai-devtools@0.11.0:
     resolution: {integrity: sha512-UVjjG7EHG/oIm1CKN46xwIbQDLW4Wkpq6pm0mjcIWATvs/W9r52U5l2FW36d9QWIRash+ccJ7RXgiz1JLPGmpA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=17.0.0'
 
-  jotai-history@0.2.1:
-    resolution: {integrity: sha512-iDswOiEN5NlErFcAXwCADD+0DvI37pst1FwUuq7/jfKlLPRhb0apQoIIbBOrz2cVG9QM6lmfwqhkhJRmC4L9gg==}
+  jotai-history@0.4.2:
+    resolution: {integrity: sha512-lwyp490JUSNjVVfHXa+pWvN0DKkMxSE2tpF0qaS3DpOzExZiMeQkmHnaw/xqpLjZiARRNItdr4572XRDRun+Aw==}
+    engines: {node: '>=12.20.0'}
     peerDependencies:
-      jotai: '>=2.5.0'
+      jotai: '>=2.9.0'
 
   jotai-immer@0.4.1:
     resolution: {integrity: sha512-nQTt1HBKie/5OJDck1qLpV1PeBA6bjJLAczEYAx70PD8R4Mbu7gtexfBUCzJh6W6ecsOfwHksAYAesVth6SN9A==}
@@ -4090,8 +4097,8 @@ packages:
       jotai: '>=2.0.0'
       optics-ts: '>=2.0.0'
 
-  jotai@2.11.1:
-    resolution: {integrity: sha512-41Su098mpHIX29hF/XOpDb0SqF6EES7+HXfrhuBqVSzRkxX48hD5i8nGsEewWZNAsBWJCTTmuz8M946Ih2PfcQ==}
+  jotai@2.12.2:
+    resolution: {integrity: sha512-oN8715y7MkjXlSrpyjlR887TOuc/NLZMs9gvgtfWH/JP47ChwO0lR2ijSwBvPMYyXRAPT+liIAhuBavluKGgtA==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/react': '>=17.0.0'
@@ -4604,8 +4611,8 @@ packages:
       '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  react-number-format@5.4.3:
-    resolution: {integrity: sha512-VCY5hFg/soBighAoGcdE+GagkJq0230qN6jcS5sp8wQX1qy1fYN/RX7/BXkrs0oyzzwqR8/+eSUrqXbGeywdUQ==}
+  react-number-format@5.4.4:
+    resolution: {integrity: sha512-wOmoNZoOpvMminhifQYiYSTCLUDOiUbBunrMrMjA+dV52sY+vck1S4UhR6PkgnoCquvvMSeJjErXZ4qSaWCliA==}
     peerDependencies:
       react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -4654,8 +4661,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-textarea-autosize@8.5.6:
-    resolution: {integrity: sha512-aT3ioKXMa8f6zHYGebhbdMD2L00tKeRX1zuVuDx9YQK/JLLRSaSxq3ugECEmUB9z2kvk6bFSIoRHLkkUv0RJiw==}
+  react-textarea-autosize@8.5.9:
+    resolution: {integrity: sha512-U1DGlIQN5AwgjTyOEnI1oCcMuEr1pv1qOtklB2l4nyMGbHzWrI0eFsYK0zos2YWqAolJyG0IWJaqWmWj5ETh0A==}
     engines: {node: '>=10'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -5159,6 +5166,10 @@ packages:
 
   type-fest@4.39.0:
     resolution: {integrity: sha512-w2IGJU1tIgcrepg9ZJ82d8UmItNQtOFJG0HCUE3SzMokKkTsruVDALl2fAdiEzJlfduoU+VyXJWIIUZ+6jV+nw==}
+    engines: {node: '>=16'}
+
+  type-fest@4.39.1:
+    resolution: {integrity: sha512-uW9qzd66uyHYxwyVBYiwS4Oi0qZyUqwjU+Oevr6ZogYiXt99EOYtwvzMSLw1c3lYo2HzJsep/NB23iEVEgjG/w==}
     engines: {node: '>=16'}
 
   typed-array-buffer@1.0.3:
@@ -6920,30 +6931,30 @@ snapshots:
 
   '@lukeed/csprng@1.1.0': {}
 
-  '@mantine/code-highlight@7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.3(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@mantine/code-highlight@7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@mantine/core': 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mantine/hooks': 7.17.3(react@19.0.0)
+      '@mantine/core': 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@mantine/hooks': 7.17.4(react@19.0.0)
       clsx: 2.1.1
       highlight.js: 11.11.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  '@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@floating-ui/react': 0.26.28(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mantine/hooks': 7.17.3(react@19.0.0)
+      '@mantine/hooks': 7.17.4(react@19.0.0)
       clsx: 2.1.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-      react-number-format: 5.4.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react-number-format: 5.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-remove-scroll: 2.6.3(@types/react@19.0.8)(react@19.0.0)
-      react-textarea-autosize: 8.5.6(@types/react@19.0.8)(react@19.0.0)
-      type-fest: 4.39.0
+      react-textarea-autosize: 8.5.9(@types/react@19.0.8)(react@19.0.0)
+      type-fest: 4.39.1
     transitivePeerDependencies:
       - '@types/react'
 
-  '@mantine/hooks@7.17.3(react@19.0.0)':
+  '@mantine/hooks@7.17.4(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
@@ -6959,7 +6970,7 @@ snapshots:
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.14.5
+      effect: 3.14.8
       nanoid: 5.0.9
       recast: 0.23.11
       xycolors: 0.1.2
@@ -8942,7 +8953,7 @@ snapshots:
 
   eastasianwidth@0.2.0: {}
 
-  effect@3.14.5:
+  effect@3.14.8:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
@@ -9805,11 +9816,13 @@ snapshots:
 
   javascript-stringify@2.1.0: {}
 
+  jieba-wasm@2.2.0: {}
+
   jotai-devtools@0.11.0(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(redux@5.0.1):
     dependencies:
-      '@mantine/code-highlight': 7.17.3(@mantine/core@7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.3(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mantine/core': 7.17.3(@mantine/hooks@7.17.3(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@mantine/hooks': 7.17.3(react@19.0.0)
+      '@mantine/code-highlight': 7.17.4(@mantine/core@7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@mantine/hooks@7.17.4(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@mantine/core': 7.17.4(@mantine/hooks@7.17.4(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@mantine/hooks': 7.17.4(react@19.0.0)
       '@redux-devtools/extension': 3.3.0(redux@5.0.1)
       clsx: 2.1.1
       javascript-stringify: 2.1.0
@@ -9824,21 +9837,21 @@ snapshots:
       - react-dom
       - redux
 
-  jotai-history@0.2.1(jotai@2.11.1(@types/react@19.0.8)(react@19.0.0)):
+  jotai-history@0.4.2(jotai@2.12.2(@types/react@19.0.8)(react@19.0.0)):
     dependencies:
-      jotai: 2.11.1(@types/react@19.0.8)(react@19.0.0)
+      jotai: 2.12.2(@types/react@19.0.8)(react@19.0.0)
 
-  jotai-immer@0.4.1(immer@10.1.1)(jotai@2.11.1(@types/react@19.0.8)(react@19.0.0)):
+  jotai-immer@0.4.1(immer@10.1.1)(jotai@2.12.2(@types/react@19.0.8)(react@19.0.0)):
     dependencies:
       immer: 10.1.1
-      jotai: 2.11.1(@types/react@19.0.8)(react@19.0.0)
+      jotai: 2.12.2(@types/react@19.0.8)(react@19.0.0)
 
-  jotai-optics@0.4.0(jotai@2.11.1(@types/react@19.0.8)(react@19.0.0))(optics-ts@2.4.1):
+  jotai-optics@0.4.0(jotai@2.12.2(@types/react@19.0.8)(react@19.0.0))(optics-ts@2.4.1):
     dependencies:
-      jotai: 2.11.1(@types/react@19.0.8)(react@19.0.0)
+      jotai: 2.12.2(@types/react@19.0.8)(react@19.0.0)
       optics-ts: 2.4.1
 
-  jotai@2.11.1(@types/react@19.0.8)(react@19.0.0):
+  jotai@2.12.2(@types/react@19.0.8)(react@19.0.0):
     optionalDependencies:
       '@types/react': 19.0.8
       react: 19.0.0
@@ -10325,7 +10338,7 @@ snapshots:
       react: 19.0.0
       react-base16-styling: 0.9.1
 
-  react-number-format@5.4.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  react-number-format@5.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -10372,7 +10385,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.0.8
 
-  react-textarea-autosize@8.5.6(@types/react@19.0.8)(react@19.0.0):
+  react-textarea-autosize@8.5.9(@types/react@19.0.8)(react@19.0.0):
     dependencies:
       '@babel/runtime': 7.27.0
       react: 19.0.0
@@ -10988,6 +11001,8 @@ snapshots:
   type-fest@0.20.2: {}
 
   type-fest@4.39.0: {}
+
+  type-fest@4.39.1: {}
 
   typed-array-buffer@1.0.3:
     dependencies:
