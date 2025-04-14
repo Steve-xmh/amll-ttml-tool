@@ -1,10 +1,13 @@
-import { atomWithKeybindingStorage } from "../utils/keybindings.ts";
+import type { WritableAtom } from "jotai";
+import { atomWithKeybindingStorage, type KeyBindingsConfig } from "../utils/keybindings.ts";
 
 // https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values
 
 const IS_MAC = navigator.userAgent.includes("Mac");
 const CONTROL_KEY = IS_MAC ? "Meta" : "Control";
 const DELETE_KEY = IS_MAC ? "Backspace" : "Delete";
+
+export type KeyBindingAtom = WritableAtom<KeyBindingsConfig, [update?: KeyBindingsConfig | undefined], Promise<void>>;
 
 // 文件
 export const keyNewFileAtom = atomWithKeybindingStorage("newFile", [
@@ -45,7 +48,7 @@ export const keySelectInvertedAtom = atomWithKeybindingStorage("selectNext", [
 	"KeyI",
 ]);
 export const keySelectWordsOfMatchedSelectionAtom = atomWithKeybindingStorage(
-	"selectNext",
+	"selectWordsOfMatchedSelection",
 	[CONTROL_KEY, "F2"],
 );
 
