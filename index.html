@@ -2,24 +2,23 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8"/>
-    <link href="./src-tauri/icons/icon.ico" rel="icon" sizes="any"/>
-    <link href="./src/assets/logo.svg" rel="icon" type="image/svg+xml"/>
-    <link href="./src/assets/logo.png" rel="apple-touch-icon" sizes="1024x1024">
+    <meta charset="UTF-8" />
     <link color="#18a058" href="./src/assets/logo.svg" rel="mask-icon">
-    <meta content="width=device-width, height=device-height, interactive-widget=resizes-content, initial-scale=1.0, minimum-scale = 1, maximum-scale = 1, user-scalable = no, minimal-ui"
-          name="viewport"/>
-    <meta content="AMLL TTML Tool" name="apple-mobile-web-app-title"/>
+    <meta
+        content="width=device-width, height=device-height, interactive-widget=resizes-content, initial-scale=1.0, minimum-scale = 1, maximum-scale = 1, user-scalable = no, minimal-ui"
+        name="viewport" />
+    <meta content="AMLL TTML Tool" name="apple-mobile-web-app-title" />
     <meta content="yes" name="apple-mobile-web-app-capable">
-    <meta content="#FFFFFF" media="(prefers-color-scheme: light)" name="apple-mobile-web-app-status-bar-style"/>
-    <meta content="#101211" media="(prefers-color-scheme: dark)" name="apple-mobile-web-app-status-bar-style"/>
-    <meta content="default-src * data: blob: filesystem: about: ws: wss: ipc: 'unsafe-inline' 'unsafe-eval'; worker-src * data: blob: ;  script-src * data: blob: 'unsafe-inline' 'unsafe-eval';  connect-src * ipc: data: blob: 'unsafe-inline';  img-src * data: blob: 'unsafe-inline';  frame-src * data: blob: ;  style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';"
-          http-equiv="Content-Security-Policy"/>
+    <meta content="#FFFFFF" media="(prefers-color-scheme: light)" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="#101211" media="(prefers-color-scheme: dark)" name="apple-mobile-web-app-status-bar-style" />
+    <meta
+        content="default-src * data: blob: filesystem: about: ws: wss: ipc: 'unsafe-inline' 'unsafe-eval'; worker-src * data: blob: ;  script-src * data: blob: 'unsafe-inline' 'unsafe-eval';  connect-src * ipc: data: blob: 'unsafe-inline';  img-src * data: blob: 'unsafe-inline';  frame-src * data: blob: ;  style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';"
+        http-equiv="Content-Security-Policy" />
     <link href="./apple-touch-icon.png" rel="apple-touch-icon">
     <link href="./apple-touch-icon.png" rel="apple-touch-icon" sizes="76x76">
     <link href="./apple-touch-icon.png" rel="apple-touch-icon" sizes="120x120">
     <link href="./apple-touch-icon.png" rel="apple-touch-icon" sizes="152x152">
-    <link href="./favicon.ico" rel="icon" sizes="48x48">
+    <link href="./favicon.ico" rel="icon" sizes="32x32">
     <link href="./favicon.svg" rel="icon" sizes="any" type="image/svg+xml">
     <link href="./site.webmanifest" rel="manifest">
     <meta content="#FFFFFF" media="(prefers-color-scheme: light)" name="theme-color">
@@ -50,16 +49,16 @@
 </head>
 
 <body>
-<div id="root">
-    <div id="loading-holder"
-         style="display: flex; flex-direction: column; height: 100vh; text-align: center; align-items: center;justify-content: center;">
-        <div>AMLL TTML Tool 正在加载...</div>
-        <div>AMLL TTML Tool is loading...</div>
-        <div>工具资源较大，请稍等片刻...</div>
-        <div>Resource files are quite big, please be patient...</div>
+    <div id="root">
+        <div id="loading-holder"
+            style="display: flex; flex-direction: column; height: 100vh; text-align: center; align-items: center;justify-content: center;">
+            <div>AMLL TTML Tool 正在加载...</div>
+            <div>AMLL TTML Tool is loading...</div>
+            <div>工具资源较大，请稍等片刻...</div>
+            <div>Resource files are quite big, please be patient...</div>
+        </div>
     </div>
-</div>
-<script defer src="/src/main.tsx" type="module"></script>
+    <script defer src="/src/main.tsx" type="module"></script>
 </body>
 
 </html>

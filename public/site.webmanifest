@@ -3,8 +3,8 @@
   "short_name": "AMLL TTML Tools",
   "icons": [
     {
-      "src": "/pwa-192x192.png",
-      "sizes": "192x192",
+      "src": "/pwa-256x256.png",
+      "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     },
@@ -15,8 +15,8 @@
       "purpose": "any"
     },
     {
-      "src": "/pwa-maskable-192x192.png",
-      "sizes": "192x192",
+      "src": "/pwa-maskable-256x256.png",
+      "sizes": "256x256",
       "type": "image/png",
       "purpose": "maskable"
     },

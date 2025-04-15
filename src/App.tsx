@@ -11,8 +11,17 @@
 
 import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
 import { TouchSyncPanel } from "$/components/TouchSyncPanel";
+import {
+	type LyricLine as CoreLyricLine,
+	parseEslrc,
+	parseLrc,
+	parseLys,
+	parseQrc,
+	parseYrc,
+} from "@applemusic-like-lyrics/lyric";
 import { Box, Flex, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
+import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { platform, version } from "@tauri-apps/plugin-os";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,6 +29,7 @@ import { useAtomValue, useStore } from "jotai";
 import { Suspense, lazy, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import semverGt from "semver/functions/gt";
+import { uid } from "uid";
 import styles from "./App.module.css";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
@@ -36,6 +46,8 @@ import {
 } from "./states/main.ts";
 import { showTouchSyncPanelAtom } from "./states/sync.ts";
 import { isInteracting } from "./utils/keybindings.ts";
+import { parseLyric as parseTTML } from "./utils/ttml-parser.ts";
+import type { TTMLLyric } from "./utils/ttml-types.ts";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
@@ -52,6 +64,62 @@ function App() {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			(async () => {
+				const file: {
+					filename: string;
+					data: string;
+					ext: string;
+				} | null = await invoke("get_open_file_data");
+				if (file) {
+					console.log("File data from tauri args", file);
+					try {
+						const setLyric = (l: TTMLLyric) => store.set(lyricLinesAtom, l);
+						const makeTTML = (lyricLines: CoreLyricLine[]) =>
+							({
+								lyricLines: lyricLines.map((line) => ({
+									...line,
+									words: line.words.map((word) => ({
+										...word,
+										id: uid(),
+										obscene: false,
+										emptyBeat: 0,
+									})),
+									ignoreSync: false,
+									id: uid(),
+								})),
+								metadata: [],
+							}) as TTMLLyric;
+						switch (file.ext) {
+							case "ttml":
+								setLyric(parseTTML(file.data));
+								break;
+							case "lrc":
+								setLyric(makeTTML(parseLrc(file.data)));
+								break;
+							case "eslrc":
+								setLyric(makeTTML(parseEslrc(file.data)));
+								break;
+							case "qrc":
+								setLyric(makeTTML(parseQrc(file.data)));
+								break;
+							case "yrc":
+								setLyric(makeTTML(parseYrc(file.data)));
+								break;
+							case "lys":
+								setLyric(makeTTML(parseLys(file.data)));
+								break;
+							default:
+								toast.error("打开失败：无法识别这个文件的格式");
+						}
+					} catch (e) {
+						console.error("Failed to parse TTML file from tauri arguments", e);
+						toast.error("打开文件失败，请检查文件格式是否正确");
+					}
+				}
+			})();
+		}, [store]);
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		useEffect(() => {
+			(async () => {
 				const win = getCurrentWindow();
 				if (platform() === "windows") {
 					if (semverGt("10.0.22000", version())) {
@@ -59,6 +127,7 @@ function App() {
 						await win.clearEffects();
 					}
 				}
+
 				await new Promise((r) => requestAnimationFrame(r));
 
 				await win.show();
