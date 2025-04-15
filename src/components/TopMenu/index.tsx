@@ -23,12 +23,12 @@ import {
 	saveFileNameAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	undoableLyricLinesAtom,
 	undoLyricLinesAtom,
+	undoableLyricLinesAtom,
 } from "$/states/main.ts";
 import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { parseLyric } from "$/utils/ttml-parser.ts";
-import { newLyricWord, type LyricWord } from "$/utils/ttml-types";
+import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import exportTTMLText from "$/utils/ttml-writer.ts";
 import { HomeRegular } from "@fluentui/react-icons";
 import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
@@ -255,9 +255,7 @@ export const TopMenu: FC = () => {
 							<ImportExportLyric />
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item
-								disabled
 								onSelect={() => store.set(submitToAMLLDBDialogAtom, true)}
-								shortcut="复活赛进行中"
 							>
 								上传到 AMLL 歌词数据库
 							</DropdownMenu.Item>
@@ -333,10 +331,14 @@ export const TopMenu: FC = () => {
 												isLoading: true,
 											});
 											try {
-												const {default:wasmMoudle} = await import("$/assets/jieba_rs_wasm_bg.wasm?url");
-												const { default: init, cut } = await import("jieba-wasm");
+												const { default: wasmMoudle } = await import(
+													"$/assets/jieba_rs_wasm_bg.wasm?url"
+												);
+												const { default: init, cut } = await import(
+													"jieba-wasm"
+												);
 												await init({
-													module_or_path: wasmMoudle
+													module_or_path: wasmMoudle,
 												});
 												toast.update(id, {
 													render: "正在分词中，请稍等...",

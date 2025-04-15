@@ -17,9 +17,46 @@ import {
 	TextArea,
 	TextField,
 } from "@radix-ui/themes";
-import { useAtom, useStore } from "jotai";
+import { atom, useAtom, useAtomValue, useStore } from "jotai";
 import { memo, useLayoutEffect, useState } from "react";
 import { toast } from "react-toastify";
+
+const metadataAtom = atom((get) => get(lyricLinesAtom).metadata);
+const issuesAtom = atom((get) => {
+	const result: string[] = [];
+	const metadatas = get(metadataAtom);
+
+	if (
+		metadatas.findIndex((m) => m.key === "musicName" && m.value.length > 0) ===
+		-1
+	)
+		result.push("元数据缺少音乐名称");
+
+	if (
+		metadatas.findIndex((m) => m.key === "artists" && m.value.length > 0) === -1
+	)
+		result.push("元数据缺少音乐作者");
+
+	if (
+		metadatas.findIndex((m) => m.key === "album" && m.value.length > 0) === -1
+	)
+		result.push("元数据缺少音乐专辑名称");
+
+	const platforms = new Set([
+		"ncmMusicId",
+		"qqMusicId",
+		"spotifyId",
+		"appleMusicId",
+	]);
+
+	if (
+		metadatas.findIndex((m) => platforms.has(m.key) && m.value.length > 0) ===
+		-1
+	)
+		result.push("元数据缺少音乐平台对于歌曲 ID");
+
+	return result;
+});
 
 export const SubmitToAMLLDBDialog = memo(() => {
 	const [dialogOpen, setDialogOpen] = useAtom(submitToAMLLDBDialogAtom);
@@ -27,6 +64,8 @@ export const SubmitToAMLLDBDialog = memo(() => {
 	const [genNameFromMetadata, setGenNameFromMetadata] = useAtom(
 		generateNameFromMetadataAtom,
 	);
+	const metadatas = useAtomValue(metadataAtom);
+	const issues = useAtomValue(issuesAtom);
 	const [name, setName] = useState("");
 	const [comment, setComment] = useState("");
 	const [processing, setProcessing] = useState(false);
@@ -80,20 +119,19 @@ export const SubmitToAMLLDBDialog = memo(() => {
 
 	useLayoutEffect(() => {
 		if (genNameFromMetadata) {
-			const metadatas = store.get(lyricLinesAtom).metadata;
-			const name = metadatas
-				.find((m) => m.key === "musicName")
-				?.value?.join(", ");
-			const artists = metadatas
-				.find((m) => m.key === "artists")
-				?.value?.join(", ");
+			const name =
+				metadatas.find((m) => m.key === "musicName")?.value?.join(", ") ??
+				"未知曲名";
+			const artists =
+				metadatas.find((m) => m.key === "artists")?.value?.join(", ") ??
+				"未知歌手";
 			setName(`${artists} - ${name}`);
 		}
-	}, [genNameFromMetadata, store]);
+	}, [genNameFromMetadata, metadatas]);
 
 	return (
 		<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-			<Dialog.Content>
+			<Dialog.Content aria-description="提交歌词到 AMLL 歌词数据库">
 				<Dialog.Title>
 					提交歌词到 AMLL 歌词数据库（仅简体中文用户）
 				</Dialog.Title>
@@ -185,7 +223,26 @@ export const SubmitToAMLLDBDialog = memo(() => {
 							/>
 						</Flex>
 					</Text>
-					<Button loading={processing} onClick={uploadAndSubmit}>
+					{issues.length > 0 && (
+						<Callout.Root color="red">
+							<Callout.Icon>
+								<ErrorCircle16Regular />
+							</Callout.Icon>
+							<Callout.Text>
+								发现以下问题，请修正后再提交：
+								<ul>
+									{issues.map((issue) => (
+										<li key={issue}>{issue}</li>
+									))}
+								</ul>
+							</Callout.Text>
+						</Callout.Root>
+					)}
+					<Button
+						loading={processing}
+						disabled={issues.length > 0}
+						onClick={uploadAndSubmit}
+					>
 						上传歌词并创建议题
 					</Button>
 				</Flex>
