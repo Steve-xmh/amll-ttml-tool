@@ -1,0 +1,14 @@
+.titlebar {
+	height: unset;
+	align-self: stretch;
+
+	button {
+		max-height: unset;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.title {
+		display: none;
+	}
+}

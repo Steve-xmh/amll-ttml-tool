@@ -1,0 +1,27 @@
+{
+	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+	"app": {
+		"windows": [
+			{
+				"title": "AMLL TTML Tools",
+				"label": "main",
+				"width": 800,
+				"height": 600,
+				"minWidth": 640,
+				"minHeight": 480,
+				"resizable": true,
+				"fullscreen": false,
+				"transparent": true,
+				"visible": false,
+				"decorations": false,
+				"center": true,
+				"devtools": true,
+				"dragDropEnabled": false,
+				"browserExtensionsEnabled": true,
+				"windowEffects": {
+					"effects": ["tabbed", "mica"]
+				}
+			}
+		]
+	}
+}

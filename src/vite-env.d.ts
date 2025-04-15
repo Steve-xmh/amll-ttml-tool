@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -10,13 +10,27 @@
  */
 
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/client" />
 
-declare module "pangu/dist/browser/pangu.min.js" {
-	export function spacing(data: string): string;
+declare module "virtual:i18next-loader" {
+	const value: typeof import("../locales/zh-CN/translation.json");
+	export default value;
 }
 
-declare global {
-	interface Window {
-		readonly __TAURI_INTERNALS__: object | undefined;
-	}
+declare module "virtual:buildmeta" {
+	export const BUILD_TIME: string;
+	export const GIT_COMMIT: string;
+}
+
+interface ImportMetaEnv {
+	readonly TAURI_ENV_DEBUG?: string;
+	readonly TAURI_ENV_TARGET_TRIPLE?: string;
+	readonly TAURI_ENV_ARCH?: string;
+	readonly TAURI_ENV_PLATFORM?: string;
+	readonly TAURI_ENV_FAMILY?: string;
+	// 更多环境变量...
+}
+
+interface ImportMeta {
+	readonly env: ImportMetaEnv;
 }

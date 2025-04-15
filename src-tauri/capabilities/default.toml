@@ -1,0 +1,35 @@
+"$schema" = "../gen/schemas/desktop-schema.json"
+identifier = "default"
+description = "enables the default permissions"
+windows = ["main"]
+
+[[permissions]]
+identifier = "core:default"
+[[permissions]]
+identifier = "os:default"
+[[permissions]]
+identifier = "os:allow-os-type"
+[[permissions]]
+identifier = "core:window:default"
+[[permissions]]
+identifier = "core:window:allow-start-dragging"
+[[permissions]]
+identifier = "core:window:allow-toggle-maximize"
+[[permissions]]
+identifier = "core:window:allow-minimize"
+[[permissions]]
+identifier = "core:window:allow-show"
+[[permissions]]
+identifier = "core:window:allow-close"
+[[permissions]]
+identifier = "core:window:allow-set-focus"
+[[permissions]]
+identifier = "core:window:allow-maximize"
+[[permissions]]
+identifier = "core:window:allow-unmaximize"
+[[permissions]]
+identifier = "core:window:allow-set-effects"
+[[permissions]]
+identifier = "decorum:allow-show-snap-overlay"
+[[permissions]]
+identifier = "shell:allow-open"

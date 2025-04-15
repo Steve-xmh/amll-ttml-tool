@@ -16,13 +16,11 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
+.million
 .DS_Store
+*.tsbuildinfo
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Yarn 2 cache -- we don't need since dependencies are not fully compatible
-.yarn/cache/
-.yarn/install-state.gz

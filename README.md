@@ -3,11 +3,15 @@
 
 <div align=center>
 
-![](./public/logo.svg)
+<img src="./public/logo.svg" align="center" width="256">
 
 # Apple Music-like Lyrics TTML Tool
 
 一个全新的逐词歌词编辑器！针对 [Apple Music-like Lyrics 生态](https://github.com/Steve-xmh/applemusic-like-lyrics)制作！
+
+<img width="1312" alt="image" src="https://github.com/user-attachments/assets/4db81b29-df0c-4f6e-819a-3b956b28247c">
+<img width="1312" alt="image" src="https://github.com/user-attachments/assets/929eefee-ebda-43db-ad04-c0f099077053">
+<img width="1312" alt="image" src="https://github.com/user-attachments/assets/7c80902e-45a9-42ae-b980-f5500069acb8">
 
 </div>
 
@@ -47,11 +51,6 @@ pnpm build # 构建网页版本
 pnpm tauri dev # 开启 Tauri 桌面版本开发环境
 pnpm tauri build # 构建 Tauri 桌面版本
 ```
-
-## 截图
-
-<img width="912" alt="image" src="https://github.com/Steve-xmh/amll-ttml-tool/assets/39523898/e12220b5-0490-43da-bbbe-44ea2d64eef3">
-<img width="912" alt="image" src="https://github.com/Steve-xmh/amll-ttml-tool/assets/39523898/53b74012-ed11-405c-8411-59bc2036abb9">
 
 ## 贡献
 

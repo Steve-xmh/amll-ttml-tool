@@ -1,31 +1,30 @@
 [package]
-name = "amll-ttml-tool"
-version = "0.0.0"
+name = "app"
+version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
-license = "GPL-3.0"
+license = ""
 repository = ""
 edition = "2021"
+rust-version = "1.77.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2.0.1", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
-serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-
-[features]
-# this feature is used for production builds or when `devPath` points to the filesystem
-# DO NOT REMOVE!!
-custom-protocol = ["tauri/custom-protocol"]
-
-[profile.release]
-lto = true
-codegen-units = 1
-panic = "abort"
-opt-level = "z"
-debug = false
-strip = true
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.0.3", features = ["devtools"] }
+tao = "*"
+tauri-plugin-log = "2.0.0-rc"
+window-vibrancy = "^0.5"
+tauri-plugin-os = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-decorum = "1"

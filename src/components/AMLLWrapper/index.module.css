@@ -1,0 +1,11 @@
+.amllWrapper {
+	overflow: hidden;
+	flex-grow: 1;
+	padding: 0;
+	height: 100%;
+
+	--amll-lp-color: var(--gray-12);
+	&.isDark {
+		--amll-lp-color: var(--white-12);
+	}
+}

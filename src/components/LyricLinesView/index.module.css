@@ -1,0 +1,172 @@
+/*
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
+ *
+ * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
+ * This source code file is a part of AMLL TTML Tool project.
+ * 本项目的源代码的使用受到 GNU GENERAL PUBLIC LICENSE version 3 许可证的约束，具体可以参阅以下链接。
+ * Use of this source code is governed by the GNU GPLv3 license that can be found through the following link.
+ *
+ * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
+ */
+
+.lyricWord {
+	&.edit {
+		display: inline-block;
+		padding: 0.25em 0.5em;
+		border-radius: var(--radius-4);
+
+		background-color: var(--color-panel);
+		box-shadow: var(--base-card-surface-box-shadow);
+	}
+
+	&.sync {
+		padding: var(--space-2);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		border-right: solid 1px var(--gray-a5);
+	}
+
+	&.dropLeft {
+		border-left: solid 3px var(--accent-a11);
+	}
+
+	&.dropRight {
+		border-right: solid 3px var(--accent-a11);
+	}
+}
+
+.displayWord {
+	font-size: 1.5em;
+}
+
+.startTime,
+.endTime {
+	padding: 0.05em 0.5em;
+	border-radius: var(--radius-4);
+	color: var(--white-a6);
+}
+
+.startTime {
+	background-color: var(--green-a4);
+}
+
+.endTime {
+	background-color: var(--red-a4);
+}
+
+.lyricWord,
+.lyricWord * {
+	white-space: nowrap;
+	word-wrap: none;
+	word-break: keep-all;
+	text-wrap: nowrap;
+	max-lines: 1;
+}
+
+.lyricLine {
+	border-radius: var(--radius-4);
+	box-shadow: var(--base-card-surface-box-shadow);
+	user-select: none;
+	display: flex;
+
+	&.dropTop {
+		border-top: solid 3px var(--accent-a11);
+	}
+
+	&.dropBottom {
+		border-bottom: solid 3px var(--accent-a11);
+	}
+
+	&.ignoreSync {
+		&.edit {
+			opacity: 0.75;
+		}
+		&.sync {
+			opacity: 0.3;
+		}
+	}
+
+	&:hover {
+		.insertWordField {
+			opacity: 1;
+		}
+	}
+}
+
+.insertWordField {
+	opacity: 0;
+	transition: opacity 0.2s ease-in-out;
+
+	&:has(> input:active),
+	&:has(> input:focus),
+	&:has(> input:hover),
+	&.empty {
+		opacity: 1;
+	}
+}
+
+.lyricLineContainer {
+	min-width: 0;
+	padding: var(--space-3);
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+
+	&.sync {
+		padding: 0 var(--space-3);
+	}
+}
+
+.lyricWordsContainer {
+	min-width: 0;
+	flex-grow: 1;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--space-2);
+
+	&.edit {
+		margin-bottom: var(--space-2);
+	}
+
+	&.sync {
+		flex-wrap: nowrap;
+		overflow: auto;
+		padding: 0 var(--space-3);
+		gap: 0;
+		border-left: solid 1px var(--gray-a5);
+		border-right: solid 1px var(--gray-a5);
+		&::-webkit-scrollbar {
+			border-top: solid 1px var(--gray-a5);
+		}
+	}
+}
+
+.blank {
+	color: var(--gray-a7);
+}
+
+.lyricWord:hover,
+.lyricLine:hover {
+	box-shadow: 0 0 0 2px var(--accent-a5);
+	background-color: var(--accent-a3);
+}
+
+.lyricWord.selected,
+.lyricLine.selected {
+	box-shadow: 0 0 0 2px var(--accent-a11);
+	background-color: var(--accent-a5);
+	&:hover {
+		box-shadow: 0 0 0 2px var(--accent-a11);
+		background-color: var(--accent-a6);
+	}
+}
+
+.lyricWord.selected {
+	.startTime,
+	.endTime {
+		color: var(--white-a10);
+	}
+}

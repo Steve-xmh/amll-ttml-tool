@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -45,9 +45,9 @@ export default function exportTTMLText(
 		const span = doc.createElement("span");
 		span.setAttribute("begin", msToTimestamp(word.startTime));
 		span.setAttribute("end", msToTimestamp(word.endTime));
-		if (word.emptyBeat) {
+		if (word.obscene) span.setAttribute("amll:obscene", "true");
+		if (word.emptyBeat)
 			span.setAttribute("amll:empty-beat", `${word.emptyBeat}`);
-		}
 		span.appendChild(doc.createTextNode(word.word));
 		return span;
 	}
@@ -126,7 +126,7 @@ export default function exportTTMLText(
 			lineP.setAttribute("itunes:key", `L${++i}`);
 
 			if (isDynamicLyric) {
-				let beginTime = Infinity;
+				let beginTime = Number.POSITIVE_INFINITY;
 				let endTime = 0;
 				for (const word of line.words) {
 					if (word.word.trim().length === 0) {
@@ -155,7 +155,7 @@ export default function exportTTMLText(
 				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
 				if (isDynamicLyric) {
-					let beginTime = Infinity;
+					let beginTime = Number.POSITIVE_INFINITY;
 					let endTime = 0;
 					for (
 						let wordIndex = 0;
@@ -226,7 +226,7 @@ export default function exportTTMLText(
 	}
 
 	ttRoot.appendChild(body);
-	console.log(ttRoot);
+	console.log("ttml document built", ttRoot);
 
 	if (pretty) {
 		const xsltDoc = new DOMParser().parseFromString(

@@ -1,0 +1,32 @@
+{
+  "metadataDialog": {
+    "builtinOptions": {
+      "musicName": "歌曲名称",
+      "artists": "歌曲的艺术家",
+      "album": "歌曲的专辑名",
+      "ncmMusicId": "网易云音乐 ID",
+      "qqMusicId": "QQ 音乐 ID",
+      "spotifyId": "Spotify 音乐 ID",
+      "appleMusicId": "Apple Music 音乐 ID",
+      "isrc": "歌曲的 ISRC 号码",
+      "ttmlAuthorGithub": "逐词歌词作者 GitHub ID",
+      "ttmlAuthorGithubLogin": "逐词歌词作者 GitHub 用户名"
+    }
+  },
+  "topBar": {
+    "modeBtns": {
+      "edit": "编辑",
+      "sync": "打轴",
+      "preview": "预览"
+    },
+    "menu": {
+      "file": "文件",
+      "edit": "编辑",
+      "help": "帮助"
+    }
+  },
+  "pwa": {
+    "offlineReady": "网站已成功离线缓存，后续可离线访问本网页",
+    "updateRefresh": "网站已更新，刷新网页以使用最新版本！"
+  }
+}

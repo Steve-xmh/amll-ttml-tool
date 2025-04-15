@@ -1,0 +1,60 @@
+:root {
+	font-family: "MiSans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	font-weight: 400;
+
+	color: rgba(255, 255, 255, 0.87);
+	background-color: transparent;
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.radix-themes {
+	--default-font-family: "MiSans", Inter, system-ui, Avenir, Helvetica, Arial,
+		sans-serif;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+
+	&:hover {
+		background: transparent;
+	}
+}
+
+::-webkit-scrollbar {
+	background-color: transparent;
+	width: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+	border: solid 6px transparent;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.0509803922), inset 0 0 0 6px
+		rgba(255, 255, 255, 0.1137254902);
+	border-radius: 10px;
+	background: transparent;
+
+	&:hover {
+		background: transparent;
+	}
+}
+
+.rt-BaseButton:where(.rt-variant-soft) {
+	background-color: var(--accent-a3);
+
+	&:hover {
+		background-color: var(--accent-a4);
+	}
+}
+
+.rt-BaseButton:where(.rt-variant-soft):where(:active:not([data-state="open"])) {
+	background-color: var(--accent-a5);
+}
+
+.amll-lyric-player {
+	margin: 0 !important;
+	padding: 0 !important;
+}

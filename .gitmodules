@@ -1,3 +1,0 @@
-[submodule "libs/kuromoji.js"]
-	path = libs/kuromoji.js
-	url = git@github.com:Steve-xmh/kuromoji.js.git

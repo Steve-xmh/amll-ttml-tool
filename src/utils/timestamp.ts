@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -24,11 +24,11 @@ export function parseTimespan(timeSpan: string): number {
 
 export function msToTimestamp(timeMS: number): string {
 	let t = timeMS;
+	if (t === Number.POSITIVE_INFINITY) {
+		return "99:99.999";
+	}
 	if (!Number.isSafeInteger(t) || t < 0) {
 		throw new Error(`Invalid timestamp: ${t}`);
-	}
-	if (t === Infinity) {
-		return "99:99.999";
 	}
 	t = timeMS / 1000;
 	const secs = t % 60;

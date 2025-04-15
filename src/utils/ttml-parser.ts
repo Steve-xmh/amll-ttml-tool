@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Steve Xiao (stevexmh@qq.com) and contributors.
+ * Copyright 2023-2025 Steve Xiao (stevexmh@qq.com) and contributors.
  *
  * 本源代码文件是属于 AMLL TTML Tool 项目的一部分。
  * This source code file is a part of AMLL TTML Tool project.
@@ -16,6 +16,7 @@
  * @see https://www.w3.org/TR/2018/REC-ttml1-20181108/
  */
 
+import { uid } from "uid";
 import { parseTimespan } from "./timestamp";
 import type {
 	LyricLine,
@@ -31,7 +32,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		"application/xml",
 	);
 
-	console.log(ttmlDoc);
+	console.log("ttml document parsed", ttmlDoc);
 
 	let mainAgentId = "v1";
 
@@ -69,6 +70,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 	function parseParseLine(lineEl: Element, isBG = false, isDuet = false) {
 		const line: LyricLine = {
+			id: uid(),
 			words: [],
 			translatedLyric: "",
 			romanLyric: "",
@@ -79,6 +81,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					lineEl.getAttribute("ttm:agent") !== mainAgentId,
 			startTime: 0,
 			endTime: 0,
+			ignoreSync: false,
 		};
 		let haveBg = false;
 
@@ -90,7 +93,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		} else {
 			line.startTime = line.words.reduce(
 				(pv, cv) => Math.min(pv, cv.startTime),
-				Infinity,
+				Number.POSITIVE_INFINITY,
 			);
 			line.endTime = line.words.reduce((pv, cv) => Math.max(pv, cv.endTime), 0);
 		}
@@ -99,9 +102,12 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			if (wordNode.nodeType === Node.TEXT_NODE) {
 				const word = wordNode.textContent ?? "";
 				line.words.push({
+					id: uid(),
 					word: word,
 					startTime: word.trim().length > 0 ? line.startTime : 0,
 					endTime: word.trim().length > 0 ? line.endTime : 0,
+					obscene: false,
+					emptyBeat: 0,
 				});
 			} else if (wordNode.nodeType === Node.ELEMENT_NODE) {
 				const wordEl = wordNode as Element;
@@ -118,14 +124,18 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					}
 				} else if (wordEl.hasAttribute("begin") && wordEl.hasAttribute("end")) {
 					const word: LyricWord = {
+						id: uid(),
 						word: wordNode.textContent ?? "",
 						startTime: parseTimespan(wordEl.getAttribute("begin") ?? ""),
 						endTime: parseTimespan(wordEl.getAttribute("end") ?? ""),
+						obscene: false,
+						emptyBeat: 0,
 					};
 					const emptyBeat = wordEl.getAttribute("amll:empty-beat");
-					if (emptyBeat) {
-						word.emptyBeat = Number(emptyBeat);
-					}
+					if (emptyBeat) word.emptyBeat = Number(emptyBeat);
+					const obscene = wordEl.getAttribute("amll:obscene");
+					if (obscene === "true") word.obscene = true;
+
 					line.words.push(word);
 				}
 			}
@@ -162,7 +172,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		parseParseLine(lineEl);
 	}
 
-	console.log(lyricLines, metadata);
+	console.log("finished ttml load", lyricLines, metadata);
 
 	return {
 		metadata,

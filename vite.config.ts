@@ -1,26 +1,83 @@
-import vue from "@vitejs/plugin-vue";
-import path from "path";
-import { defineConfig, type UserConfig } from "vite";
+import MillionLint from "@million/lint";
+import react from "@vitejs/plugin-react";
+import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
+import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { exec } from "node:child_process";
+import ConditionalCompile from "unplugin-preprocessor-directives/vite";
+import { type Plugin, defineConfig } from "vite";
+import i18nextLoader from "vite-plugin-i18next-loader";
 import { VitePWA } from "vite-plugin-pwa";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 import svgLoader from "vite-svg-loader";
 
-const plugins = [
-	vue({
-		script: {
-			defineModel: true,
-			propsDestructure: true,
+const AMLL_LOCAL_EXISTS = existsSync(
+	resolve(__dirname, "../applemusic-like-lyrics"),
+);
+
+const ReactCompilerConfig = {
+	target: "19",
+};
+
+process.env.AMLL_LOCAL_EXISTS = AMLL_LOCAL_EXISTS ? "true" : "false";
+
+const plugins: Plugin[] = [
+	ConditionalCompile(),
+	topLevelAwait(),
+	MillionLint.vite(),
+	react({
+		babel: {
+			presets: ["jotai/babel/preset"],
+			plugins: [
+				["babel-plugin-react-compiler", ReactCompilerConfig],
+				jotaiDebugLabel,
+				jotaiReactRefresh,
+			],
 		},
 	}),
 	svgLoader(),
 	wasm(),
-	topLevelAwait(),
+	i18nextLoader({
+		paths: ["./locales"],
+		namespaceResolution: "basename",
+	}),
+	{
+		name: "buildmeta",
+		async resolveId(id) {
+			if (id === "virtual:buildmeta") {
+				return id;
+			}
+		},
+		async load(id) {
+			if (id === "virtual:buildmeta") {
+				let gitCommit = "unknown";
+
+				try {
+					gitCommit = await new Promise<string>((resolve, reject) =>
+						exec("git rev-parse HEAD", (err, stdout) => {
+							if (err) {
+								reject(err);
+							} else {
+								resolve(stdout.trim());
+							}
+						}),
+					);
+				} catch {}
+
+				return `
+					export const BUILD_TIME = "${new Date().toISOString()}";
+					export const GIT_COMMIT = "${gitCommit}";
+				`;
+			}
+		},
+	},
 	VitePWA({
 		injectRegister: null,
-		disable: !!process.env.TAURI_PLATFORM || !process.env.VITE_DEV,
+		disable: !!process.env.TAURI_PLATFORM,
 		workbox: {
-			globPatterns: ["**/*.{js,css,html,wasm}", "kuromoji-dict-min/*.dat"],
+			globPatterns: ["**/*.{js,css,html,wasm}"],
 			maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
 		},
 		manifest: {
@@ -70,52 +127,45 @@ const plugins = [
 	}),
 ];
 
-const rollupOptions: UserConfig["build"]["rollupOptions"] = {
-	output: {
-		manualChunks(id) {
-			if (id.includes("naive-ui")) return "naive-ui";
-			if (id.includes("@pixi")) return "pixi";
-			if (id.includes("node_modules")) return null;
-		},
-	},
-};
-
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins,
-	base: process.env.TAURI_PLATFORM ? "/" : "./",
-	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-	// prevent vite from obscuring rust errors
+	base: process.env.TAURI_ENV_PLATFORM ? "/" : "./",
 	clearScreen: false,
-	// tauri expects a fixed port, fail if that port is not available
 	server: {
-		port: 1420,
 		strictPort: true,
 	},
-	resolve: {
-		alias: {
-			"kuromoji": path.resolve(
-				__dirname,
-				"libs/kuromoji.js",
-			),
-		},
+	envPrefix: ["VITE_", "TAURI_", "AMLL_", "SENTRY_"],
+	build: {
+		// Tauri uses Chromium on Windows and WebKit on macOS and Linux
+		target:
+			process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome105" : "safari15",
+		// don't minify for debug builds
+		minify: !process.env.TAURI_ENV_DEBUG ? "esbuild" : false,
+		// produce sourcemaps for debug builds
+		sourcemap: true,
 	},
-	// to make use of `TAURI_DEBUG` and other env variables
-	// https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
-	envPrefix: ["VITE_", "TAURI_"],
-	build: process.env.TAURI_PLATFORM
-		? {
-				// Tauri supports es2021
-				target:
-					process.env.TAURI_PLATFORM === "windows" ? "chrome105" : "safari13",
-				// don't minify for debug builds
-				minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
-				// produce sourcemaps for debug builds
-				sourcemap: !!process.env.TAURI_DEBUG,
-				rollupOptions,
-		  }
-		: {
-				rollupOptions,
-				sourcemap: true,
-		  },
+	resolve: {
+		alias: Object.assign(
+			{
+				$: resolve(__dirname, "src"),
+			},
+			AMLL_LOCAL_EXISTS
+				? {
+						// for development, use the local copy of the AMLL library
+						"@applemusic-like-lyrics/core": resolve(
+							__dirname,
+							"../applemusic-like-lyrics/packages/core/src",
+						),
+						"@applemusic-like-lyrics/react": resolve(
+							__dirname,
+							"../applemusic-like-lyrics/packages/react/src",
+						),
+					}
+				: {},
+		) as Record<string, string>,
+	},
+	worker: {
+		format: "es",
+	},
 });

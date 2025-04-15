@@ -1,0 +1,6 @@
+.syncButtons > button {
+	padding-left: 0;
+	padding-right: 0;
+	text-wrap: nowrap;
+	white-space: nowrap;
+}
