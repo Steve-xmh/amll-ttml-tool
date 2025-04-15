@@ -1,24 +1,32 @@
-import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
 import {
+	generateNameFromMetadataAtom,
+	hideSubmitAMLLDBWarningAtom,
+} from "$/states/config.ts";
+import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
+import { lyricLinesAtom } from "$/states/main";
+import exportTTMLText from "$/utils/ttml-writer";
+import { ErrorCircle16Regular, Info16Regular } from "@fluentui/react-icons";
+import {
+	Button,
 	Callout,
 	Checkbox,
 	Dialog,
-	Text,
 	Flex,
+	RadioGroup,
+	Text,
 	TextArea,
 	TextField,
-	RadioGroup,
-	Button,
 } from "@radix-ui/themes";
 import { useAtom, useStore } from "jotai";
-import { ErrorCircle16Regular, Info16Regular } from "@fluentui/react-icons";
-import { memo, useState } from "react";
+import { memo, useLayoutEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { lyricLinesAtom } from "$/states/main";
-import exportTTMLText from "$/utils/ttml-writer";
 
 export const SubmitToAMLLDBDialog = memo(() => {
 	const [dialogOpen, setDialogOpen] = useAtom(submitToAMLLDBDialogAtom);
+	const [hideWarning, setHideWarning] = useAtom(hideSubmitAMLLDBWarningAtom);
+	const [genNameFromMetadata, setGenNameFromMetadata] = useAtom(
+		generateNameFromMetadataAtom,
+	);
 	const [name, setName] = useState("");
 	const [comment, setComment] = useState("");
 	const [processing, setProcessing] = useState(false);
@@ -30,20 +38,21 @@ export const SubmitToAMLLDBDialog = memo(() => {
 		setProcessing(true);
 		try {
 			const ttmlLyric = store.get(lyricLinesAtom);
-			const lyricData = encodeURIComponent(exportTTMLText(ttmlLyric));
-			const lyricUrl = await fetch("https://dpaste.org/api/", {
-				method: "POST",
-				mode: "cors",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
+			const lyricData = exportTTMLText(ttmlLyric);
+			const lyricUrl = await fetch(
+				"https://amll-ttml-tools-dpaste-proxy.stevexmh.net/74335190-b44f-4468-b5ce-0dd9f25bef98",
+				{
+					method: "POST",
+					mode: "cors",
+					body: lyricData,
 				},
-				body: `format=url&lexer=xml&expires=3600&filename=lyric.ttml&content=${lyricData}`,
-			})
-				.then((v) => {
-					console.log(v);
-					return v.text();
-				})
-				.then((v) => `${v.trim()}/raw`);
+			).then((v) => {
+				if (v.status !== 200)
+					return Promise.reject(
+						new Error(`发送上传歌词文件请求失败：${v.status} ${v.statusText}`),
+					);
+				return v.text();
+			});
 			const issueUrl = new URL(
 				"https://github.com/Steve-xmh/amll-ttml-db/issues/new",
 			);
@@ -51,7 +60,10 @@ export const SubmitToAMLLDBDialog = memo(() => {
 			issueUrl.searchParams.append("template", "submit-lyric.yml");
 			issueUrl.searchParams.append("title", `[歌词提交/修正] ${name}`);
 			issueUrl.searchParams.append("song-name", name);
-			issueUrl.searchParams.append("ttml-download-url", lyricUrl);
+			issueUrl.searchParams.append(
+				"ttml-download-url",
+				new URL(lyricUrl).toString(),
+			);
 			issueUrl.searchParams.append("upload-reason", submitReason);
 			issueUrl.searchParams.append("comment", comment);
 			open(issueUrl.toString());
@@ -66,6 +78,19 @@ export const SubmitToAMLLDBDialog = memo(() => {
 		setProcessing(false);
 	}
 
+	useLayoutEffect(() => {
+		if (genNameFromMetadata) {
+			const metadatas = store.get(lyricLinesAtom).metadata;
+			const name = metadatas
+				.find((m) => m.key === "musicName")
+				?.value?.join(", ");
+			const artists = metadatas
+				.find((m) => m.key === "artists")
+				?.value?.join(", ");
+			setName(`${artists} - ${name}`);
+		}
+	}, [genNameFromMetadata, store]);
+
 	return (
 		<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
 			<Dialog.Content>
@@ -73,43 +98,54 @@ export const SubmitToAMLLDBDialog = memo(() => {
 					提交歌词到 AMLL 歌词数据库（仅简体中文用户）
 				</Dialog.Title>
 				<Flex direction="column" gap="4">
-					<Callout.Root color="orange">
-						<Callout.Icon>
-							<ErrorCircle16Regular />
-						</Callout.Icon>
-						<Callout.Text>
-							本功能仅使用 AMLL
-							歌词数据库的简体中文用户可用，如果您是为了在其他软件上使用歌词而编辑歌词的话，请参考对应的软件提交歌词的方式来提交歌词哦！
-						</Callout.Text>
-					</Callout.Root>
-					<Callout.Root color="blue">
-						<Callout.Icon>
-							<Info16Regular />
-						</Callout.Icon>
-						<Callout.Text>
-							<p>
-								首先，感谢您的慷慨歌词贡献！
-								<br />
-								通过提交，你将默认同意{" "}
-								<Text weight="bold" color="orange">
-									使用 CC0 共享协议完全放弃歌词所有权{" "}
-								</Text>
-								并提交到歌词数据库！
-								<br />
-								并且歌词将会在以后被 AMLL 系程序作为默认 TTML 歌词源获取！
-								<br />
-								如果您对歌词所有权比较看重的话，请勿提交歌词哦！
-								<br />
-								请输入以下提交信息然后跳转到 Github 议题提交页面！
-							</p>
-						</Callout.Text>
-					</Callout.Root>
-					<Button variant="soft" size="1">
-						关闭上述警告信息
-					</Button>
+					{!hideWarning && (
+						<>
+							<Callout.Root color="orange">
+								<Callout.Icon>
+									<ErrorCircle16Regular />
+								</Callout.Icon>
+								<Callout.Text>
+									本功能仅使用 AMLL
+									歌词数据库的简体中文用户可用，如果您是为了在其他软件上使用歌词而编辑歌词的话，请参考对应的软件提交歌词的方式来提交歌词哦！
+								</Callout.Text>
+							</Callout.Root>
+							<Callout.Root color="blue">
+								<Callout.Icon>
+									<Info16Regular />
+								</Callout.Icon>
+								<Callout.Text>
+									<p>
+										首先，感谢您的慷慨歌词贡献！
+										<br />
+										通过提交，你将默认同意{" "}
+										<Text weight="bold" color="orange">
+											使用 CC0 共享协议完全放弃歌词所有权{" "}
+										</Text>
+										并提交到歌词数据库！
+										<br />
+										并且歌词将会在以后被 AMLL 系程序作为默认 TTML 歌词源获取！
+										<br />
+										如果您对歌词所有权比较看重的话，请勿提交歌词哦！
+										<br />
+										请输入以下提交信息然后跳转到 Github 议题提交页面！
+									</p>
+								</Callout.Text>
+							</Callout.Root>
+							<Button
+								variant="soft"
+								size="1"
+								onClick={() => setHideWarning(true)}
+							>
+								关闭上述警告信息
+							</Button>
+						</>
+					)}
 					<Text as="label" size="2">
 						<Flex gap="2">
-							<Checkbox defaultChecked />
+							<Checkbox
+								checked={genNameFromMetadata}
+								onCheckedChange={(v) => setGenNameFromMetadata(!!v)}
+							/>
 							从元数据中生成
 						</Flex>
 					</Text>
@@ -118,6 +154,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 							音乐名称
 							<TextField.Root
 								value={name}
+								disabled={genNameFromMetadata}
 								onChange={(e) => setName(e.currentTarget.value)}
 							/>
 							推荐使用 歌手 - 歌曲 格式，方便仓库管理员确认你的歌曲是否存在

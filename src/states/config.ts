@@ -11,3 +11,12 @@ export const syncJudgeModeAtom = atomWithStorage(
 	"syncJudgeMode",
 	SyncJudgeMode.FirstKeyDownTime,
 );
+
+export const hideSubmitAMLLDBWarningAtom = atomWithStorage(
+	"hideSubmitAMLLDBWarning",
+	false,
+);
+export const generateNameFromMetadataAtom = atomWithStorage(
+	"generateNameFromMetadata",
+	true,
+);
