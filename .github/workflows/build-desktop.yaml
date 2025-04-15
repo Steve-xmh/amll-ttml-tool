@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4.2.0
           
       - name: 缓存 Cargo 产物
-        uses: actions/cache@v4.1.0
+        uses: actions/cache@v4.2.3
         with:
           path: |
             ~/.cargo/bin/
