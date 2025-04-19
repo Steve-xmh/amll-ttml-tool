@@ -31,11 +31,11 @@ import {
 	useState,
 } from "react";
 import { toast } from "react-toastify";
-import styles from "./import-from-text.module.css";
+// import styles from "./import-from-text.module.css";
 import error = toast.error;
 
-type IModelDeltaDecoration = monaco.editor.IModelDeltaDecoration;
-type IEditorDecorationsCollection = monaco.editor.IEditorDecorationsCollection;
+// type IModelDeltaDecoration = monaco.editor.IModelDeltaDecoration;
+// type IEditorDecorationsCollection = monaco.editor.IEditorDecorationsCollection;
 
 const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
@@ -287,76 +287,76 @@ export const ImportFromText = () => {
 			smoothScrolling: true,
 		});
 
-		let decoCol: IEditorDecorationsCollection | null = null;
+		// let decoCol: IEditorDecorationsCollection | null = null;
 
-		editor.onDidChangeModelContent(() => {
-			try {
-				decoCol?.clear();
-			} catch {
-				/* empty */
-			}
-			const model = editor.getModel();
-			if (!model) return;
+		// editor.onDidChangeModelContent(() => {
+		// 	try {
+		// 		decoCol?.clear();
+		// 	} catch {
+		// 		/* empty */
+		// 	}
+		// 	const model = editor.getModel();
+		// 	if (!model) return;
 
-			const deco: IModelDeltaDecoration[] = [];
+		// 	const deco: IModelDeltaDecoration[] = [];
 
-			deco.push(
-				...model
-					.findMatches(wordSeparator, true, false, true, null, false)
-					.map((match) => ({
-						range: match.range,
-						options: {
-							inlineClassName: styles.wordSeparator,
-						},
-					})),
-			);
+		// 	deco.push(
+		// 		...model
+		// 			.findMatches(wordSeparator, true, false, true, null, false)
+		// 			.map((match) => ({
+		// 				range: match.range,
+		// 				options: {
+		// 					inlineClassName: styles.wordSeparator,
+		// 				},
+		// 			})),
+		// 	);
 
-			deco.push(
-				...model
-					.findMatches(lineSeparator, true, false, true, null, false)
-					.map((match) => ({
-						range: match.range,
-						options: {
-							inlineClassName: styles.lineSeparator,
-						},
-					})),
-			);
+		// 	deco.push(
+		// 		...model
+		// 			.findMatches(lineSeparator, true, false, true, null, false)
+		// 			.map((match) => ({
+		// 				range: match.range,
+		// 				options: {
+		// 					inlineClassName: styles.lineSeparator,
+		// 				},
+		// 			})),
+		// 	);
 
-			deco.push(
-				...model
-					.findMatches(bgLyricPrefix, true, false, true, null, false)
-					.map((match) => ({
-						range: match.range,
-						options: {
-							inlineClassName: styles.bgLinePrefix,
-						},
-					})),
-			);
+		// 	deco.push(
+		// 		...model
+		// 			.findMatches(bgLyricPrefix, true, false, true, null, false)
+		// 			.map((match) => ({
+		// 				range: match.range,
+		// 				options: {
+		// 					inlineClassName: styles.bgLinePrefix,
+		// 				},
+		// 			})),
+		// 	);
 
-			deco.push(
-				...model
-					.findMatches(duetLyricPrefix, true, false, true, null, false)
-					.map((match) => ({
-						range: match.range,
-						options: {
-							inlineClassName: styles.duetLinePrefix,
-						},
-					})),
-			);
+		// 	deco.push(
+		// 		...model
+		// 			.findMatches(duetLyricPrefix, true, false, true, null, false)
+		// 			.map((match) => ({
+		// 				range: match.range,
+		// 				options: {
+		// 					inlineClassName: styles.duetLinePrefix,
+		// 				},
+		// 			})),
+		// 	);
 
-			deco.push(
-				...model
-					.findMatches(emptyBeatSymbol, true, false, true, null, false)
-					.map((match) => ({
-						range: match.range,
-						options: {
-							inlineClassName: styles.emptyBeatSymbol,
-						},
-					})),
-			);
+		// 	deco.push(
+		// 		...model
+		// 			.findMatches(emptyBeatSymbol, true, false, true, null, false)
+		// 			.map((match) => ({
+		// 				range: match.range,
+		// 				options: {
+		// 					inlineClassName: styles.emptyBeatSymbol,
+		// 				},
+		// 			})),
+		// 	);
 
-			decoCol = editor.createDecorationsCollection(deco);
-		});
+		// 	decoCol = editor.createDecorationsCollection(deco);
+		// });
 	}
 
 	return (
