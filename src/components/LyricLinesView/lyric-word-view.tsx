@@ -22,7 +22,7 @@ import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
 import { ContextMenu, TextField } from "@radix-ui/themes";
 import classNames from "classnames";
 import { type Atom, atom, useAtomValue, useStore } from "jotai";
-import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
+import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
 	memo,

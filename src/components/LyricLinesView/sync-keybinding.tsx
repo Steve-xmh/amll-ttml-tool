@@ -40,14 +40,18 @@ export const SyncKeyBinding: FC = () => {
 				0,
 				audioEngine.musicCurrentTime * 1000 + syncTimeOffset,
 			);
+			let adjustedTime = currentTime;
 			switch (store.get(syncJudgeModeAtom)) {
 				case SyncJudgeMode.FirstKeyDownTime:
-					return (currentTime - evt.downTimeOffset) | 0;
+					adjustedTime -= evt.downTimeOffset;
+					break;
 				case SyncJudgeMode.LastKeyUpTime:
-					return currentTime | 0;
+					break;
 				case SyncJudgeMode.MiddleKeyTime:
-					return (currentTime - evt.downTimeOffset / 2) | 0;
+					adjustedTime -= currentTime - evt.downTimeOffset / 2;
+					break;
 			}
+			return Math.max(0, adjustedTime) | 0;
 		},
 		[store],
 	);

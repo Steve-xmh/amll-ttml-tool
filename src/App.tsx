@@ -19,7 +19,15 @@ import {
 	parseQrc,
 	parseYrc,
 } from "@applemusic-like-lyrics/lyric";
-import { Box, Flex, Theme } from "@radix-ui/themes";
+import {
+	Box,
+	Button,
+	Flex,
+	Heading,
+	Text,
+	TextArea,
+	Theme,
+} from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -48,10 +56,59 @@ import { showTouchSyncPanelAtom } from "./states/sync.ts";
 import { isInteracting } from "./utils/keybindings.ts";
 import { parseLyric as parseTTML } from "./utils/ttml-parser.ts";
 import type { TTMLLyric } from "./utils/ttml-types.ts";
+import { ErrorBoundary } from "react-error-boundary";
+import exportTTMLText from "./utils/ttml-writer.ts";
+import saveFile from "save-file";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
 const Dialogs = lazy(() => import("./components/Dialogs"));
+
+const AppErrorPage = ({ error, resetErrorBoundary }) => {
+	const store = useStore();
+
+	return (
+		<Flex direction="column" align="center" justify="center" height="100vh">
+			<Flex direction="column" align="start" justify="center" gap="2">
+				<Heading>诶呀，出错了！</Heading>
+				<Text>AMLL TTML Tools 在运行时出现了错误</Text>
+				<Text>具体错误详情可以在开发者工具中查询</Text>
+				<Flex gap="2">
+					<Button
+						onClick={() => {
+							try {
+								const ttmlText = exportTTMLText(store.get(lyricLinesAtom));
+								const b = new Blob([ttmlText], { type: "text/plain" });
+								saveFile(b, "lyric.ttml").catch(console.error);
+							} catch (e) {
+								console.error("Failed to save TTML file", e);
+							}
+						}}
+					>
+						尝试保存当前歌词
+					</Button>
+					<Button
+						onClick={() => {
+							resetErrorBoundary();
+						}}
+						variant="soft"
+					>
+						尝试重新进入程序
+					</Button>
+				</Flex>
+				<Text>大致错误信息：</Text>
+				<TextArea
+					readOnly
+					value={String(error)}
+					style={{
+						width: "100%",
+						height: "8em",
+					}}
+				/>
+			</Flex>
+		</Flex>
+	);
+};
 
 function App() {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
@@ -170,55 +227,64 @@ function App() {
 				store.set(selectedWordsAtom, new Set());
 			}}
 		>
-			{toolMode === ToolMode.Sync && <SyncKeyBinding />}
-			<DarkThemeDetector />
-			<Flex direction="column" height="100vh">
-				<TitleBar />
-				<RibbonBar />
-				<Box flexGrow="1" overflow="hidden">
-					<AnimatePresence mode="wait">
-						{toolMode !== ToolMode.Preview && (
-							<SuspensePlaceHolder key="edit">
-								<motion.div
-									layout="position"
-									style={{
-										height: "100%",
-										maxHeight: "100%",
-										overflowY: "hidden",
-									}}
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{ opacity: 0 }}
-								>
-									<LyricLinesView key="edit" />
-								</motion.div>
-							</SuspensePlaceHolder>
-						)}
-						{toolMode === ToolMode.Preview && (
-							<SuspensePlaceHolder key="amll-preview">
-								<Box height="100%" key="amll-preview" p="2" asChild>
+			<ErrorBoundary
+				FallbackComponent={AppErrorPage}
+				onReset={(details) => {
+					// TODO
+				}}
+			>
+				{toolMode === ToolMode.Sync && <SyncKeyBinding />}
+				<DarkThemeDetector />
+				<Flex direction="column" height="100vh">
+					<TitleBar />
+					<RibbonBar />
+					<Box flexGrow="1" overflow="hidden">
+						<AnimatePresence mode="wait">
+							{toolMode !== ToolMode.Preview && (
+								<SuspensePlaceHolder key="edit">
 									<motion.div
 										layout="position"
+										style={{
+											height: "100%",
+											maxHeight: "100%",
+											overflowY: "hidden",
+										}}
 										initial={{ opacity: 0 }}
 										animate={{ opacity: 1 }}
 										exit={{ opacity: 0 }}
 									>
-										<AMLLWrapper />
+										<LyricLinesView key="edit" />
 									</motion.div>
-								</Box>
-							</SuspensePlaceHolder>
-						)}
-					</AnimatePresence>
-				</Box>
-				{showTouchSyncPanel && toolMode === ToolMode.Sync && <TouchSyncPanel />}
-				<Box flexShrink="0">
-					<AudioControls />
-				</Box>
-			</Flex>
-			<Suspense fallback={null}>
-				<Dialogs />
-			</Suspense>
-			<ToastContainer theme={isDarkTheme ? "dark" : "light"} />
+								</SuspensePlaceHolder>
+							)}
+							{toolMode === ToolMode.Preview && (
+								<SuspensePlaceHolder key="amll-preview">
+									<Box height="100%" key="amll-preview" p="2" asChild>
+										<motion.div
+											layout="position"
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0 }}
+										>
+											<AMLLWrapper />
+										</motion.div>
+									</Box>
+								</SuspensePlaceHolder>
+							)}
+						</AnimatePresence>
+					</Box>
+					{showTouchSyncPanel && toolMode === ToolMode.Sync && (
+						<TouchSyncPanel />
+					)}
+					<Box flexShrink="0">
+						<AudioControls />
+					</Box>
+				</Flex>
+				<Suspense fallback={null}>
+					<Dialogs />
+				</Suspense>
+				<ToastContainer theme={isDarkTheme ? "dark" : "light"} />
+			</ErrorBoundary>
 		</Theme>
 	);
 }
