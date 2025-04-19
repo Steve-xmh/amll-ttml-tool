@@ -11,7 +11,7 @@
 				"minHeight": 480,
 				"resizable": true,
 				"fullscreen": false,
-				"visible": false,
+				"visible": true,
 				"center": true,
 				"devtools": true,
 				"hiddenTitle": true,
