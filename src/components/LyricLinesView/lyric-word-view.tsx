@@ -35,7 +35,7 @@ import {
 } from "react";
 import styles from "./index.module.css";
 import { LyricWordMenu } from "./lyric-word-menu";
-import { useAtomCallback } from "jotai/utils";
+import { currentTimeAtom } from "$/states/audio";
 
 const isDraggingAtom = atom(false);
 const draggingIdAtom = atom("");
@@ -279,6 +279,17 @@ const LyricWorldViewSync: FC<{
 		() => atom((get) => get(selectedWordsAtom).has(get(wordAtom).id)),
 		[wordAtom],
 	);
+	const isWordActiveAtom = useMemo(
+		() => atom((get) => {
+			const currentTime = get(currentTimeAtom);
+			const word = get(wordAtom);
+			return (
+				currentTime >= word.startTime && currentTime < word.endTime
+			);
+		}),
+		[wordAtom],
+	);
+	const isWordActive = useAtomValue(isWordActiveAtom);
 	const isWordSelected = useAtomValue(isWordSelectedAtom);
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
@@ -340,8 +351,9 @@ const LyricWorldViewSync: FC<{
 				styles.sync,
 				isWordSelected && styles.selected,
 				isWordBlank && styles.blank,
+				isWordActive && styles.active,
 			),
-		[isWordBlank, isWordSelected, word],
+		[isWordBlank, isWordSelected, isWordActive],
 	);
 
 	return (

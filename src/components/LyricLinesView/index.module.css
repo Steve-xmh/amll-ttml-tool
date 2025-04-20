@@ -48,6 +48,13 @@
 	color: var(--white-a6);
 }
 
+:global(.radix-themes.light) {
+	.startTime,
+	.endTime {
+		color: var(--white-a10);
+	}
+}
+
 .startTime {
 	background-color: var(--green-a4);
 }
@@ -164,9 +171,24 @@
 	}
 }
 
+:global(.radix-themes.light) .lyricWord.selected {
+	.startTime,
+	.endTime {
+		color: var(--white-a12);
+	}
+}
+
 .lyricWord.selected {
 	.startTime,
 	.endTime {
 		color: var(--white-a10);
+	}
+}
+
+.lyricWord.sync.active {
+	background-color: var(--accent-a5);
+	
+	&.selected {
+		background-color: var(--accent-a7);
 	}
 }

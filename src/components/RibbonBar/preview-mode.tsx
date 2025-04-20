@@ -14,7 +14,7 @@ import {
 	showRomanLinesAtom,
 	showTranslationLinesAtom,
 } from "$/states/preview.ts";
-import { Checkbox, Grid, RadioGroup, Text, TextField } from "@radix-ui/themes";
+import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { forwardRef } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
@@ -31,12 +31,6 @@ export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
 
 		return (
 			<RibbonFrame ref={ref}>
-				<RibbonSection label="预览模式">
-					<RadioGroup.Root defaultValue="amll" size="1">
-						<RadioGroup.Item value="amll">AMLL</RadioGroup.Item>
-						<RadioGroup.Item value="simple">简单</RadioGroup.Item>
-					</RadioGroup.Root>
-				</RibbonSection>
 				<RibbonSection label="歌词">
 					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<Text wrap="nowrap" size="1">
