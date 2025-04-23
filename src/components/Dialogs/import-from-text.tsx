@@ -17,9 +17,10 @@ import {
 	Select,
 	Switch,
 	Text,
+	TextArea,
 	TextField,
 } from "@radix-ui/themes";
-import { useAtom, useAtomValue, useStore } from "jotai";
+import { atom, useAtom, useAtomValue, useStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import type * as monaco from "monaco-editor";
 import {
@@ -88,15 +89,27 @@ const emptyBeatSymbolAtom = atomWithStorage(
 	"importFromText.emptyBeatSymbol",
 	"^",
 );
+const textValueAtom = atom("");
+
+const ImportFromTextEditor = memo(() => {
+	const [value, setValue] = useAtom(textValueAtom);
+	return (
+		<TextArea
+			style={{
+				height: "calc(80vh - 5em)",
+				flex: "1 1 auto",
+				fontFamily: "var(--code-font-family)"
+			}}
+			value={value}
+			onChange={(evt) => setValue(evt.currentTarget.value)}
+		/>
+	);
+});
 
 export const ImportFromText = () => {
-	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>(null);
-	const monacoRef = useRef<Monaco>(null);
-	const [value, setValue] = useState("");
 	const [importFromTextDialog, setImportFromTextDialog] = useAtom(
 		importFromTextDialogAtom,
 	);
-	const isDarkTheme = useAtomValue(isDarkThemeAtom);
 
 	const [importMode, setImportMode] = useAtom(importModeAtom);
 	const [lineSeparatorMode, setLineSeparatorMode] = useAtom(
@@ -269,96 +282,6 @@ export const ImportFromText = () => {
 		[store],
 	);
 
-	function handleEditorWillMount(monaco: Monaco) {
-		console.log(
-			"monaco.languages.getLanguages()",
-			monaco.languages.getLanguages(),
-		);
-	}
-
-	function handleEditorDidMount(
-		editor: monaco.editor.IStandaloneCodeEditor,
-		monaco: Monaco,
-	) {
-		editorRef.current = editor;
-		monacoRef.current = monaco;
-
-		editor.updateOptions({
-			smoothScrolling: true,
-		});
-
-		// let decoCol: IEditorDecorationsCollection | null = null;
-
-		// editor.onDidChangeModelContent(() => {
-		// 	try {
-		// 		decoCol?.clear();
-		// 	} catch {
-		// 		/* empty */
-		// 	}
-		// 	const model = editor.getModel();
-		// 	if (!model) return;
-
-		// 	const deco: IModelDeltaDecoration[] = [];
-
-		// 	deco.push(
-		// 		...model
-		// 			.findMatches(wordSeparator, true, false, true, null, false)
-		// 			.map((match) => ({
-		// 				range: match.range,
-		// 				options: {
-		// 					inlineClassName: styles.wordSeparator,
-		// 				},
-		// 			})),
-		// 	);
-
-		// 	deco.push(
-		// 		...model
-		// 			.findMatches(lineSeparator, true, false, true, null, false)
-		// 			.map((match) => ({
-		// 				range: match.range,
-		// 				options: {
-		// 					inlineClassName: styles.lineSeparator,
-		// 				},
-		// 			})),
-		// 	);
-
-		// 	deco.push(
-		// 		...model
-		// 			.findMatches(bgLyricPrefix, true, false, true, null, false)
-		// 			.map((match) => ({
-		// 				range: match.range,
-		// 				options: {
-		// 					inlineClassName: styles.bgLinePrefix,
-		// 				},
-		// 			})),
-		// 	);
-
-		// 	deco.push(
-		// 		...model
-		// 			.findMatches(duetLyricPrefix, true, false, true, null, false)
-		// 			.map((match) => ({
-		// 				range: match.range,
-		// 				options: {
-		// 					inlineClassName: styles.duetLinePrefix,
-		// 				},
-		// 			})),
-		// 	);
-
-		// 	deco.push(
-		// 		...model
-		// 			.findMatches(emptyBeatSymbol, true, false, true, null, false)
-		// 			.map((match) => ({
-		// 				range: match.range,
-		// 				options: {
-		// 					inlineClassName: styles.emptyBeatSymbol,
-		// 				},
-		// 			})),
-		// 	);
-
-		// 	decoCol = editor.createDecorationsCollection(deco);
-		// });
-	}
-
 	return (
 		<Dialog.Root
 			open={importFromTextDialog}
@@ -377,7 +300,7 @@ export const ImportFromText = () => {
 						<Button
 							onClick={() => {
 								try {
-									onImport(value);
+									onImport(store.get(textValueAtom));
 									setImportFromTextDialog(false);
 								} catch (e) {
 									error(
@@ -397,20 +320,20 @@ export const ImportFromText = () => {
 							sm: "row",
 						}}
 					>
-						<Card style={{ flex: "1 1 auto" }}>
+						{/* <Card style={{ flex: "1 1 auto" }}>
 							<Inset>
-								<SuspensePlaceHolder>
-									<MonacoEditor
-										height="calc(80vh - 5em)"
-										theme={isDarkTheme ? "vs-dark" : "light"}
-										beforeMount={handleEditorWillMount}
-										onMount={handleEditorDidMount}
-										value={value}
-										onChange={(v) => setValue(v ?? "")}
-									/>
-								</SuspensePlaceHolder>
+								<TextArea
+									style={{
+										height: "calc(80vh - 5em)",
+										flex: "1 1 auto"
+									}}
+									value={value}
+									onChange={(evt) => setValue(evt.currentTarget.value)}
+								/>
 							</Inset>
-						</Card>
+						</Card> */}
+
+						<ImportFromTextEditor />
 						<Grid
 							columns="2"
 							gapY="2"

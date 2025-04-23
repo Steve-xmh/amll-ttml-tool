@@ -1,4 +1,4 @@
-import MillionLint from "@million/lint";
+// import MillionLint from "@million/lint";
 import react from "@vitejs/plugin-react";
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
@@ -26,7 +26,7 @@ process.env.AMLL_LOCAL_EXISTS = AMLL_LOCAL_EXISTS ? "true" : "false";
 const plugins: Plugin[] = [
 	ConditionalCompile(),
 	topLevelAwait(),
-	MillionLint.vite(),
+	// MillionLint.vite(),
 	react({
 		babel: {
 			presets: ["jotai/babel/preset"],
