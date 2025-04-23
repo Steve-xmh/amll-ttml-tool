@@ -154,10 +154,10 @@ export const ImportFromText = () => {
 				if (enableSpecialPrefix) {
 					// 循环遍历是否存在前缀，有则与之分离
 					while (true) {
-						if (orig.startsWith(bgLyricPrefix)) {
+						if (finalOrig.startsWith(bgLyricPrefix)) {
 							isBG = true;
 							finalOrig = finalOrig.slice(bgLyricPrefix.length);
-						} else if (orig.startsWith(duetLyricPrefix)) {
+						} else if (finalOrig.startsWith(duetLyricPrefix)) {
 							isDuet = true;
 							finalOrig = finalOrig.slice(duetLyricPrefix.length);
 						} else {
