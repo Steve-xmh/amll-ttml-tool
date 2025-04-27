@@ -22,12 +22,14 @@ export function parseTimespan(timeSpan: string): number {
 	throw new TypeError(`时间戳字符串解析失败：${timeSpan}`);
 }
 
-export function msToTimestamp(timeMS: number): string {
+export function msToTimestamp(timeMS: number, skipSafeCheck = false): string {
 	let t = timeMS;
 	if (t === Number.POSITIVE_INFINITY) {
 		return "99:99.999";
 	}
-	if (!Number.isSafeInteger(t) || t < 0) {
+	if (skipSafeCheck) {
+		t = t | 0;
+	} else if (!Number.isSafeInteger(t) || t < 0) {
 		throw new Error(`Invalid timestamp: ${t}`);
 	}
 	t = timeMS / 1000;

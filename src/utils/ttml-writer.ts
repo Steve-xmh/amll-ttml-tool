@@ -15,8 +15,10 @@
  * 但是可能会有信息会丢失
  */
 
-import { msToTimestamp } from "./timestamp";
+import { msToTimestamp as origMsToTimestamp } from "./timestamp";
 import type { LyricLine, LyricWord, TTMLLyric } from "./ttml-types";
+
+const msToTimestamp = (time: number) => origMsToTimestamp(time, true);
 
 export default function exportTTMLText(
 	ttmlLyric: TTMLLyric,

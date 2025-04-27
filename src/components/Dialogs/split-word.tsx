@@ -83,8 +83,8 @@ export const SplitWordDialog = memo(() => {
 										const splittedDuration = duration / splittedWords.length;
 										const newWords = splittedWords.map((w, i) => ({
 											...newLyricWord(),
-											startTime: startTime + splittedDuration * i,
-											endTime: startTime + splittedDuration * (i + 1),
+											startTime: (startTime + splittedDuration * i) | 0,
+											endTime: (startTime + splittedDuration * (i + 1)) | 0,
 											word: w,
 										}));
 										line.words.splice(splitState.wordIndex, 1, ...newWords);
