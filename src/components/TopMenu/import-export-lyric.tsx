@@ -8,11 +8,7 @@ import {
 	parseQrc,
 	parseYrc,
 	stringifyAss,
-	stringifyEslrc,
 	stringifyLrc,
-	stringifyLys,
-	stringifyQrc,
-	stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
 import { DropdownMenu } from "@radix-ui/themes";
 import { useSetAtom, useStore } from "jotai";
@@ -108,18 +104,6 @@ export const ImportExportLyric = () => {
 				<DropdownMenu.SubContent>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyLrc, "lrc")}>
 						导出到 LyRiC
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onExportLyric(stringifyEslrc, "lrc")}>
-						导出到 ESLyRiC
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onExportLyric(stringifyQrc, "qrc")}>
-						导出到 QRC
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onExportLyric(stringifyYrc, "yrc")}>
-						导出到 YRC
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onExportLyric(stringifyLys, "lys")}>
-						导出到 Lyricify Syllable
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyAss, "ass")}>
 						导出到 ASS 字幕
