@@ -13,8 +13,8 @@ export function formatKeyBindings(cfg: KeyBindingsConfig): string {
 	return cfg
 		.map((key) => {
 			if (key.startsWith("Key")) return key.substring(3);
-			if (key.endsWith("Right")) return key.substring(0, key.length-5);
-			if (key.endsWith("Left")) return key.substring(0, key.length-4);
+			if (key.endsWith("Right")) return key.substring(0, key.length - 5);
+			if (key.endsWith("Left")) return key.substring(0, key.length - 4);
 			if (navigator.userAgent.includes("Mac")) {
 				if (key === "Control") return "⌃";
 				if (key === "Alt") return "⌥";
@@ -85,86 +85,76 @@ const bufferedKeys = new Set<string>();
 const pressingKeys = new Set<string>();
 const registeredKeyBindings = new Map<string, Set<KeyBindingCallback>>();
 let downTime = 0;
-window.addEventListener(
-	"keydown",
-	(evt) => {
-		if (isEditing(evt)) {
-			pressingKeys.clear();
-			bufferedKeys.clear();
-			return;
-		}
-		if (pressingKeys.size === 0) {
-			downTime = evt.timeStamp;
-		}
+window.addEventListener("keydown", (evt) => {
+	if (isEditing(evt)) {
+		pressingKeys.clear();
+		bufferedKeys.clear();
+		return;
+	}
+	if (pressingKeys.size === 0) {
+		downTime = evt.timeStamp;
+	}
 
-		const code = removeSideOfKeyCode(evt.code);
+	const code = removeSideOfKeyCode(evt.code);
 
-		// 阻止空格滚动
-		if (evt.keyCode === 32 && evt.target === document.body) {
-			evt.preventDefault();
-		}
+	// 阻止空格滚动
+	if (evt.keyCode === 32 && evt.target === document.body) {
+		evt.preventDefault();
+		evt.stopPropagation();
+	}
 
-		// const joined = [...bufferedKeys].join(" + ").trim();
-		// for (const key of registeredKeyBindings.keys()) {
-		// 	if (key.startsWith(code) || (joined.length > 0 && key.startsWith(joined))) {
-		// 		evt.preventDefault();
-		// 	}
-		// }
-		pressingKeys.add(code);
-		bufferedKeys.add(code);
-	},
-	{
-		passive: true,
-	},
-);
+	// const joined = [...bufferedKeys].join(" + ").trim();
+	// for (const key of registeredKeyBindings.keys()) {
+	// 	if (key.startsWith(code) || (joined.length > 0 && key.startsWith(joined))) {
+	// 		evt.preventDefault();
+	// 	}
+	// }
+	pressingKeys.add(code);
+	bufferedKeys.add(code);
+});
 let invoked = false;
-window.addEventListener(
-	"keyup",
-	(evt) => {
-		if (isEditing(evt)) {
-			pressingKeys.clear();
-			bufferedKeys.clear();
-			return;
-		}
-		const code = removeSideOfKeyCode(evt.code);
-		if (bufferedKeys.size > 0) {
-			const joined = [...pressingKeys].join(" + ").trim();
-			bufferedKeys.clear();
-			const callbacks = registeredKeyBindings.get(joined);
-			// console.log("keybinding.keyUp", joined, callbacks);
+window.addEventListener("keyup", (evt) => {
+	if (isEditing(evt)) {
+		pressingKeys.clear();
+		bufferedKeys.clear();
+		return;
+	}
 
-			if (callbacks) {
-				const downTimeOffset = evt.timeStamp - downTime;
-				const e: KeyBindingEvent = {
-					downTime,
-					downTimeOffset,
-				};
-				for (const cb of callbacks) {
-					try {
-						cb(e);
-					} catch (err) {
-						console.warn("Error in key binding ", joined, "callback", err);
-					}
+	const code = removeSideOfKeyCode(evt.code);
+	if (bufferedKeys.size > 0) {
+		const joined = [...pressingKeys].join(" + ").trim();
+		bufferedKeys.clear();
+		const callbacks = registeredKeyBindings.get(joined);
+		// console.log("keybinding.keyUp", joined, callbacks);
+
+		if (callbacks) {
+			const downTimeOffset = evt.timeStamp - downTime;
+			const e: KeyBindingEvent = {
+				downTime,
+				downTimeOffset,
+			};
+			for (const cb of callbacks) {
+				try {
+					cb(e);
+				} catch (err) {
+					console.warn("Error in key binding ", joined, "callback", err);
 				}
-				evt.preventDefault();
-				evt.stopPropagation();
-				evt.stopImmediatePropagation();
-				invoked = true;
 			}
-		} else {
-			invoked = false;
-		}
-		if (invoked) {
 			evt.preventDefault();
 			evt.stopPropagation();
 			evt.stopImmediatePropagation();
+			invoked = true;
 		}
-		pressingKeys.delete(code);
-	},
-	{
-		passive: true,
-	},
-);
+	} else {
+		invoked = false;
+	}
+	if (invoked) {
+		evt.preventDefault();
+		evt.stopPropagation();
+		evt.stopImmediatePropagation();
+	}
+	pressingKeys.delete(code);
+});
 window.addEventListener("blur", () => {
 	pressingKeys.clear();
 	bufferedKeys.clear();
