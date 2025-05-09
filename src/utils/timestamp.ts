@@ -10,7 +10,7 @@
  */
 
 const timeRegexp =
-	/^(((?<hour>[0-9]+):)?(?<min>[0-9]+):)?((?<sec>[0-9])+([.:](?<frac>[0-9]{1,3}))?)$/;
+	/^(((?<hour>[0-9]+):)?(?<min>[0-9]+):)?((?<sec>[0-9]+)([.:](?<frac>[0-9]{1,3}))?)$/;
 export function parseTimespan(timeSpan: string): number {
 	const matches = timeRegexp.exec(timeSpan);
 	if (matches) {
