@@ -13,12 +13,10 @@ import {
 	ToolMode,
 	lyricLinesAtom,
 	selectedLinesAtom,
-	selectedWordsAtom,
 	toolModeAtom,
 } from "$/states/main.ts";
 import { Box, Flex, Text } from "@radix-ui/themes";
-import { atom, useAtomValue, useStore } from "jotai";
-import { useSetImmerAtom } from "jotai-immer";
+import { atom, useAtomValue } from "jotai";
 import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
 import {
@@ -38,8 +36,6 @@ const lyricLinesOnlyAtom = splitAtom(
 
 export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const editLyric = useAtomValue(lyricLinesOnlyAtom);
-	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
-	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const viewRef = useRef<ViewportListRef>(null);
 	const viewElRef = useRef<HTMLDivElement>(null);
 	const toolMode = useAtomValue(toolModeAtom);
@@ -109,11 +105,6 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 				padding: toolMode === ToolMode.Sync ? "20vh 0" : undefined,
 				maxHeight: "100%",
 				overflowY: "auto",
-			}}
-			onClick={(evt) => {
-				setSelectedLines((o) => o.clear());
-				setSelectedWords((o) => o.clear());
-				evt.stopPropagation();
 			}}
 			ref={viewElRef}
 		>

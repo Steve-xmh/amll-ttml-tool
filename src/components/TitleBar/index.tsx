@@ -4,10 +4,16 @@ import {
 	keySwitchPreviewModeAtom,
 	keySwitchSyncModeAtom,
 } from "$/states/keybindings.ts";
-import { ToolMode, toolModeAtom } from "$/states/main.ts";
+import {
+	ToolMode,
+	selectedLinesAtom,
+	selectedWordsAtom,
+	toolModeAtom,
+} from "$/states/main.ts";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { SegmentedControl, Text } from "@radix-ui/themes";
 import { useAtom } from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
 import { type FC, useCallback } from "react";
 import { Trans } from "react-i18next";
 import { TopMenu } from "../TopMenu/index.tsx";
@@ -15,6 +21,8 @@ import styles from "./index.module.css";
 
 export const TitleBar: FC = () => {
 	const [toolMode, setToolMode] = useAtom(toolModeAtom);
+	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
+	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 
 	const onSwitchEditMode = useCallback(() => {
 		setToolMode(ToolMode.Edit);
@@ -59,6 +67,10 @@ export const TitleBar: FC = () => {
 					</Text>
 				)
 			}
+			onSpacerClicked={() => {
+				setSelectedLines((o) => o.clear());
+				setSelectedWords((o) => o.clear());
+			}}
 		/>
 	);
 };

@@ -10,14 +10,15 @@
  */
 
 const timeRegexp =
-	/^(((?<hour>[0-9]+):)?(?<min>[0-9]+):)?(?<sec>[0-9]+([.:]([0-9]{1,3}))?)$/;
+	/^(((?<hour>[0-9]+):)?(?<min>[0-9]+):)?((?<sec>[0-9])+([.:](?<frac>[0-9]{1,3}))?)$/;
 export function parseTimespan(timeSpan: string): number {
 	const matches = timeRegexp.exec(timeSpan);
 	if (matches) {
 		const hour = Number(matches.groups?.hour || "0");
 		const min = Number(matches.groups?.min || "0");
-		const sec = Number(matches.groups?.sec.replace(/:/, ".") || "0");
-		return Math.floor((hour * 3600 + min * 60 + sec) * 1000);
+		const sec = Number(matches.groups?.sec || "0");
+		const frac = Number((matches.groups?.frac || "0").padEnd(3, "0"));
+		return (hour * 3600 + min * 60 + sec) * 1000 + frac;
 	}
 	throw new TypeError(`时间戳字符串解析失败：${timeSpan}`);
 }

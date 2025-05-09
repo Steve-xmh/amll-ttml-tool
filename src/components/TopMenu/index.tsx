@@ -34,7 +34,7 @@ import { HomeRegular } from "@fluentui/react-icons";
 import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
 import { open } from "@tauri-apps/plugin-shell";
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
-import { useSetImmerAtom } from "jotai-immer";
+import { useSetImmerAtom, withImmer } from "jotai-immer";
 import { type FC, useCallback } from "react";
 import { Trans } from "react-i18next";
 import { toast } from "react-toastify";
@@ -125,6 +125,22 @@ export const TopMenu: FC = () => {
 		store.set(redoLyricLinesAtom);
 	}, [store]);
 	const redoKey = useKeyBindingAtom(keyRedoAtom, onRedo, [onRedo]);
+
+	const onUnselectAll = useCallback(() => {
+		const immerSelectedLinesAtom = withImmer(selectedLinesAtom);
+		const immerSelectedWordsAtom = withImmer(selectedWordsAtom);
+		store.set(immerSelectedLinesAtom, (old) => {
+			old.clear();
+		});
+		store.set(immerSelectedWordsAtom, (old) => {
+			old.clear();
+		});
+	}, [store]);
+	const unselectAllLinesKey = useKeyBindingAtom(
+		keySelectAllAtom,
+		onUnselectAll,
+		[onUnselectAll],
+	);
 
 	const onSelectAll = useCallback(() => {
 		const lines = store.get(lyricLinesAtom).lyricLines;
@@ -287,6 +303,12 @@ export const TopMenu: FC = () => {
 								shortcut={formatKeyBindings(selectAllLinesKey)}
 							>
 								全选
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onSelect={onUnselectAll}
+								shortcut={formatKeyBindings(unselectAllLinesKey)}
+							>
+								取消选择
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onSelectInverted}
