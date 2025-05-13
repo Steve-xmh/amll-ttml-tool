@@ -1,44 +1,31 @@
-import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
 import { importFromTextDialogAtom } from "$/states/dialogs.ts";
-import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
+import { lyricLinesAtom } from "$/states/main.ts";
+import { error as logError } from "$/utils/logging.ts";
 import {
 	type LyricLine,
 	newLyricLine,
 	newLyricWord,
 } from "$/utils/ttml-types.ts";
-import type { Monaco } from "@monaco-editor/react";
 import {
 	Button,
-	Card,
 	Dialog,
 	Flex,
 	Grid,
-	Inset,
 	Select,
 	Switch,
 	Text,
 	TextArea,
 	TextField,
 } from "@radix-ui/themes";
-import { atom, useAtom, useAtomValue, useStore } from "jotai";
+import { atom, useAtom, useStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import type * as monaco from "monaco-editor";
-import {
-	type PropsWithChildren,
-	lazy,
-	memo,
-	useCallback,
-	useRef,
-	useState,
-} from "react";
+import { type PropsWithChildren, memo, useCallback } from "react";
 import { toast } from "react-toastify";
 // import styles from "./import-from-text.module.css";
 import error = toast.error;
 
 // type IModelDeltaDecoration = monaco.editor.IModelDeltaDecoration;
 // type IEditorDecorationsCollection = monaco.editor.IEditorDecorationsCollection;
-
-const MonacoEditor = lazy(() => import("@monaco-editor/react"));
 
 const PrefText = memo((props: PropsWithChildren) => (
 	<Text color="gray" size="2">
@@ -98,7 +85,7 @@ const ImportFromTextEditor = memo(() => {
 			style={{
 				height: "calc(80vh - 5em)",
 				flex: "1 1 auto",
-				fontFamily: "var(--code-font-family)"
+				fontFamily: "var(--code-font-family)",
 			}}
 			value={value}
 			onChange={(evt) => setValue(evt.currentTarget.value)}
@@ -306,7 +293,7 @@ export const ImportFromText = () => {
 									error(
 										"导入纯文本歌词失败，请检查输入的文本是否正确，或者导入设置是否正确",
 									);
-									console.error(e);
+									logError(e);
 								}
 							}}
 						>

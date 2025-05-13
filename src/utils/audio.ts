@@ -1,3 +1,5 @@
+import { log } from "./logging.ts";
+
 const DELAY = 0.05; // 50ms
 
 class AudioEngine extends EventTarget {
@@ -7,7 +9,7 @@ class AudioEngine extends EventTarget {
 		this._ctx = new AudioContext({
 			latencyHint: "interactive",
 		});
-		console.log(
+		log(
 			"AudioContext created with latency",
 			this._ctx.baseLatency,
 			this._ctx.outputLatency,
@@ -146,7 +148,6 @@ class AudioEngine extends EventTarget {
 	}
 
 	resumeOrSeekMusic(offset = this.musicStartOffset) {
-		console.log("resumeOrSeekMusic", offset);
 		if (!this.musicBuffer) return;
 		if (this.musicNode) {
 			this.musicNode.stop();
@@ -198,7 +199,6 @@ class AudioEngine extends EventTarget {
 			0,
 			Math.min(this.musicDuration, this.musicCurrentTime),
 		);
-		console.log("pause music", this.musicStartOffset);
 		const oldNode = this.musicNode;
 		this.musicNode = null;
 		oldNode.stop();

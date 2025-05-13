@@ -1,3 +1,4 @@
+import { log, warn } from "$/utils/logging.ts";
 import {
 	type ReactNode,
 	useCallback,
@@ -36,7 +37,7 @@ export default function WindowControls(props: WindowControlsProps) {
 	useLayoutEffect(() => {
 		if (props.variant) return setVariant(props.variant);
 		if (import.meta.env.DEV)
-			console.log(
+			log(
 				"Setting variant based on platform:",
 				import.meta.env.TAURI_ENV_PLATFORM,
 			);
@@ -56,7 +57,7 @@ export default function WindowControls(props: WindowControlsProps) {
 			const tauriWin = import("@tauri-apps/api/window");
 			await (await tauriWin).getCurrentWindow().close();
 		} catch (err) {
-			if (import.meta.env.DEV) console.warn(err);
+			if (import.meta.env.DEV) warn(err);
 		}
 	}, [props.onClosed]);
 
@@ -72,7 +73,7 @@ export default function WindowControls(props: WindowControlsProps) {
 				await win.maximize();
 			}
 		} catch (err) {
-			if (import.meta.env.DEV) console.warn(err);
+			if (import.meta.env.DEV) warn(err);
 		}
 	}, [props.onMaximized]);
 
@@ -84,7 +85,7 @@ export default function WindowControls(props: WindowControlsProps) {
 			if (!(await win.isMinimizable())) return;
 			await win.minimize();
 		} catch (err) {
-			if (import.meta.env.DEV) console.warn(err);
+			if (import.meta.env.DEV) warn(err);
 		}
 	}, [props.onMinimized]);
 

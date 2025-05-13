@@ -31,10 +31,9 @@
 - 配置歌词行行为（背景歌词、对唱歌词等）
 - 配置歌词文件元数据（名称，作者，网易云音乐 ID 等）
 - 拆分/组合/移动单词
-- LRC/ESLyric/YRC/QRC/Lyricify Syllable 等歌词文件格式的导入导出
+- LRC/ESLyric/YRC/QRC/Lyricify Syllable 等歌词文件格式的导入以及部分格式的导出
 - 支持带有特殊标识符的纯文本导入歌词
 - 可配置的快捷键
-- 可以编写插件扩展 AMLL TTML Tools 的功能
 
 ## 开发构建
 

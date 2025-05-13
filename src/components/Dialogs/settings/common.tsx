@@ -1,9 +1,15 @@
 import { playbackRateAtom, volumeAtom } from "$/states/audio";
-import { SyncJudgeMode, syncJudgeModeAtom } from "$/states/config.ts";
+import {
+	LayoutMode,
+	SyncJudgeMode,
+	layoutModeAtom,
+	syncJudgeModeAtom,
+} from "$/states/config.ts";
 import { Flex, Select, Slider, Text } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 
 export const SettingsCommonTab = () => {
+	const [layoutMode, setLayoutMode] = useAtom(layoutModeAtom);
 	const [syncJudgeMode, setSyncJudgeMode] = useAtom(syncJudgeModeAtom);
 	const [volume, setVolume] = useAtom(volumeAtom);
 	const [playbackRate, setPlaybackRate] = useAtom(playbackRateAtom);
@@ -12,6 +18,27 @@ export const SettingsCommonTab = () => {
 		<>
 			<Text as="label">
 				<Flex direction="column" gap="2" align="start">
+					<Text>编辑布局模式</Text>
+					<Text size="1" color="gray">
+						简单布局能够满足大部分使用者的基本需求
+						<br />
+						如果你需要更加高效的打轴的话，可以考虑切换到高级模式
+					</Text>
+					<Select.Root
+						value={layoutMode}
+						onValueChange={(v) => setLayoutMode(v as LayoutMode)}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							<Select.Item value={LayoutMode.Simple}>简单模式</Select.Item>
+							<Select.Item value={LayoutMode.Advance}>高级模式</Select.Item>
+						</Select.Content>
+					</Select.Root>
+				</Flex>
+			</Text>
+
+			<Text as="label">
+				<Flex direction="column" gap="2" my="3" align="start">
 					<Text>打轴时间戳判定模式</Text>
 					<Text size="1" color="gray">
 						设置打轴时间戳的判定模式，默认为“首个按键按下时间”。

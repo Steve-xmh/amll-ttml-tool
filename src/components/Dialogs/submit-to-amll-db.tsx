@@ -4,9 +4,11 @@ import {
 } from "$/states/config.ts";
 import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main";
+import { error } from "$/utils/logging.ts";
 import exportTTMLText from "$/utils/ttml-writer";
 import { ErrorCircle16Regular, Info16Regular } from "@fluentui/react-icons";
 import {
+	Box,
 	Button,
 	Callout,
 	Checkbox,
@@ -18,9 +20,17 @@ import {
 	TextField,
 } from "@radix-ui/themes";
 import { atom, useAtom, useAtomValue, useStore } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import { memo, useLayoutEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+enum UploadDBType {
+	Official = "official",
+	User = "user",
+	Both = "both",
+}
+
+const uploadDbTypeAtom = atomWithStorage("uploadDbType", UploadDBType.Official);
 const metadataAtom = atom((get) => get(lyricLinesAtom).metadata);
 const issuesAtom = atom((get) => {
 	const result: string[] = [];
@@ -53,12 +63,13 @@ const issuesAtom = atom((get) => {
 		metadatas.findIndex((m) => platforms.has(m.key) && m.value.length > 0) ===
 		-1
 	)
-		result.push("元数据缺少音乐平台对于歌曲 ID");
+		result.push("元数据缺少音乐平台对应歌曲 ID");
 
 	return result;
 });
 
 export const SubmitToAMLLDBDialog = memo(() => {
+	const [uploadDbType, setUploadDbType] = useAtom(uploadDbTypeAtom);
 	const [dialogOpen, setDialogOpen] = useAtom(submitToAMLLDBDialogAtom);
 	const [hideWarning, setHideWarning] = useAtom(hideSubmitAMLLDBWarningAtom);
 	const [genNameFromMetadata, setGenNameFromMetadata] = useAtom(
@@ -77,6 +88,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 		setProcessing(true);
 		try {
 			const ttmlLyric = store.get(lyricLinesAtom);
+			const uploadDbType = store.get(uploadDbTypeAtom);
 			const lyricData = exportTTMLText(ttmlLyric);
 			const lyricUrl = await fetch(
 				"https://amll-ttml-tools-dpaste-proxy.stevexmh.net/74335190-b44f-4468-b5ce-0dd9f25bef98",
@@ -95,6 +107,9 @@ export const SubmitToAMLLDBDialog = memo(() => {
 			const issueUrl = new URL(
 				"https://github.com/Steve-xmh/amll-ttml-db/issues/new",
 			);
+			if (uploadDbType === UploadDBType.User) {
+				issueUrl.pathname = "/Steve-xmh/amll-ttml-db-user/issues/new";
+			}
 			issueUrl.searchParams.append("labels", "歌词提交/补正");
 			issueUrl.searchParams.append("template", "submit-lyric.yml");
 			issueUrl.searchParams.append("title", `[歌词提交/修正] ${name}`);
@@ -106,8 +121,12 @@ export const SubmitToAMLLDBDialog = memo(() => {
 			issueUrl.searchParams.append("upload-reason", submitReason);
 			issueUrl.searchParams.append("comment", comment);
 			open(issueUrl.toString());
+			if (uploadDbType === UploadDBType.Both) {
+				issueUrl.pathname = "/Steve-xmh/amll-ttml-db-user/issues/new";
+				open(issueUrl.toString());
+			}
 		} catch (err) {
-			console.warn("Submit failed", err);
+			error("Submit failed", err);
 			// notify.error({
 			// 	title: t("uploadDBDialog.errorNotification.title"),
 			// 	content: t("uploadDBDialog.errorNotification.content", [err]),
@@ -178,6 +197,60 @@ export const SubmitToAMLLDBDialog = memo(() => {
 							</Button>
 						</>
 					)}
+					<Flex justify="between" gap="4" align="center">
+						<Box flexShrink="0">
+							<Text as="label" size="2">
+								<Flex direction="column" gap="2">
+									歌词库类型
+									<RadioGroup.Root
+										value={uploadDbType}
+										onValueChange={(v) => setUploadDbType(v as UploadDBType)}
+									>
+										<RadioGroup.Item value={UploadDBType.Official}>
+											官方歌词库
+										</RadioGroup.Item>
+										<RadioGroup.Item value={UploadDBType.User}>
+											用户歌词库
+										</RadioGroup.Item>
+										<RadioGroup.Item value={UploadDBType.Both}>
+											全部歌词库
+										</RadioGroup.Item>
+									</RadioGroup.Root>
+								</Flex>
+							</Text>
+						</Box>
+
+						<Flex direction="column">
+							{uploadDbType === UploadDBType.Official && (
+								<Callout.Root color="grass">
+									<Callout.Text size="1">
+										提交到官方歌词库，需要进行人工审核，确保歌词满足基本要求以及时间轴和效果后方可加入词库。
+										<br />
+										此举可以把关你的歌词质量，让你的歌词能以足够好的演出效果呈现，推荐提交到此处。
+									</Callout.Text>
+								</Callout.Root>
+							)}
+							{uploadDbType === UploadDBType.User && (
+								<Callout.Root color="orange">
+									<Callout.Text size="1">
+										提交到用户歌词库，仅需通过机器人审核没有严重问题后即可加入词库，无需人工审核。
+										<br />
+										但是如果出现歌词内容以及呈现效果的问题则只能通过重新提交覆盖，无法进行人工核对保证质量。
+									</Callout.Text>
+								</Callout.Root>
+							)}
+							{uploadDbType === UploadDBType.Both && (
+								<Callout.Root color="orange">
+									<Callout.Text size="1">
+										两个都要也不坏，知晓情况即可
+										<br />
+										上传后将会分别打开每个仓库对应的提交页面，请手动分别按下创建议题即可提交。
+									</Callout.Text>
+								</Callout.Root>
+							)}
+						</Flex>
+					</Flex>
+
 					<Text as="label" size="2">
 						<Flex gap="2">
 							<Checkbox

@@ -11,6 +11,7 @@
 
 import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
 import { TouchSyncPanel } from "$/components/TouchSyncPanel";
+import { log, error as logError } from "$/utils/logging.ts";
 import {
 	type LyricLine as CoreLyricLine,
 	parseEslrc,
@@ -35,7 +36,9 @@ import { platform, version } from "@tauri-apps/plugin-os";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useStore } from "jotai";
 import { Suspense, lazy, useEffect, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { ToastContainer, toast } from "react-toastify";
+import saveFile from "save-file";
 import semverGt from "semver/functions/gt";
 import { uid } from "uid";
 import styles from "./App.module.css";
@@ -48,17 +51,12 @@ import {
 	ToolMode,
 	isDarkThemeAtom,
 	lyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
 	toolModeAtom,
 } from "./states/main.ts";
 import { showTouchSyncPanelAtom } from "./states/sync.ts";
-import { isInteracting } from "./utils/keybindings.ts";
 import { parseLyric as parseTTML } from "./utils/ttml-parser.ts";
 import type { TTMLLyric } from "./utils/ttml-types.ts";
-import { ErrorBoundary } from "react-error-boundary";
 import exportTTMLText from "./utils/ttml-writer.ts";
-import saveFile from "save-file";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
@@ -79,9 +77,9 @@ const AppErrorPage = ({ error, resetErrorBoundary }) => {
 							try {
 								const ttmlText = exportTTMLText(store.get(lyricLinesAtom));
 								const b = new Blob([ttmlText], { type: "text/plain" });
-								saveFile(b, "lyric.ttml").catch(console.error);
+								saveFile(b, "lyric.ttml").catch(logError);
 							} catch (e) {
-								console.error("Failed to save TTML file", e);
+								logError("Failed to save TTML file", e);
 							}
 						}}
 					>
@@ -127,7 +125,7 @@ function App() {
 					ext: string;
 				} | null = await invoke("get_open_file_data");
 				if (file) {
-					console.log("File data from tauri args", file);
+					log("File data from tauri args", file);
 					try {
 						const setLyric = (l: TTMLLyric) => store.set(lyricLinesAtom, l);
 						const makeTTML = (lyricLines: CoreLyricLine[]) =>
@@ -168,7 +166,7 @@ function App() {
 								toast.error("打开失败：无法识别这个文件的格式");
 						}
 					} catch (e) {
-						console.error("Failed to parse TTML file from tauri arguments", e);
+						logError("Failed to parse TTML file from tauri arguments", e);
 						toast.error("打开文件失败，请检查文件格式是否正确");
 					}
 				}
@@ -221,11 +219,6 @@ function App() {
 			hasBackground={hasBackground}
 			accentColor={isDarkTheme ? "jade" : "green"}
 			className={styles.radixTheme}
-			onClick={(evt) => {
-				if (isInteracting(evt.nativeEvent)) return;
-				store.set(selectedLinesAtom, new Set());
-				store.set(selectedWordsAtom, new Set());
-			}}
 		>
 			<ErrorBoundary
 				FallbackComponent={AppErrorPage}

@@ -122,7 +122,6 @@ function EditField<
 					return state;
 				});
 			} catch (err) {
-				console.warn("EditField.onInputFinished", err);
 				if (typeof currentValue === "string") setFieldInput(currentValue);
 			}
 		},
@@ -138,7 +137,6 @@ function EditField<
 	);
 
 	useLayoutEffect(() => {
-		// console.log("EditField.useLayoutEffect currentValue Updated", currentValue);
 		if (currentValue === MULTIPLE_VALUES) {
 			setFieldInput("");
 			setFieldPlaceholder("多个值...");
@@ -162,12 +160,10 @@ function EditField<
 				onChange={(evt) => setFieldInput(evt.currentTarget.value)}
 				onKeyDown={(evt) => {
 					if (evt.key !== "Enter") return;
-					// console.log("EditField.onKeyDown", evt);
 					onInputFinished(evt.currentTarget.value);
 				}}
 				onBlur={(evt) => {
 					if (evt.currentTarget.value === currentValue) return;
-					// console.log("EditField.onBlur", evt);
 					onInputFinished(evt.currentTarget.value);
 				}}
 			/>

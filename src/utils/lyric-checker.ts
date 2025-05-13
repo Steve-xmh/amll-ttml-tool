@@ -1,3 +1,4 @@
+import { log } from "./logging.ts";
 import type { LyricLine } from "./ttml-types.ts";
 
 /**
@@ -19,10 +20,7 @@ export function checkLyric(lyric: LyricLine[]): string[] {
 			.trim();
 		if (originalLyric.length > 0) {
 			const moreSpace = /\s\s+/;
-			console.log(
-				`正在检查第 ${line.id + 1} 行:`,
-				JSON.stringify(originalLyric),
-			);
+			log(`正在检查第 ${line.id + 1} 行:`, JSON.stringify(originalLyric));
 			const moreSpaceRegResult = moreSpace.exec(originalLyric);
 			if (moreSpaceRegResult) {
 				errors.push(`第 ${line.id + 1} 行歌词内容中有多余的空格`);

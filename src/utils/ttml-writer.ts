@@ -15,6 +15,7 @@
  * 但是可能会有信息会丢失
  */
 
+import { log } from "./logging.ts";
 import { msToTimestamp as origMsToTimestamp } from "./timestamp";
 import type { LyricLine, LyricWord, TTMLLyric } from "./ttml-types";
 
@@ -228,7 +229,7 @@ export default function exportTTMLText(
 	}
 
 	ttRoot.appendChild(body);
-	console.log("ttml document built", ttRoot);
+	log("ttml document built", ttRoot);
 
 	if (pretty) {
 		const xsltDoc = new DOMParser().parseFromString(

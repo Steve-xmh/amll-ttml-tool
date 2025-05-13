@@ -35,6 +35,23 @@
 	&.dropRight {
 		border-right: solid 3px var(--accent-a11);
 	}
+	
+	&.advance {
+		display: flex;
+		flex-direction: column;
+		padding: 0.25em;
+		gap: 0.25em;
+		max-width: 9em;
+	}
+}
+
+.advanceBar {
+	display: flex;
+	gap: 0.25em;
+	
+	& :global(.rt-TextFieldRoot) {
+		min-width: 10em;
+	}
 }
 
 .displayWord {
@@ -186,9 +203,9 @@
 }
 
 .lyricWord.sync.active {
-	background-color: var(--accent-a5);
+	background-color: var(--blue-a5);
 	
 	&.selected {
-		background-color: var(--accent-a7);
+		background-color: var(--blue-a7);
 	}
 }

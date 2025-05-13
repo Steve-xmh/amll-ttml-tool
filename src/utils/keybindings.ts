@@ -1,6 +1,7 @@
 import { atom, type createStore, useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { type DependencyList, useEffect } from "react";
+import { warn } from "./logging.ts";
 
 export type KeyBindingsConfig = string[];
 export interface KeyBindingEvent {
@@ -125,7 +126,6 @@ window.addEventListener("keyup", (evt) => {
 		const joined = [...pressingKeys].join(" + ").trim();
 		bufferedKeys.clear();
 		const callbacks = registeredKeyBindings.get(joined);
-		// console.log("keybinding.keyUp", joined, callbacks);
 
 		if (callbacks) {
 			const downTimeOffset = evt.timeStamp - downTime;
@@ -137,7 +137,7 @@ window.addEventListener("keyup", (evt) => {
 				try {
 					cb(e);
 				} catch (err) {
-					console.warn("Error in key binding ", joined, "callback", err);
+					warn("Error in key binding ", joined, "callback", err);
 				}
 			}
 			evt.preventDefault();
@@ -172,7 +172,7 @@ export function forceInvokeKeyBindingAtom(
 	const keyBinding = store.get(thisAtom);
 	const joined = keyBinding.join(" + ").trim();
 	const callbacks = registeredKeyBindings.get(joined);
-	// console.log("forceInvokeKeyBindingAtom", joined, callbacks);
+
 	if (callbacks) {
 		const downTimeOffset = evt?.timeStamp ?? Date.now();
 		const e: KeyBindingEvent = {
@@ -183,7 +183,7 @@ export function forceInvokeKeyBindingAtom(
 			try {
 				cb(e);
 			} catch (err) {
-				console.warn("Error in key binding ", joined, "callback", err);
+				warn("Error in key binding ", joined, "callback", err);
 			}
 		}
 		evt?.preventDefault();

@@ -10,6 +10,7 @@ import {
 	showRomanLinesAtom,
 	showTranslationLinesAtom,
 } from "$/states/preview.ts";
+import { audioEngine } from "$/utils/audio";
 import {
 	LyricPlayer,
 	type LyricPlayerRef,
@@ -17,10 +18,9 @@ import {
 import { Card } from "@radix-ui/themes";
 import structuredClone from "@ungap/structured-clone";
 import classNames from "classnames";
-import { useAtomValue, useStore } from "jotai";
+import { useAtomValue } from "jotai";
 import { memo, useEffect, useMemo, useRef } from "react";
 import styles from "./index.module.css";
-import { audioEngine } from "$/utils/audio";
 
 export const AMLLWrapper = memo(() => {
 	const originalLyricLines = useAtomValue(lyricLinesAtom);

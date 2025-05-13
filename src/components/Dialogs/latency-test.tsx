@@ -169,7 +169,6 @@ export const LatencyTestDialog = memo(() => {
 					hitTime -= evt.downTimeOffset / 2000;
 					break;
 			}
-			console.log("hitTime", { hitTime, currentTime, outputLatency });
 			const curDiff = curBeatTime.current - hitTime;
 			const nextDiff = nextBeatTime.current - hitTime;
 			let diff = 0;

@@ -9,7 +9,7 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { atom, type SetStateAction } from "jotai";
+import { type SetStateAction, atom } from "jotai";
 import { REDO, UNDO, withHistory } from "jotai-history";
 import type { TTMLLyric } from "../utils/ttml-types";
 

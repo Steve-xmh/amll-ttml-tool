@@ -27,6 +27,7 @@ import {
 	undoableLyricLinesAtom,
 } from "$/states/main.ts";
 import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
+import { error, log } from "$/utils/logging.ts";
 import { parseLyric } from "$/utils/ttml-parser.ts";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import exportTTMLText from "$/utils/ttml-writer.ts";
@@ -70,7 +71,7 @@ export const TopMenu: FC = () => {
 					setLyricLines(ttmlData);
 					setSaveFileName(file.name);
 				} catch (e) {
-					console.error("Failed to parse TTML file", e);
+					error("Failed to parse TTML file", e);
 				}
 			},
 			{
@@ -89,7 +90,7 @@ export const TopMenu: FC = () => {
 			const ttmlData = parseLyric(ttmlText);
 			setLyricLines(ttmlData);
 		} catch (e) {
-			console.error("Failed to parse TTML file from clipboard", e);
+			error("Failed to parse TTML file from clipboard", e);
 		}
 	};
 
@@ -97,9 +98,9 @@ export const TopMenu: FC = () => {
 		try {
 			const ttmlText = exportTTMLText(store.get(lyricLinesAtom));
 			const b = new Blob([ttmlText], { type: "text/plain" });
-			saveFile(b, saveFileName).catch(console.error);
+			saveFile(b, saveFileName).catch(error);
 		} catch (e) {
-			console.error("Failed to save TTML file", e);
+			error("Failed to save TTML file", e);
 		}
 	}, [saveFileName, store]);
 	const saveFileKey = useKeyBindingAtom(keySaveFileAtom, onSaveFile, [
@@ -112,7 +113,7 @@ export const TopMenu: FC = () => {
 			const ttml = exportTTMLText(lyric);
 			await navigator.clipboard.writeText(ttml);
 		} catch (e) {
-			console.error("Failed to save TTML file into clipboard", e);
+			error("Failed to save TTML file into clipboard", e);
 		}
 	};
 
@@ -204,7 +205,7 @@ export const TopMenu: FC = () => {
 	const onDeleteSelection = useCallback(() => {
 		const selectedWordIds = store.get(selectedWordsAtom);
 		const selectedLineIds = store.get(selectedLinesAtom);
-		console.log("deleting selections", selectedWordIds, selectedLineIds);
+		log("deleting selections", selectedWordIds, selectedLineIds);
 		if (selectedWordIds.size === 0) {
 			// 删除选中的行
 			editLyricLines((prev) => {
@@ -393,7 +394,7 @@ export const TopMenu: FC = () => {
 													isLoading: false,
 													autoClose: 5000,
 												});
-												console.error(err);
+												error(err);
 											}
 										}}
 									>

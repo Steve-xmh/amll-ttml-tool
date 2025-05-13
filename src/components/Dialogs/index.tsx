@@ -3,6 +3,7 @@ import { MetadataEditor } from "$/components/Dialogs/metadata.tsx";
 import { SettingsDialog } from "$/components/Dialogs/settings";
 import { SubmitToAMLLDBDialog } from "$/components/Dialogs/submit-to-amll-db.tsx";
 import { LatencyTestDialog } from "./latency-test";
+import { NoticeDialog } from "./notice.tsx";
 import { SplitWordDialog } from "./split-word";
 
 export const Dialogs = () => {
@@ -14,6 +15,7 @@ export const Dialogs = () => {
 			<SplitWordDialog />
 			<SubmitToAMLLDBDialog />
 			<LatencyTestDialog />
+			<NoticeDialog />
 		</>
 	);
 };

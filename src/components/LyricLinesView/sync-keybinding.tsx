@@ -59,7 +59,6 @@ export const SyncKeyBinding: FC = () => {
 	const moveToNextWord = useCallback(
 		function moveToNextWord(): boolean {
 			const location = getCurrentLocation(store);
-			console.log("moveToNextWord.location", location);
 			if (!location) return false;
 			const nextWord = findNextWord(
 				location.lines,

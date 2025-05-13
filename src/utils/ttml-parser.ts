@@ -17,6 +17,7 @@
  */
 
 import { uid } from "uid";
+import { log } from "./logging.ts";
 import { parseTimespan } from "./timestamp";
 import type {
 	LyricLine,
@@ -32,7 +33,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		"application/xml",
 	);
 
-	console.log("ttml document parsed", ttmlDoc);
+	log("ttml document parsed", ttmlDoc);
 
 	let mainAgentId = "v1";
 
@@ -172,7 +173,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		parseParseLine(lineEl);
 	}
 
-	console.log("finished ttml load", lyricLines, metadata);
+	log("finished ttml load", lyricLines, metadata);
 
 	return {
 		metadata,
