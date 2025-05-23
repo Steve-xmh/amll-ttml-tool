@@ -172,7 +172,8 @@ export default function exportTTMLText(
 							const span = createWordElement(word);
 							if (wordIndex === 0) {
 								span.prepend(doc.createTextNode("("));
-							} else if (wordIndex === bgLine.words.length - 1) {
+							}
+							if (wordIndex === bgLine.words.length - 1) {
 								span.appendChild(doc.createTextNode(")"));
 							}
 							bgLineSpan.appendChild(span);

@@ -88,16 +88,6 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 		const startTime = lineEl.getAttribute("begin");
 		const endTime = lineEl.getAttribute("end");
-		if (startTime && endTime) {
-			line.startTime = parseTimespan(startTime);
-			line.endTime = parseTimespan(endTime);
-		} else {
-			line.startTime = line.words.reduce(
-				(pv, cv) => Math.min(pv, cv.startTime),
-				Number.POSITIVE_INFINITY,
-			);
-			line.endTime = line.words.reduce((pv, cv) => Math.max(pv, cv.endTime), 0);
-		}
 
 		for (const wordNode of lineEl.childNodes) {
 			if (wordNode.nodeType === Node.TEXT_NODE) {
@@ -140,6 +130,17 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					line.words.push(word);
 				}
 			}
+		}
+
+		if (startTime && endTime) {
+			line.startTime = parseTimespan(startTime);
+			line.endTime = parseTimespan(endTime);
+		} else {
+			line.startTime = line.words.reduce(
+				(pv, cv) => Math.min(pv, cv.startTime),
+				Number.POSITIVE_INFINITY,
+			);
+			line.endTime = line.words.reduce((pv, cv) => Math.max(pv, cv.endTime), 0);
 		}
 
 		if (line.isBG) {
