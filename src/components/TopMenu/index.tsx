@@ -541,7 +541,7 @@ export const TopMenu: FC = () => {
 								<Button variant="soft" style={{
 									borderTopRightRadius: "0",
 									borderBottomRightRadius: "0",
-									marginRight: "1px",
+									marginRight: "0px",
 								}}>
 									<Trans i18nKey="topBar.menu.file">文件</Trans>
 								</Button>
@@ -585,7 +585,7 @@ export const TopMenu: FC = () => {
 						<Toolbar.Button asChild>
 							<DropdownMenu.Trigger style={{
 								borderRadius: "0",
-								marginRight: "1px",
+								marginRight: "0px",
 							}}>
 								<Button variant="soft">
 									<Trans i18nKey="topBar.menu.edit">编辑</Trans>
@@ -655,7 +655,7 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.Trigger>
 								<Button variant="soft" style={{
 									borderRadius: "0",
-									marginRight: "1px",
+									marginRight: "0px",
 								}}>
 									<Trans i18nKey="topBar.menu.tools">工具</Trans>
 								</Button>

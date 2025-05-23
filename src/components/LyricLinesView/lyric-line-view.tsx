@@ -62,35 +62,42 @@ const isDraggingAtom = atom(false);
 
 const LyricLineScroller = ({
 	lineAtom,
-	wordsContainerRef,
+	wordsContainer,
 }: {
 	lineAtom: Atom<LyricLine>;
-	wordsContainerRef: RefObject<HTMLDivElement | null>;
+	wordsContainer: HTMLDivElement | null;
 }) => {
-	const line = useAtomValue(lineAtom);
-	const selectedWords = useAtomValue(selectedWordsAtom);
+	const scrollToIndexAtom = useMemo(() =>
+		atom((get) => {
+			const line = get(lineAtom);
+			const selectedWords = get(selectedWordsAtom);
+			if (selectedWords.size === 0) return Number.NaN;
+			let scrollToIndex = Number.NaN;
+			let i = 0;
+			for (const word of line.words) {
+				if (selectedWords.has(word.id)) {
+					scrollToIndex = i;
+					break;
+				}
+				i++;
+			}
+			return scrollToIndex;
+		})
+		, [lineAtom]);
+	const scrollToIndex = useAtomValue(scrollToIndexAtom);
 
 	useEffect(() => {
-		const wordsContainerEl = wordsContainerRef.current;
-		if (!wordsContainerEl) return;
-		let scrollToIndex = Number.NaN;
-		let i = 0;
-		for (const word of line.words) {
-			if (selectedWords.has(word.id)) {
-				scrollToIndex = i;
-				break;
-			}
-
-			i++;
-		}
 		if (Number.isNaN(scrollToIndex)) return;
-		const wordEl = wordsContainerEl.children[scrollToIndex] as HTMLElement;
+		console.log({ scrollToIndex, wordsContainer });
+		if (!wordsContainer) return;
+		const wordEl = wordsContainer.children[scrollToIndex] as HTMLElement;
+		console.log({ wordEl, wordsContainer });
 		if (!wordEl) return;
-		wordsContainerEl.scrollTo({
-			left: wordEl.offsetLeft - wordsContainerEl.clientWidth / 2,
-			behavior: "instant",
+		wordsContainer.scrollTo({
+			left: wordEl.offsetLeft - wordsContainer.clientWidth / 2,
+			behavior: "auto",
 		});
-	}, [line.words, selectedWords, wordsContainerRef.current]);
+	}, [scrollToIndex, wordsContainer]);
 
 	return null;
 };
@@ -242,7 +249,7 @@ export const LyricLineView: FC<{
 		<>
 			<LyricLineScroller
 				lineAtom={lineAtom}
-				wordsContainerRef={wordsContainerRef}
+				wordsContainer={wordsContainerRef.current}
 			/>
 			{enableInsert && (
 				<Button
@@ -435,7 +442,6 @@ export const LyricLineView: FC<{
 									toolMode === ToolMode.Edit && styles.edit,
 									toolMode === ToolMode.Sync && styles.sync,
 								)}
-								ref={wordsContainerRef}
 							>
 								<div
 									className={classNames(
@@ -446,7 +452,7 @@ export const LyricLineView: FC<{
 									ref={wordsContainerRef}
 								>
 									{words.map((wordAtom, wi) => (
-										<Fragment key={`word-${wordAtom}-${wi}`}>
+										<Fragment key={`word-${wi}`}>
 											{enableInsert && (
 												<IconButton
 													size="1"
