@@ -38,17 +38,8 @@ export const lyricLinesAtom = atom({
 	lyricLines: [],
 	metadata: [],
 } as TTMLLyric);
-const trackChangeAtom = atom(
-	(get) => {
-		const current = get(lyricLinesAtom);
-		console.log("lyricLines atom changed", current);
-		return current;
-	},
-	(_get, set, value: SetStateAction<TTMLLyric>) => {
-		set(lyricLinesAtom, value);
-	},
-);
-export const undoableLyricLinesAtom = withHistory(trackChangeAtom, 256);
+
+export const undoableLyricLinesAtom = withHistory(lyricLinesAtom, 256);
 export const undoLyricLinesAtom = atom(null, (_get, set) => {
 	set(undoableLyricLinesAtom, UNDO);
 });
