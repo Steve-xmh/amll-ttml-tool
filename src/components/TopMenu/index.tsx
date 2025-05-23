@@ -32,16 +32,40 @@ import { parseLyric } from "$/utils/ttml-parser.ts";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import exportTTMLText from "$/utils/ttml-writer.ts";
 import { HomeRegular } from "@fluentui/react-icons";
-import { DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
+import { Button, DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
 import { open } from "@tauri-apps/plugin-shell";
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom, withImmer } from "jotai-immer";
-import { type FC, useCallback } from "react";
+import { Toolbar } from "radix-ui";
+import { type FC, useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import { toast } from "react-toastify";
 import saveFile from "save-file";
 
+const useWindowSize = () => {
+	const [windowSize, setWindowSize] = useState({
+		width: window.innerWidth,
+		height: window.innerHeight,
+	});
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowSize({
+				width: window.innerWidth,
+				height: window.innerHeight,
+			});
+		};
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
+	return windowSize;
+};
+
 export const TopMenu: FC = () => {
+	const { width } = useWindowSize();
+	const showHomeButton = width < 800;
 	const [saveFileName, setSaveFileName] = useAtom(saveFileNameAtom);
 	const newLyricLine = useSetAtom(newLyricLinesAtom);
 	const setLyricLines = useSetAtom(lyricLinesAtom);
@@ -84,7 +108,7 @@ export const TopMenu: FC = () => {
 		onOpenFile,
 	]);
 
-	const onOpenFileFromClipboard = async () => {
+	const onOpenFileFromClipboard = useCallback(async () => {
 		try {
 			const ttmlText = await navigator.clipboard.readText();
 			const ttmlData = parseLyric(ttmlText);
@@ -92,7 +116,7 @@ export const TopMenu: FC = () => {
 		} catch (e) {
 			error("Failed to parse TTML file from clipboard", e);
 		}
-	};
+	}, [setLyricLines]);
 
 	const onSaveFile = useCallback(() => {
 		try {
@@ -107,7 +131,7 @@ export const TopMenu: FC = () => {
 		onSaveFile,
 	]);
 
-	const onSaveFileToClipboard = async () => {
+	const onSaveFileToClipboard = useCallback(async () => {
 		try {
 			const lyric = store.get(lyricLinesAtom);
 			const ttml = exportTTMLText(lyric);
@@ -115,7 +139,39 @@ export const TopMenu: FC = () => {
 		} catch (e) {
 			error("Failed to save TTML file into clipboard", e);
 		}
-	};
+	}, [store]);
+
+	const onSubmitToAMLLDB = useCallback(() => {
+		store.set(submitToAMLLDBDialogAtom, true);
+	}, [store]);
+
+	const onOpenMetadataEditor = useCallback(() => {
+		setMetadataEditorOpened(true);
+	}, [setMetadataEditorOpened]);
+
+	const onOpenSettings = useCallback(() => {
+		setSettingsDialogOpened(true);
+	}, [setSettingsDialogOpened]);
+
+	const onOpenLatencyTest = useCallback(() => {
+		store.set(latencyTestDialogAtom, true);
+	}, [store]);
+
+	const onOpenGitHub = useCallback(async () => {
+		if (import.meta.env.TAURI_ENV_PLATFORM) {
+			await open("https://github.com/Steve-xmh/amll-ttml-tool");
+		} else {
+			window.open("https://github.com/Steve-xmh/amll-ttml-tool");
+		}
+	}, []);
+
+	const onOpenWiki = useCallback(async () => {
+		if (import.meta.env.TAURI_ENV_PLATFORM) {
+			await open("https://github.com/Steve-xmh/amll-ttml-tool/wiki");
+		} else {
+			window.open("https://github.com/Steve-xmh/amll-ttml-tool/wiki");
+		}
+	}, []);
 
 	const onUndo = useCallback(() => {
 		store.set(undoLyricLinesAtom);
@@ -188,14 +244,14 @@ export const TopMenu: FC = () => {
 		onSelectAll,
 	]);
 
-	const onSelectInverted = useCallback(() => {}, []);
+	const onSelectInverted = useCallback(() => { }, []);
 	const selectInvertedLinesKey = useKeyBindingAtom(
 		keySelectInvertedAtom,
 		onSelectInverted,
 		[onSelectInverted],
 	);
 
-	const onSelectWordsOfMatchedSelection = useCallback(() => {}, []);
+	const onSelectWordsOfMatchedSelection = useCallback(() => { }, []);
 	const selectWordsOfMatchedSelectionKey = useKeyBindingAtom(
 		keySelectWordsOfMatchedSelectionAtom,
 		onSelectWordsOfMatchedSelection,
@@ -230,20 +286,268 @@ export const TopMenu: FC = () => {
 		[onDeleteSelection],
 	);
 
+	const onSimpleSegmentation = useCallback(() => {
+		editLyricLines((state) => {
+			const latinReg =
+				/^[0-9A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
+
+			for (const line of state.lyricLines) {
+				const chars = line.words.flatMap((w) =>
+					w.word.split(""),
+				);
+				const wordsResult: LyricWord[] = [];
+				let tmpWord = newLyricWord();
+				for (const c of chars) {
+					if (/^\s+$/.test(c)) {
+						if (tmpWord.word.trim().length > 0) {
+							wordsResult.push(tmpWord);
+						}
+						tmpWord = {
+							...newLyricWord(),
+							word: " ",
+						};
+					} else if (latinReg.test(c)) {
+						if (latinReg.test(tmpWord.word)) {
+							tmpWord.word += c;
+						} else {
+							if (tmpWord.word.length > 0) {
+								wordsResult.push(tmpWord);
+							}
+							tmpWord = {
+								...newLyricWord(),
+								word: c,
+							};
+						}
+					} else {
+						if (tmpWord.word.length > 0) {
+							wordsResult.push(tmpWord);
+						}
+						tmpWord = {
+							...newLyricWord(),
+							word: c,
+						};
+					}
+				}
+				if (tmpWord.word.length > 0) {
+					wordsResult.push(tmpWord);
+				}
+				line.words = wordsResult;
+			}
+		});
+	}, [editLyricLines]);
+
+	const onJiebaSegmentation = useCallback(async () => {
+		const id = toast("正在加载 Jieba 分词算法模块", {
+			autoClose: false,
+			isLoading: true,
+		});
+		try {
+			const { default: wasmMoudle } = await import(
+				"$/assets/jieba_rs_wasm_bg.wasm?url"
+			);
+			const { default: init, cut } = await import(
+				"jieba-wasm"
+			);
+			await init({
+				module_or_path: wasmMoudle,
+			});
+			toast.update(id, {
+				render: "正在分词中，请稍等...",
+			});
+			editLyricLines((state) => {
+				for (const line of state.lyricLines) {
+					const mergedWords = line.words
+						.map((w) => w.word)
+						.join("");
+					const splited = cut(mergedWords, true);
+					line.words = [];
+					for (const word of splited) {
+						line.words.push({
+							...newLyricWord(),
+							word: word,
+						});
+					}
+				}
+			});
+			toast.update(id, {
+				render: "分词完成！",
+				type: "success",
+				isLoading: false,
+				autoClose: 5000,
+			});
+		} catch (err) {
+			toast.update(id, {
+				render: "分词失败，请检查控制台错误输出！",
+				type: "error",
+				isLoading: false,
+				autoClose: 5000,
+			});
+			error(err);
+		}
+	}, [editLyricLines]);
+
 	return (
-		<Flex p="2" pr="0" align="center" gap="2">
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<IconButton variant="soft">
-						<HomeRegular />
-					</IconButton>
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content>
-					<DropdownMenu.Sub>
-						<DropdownMenu.SubTrigger>
-							<Trans i18nKey="topBar.menu.file">文件</Trans>
-						</DropdownMenu.SubTrigger>
-						<DropdownMenu.SubContent>
+		<Flex p="2" pr="0" align="center" gap="2" style={{
+			whiteSpace: "nowrap",
+		}}>
+			{showHomeButton ? (
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						<IconButton variant="soft">
+							<HomeRegular />
+						</IconButton>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content>
+						<DropdownMenu.Sub>
+							<DropdownMenu.SubTrigger>
+								<Trans i18nKey="topBar.menu.file">文件</Trans>
+							</DropdownMenu.SubTrigger>
+							<DropdownMenu.SubContent>
+								<DropdownMenu.Item
+									onSelect={onNewFile}
+									shortcut={formatKeyBindings(newFileKey)}
+								>
+									新建 TTML 文件
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									onSelect={onOpenFile}
+									shortcut={formatKeyBindings(openFileKey)}
+								>
+									打开 TTML 文件
+								</DropdownMenu.Item>
+								<DropdownMenu.Item onSelect={onOpenFileFromClipboard}>
+									从剪切板打开 TTML 文件
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									onSelect={onSaveFile}
+									shortcut={formatKeyBindings(saveFileKey)}
+								>
+									保存 TTML 文件
+								</DropdownMenu.Item>
+								<DropdownMenu.Item onSelect={onSaveFileToClipboard}>
+									保存 TTML 文件到剪切板
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								<ImportExportLyric />
+								<DropdownMenu.Separator />
+								<DropdownMenu.Item onSelect={onSubmitToAMLLDB}>
+									上传到 AMLL 歌词数据库
+								</DropdownMenu.Item>
+							</DropdownMenu.SubContent>
+						</DropdownMenu.Sub>
+
+						<DropdownMenu.Sub>
+							<DropdownMenu.SubTrigger>
+								<Trans i18nKey="topBar.menu.edit">编辑</Trans>
+							</DropdownMenu.SubTrigger>
+							<DropdownMenu.SubContent>
+								<DropdownMenu.Item
+									onSelect={onUndo}
+									shortcut={formatKeyBindings(undoKey)}
+									disabled={undoLyricLines.canUndo}
+								>
+									撤销
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									onSelect={onRedo}
+									shortcut={formatKeyBindings(redoKey)}
+									disabled={undoLyricLines.canRedo}
+								>
+									重做
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								<DropdownMenu.Item
+									onSelect={onSelectAll}
+									shortcut={formatKeyBindings(selectAllLinesKey)}
+								>
+									全选
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									onSelect={onUnselectAll}
+									shortcut={formatKeyBindings(unselectAllLinesKey)}
+								>
+									取消选择
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									onSelect={onSelectInverted}
+									shortcut={formatKeyBindings(selectInvertedLinesKey)}
+								>
+									反选
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									onSelect={onSelectWordsOfMatchedSelection}
+									shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
+								>
+									选择单词匹配项
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								<DropdownMenu.Item
+									onSelect={onDeleteSelection}
+									shortcut={formatKeyBindings(deleteSelectionKey)}
+								>
+									删除所选
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
+									编辑元数据
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								<DropdownMenu.Item onSelect={onOpenSettings}>
+									首选项
+								</DropdownMenu.Item>
+							</DropdownMenu.SubContent>
+						</DropdownMenu.Sub>
+
+						<DropdownMenu.Sub>
+							<DropdownMenu.SubTrigger>工具</DropdownMenu.SubTrigger>
+							<DropdownMenu.SubContent>
+								<DropdownMenu.Sub>
+									<DropdownMenu.SubTrigger>按照算法分词</DropdownMenu.SubTrigger>
+									<DropdownMenu.SubContent>
+										<DropdownMenu.Item onSelect={onJiebaSegmentation}>
+											Jieba 分词
+										</DropdownMenu.Item>
+										<DropdownMenu.Item onSelect={onSimpleSegmentation}>
+											简单分词
+										</DropdownMenu.Item>
+									</DropdownMenu.SubContent>
+								</DropdownMenu.Sub>
+								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
+									音频/输入延迟测试
+								</DropdownMenu.Item>
+							</DropdownMenu.SubContent>
+						</DropdownMenu.Sub>
+
+						<DropdownMenu.Sub>
+							<DropdownMenu.SubTrigger>
+								<Trans i18nKey="topBar.menu.help">帮助</Trans>
+							</DropdownMenu.SubTrigger>
+							<DropdownMenu.SubContent>
+								<DropdownMenu.Item onSelect={onOpenGitHub}>
+									GitHub
+								</DropdownMenu.Item>
+								<DropdownMenu.Item onSelect={onOpenWiki}>
+									使用说明
+								</DropdownMenu.Item>
+							</DropdownMenu.SubContent>
+						</DropdownMenu.Sub>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			) : (
+				<Toolbar.Root>
+					<DropdownMenu.Root>
+						<Toolbar.Button asChild>
+							<DropdownMenu.Trigger>
+								<Button variant="soft" style={{
+									borderTopRightRadius: "0",
+									borderBottomRightRadius: "0",
+									marginRight: "1px",
+								}}>
+									<Trans i18nKey="topBar.menu.file">文件</Trans>
+								</Button>
+							</DropdownMenu.Trigger>
+						</Toolbar.Button>
+						<DropdownMenu.Content>
 							<DropdownMenu.Item
 								onSelect={onNewFile}
 								shortcut={formatKeyBindings(newFileKey)}
@@ -271,19 +575,24 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.Separator />
 							<ImportExportLyric />
 							<DropdownMenu.Separator />
-							<DropdownMenu.Item
-								onSelect={() => store.set(submitToAMLLDBDialogAtom, true)}
-							>
+							<DropdownMenu.Item onSelect={onSubmitToAMLLDB}>
 								上传到 AMLL 歌词数据库
 							</DropdownMenu.Item>
-						</DropdownMenu.SubContent>
-					</DropdownMenu.Sub>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 
-					<DropdownMenu.Sub>
-						<DropdownMenu.SubTrigger>
-							<Trans i18nKey="topBar.menu.edit">编辑</Trans>
-						</DropdownMenu.SubTrigger>
-						<DropdownMenu.SubContent>
+					<DropdownMenu.Root >
+						<Toolbar.Button asChild>
+							<DropdownMenu.Trigger style={{
+								borderRadius: "0",
+								marginRight: "1px",
+							}}>
+								<Button variant="soft">
+									<Trans i18nKey="topBar.menu.edit">编辑</Trans>
+								</Button>
+							</DropdownMenu.Trigger>
+						</Toolbar.Button>
+						<DropdownMenu.Content>
 							<DropdownMenu.Item
 								onSelect={onUndo}
 								shortcut={formatKeyBindings(undoKey)}
@@ -331,175 +640,68 @@ export const TopMenu: FC = () => {
 								删除所选
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
-							<DropdownMenu.Item onSelect={() => setMetadataEditorOpened(true)}>
+							<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
 								编辑元数据
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
-							<DropdownMenu.Item onSelect={() => setSettingsDialogOpened(true)}>
+							<DropdownMenu.Item onSelect={onOpenSettings}>
 								首选项
 							</DropdownMenu.Item>
-						</DropdownMenu.SubContent>
-					</DropdownMenu.Sub>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 
-					<DropdownMenu.Sub>
-						<DropdownMenu.SubTrigger>工具</DropdownMenu.SubTrigger>
-						<DropdownMenu.SubContent>
+					<DropdownMenu.Root>
+						<Toolbar.Button asChild>
+							<DropdownMenu.Trigger>
+								<Button variant="soft" style={{
+									borderRadius: "0",
+									marginRight: "1px",
+								}}>
+									<Trans i18nKey="topBar.menu.tools">工具</Trans>
+								</Button>
+							</DropdownMenu.Trigger>
+						</Toolbar.Button>
+						<DropdownMenu.Content>
 							<DropdownMenu.Sub>
 								<DropdownMenu.SubTrigger>按照算法分词</DropdownMenu.SubTrigger>
 								<DropdownMenu.SubContent>
-									<DropdownMenu.Item
-										onSelect={async () => {
-											const id = toast("正在加载 Jieba 分词算法模块", {
-												autoClose: false,
-												isLoading: true,
-											});
-											try {
-												const { default: wasmMoudle } = await import(
-													"$/assets/jieba_rs_wasm_bg.wasm?url"
-												);
-												const { default: init, cut } = await import(
-													"jieba-wasm"
-												);
-												await init({
-													module_or_path: wasmMoudle,
-												});
-												toast.update(id, {
-													render: "正在分词中，请稍等...",
-												});
-												editLyricLines((state) => {
-													for (const line of state.lyricLines) {
-														const mergedWords = line.words
-															.map((w) => w.word)
-															.join("");
-														const splited = cut(mergedWords, true);
-														line.words = [];
-														for (const word of splited) {
-															line.words.push({
-																...newLyricWord(),
-																word: word,
-															});
-														}
-													}
-												});
-												toast.update(id, {
-													render: "分词完成！",
-													type: "success",
-													isLoading: false,
-													autoClose: 5000,
-												});
-											} catch (err) {
-												toast.update(id, {
-													render: "分词失败，请检查控制台错误输出！",
-													type: "error",
-													isLoading: false,
-													autoClose: 5000,
-												});
-												error(err);
-											}
-										}}
-									>
+									<DropdownMenu.Item onSelect={onJiebaSegmentation}>
 										Jieba 分词
 									</DropdownMenu.Item>
-									<DropdownMenu.Item
-										onSelect={() => {
-											editLyricLines((state) => {
-												const latinReg =
-													/^[0-9A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
-
-												for (const line of state.lyricLines) {
-													const chars = line.words.flatMap((w) =>
-														w.word.split(""),
-													);
-													const wordsResult: LyricWord[] = [];
-													let tmpWord = newLyricWord();
-													for (const c of chars) {
-														if (/^\s+$/.test(c)) {
-															if (tmpWord.word.trim().length > 0) {
-																wordsResult.push(tmpWord);
-															}
-															tmpWord = {
-																...newLyricWord(),
-																word: " ",
-															};
-														} else if (latinReg.test(c)) {
-															if (latinReg.test(tmpWord.word)) {
-																tmpWord.word += c;
-															} else {
-																if (tmpWord.word.length > 0) {
-																	wordsResult.push(tmpWord);
-																}
-																tmpWord = {
-																	...newLyricWord(),
-																	word: c,
-																};
-															}
-														} else {
-															if (tmpWord.word.length > 0) {
-																wordsResult.push(tmpWord);
-															}
-															tmpWord = {
-																...newLyricWord(),
-																word: c,
-															};
-														}
-													}
-													if (tmpWord.word.length > 0) {
-														wordsResult.push(tmpWord);
-													}
-													line.words = wordsResult;
-												}
-											});
-										}}
-									>
+									<DropdownMenu.Item onSelect={onSimpleSegmentation}>
 										简单分词
 									</DropdownMenu.Item>
 								</DropdownMenu.SubContent>
 							</DropdownMenu.Sub>
-							<DropdownMenu.Item
-								onSelect={() => {
-									store.set(latencyTestDialogAtom, true);
-								}}
-							>
+							<DropdownMenu.Item onSelect={onOpenLatencyTest}>
 								音频/输入延迟测试
 							</DropdownMenu.Item>
-						</DropdownMenu.SubContent>
-					</DropdownMenu.Sub>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 
-					<DropdownMenu.Sub>
-						<DropdownMenu.SubTrigger>
-							<Trans i18nKey="topBar.menu.help">帮助</Trans>
-						</DropdownMenu.SubTrigger>
-						<DropdownMenu.SubContent>
-							<DropdownMenu.Item
-								onSelect={async () => {
-									if (import.meta.env.TAURI_ENV_PLATFORM) {
-										await open("https://github.com/Steve-xmh/amll-ttml-tool");
-									} else {
-										window.open("https://github.com/Steve-xmh/amll-ttml-tool");
-									}
-								}}
-							>
+					<DropdownMenu.Root>
+						<Toolbar.Button asChild>
+							<DropdownMenu.Trigger>
+								<Button variant="soft" style={{
+									borderTopLeftRadius: "0",
+									borderBottomLeftRadius: "0",
+								}}>
+									<Trans i18nKey="topBar.menu.help">帮助</Trans>
+								</Button>
+							</DropdownMenu.Trigger>
+						</Toolbar.Button>
+						<DropdownMenu.Content>
+							<DropdownMenu.Item onSelect={onOpenGitHub}>
 								GitHub
 							</DropdownMenu.Item>
-							<DropdownMenu.Item
-								onSelect={async () => {
-									if (import.meta.env.TAURI_ENV_PLATFORM) {
-										await open(
-											"https://github.com/Steve-xmh/amll-ttml-tool/wiki",
-										);
-									} else {
-										window.open(
-											"https://github.com/Steve-xmh/amll-ttml-tool/wiki",
-										);
-									}
-								}}
-							>
+							<DropdownMenu.Item onSelect={onOpenWiki}>
 								使用说明
 							</DropdownMenu.Item>
-						</DropdownMenu.SubContent>
-					</DropdownMenu.Sub>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+
+				</Toolbar.Root>
+			)}
 			<TextField.Root
 				style={{
 					flexBasis: "20em",
