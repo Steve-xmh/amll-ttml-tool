@@ -49,6 +49,7 @@ import {
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordMenu } from "./lyric-word-menu";
+import { useTranslation } from "react-i18next";
 
 const isDraggingAtom = atom(false);
 const draggingIdAtom = atom("");
@@ -690,12 +691,14 @@ const LyricWorldViewSync: FC<{
 	);
 };
 
-const useDisplayWord = (word: string, isWordBlank: boolean) =>
-	useMemo(() => {
-		if (word === "") return "空白";
-		if (isWordBlank) return `空格 x${word.length}`;
+const useDisplayWord = (word: string, isWordBlank: boolean) => {
+	const { t } = useTranslation();
+	return useMemo(() => {
+		if (word === "") return t("lyricWordView.empty", "空白");
+		if (isWordBlank) return t("lyricWordView.spaceCount", "空格 x{{count}}", { count: word.length });
 		return word;
-	}, [word, isWordBlank]);
+	}, [word, isWordBlank, t]);
+};
 
 export const LyricWordView: FC<{
 	wordAtom: Atom<LyricWord>;

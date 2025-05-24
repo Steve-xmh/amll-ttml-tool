@@ -2,7 +2,18 @@
 	"app": {
 		"loadingEditPage": "正在加载编辑页面",
 		"loadingSyncPage": "正在加载打轴页面",
-		"loadingAMLLPreviewPage": "正在加载 AMLL 预览页面"
+		"loadingAMLLPreviewPage": "正在加载 AMLL 预览页面",
+		"error": {
+			"title": "诶呀，出错了！",
+			"description": "AMLL TTML Tools 在运行时出现了错误",
+			"checkDevTools": "具体错误详情可以在开发者工具中查询",
+			"saveLyrics": "尝试保存当前歌词",
+			"tryRestart": "尝试重新进入程序",
+			"details": "大致错误信息："
+		},
+		"wip": {
+			"warning": "本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！"
+		}
 	},
 	"runtimeError": {
 		"title": "程序发生运行错误",
@@ -52,9 +63,9 @@
 			"tool": "工具"
 		},
 		"modeBtns": {
-			"edit": "编辑模式",
-			"sync": "打轴模式",
-			"preview": "预览模式"
+			"edit": "编辑",
+			"sync": "打轴",
+			"preview": "预览"
 		},
 		"appName": "Apple Music-like Lyrics TTML Tool"
 	},
@@ -367,5 +378,118 @@
 	"shortcutInput": {
 		"none": "无绑定",
 		"recording": "请按下任意键..."
+	},
+	"ribbonBar": {
+		"editMode": {
+			"new": "新建",
+			"lyricLine": "歌词行",
+			"timing": "行时间戳",
+			"startTime": "起始时间",
+			"endTime": "结束时间",
+			"lineProperties": "行属性",
+			"bgLyric": "背景歌词",
+			"duetLyric": "对唱歌词",
+			"ignoreSync": "忽略打轴",
+			"wordTiming": "词时间戳",
+			"wordProperties": "单词属性",
+			"word": "单词",
+			"emptyBeatCount": "空拍数量",
+			"secondaryContent": "次要内容",
+			"translatedLyric": "翻译歌词",
+			"romanLyric": "音译歌词",
+			"multipleValues": "多个值..."
+		},
+		"previewMode": {
+			"lyric": "歌词",
+			"showTranslation": "显示翻译",
+			"showRoman": "显示音译",
+			"word": "单词",
+			"fadeWidth": "过渡宽度"
+		},
+		"syncMode": {
+			"currentEmptyBeat": "当前空拍",
+			"syncAdjustment": "打轴调整",
+			"timeOffset": "时间戳位移",
+			"assistSettings": "辅助设置",
+			"showTimestampUpdate": "呈现时间戳更新",
+			"touchSyncPanel": "触控打轴辅助面板",
+			"keyBindingReference": "打轴键位速查",
+			"startAxis": "起始轴",
+			"continuousAxis": "连续轴",
+			"endAxis": "结束轴"
+		}
+	},
+	"importExport": {
+		"import": {
+			"title": "导入歌词...",
+			"fromPlainText": "从纯文本导入",
+			"fromLrc": "从 LyRiC 文件导入",
+			"fromEslrc": "从 ESLyRiC 文件导入",
+			"fromQrc": "从 QRC 文件导入",
+			"fromYrc": "从 YRC 文件导入",
+			"fromLys": "从 Lyricify Syllable 文件导入"
+		},
+		"export": {
+			"title": "导出歌词...",
+			"toLrc": "导出到 LyRiC",
+			"toEslrc": "导出到 ESLyRiC",
+			"toQrc": "导出到 QRC",
+			"toYrc": "导出到 YRC",
+			"toLys": "导出到 Lyricify Syllable",
+			"toAss": "导出到 ASS 字幕"
+		}
+	},
+	"lyricLineView": {
+		"translatedLabel": "翻译：",
+		"romanLabel": "音译：",
+		"empty": "无"
+	},
+	"splitWordDialog": {
+		"title": "拆分/替换单词",
+		"tip": "拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除",
+		"originalWord": "拆分/替换模板",
+		"delimiter": "分隔符",
+		"previewTitle": "拆分预览",
+		"spaceCount": "空格x{{count}}",
+		"empty": "空白"
+	},
+	"submitToAMLLDB": {
+		"description": "提交歌词到 AMLL 歌词数据库",
+		"title": "提交歌词到 AMLL 歌词数据库（仅简体中文用户）",
+		"chineseOnlyWarning": "本功能仅使用 AMLL 歌词数据库的简体中文用户可用，如果您是为了在其他软件上使用歌词而编辑歌词的话，请参考对应的软件提交歌词的方式来提交歌词哦！",
+		"thankYou": "首先，感谢您的慷慨歌词贡献！",
+		"cc0Agreement": "通过提交，你将默认同意",
+		"cc0Rights": "使用 CC0 共享协议完全放弃歌词所有权",
+		"andSubmit": "并提交到歌词数据库！",
+		"futureUse": "并且歌词将会在以后被 AMLL 系程序作为默认 TTML 歌词源获取！",
+		"rightsWarning": "如果您对歌词所有权比较看重的话，请勿提交歌词哦！",
+		"submitInstructions": "请输入以下提交信息然后跳转到 Github 议题提交页面！",
+		"closeWarning": "关闭上述警告信息"
+	},
+	"lyricWordView": {
+		"empty": "空白",
+		"spaceCount": "空格 x{{count}}"
+	},
+	"settings": {
+		"common": {
+			"layoutMode": "编辑布局模式",
+			"layoutModeDesc": {
+				"line1": "简单布局能够满足大部分使用者的基本需求",
+				"line2": "如果你需要更加高效的打轴的话，可以考虑切换到高级模式"
+			},
+			"layoutModeOptions": {
+				"simple": "简单模式",
+				"advance": "高级模式"
+			},
+			"syncJudgeMode": "打轴时间戳判定模式",
+			"syncJudgeModeDesc": "设置打轴时间戳的判定模式，默认为\"首个按键按下时间\"。",
+			"syncJudgeModeOptions": {
+				"firstKeyDown": "首个按键按下时间",
+				"lastKeyUp": "最后一个按键抬起时间",
+				"middleKey": "取按键按下和抬起的中间值"
+			},
+			"volume": "音乐音量",
+			"playbackRate": "播放速度"
+		}
 	}
 }

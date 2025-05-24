@@ -21,8 +21,11 @@ import {
 } from "@radix-ui/themes";
 import { atom, useAtom, useAtomValue, useStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { memo, useLayoutEffect, useState } from "react";
+import { memo, useLayoutEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+import type { TTMLMetadata } from "$/utils/ttml-types";
+import type { TFunction } from "i18next";
 
 enum UploadDBType {
 	Official = "official",
@@ -68,7 +71,40 @@ const issuesAtom = atom((get) => {
 	return result;
 });
 
+const validateMetadata = (metadatas: TTMLMetadata[], t: TFunction): string[] => {
+	const result: string[] = [];
+	const musicName = metadatas.find((m) => m.key === "musicName");
+	if (!musicName?.value?.length) {
+		result.push(t("submitToAMLLDB.validation.missingMusicName", "元数据缺少音乐名称"));
+	}
+
+	const artists = metadatas.find((m) => m.key === "artists");
+	if (!artists?.value?.length) {
+		result.push(t("submitToAMLLDB.validation.missingArtists", "元数据缺少音乐作者"));
+	}
+
+	const album = metadatas.find((m) => m.key === "album");
+	if (!album?.value?.length) {
+		result.push(t("submitToAMLLDB.validation.missingAlbum", "元数据缺少音乐专辑名称"));
+	}
+
+	const musicIds = [
+		metadatas.find((m) => m.key === "ncmMusicId"),
+		metadatas.find((m) => m.key === "qqMusicId"),
+		metadatas.find((m) => m.key === "spotifyId"),
+		metadatas.find((m) => m.key === "appleMusicId"),
+		metadatas.find((m) => m.key === "isrc"),
+	];
+
+	if (!musicIds.some((id) => id?.value?.length)) {
+		result.push(t("submitToAMLLDB.validation.missingMusicId", "元数据缺少音乐平台对应歌曲 ID"));
+	}
+
+	return result;
+};
+
 export const SubmitToAMLLDBDialog = memo(() => {
+	const { t } = useTranslation();
 	const [uploadDbType, setUploadDbType] = useAtom(uploadDbTypeAtom);
 	const [dialogOpen, setDialogOpen] = useAtom(submitToAMLLDBDialogAtom);
 	const [hideWarning, setHideWarning] = useAtom(hideSubmitAMLLDBWarningAtom);
@@ -80,79 +116,97 @@ export const SubmitToAMLLDBDialog = memo(() => {
 	const [name, setName] = useState("");
 	const [comment, setComment] = useState("");
 	const [processing, setProcessing] = useState(false);
-	const [submitReason, setSubmitReason] = useState("新歌词提交");
+	const [submitReason, setSubmitReason] = useState(t("submitToAMLLDB.defaultReason", "新歌词提交"));
 	const store = useStore();
 
-	async function uploadAndSubmit() {
+	const onSubmit = useCallback(async () => {
 		if (processing) return;
 		setProcessing(true);
 		try {
-			const ttmlLyric = store.get(lyricLinesAtom);
-			const uploadDbType = store.get(uploadDbTypeAtom);
-			const lyricData = exportTTMLText(ttmlLyric);
-			const lyricUrl = await fetch(
-				"https://amll-ttml-tools-dpaste-proxy.stevexmh.net/74335190-b44f-4468-b5ce-0dd9f25bef98",
+			const errors = validateMetadata(metadatas, t);
+			if (errors.length > 0) {
+				toast.error(
+					t("submitToAMLLDB.errors.validation", "提交验证失败：\n{{errors}}", {
+						errors: errors.join("\n"),
+					}),
+				);
+				return;
+			}
+
+			if (store.get(lyricLinesAtom).lyricLines.length === 0) {
+				toast.error(t("submitToAMLLDB.errors.noLyrics", "歌词还什么都没有呢？"));
+				return;
+			}
+
+			const ttmlText = exportTTMLText(store.get(lyricLinesAtom));
+			const ttmlBlob = new Blob([ttmlText], { type: "text/xml" });
+
+			const formData = new FormData();
+			formData.append("file", ttmlBlob, "lyrics.ttml");
+
+			const uploadResp = await fetch(
+				"https://amll-ttml-db.stevexmh.com/api/upload",
 				{
 					method: "POST",
-					mode: "cors",
-					body: lyricData,
+					body: formData,
 				},
-			).then((v) => {
-				if (v.status !== 200)
-					return Promise.reject(
-						new Error(`发送上传歌词文件请求失败：${v.status} ${v.statusText}`),
-					);
-				return v.text();
-			});
+			);
+
+			if (!uploadResp.ok) {
+				throw new Error(
+					t("submitToAMLLDB.errors.uploadFailed", "发送上传歌词文件请求失败：{{status}} {{statusText}}", {
+						status: uploadResp.status,
+						statusText: uploadResp.statusText,
+					}),
+				);
+			}
+
+			const uploadResult = await uploadResp.json();
+
 			const issueUrl = new URL(
-				"https://github.com/Steve-xmh/amll-ttml-db/issues/new",
+				"https://github.com/Steve-xmh/amll-ttml-lyrics/issues/new",
 			);
-			if (uploadDbType === UploadDBType.User) {
-				issueUrl.pathname = "/Steve-xmh/amll-ttml-db-user/issues/new";
-			}
-			issueUrl.searchParams.append("labels", "歌词提交/补正");
-			issueUrl.searchParams.append("template", "submit-lyric.yml");
-			issueUrl.searchParams.append("title", `[歌词提交/修正] ${name}`);
-			issueUrl.searchParams.append("song-name", name);
+
+			issueUrl.searchParams.append("labels", t("submitToAMLLDB.labels.submit", "歌词提交/补正"));
 			issueUrl.searchParams.append(
-				"ttml-download-url",
-				new URL(lyricUrl).toString(),
+				"title",
+				t("submitToAMLLDB.issueTitle", "[歌词提交/修正] {{name}}", { name }),
 			);
-			issueUrl.searchParams.append("upload-reason", submitReason);
-			issueUrl.searchParams.append("comment", comment);
+			issueUrl.searchParams.append(
+				"body",
+				`${submitReason}
+
+${comment}
+
+<!-- AMLL TTML DB File ID: ${uploadResult.id} -->`,
+			);
+
 			open(issueUrl.toString());
-			if (uploadDbType === UploadDBType.Both) {
-				issueUrl.pathname = "/Steve-xmh/amll-ttml-db-user/issues/new";
-				open(issueUrl.toString());
-			}
+			setDialogOpen(false);
 		} catch (err) {
-			error("Submit failed", err);
-			// notify.error({
-			// 	title: t("uploadDBDialog.errorNotification.title"),
-			// 	content: t("uploadDBDialog.errorNotification.content", [err]),
-			// });
-			toast.error("提交发生错误，请查看控制台确认原因！");
+			console.error(err);
+			toast.error(t("submitToAMLLDB.errors.submitFailed", "提交发生错误，请查看控制台确认原因！"));
 		}
 		setProcessing(false);
-	}
+	}, [store, name, submitReason, comment, setDialogOpen, t]);
 
 	useLayoutEffect(() => {
 		if (genNameFromMetadata) {
 			const name =
 				metadatas.find((m) => m.key === "musicName")?.value?.join(", ") ??
-				"未知曲名";
+				t("submitToAMLLDB.unknownTitle", "未知曲名");
 			const artists =
 				metadatas.find((m) => m.key === "artists")?.value?.join(", ") ??
-				"未知歌手";
+				t("submitToAMLLDB.unknownArtist", "未知歌手");
 			setName(`${artists} - ${name}`);
 		}
-	}, [genNameFromMetadata, metadatas]);
+	}, [genNameFromMetadata, metadatas, t]);
 
 	return (
 		<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-			<Dialog.Content aria-description="提交歌词到 AMLL 歌词数据库">
+			<Dialog.Content aria-description={t("submitToAMLLDB.description", "提交歌词到 AMLL 歌词数据库")}>
 				<Dialog.Title>
-					提交歌词到 AMLL 歌词数据库（仅简体中文用户）
+					{t("submitToAMLLDB.title", "提交歌词到 AMLL 歌词数据库（仅简体中文用户）")}
 				</Dialog.Title>
 				<Flex direction="column" gap="4">
 					{!hideWarning && (
@@ -162,8 +216,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 									<ErrorCircle16Regular />
 								</Callout.Icon>
 								<Callout.Text>
-									本功能仅使用 AMLL
-									歌词数据库的简体中文用户可用，如果您是为了在其他软件上使用歌词而编辑歌词的话，请参考对应的软件提交歌词的方式来提交歌词哦！
+									{t("submitToAMLLDB.chineseOnlyWarning", "本功能仅使用 AMLL 歌词数据库的简体中文用户可用，如果您是为了在其他软件上使用歌词而编辑歌词的话，请参考对应的软件提交歌词的方式来提交歌词哦！")}
 								</Callout.Text>
 							</Callout.Root>
 							<Callout.Root color="blue">
@@ -172,19 +225,20 @@ export const SubmitToAMLLDBDialog = memo(() => {
 								</Callout.Icon>
 								<Callout.Text>
 									<p>
-										首先，感谢您的慷慨歌词贡献！
+										{t("submitToAMLLDB.thankYou", "首先，感谢您的慷慨歌词贡献！")}
 										<br />
-										通过提交，你将默认同意{" "}
+										{t("submitToAMLLDB.cc0Agreement", "通过提交，你将默认同意")}
+										{" "}
 										<Text weight="bold" color="orange">
-											使用 CC0 共享协议完全放弃歌词所有权{" "}
+											{t("submitToAMLLDB.cc0Rights", "使用 CC0 共享协议完全放弃歌词所有权")}
 										</Text>
-										并提交到歌词数据库！
+										{t("submitToAMLLDB.andSubmit", "并提交到歌词数据库！")}
 										<br />
-										并且歌词将会在以后被 AMLL 系程序作为默认 TTML 歌词源获取！
+										{t("submitToAMLLDB.futureUse", "并且歌词将会在以后被 AMLL 系程序作为默认 TTML 歌词源获取！")}
 										<br />
-										如果您对歌词所有权比较看重的话，请勿提交歌词哦！
+										{t("submitToAMLLDB.rightsWarning", "如果您对歌词所有权比较看重的话，请勿提交歌词哦！")}
 										<br />
-										请输入以下提交信息然后跳转到 Github 议题提交页面！
+										{t("submitToAMLLDB.submitInstructions", "请输入以下提交信息然后跳转到 Github 议题提交页面！")}
 									</p>
 								</Callout.Text>
 							</Callout.Root>
@@ -193,7 +247,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 								size="1"
 								onClick={() => setHideWarning(true)}
 							>
-								关闭上述警告信息
+								{t("submitToAMLLDB.closeWarning", "关闭上述警告信息")}
 							</Button>
 						</>
 					)}
@@ -314,7 +368,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 					<Button
 						loading={processing}
 						disabled={issues.length > 0}
-						onClick={uploadAndSubmit}
+						onClick={onSubmit}
 					>
 						上传歌词并创建议题
 					</Button>

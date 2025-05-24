@@ -57,6 +57,7 @@ import {
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordView } from "./lyric-word-view";
+import { useTranslation } from "react-i18next";
 
 const isDraggingAtom = atom(false);
 
@@ -115,6 +116,7 @@ const SubLineEdit = memo(
 		const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 		const line = useAtomValue(lineAtom);
 		const [editing, setEditing] = useState(false);
+		const { t } = useTranslation();
 
 		const onEnter = useCallback(
 			(evt: SyntheticEvent<HTMLInputElement>) => {
@@ -130,8 +132,10 @@ const SubLineEdit = memo(
 		);
 
 		const label = useMemo(
-			() => (type === "translatedLyric" ? "翻译：" : "音译："),
-			[type],
+			() => type === "translatedLyric"
+				? t("lyricLineView.translatedLabel", "翻译：")
+				: t("lyricLineView.romanLabel", "音译："),
+			[type, t],
 		);
 
 		return (
@@ -157,7 +161,7 @@ const SubLineEdit = memo(
 							setEditing(true);
 						}}
 					>
-						{line[type] || <Text color="gray">无</Text>}
+						{line[type] || <Text color="gray">{t("lyricLineView.empty", "无")}</Text>}
 					</Button>
 				)}
 			</Flex>

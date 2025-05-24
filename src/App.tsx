@@ -57,20 +57,22 @@ import { showTouchSyncPanelAtom } from "./states/sync.ts";
 import { parseLyric as parseTTML } from "./utils/ttml-parser.ts";
 import type { TTMLLyric } from "./utils/ttml-types.ts";
 import exportTTMLText from "./utils/ttml-writer.ts";
+import { useTranslation } from "react-i18next";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
 const Dialogs = lazy(() => import("./components/Dialogs"));
 
-const AppErrorPage = ({ error, resetErrorBoundary }) => {
+const AppErrorPage = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
 	const store = useStore();
+	const { t } = useTranslation();
 
 	return (
 		<Flex direction="column" align="center" justify="center" height="100vh">
 			<Flex direction="column" align="start" justify="center" gap="2">
-				<Heading>诶呀，出错了！</Heading>
-				<Text>AMLL TTML Tools 在运行时出现了错误</Text>
-				<Text>具体错误详情可以在开发者工具中查询</Text>
+				<Heading>{t("app.error.title", "诶呀，出错了！")}</Heading>
+				<Text>{t("app.error.description", "AMLL TTML Tools 在运行时出现了错误")}</Text>
+				<Text>{t("app.error.checkDevTools", "具体错误详情可以在开发者工具中查询")}</Text>
 				<Flex gap="2">
 					<Button
 						onClick={() => {
@@ -83,7 +85,7 @@ const AppErrorPage = ({ error, resetErrorBoundary }) => {
 							}
 						}}
 					>
-						尝试保存当前歌词
+						{t("app.error.saveLyrics", "尝试保存当前歌词")}
 					</Button>
 					<Button
 						onClick={() => {
@@ -91,10 +93,10 @@ const AppErrorPage = ({ error, resetErrorBoundary }) => {
 						}}
 						variant="soft"
 					>
-						尝试重新进入程序
+						{t("app.error.tryRestart", "尝试重新进入程序")}
 					</Button>
 				</Flex>
-				<Text>大致错误信息：</Text>
+				<Text>{t("app.error.details", "大致错误信息：")}</Text>
 				<TextArea
 					readOnly
 					value={String(error)}
@@ -114,6 +116,7 @@ function App() {
 	const showTouchSyncPanel = useAtomValue(showTouchSyncPanelAtom);
 	const [hasBackground, setHasBackground] = useState(false);
 	const store = useStore();
+	const { t } = useTranslation();
 
 	if (import.meta.env.TAURI_ENV_PLATFORM) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -191,15 +194,15 @@ function App() {
 	}
 
 	useEffect(() => {
-		toast.warn("本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！");
-	}, []);
+		toast.warn(t("app.wip.warning", "本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！"));
+	}, [t]);
 
 	useEffect(() => {
 		const onBeforeClose = (evt: BeforeUnloadEvent) => {
 			const currentLyricLines = store.get(lyricLinesAtom);
 			if (
 				currentLyricLines.lyricLines.length +
-					currentLyricLines.metadata.length >
+				currentLyricLines.metadata.length >
 				0
 			) {
 				evt.preventDefault();

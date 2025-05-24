@@ -41,6 +41,7 @@ import { type FC, useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import { toast } from "react-toastify";
 import saveFile from "save-file";
+import { useTranslation } from "react-i18next";
 
 const useWindowSize = () => {
 	const [windowSize, setWindowSize] = useState({
@@ -74,6 +75,7 @@ export const TopMenu: FC = () => {
 	const setSettingsDialogOpened = useSetAtom(settingsDialogAtom);
 	const undoLyricLines = useAtomValue(undoableLyricLinesAtom);
 	const store = useStore();
+	const { t } = useTranslation();
 
 	const onNewFile = useCallback(() => {
 		newLyricLine();
@@ -337,7 +339,7 @@ export const TopMenu: FC = () => {
 	}, [editLyricLines]);
 
 	const onJiebaSegmentation = useCallback(async () => {
-		const id = toast("正在加载 Jieba 分词算法模块", {
+		const id = toast(t("topBar.menu.tools.loadingJieba", "正在加载 Jieba 分词算法模块"), {
 			autoClose: false,
 			isLoading: true,
 		});
@@ -352,7 +354,7 @@ export const TopMenu: FC = () => {
 				module_or_path: wasmMoudle,
 			});
 			toast.update(id, {
-				render: "正在分词中，请稍等...",
+				render: t("topBar.menu.tools.processing", "正在分词中，请稍等..."),
 			});
 			editLyricLines((state) => {
 				for (const line of state.lyricLines) {
@@ -370,14 +372,14 @@ export const TopMenu: FC = () => {
 				}
 			});
 			toast.update(id, {
-				render: "分词完成！",
+				render: t("topBar.menu.tools.completed", "分词完成！"),
 				type: "success",
 				isLoading: false,
 				autoClose: 5000,
 			});
 		} catch (err) {
 			toast.update(id, {
-				render: "分词失败，请检查控制台错误输出！",
+				render: t("topBar.menu.tools.error", "分词失败，请检查控制台错误输出！"),
 				type: "error",
 				isLoading: false,
 				autoClose: 5000,
@@ -407,31 +409,31 @@ export const TopMenu: FC = () => {
 									onSelect={onNewFile}
 									shortcut={formatKeyBindings(newFileKey)}
 								>
-									新建 TTML 文件
+									<Trans i18nKey="topBar.menu.newLyric">新建 TTML 文件</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onOpenFile}
 									shortcut={formatKeyBindings(openFileKey)}
 								>
-									打开 TTML 文件
+									<Trans i18nKey="topBar.menu.openLyric">打开 TTML 文件</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item onSelect={onOpenFileFromClipboard}>
-									从剪切板打开 TTML 文件
+									<Trans i18nKey="topBar.menu.openFromClipboard">从剪切板打开 TTML 文件</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onSaveFile}
 									shortcut={formatKeyBindings(saveFileKey)}
 								>
-									保存 TTML 文件
+									<Trans i18nKey="topBar.menu.saveLyric">保存 TTML 文件</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item onSelect={onSaveFileToClipboard}>
-									保存 TTML 文件到剪切板
+									<Trans i18nKey="topBar.menu.saveLyricToClipboard">保存 TTML 文件到剪切板</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<ImportExportLyric />
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onSubmitToAMLLDB}>
-									上传到 AMLL 歌词数据库
+									<Trans i18nKey="topBar.menu.uploadToAMLLDB">上传到 AMLL 歌词数据库</Trans>
 								</DropdownMenu.Item>
 							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
@@ -446,74 +448,78 @@ export const TopMenu: FC = () => {
 									shortcut={formatKeyBindings(undoKey)}
 									disabled={undoLyricLines.canUndo}
 								>
-									撤销
+									<Trans i18nKey="topBar.menu.undo">撤销</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onRedo}
 									shortcut={formatKeyBindings(redoKey)}
 									disabled={undoLyricLines.canRedo}
 								>
-									重做
+									<Trans i18nKey="topBar.menu.redo">重做</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item
 									onSelect={onSelectAll}
 									shortcut={formatKeyBindings(selectAllLinesKey)}
 								>
-									全选
+									<Trans i18nKey="topBar.menu.selectAllLines">选中所有歌词行</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onUnselectAll}
 									shortcut={formatKeyBindings(unselectAllLinesKey)}
 								>
-									取消选择
+									<Trans i18nKey="topBar.menu.unselectAllLines">取消选中所有歌词行</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onSelectInverted}
 									shortcut={formatKeyBindings(selectInvertedLinesKey)}
 								>
-									反选
+									<Trans i18nKey="topBar.menu.invertSelectAllLines">反选所有歌词行</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onSelectWordsOfMatchedSelection}
 									shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
 								>
-									选择单词匹配项
+									<Trans i18nKey="topBar.menu.selectWordsOfMatchedSelection">选择单词匹配项</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item
 									onSelect={onDeleteSelection}
 									shortcut={formatKeyBindings(deleteSelectionKey)}
 								>
-									删除所选
+									<Trans i18nKey="contextMenu.deleteWord">删除选定单词</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
-									编辑元数据
+									<Trans i18nKey="topBar.menu.editMetadata">编辑歌词元数据</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onOpenSettings}>
-									首选项
+									<Trans i18nKey="settingsDialog.title">设置</Trans>
 								</DropdownMenu.Item>
 							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
 
 						<DropdownMenu.Sub>
-							<DropdownMenu.SubTrigger>工具</DropdownMenu.SubTrigger>
+							<DropdownMenu.SubTrigger>
+								<Trans i18nKey="topBar.menu.tool">工具</Trans>
+							</DropdownMenu.SubTrigger>
 							<DropdownMenu.SubContent>
 								<DropdownMenu.Sub>
-									<DropdownMenu.SubTrigger>按照算法分词</DropdownMenu.SubTrigger>
+									<DropdownMenu.SubTrigger>
+										<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">使用简单方式对歌词行分词</Trans>
+									</DropdownMenu.SubTrigger>
 									<DropdownMenu.SubContent>
 										<DropdownMenu.Item onSelect={onJiebaSegmentation}>
-											Jieba 分词
+											<Trans i18nKey="topBar.menu.splitWordByJieba">使用 JieBa 对歌词行分词</Trans>
 										</DropdownMenu.Item>
 										<DropdownMenu.Item onSelect={onSimpleSegmentation}>
-											简单分词
+											<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">使用简单方式对歌词行分词</Trans>
 										</DropdownMenu.Item>
 									</DropdownMenu.SubContent>
 								</DropdownMenu.Sub>
 								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
-									音频/输入延迟测试
+									<Trans i18nKey="settingsDialog.common.latencyTest" defaults="音频/输入延迟测试">音频/输入延迟测试</Trans>
 								</DropdownMenu.Item>
 							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
@@ -598,54 +604,54 @@ export const TopMenu: FC = () => {
 								shortcut={formatKeyBindings(undoKey)}
 								disabled={undoLyricLines.canUndo}
 							>
-								撤销
+								<Trans i18nKey="topBar.menu.undo">撤销</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onRedo}
 								shortcut={formatKeyBindings(redoKey)}
 								disabled={undoLyricLines.canRedo}
 							>
-								重做
+								<Trans i18nKey="topBar.menu.redo">重做</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item
 								onSelect={onSelectAll}
 								shortcut={formatKeyBindings(selectAllLinesKey)}
 							>
-								全选
+								<Trans i18nKey="topBar.menu.selectAllLines">选中所有歌词行</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onUnselectAll}
 								shortcut={formatKeyBindings(unselectAllLinesKey)}
 							>
-								取消选择
+								<Trans i18nKey="topBar.menu.unselectAllLines">取消选中所有歌词行</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onSelectInverted}
 								shortcut={formatKeyBindings(selectInvertedLinesKey)}
 							>
-								反选
+								<Trans i18nKey="topBar.menu.invertSelectAllLines">反选所有歌词行</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onSelectWordsOfMatchedSelection}
 								shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
 							>
-								选择单词匹配项
+								<Trans i18nKey="topBar.menu.selectWordsOfMatchedSelection">选择单词匹配项</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item
 								onSelect={onDeleteSelection}
 								shortcut={formatKeyBindings(deleteSelectionKey)}
 							>
-								删除所选
+								<Trans i18nKey="contextMenu.deleteWord">删除选定单词</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
-								编辑元数据
+								<Trans i18nKey="topBar.menu.editMetadata">编辑歌词元数据</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onOpenSettings}>
-								首选项
+								<Trans i18nKey="settingsDialog.title">设置</Trans>
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
@@ -657,24 +663,26 @@ export const TopMenu: FC = () => {
 									borderRadius: "0",
 									marginRight: "0px",
 								}}>
-									<Trans i18nKey="topBar.menu.tools">工具</Trans>
+									{t("topBar.menu.tool", "工具")}
 								</Button>
 							</DropdownMenu.Trigger>
 						</Toolbar.Button>
 						<DropdownMenu.Content>
 							<DropdownMenu.Sub>
-								<DropdownMenu.SubTrigger>按照算法分词</DropdownMenu.SubTrigger>
+								<DropdownMenu.SubTrigger>
+									{t("topBar.menu.splitWordBySimpleMethod", "使用简单方式对歌词行分词")}
+								</DropdownMenu.SubTrigger>
 								<DropdownMenu.SubContent>
 									<DropdownMenu.Item onSelect={onJiebaSegmentation}>
-										Jieba 分词
+										{t("topBar.menu.splitWordByJieba", "使用 JieBa 对歌词行分词")}
 									</DropdownMenu.Item>
 									<DropdownMenu.Item onSelect={onSimpleSegmentation}>
-										简单分词
+										{t("topBar.menu.splitWordBySimpleMethod", "使用简单方式对歌词行分词")}
 									</DropdownMenu.Item>
 								</DropdownMenu.SubContent>
 							</DropdownMenu.Sub>
 							<DropdownMenu.Item onSelect={onOpenLatencyTest}>
-								音频/输入延迟测试
+								{t("settingsDialog.common.latencyTest", "音频/输入延迟测试")}
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>

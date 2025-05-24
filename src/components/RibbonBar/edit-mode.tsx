@@ -32,6 +32,7 @@ import {
 	useState,
 } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
+import { useTranslation } from "react-i18next";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");
 
@@ -62,6 +63,7 @@ function EditField<
 	);
 
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
+	const { t } = useTranslation();
 
 	const currentValueAtom = useMemo(
 		() =>
@@ -139,12 +141,12 @@ function EditField<
 	useLayoutEffect(() => {
 		if (currentValue === MULTIPLE_VALUES) {
 			setFieldInput("");
-			setFieldPlaceholder("多个值...");
+			setFieldPlaceholder(t("ribbonBar.editMode.multipleValues", "多个值..."));
 		} else {
 			setFieldInput(currentValue);
 			setFieldPlaceholder("");
 		}
-	}, [currentValue]);
+	}, [currentValue, t]);
 
 	return (
 		<>
@@ -382,10 +384,11 @@ function CheckboxField<
 export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
 		const editLyricLines = useSetAtom(lyricLinesAtom);
+		const { t } = useTranslation();
 
 		return (
 			<RibbonFrame ref={ref}>
-				<RibbonSection label="新建">
+				<RibbonSection label={t("ribbonBar.editMode.new", "新建")}>
 					<Grid columns="1" gap="1" gapY="1" flexGrow="1" align="center">
 						<Button
 							size="1"
@@ -399,66 +402,66 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 								})
 							}
 						>
-							歌词行
+							{t("ribbonBar.editMode.lyricLine", "歌词行")}
 						</Button>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label="行时间戳">
+				<RibbonSection label={t("ribbonBar.editMode.timing", "行时间戳")}>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
-							label="起始时间"
+							label={t("ribbonBar.editMode.startTime", "起始时间")}
 							fieldName="startTime"
 							parser={parseTimespan}
 							formatter={msToTimestamp}
 						/>
 						<EditField
-							label="结束时间"
+							label={t("ribbonBar.editMode.endTime", "结束时间")}
 							fieldName="endTime"
 							parser={parseTimespan}
 							formatter={msToTimestamp}
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label="行属性">
+				<RibbonSection label={t("ribbonBar.editMode.lineProperties", "行属性")}>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<CheckboxField
-							label="背景歌词"
+							label={t("ribbonBar.editMode.bgLyric", "背景歌词")}
 							isWordField={false}
 							fieldName="isBG"
 							defaultValue={false}
 						/>
 						<CheckboxField
-							label="对唱歌词"
+							label={t("ribbonBar.editMode.duetLyric", "对唱歌词")}
 							isWordField={false}
 							fieldName="isDuet"
 							defaultValue={false}
 						/>
 						<CheckboxField
-							label="忽略打轴"
+							label={t("ribbonBar.editMode.ignoreSync", "忽略打轴")}
 							isWordField={false}
 							fieldName="ignoreSync"
 							defaultValue={false}
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label="词时间戳">
+				<RibbonSection label={t("ribbonBar.editMode.timing", "词时间戳")}>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
-							label="起始时间"
+							label={t("ribbonBar.editMode.startTime", "起始时间")}
 							fieldName="startTime"
 							isWordField
 							parser={parseTimespan}
 							formatter={msToTimestamp}
 						/>
 						<EditField
-							label="结束时间"
+							label={t("ribbonBar.editMode.endTime", "结束时间")}
 							fieldName="endTime"
 							isWordField
 							parser={parseTimespan}
 							formatter={msToTimestamp}
 						/>
 						<EditField
-							label="空拍数量"
+							label={t("ribbonBar.editMode.emptyBeatCount", "空拍数量")}
 							fieldName="emptyBeat"
 							isWordField
 							parser={Number.parseInt}
@@ -466,34 +469,34 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label="单词属性">
+				<RibbonSection label={t("ribbonBar.editMode.wordProperties", "单词属性")}>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
-							label="单词内容"
+							label={t("ribbonBar.editMode.wordContent", "单词内容")}
 							fieldName="word"
 							isWordField
 							parser={(v) => v}
 							formatter={(v) => v}
 						/>
 						<CheckboxField
-							label="不雅用语"
+							label={t("ribbonBar.editMode.obscene", "不雅用语")}
 							isWordField
 							fieldName="obscene"
 							defaultValue={false}
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label="次要内容">
+				<RibbonSection label={t("ribbonBar.editMode.secondaryContent", "次要内容")}>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
-							label="翻译歌词"
+							label={t("ribbonBar.editMode.translatedLyric", "翻译歌词")}
 							fieldName="translatedLyric"
 							parser={(v) => v}
 							formatter={(v) => v}
 							textFieldStyle={{ width: "20em" }}
 						/>
 						<EditField
-							label="音译歌词"
+							label={t("ribbonBar.editMode.romanLyric", "音译歌词")}
 							fieldName="romanLyric"
 							parser={(v) => v}
 							formatter={(v) => v}

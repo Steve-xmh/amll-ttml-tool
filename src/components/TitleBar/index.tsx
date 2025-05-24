@@ -15,7 +15,7 @@ import { SegmentedControl, Text } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import { type FC, useCallback } from "react";
-import { Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { TopMenu } from "../TopMenu/index.tsx";
 import styles from "./index.module.css";
 
@@ -23,6 +23,7 @@ export const TitleBar: FC = () => {
 	const [toolMode, setToolMode] = useAtom(toolModeAtom);
 	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
+	const { t } = useTranslation();
 
 	const onSwitchEditMode = useCallback(() => {
 		setToolMode(ToolMode.Edit);
@@ -45,16 +46,16 @@ export const TitleBar: FC = () => {
 				<SegmentedControl.Root
 					value={toolMode}
 					onValueChange={(v) => setToolMode(v as ToolMode)}
-					// size="1"
+				// size="1"
 				>
 					<SegmentedControl.Item value={ToolMode.Edit}>
-						<Trans i18nKey="topBar.modeBtns.edit">编辑</Trans>
+						{t("topBar.modeBtns.edit", "编辑")}
 					</SegmentedControl.Item>
 					<SegmentedControl.Item value={ToolMode.Sync}>
-						<Trans i18nKey="topBar.modeBtns.sync">打轴</Trans>
+						{t("topBar.modeBtns.sync", "打轴")}
 					</SegmentedControl.Item>
 					<SegmentedControl.Item value={ToolMode.Preview}>
-						<Trans i18nKey="topBar.modeBtns.preview">预览</Trans>
+						{t("topBar.modeBtns.preview", "预览")}
 					</SegmentedControl.Item>
 				</SegmentedControl.Root>
 			}
@@ -62,7 +63,7 @@ export const TitleBar: FC = () => {
 				!import.meta.env.TAURI_ENV_PLATFORM && (
 					<Text color="gray" wrap="nowrap" size="2" mr="2">
 						<span className={styles.title}>
-							Apple Music-like Lyrics TTML Tool
+							{t("topBar.appName", "Apple Music-like Lyrics TTML Tool")}
 						</span>
 					</Text>
 				)

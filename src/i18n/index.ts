@@ -3,12 +3,26 @@ import i18n from "i18next";
 import ICU from "i18next-icu";
 import { initReactI18next } from "react-i18next";
 
+// Define the structure of our translation resources
+type DeepPartial<T> = {
+	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+type TranslationResource = typeof resources;
+
 declare module "i18next" {
 	// Extend CustomTypeOptions
 	interface CustomTypeOptions {
+		// Extend the resources type to include all our translation keys
 		resources: {
-			translation: typeof resources;
+			translation: TranslationResource;
 		};
+		// Add defaultNS type
+		defaultNS: "translation";
+		// Add returnNull type
+		returnNull: false;
+		// Define allowed keys for translations
+		allowedKeys: keyof TranslationResource;
 	}
 }
 
@@ -16,12 +30,15 @@ i18n
 	.use(initReactI18next) // passes i18n down to react-i18next
 	.use(ICU)
 	.init({
-		resources,
+		resources: {
+			translation: resources,
+		},
 		debug: import.meta.env.DEV,
 		fallbackLng: "zh-CN",
 		interpolation: {
 			escapeValue: false, // react already safes from xss
 		},
+		returnNull: false,
 	})
 	.then(() => {});
 

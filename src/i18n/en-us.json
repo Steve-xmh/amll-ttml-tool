@@ -37,7 +37,7 @@
 			"splitWordBySimpleMethod": "Split words (simple)",
 			"splitWordByJieba": "Split words (using JieBa)",
 			"view": "View",
-			"tool": "Tool"
+			"tool": "Tools"
 		},
 		"modeBtns": {
 			"edit": "Edit Mode",
@@ -220,5 +220,45 @@
 		},
 		"ending": "Afterwards you can revisit this page via the File->About->Quick Tutorial, or come back to it if you have forgotten how to do it!",
 		"closeBtn": "I see"
+	},
+	"lyricWordView": {
+		"empty": "Empty",
+		"spaceCount": "Space x{{count}}"
+	},
+	"ribbonBar": {
+		"editMode": {
+			"new": "New",
+			"lyricLine": "Lyric Line",
+			"timing": "Line Timing",
+			"startTime": "Start Time",
+			"endTime": "End Time",
+			"lineProperties": "Line Properties",
+			"bgLyric": "Background Vocal",
+			"duetLyric": "Duet Vocal",
+			"ignoreSync": "Ignore Sync",
+			"wordTiming": "Word Timing",
+			"wordProperties": "Word Properties",
+			"word": "Word",
+			"emptyBeatCount": "Empty Beat Count",
+			"secondaryContent": "Secondary Content",
+			"translatedLyric": "Translation",
+			"romanLyric": "Romanization",
+			"multipleValues": "Multiple values..."
+		},
+		"syncMode": {
+			"currentEmptyBeat": "Current Empty Beat",
+			"syncAdjustment": "Sync Adjustment",
+			"timeOffset": "Time Offset",
+			"assistSettings": "Assistant Settings",
+			"showTimestampUpdate": "Show Timestamp Updates",
+			"touchSyncPanel": "Touch Sync Panel",
+			"keyBindingReference": "Key Binding Reference",
+			"startAxis": "Start Axis",
+			"continuousAxis": "Continuous Axis",
+			"endAxis": "End Axis"
+		}
+	},
+	"submitToAMLLDB": {
+		"closeWarning": "Close warning message"
 	}
 }
