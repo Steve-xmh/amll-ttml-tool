@@ -63,7 +63,10 @@ const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
 const Dialogs = lazy(() => import("./components/Dialogs"));
 
-const AppErrorPage = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
+const AppErrorPage = ({
+	error,
+	resetErrorBoundary,
+}: { error: Error; resetErrorBoundary: () => void }) => {
 	const store = useStore();
 	const { t } = useTranslation();
 
@@ -71,8 +74,12 @@ const AppErrorPage = ({ error, resetErrorBoundary }: { error: Error; resetErrorB
 		<Flex direction="column" align="center" justify="center" height="100vh">
 			<Flex direction="column" align="start" justify="center" gap="2">
 				<Heading>{t("app.error.title", "诶呀，出错了！")}</Heading>
-				<Text>{t("app.error.description", "AMLL TTML Tools 在运行时出现了错误")}</Text>
-				<Text>{t("app.error.checkDevTools", "具体错误详情可以在开发者工具中查询")}</Text>
+				<Text>
+					{t("app.error.description", "AMLL TTML Tools 在运行时出现了错误")}
+				</Text>
+				<Text>
+					{t("app.error.checkDevTools", "具体错误详情可以在开发者工具中查询")}
+				</Text>
 				<Flex gap="2">
 					<Button
 						onClick={() => {
@@ -194,7 +201,12 @@ function App() {
 	}
 
 	useEffect(() => {
-		toast.warn(t("app.wip.warning", "本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！"));
+		toast.warn(
+			t(
+				"app.wip.warning",
+				"本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！",
+			),
+		);
 	}, [t]);
 
 	useEffect(() => {
@@ -202,7 +214,7 @@ function App() {
 			const currentLyricLines = store.get(lyricLinesAtom);
 			if (
 				currentLyricLines.lyricLines.length +
-				currentLyricLines.metadata.length >
+					currentLyricLines.metadata.length >
 				0
 			) {
 				evt.preventDefault();
