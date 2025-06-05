@@ -56,6 +56,7 @@ export const AMLLWrapper = memo(() => {
 					boxSizing: "content-box",
 				}}
 				onLyricLineClick={(evt) => {
+					playerRef.current?.lyricPlayer?.resetScroll();
 					audioEngine.seekMusic(evt.line.getLine().startTime / 1000);
 				}}
 				lyricLines={lyricLines}
