@@ -63,6 +63,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			const id = agent.getAttribute("xml:id");
 			if (id) {
 				mainAgentId = id;
+				break;
 			}
 		}
 	}
