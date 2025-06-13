@@ -35,6 +35,21 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 	log("ttml document parsed", ttmlDoc);
 
+	// 处理 Apple Music 样式的翻译
+	const itunesTranslations = new Map<string, string>();
+	const translationTextElements = ttmlDoc.querySelectorAll(
+		"iTunesMetadata > translations > translation > text[for]",
+	);
+
+	translationTextElements.forEach((textEl) => {
+		const key = textEl.getAttribute("for");
+		const translation = textEl.textContent ?? "";
+		if (key && translation) {
+			itunesTranslations.set(key, translation);
+		}
+	});
+
+
 	let mainAgentId = "v1";
 
 	const metadata: TTMLMetadata[] = [];
@@ -80,7 +95,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			isDuet: isBG
 				? isDuet
 				: !!lineEl.getAttribute("ttm:agent") &&
-					lineEl.getAttribute("ttm:agent") !== mainAgentId,
+				lineEl.getAttribute("ttm:agent") !== mainAgentId,
 			startTime: 0,
 			endTime: 0,
 			ignoreSync: false,
@@ -89,6 +104,13 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 		const startTime = lineEl.getAttribute("begin");
 		const endTime = lineEl.getAttribute("end");
+
+		// 获取 itunes:key 并应用 <head> 中的翻译
+		const itunesKey = lineEl.getAttribute("itunes:key");
+		if (itunesKey && itunesTranslations.has(itunesKey)) {
+			line.translatedLyric = itunesTranslations.get(itunesKey) ?? "";
+		}
+
 
 		for (const wordNode of lineEl.childNodes) {
 			if (wordNode.nodeType === Node.TEXT_NODE) {
@@ -110,7 +132,10 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 						parseParseLine(wordEl, true, line.isDuet);
 						haveBg = true;
 					} else if (role === "x-translation") {
-						line.translatedLyric = wordEl.innerHTML;
+						// 没有 Apple Music 样式翻译时才使用内嵌翻译
+						if (!line.translatedLyric) {
+							line.translatedLyric = wordEl.innerHTML;
+						}
 					} else if (role === "x-roman") {
 						line.romanLyric = wordEl.innerHTML;
 					}
