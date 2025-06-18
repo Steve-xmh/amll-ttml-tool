@@ -9,7 +9,9 @@ import ConditionalCompile from "unplugin-preprocessor-directives/vite";
 import { type Plugin, defineConfig } from "vite";
 import i18nextLoader from "vite-plugin-i18next-loader";
 import { VitePWA } from "vite-plugin-pwa";
-import topLevelAwait from "vite-plugin-top-level-await";
+// 由于这个插件会除去 Source Map 注释，所以考虑移除
+// https://github.com/Menci/vite-plugin-top-level-await/issues/34
+// import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 import svgLoader from "vite-svg-loader";
 
@@ -25,7 +27,7 @@ process.env.AMLL_LOCAL_EXISTS = AMLL_LOCAL_EXISTS ? "true" : "false";
 
 const plugins: Plugin[] = [
 	ConditionalCompile(),
-	topLevelAwait(),
+	// topLevelAwait(),
 	// MillionLint.vite(),
 	react({
 		babel: {
