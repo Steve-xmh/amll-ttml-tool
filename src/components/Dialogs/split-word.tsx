@@ -63,7 +63,7 @@ export const SplitWordDialog = memo(() => {
 								{w.trim() === "" ? (
 									<Text color="gray">
 										{w.length > 0
-											? t("splitWordDialog.spaceCount", "空格x{{count}}", { count: w.length })
+											? t("splitWordDialog.spaceCount", "空格x{count}", { count: w.length })
 											: t("splitWordDialog.empty", "空白")}
 									</Text>
 								) : (
