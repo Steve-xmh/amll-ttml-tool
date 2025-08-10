@@ -40,6 +40,7 @@ export const lyricLinesAtom = atom({
 } as TTMLLyric);
 
 export const undoableLyricLinesAtom = withHistory(lyricLinesAtom, 256);
+export const isDirtyAtom = atom((get) => get(undoableLyricLinesAtom).canUndo);
 export const undoLyricLinesAtom = atom(null, (_get, set) => {
 	set(undoableLyricLinesAtom, UNDO);
 });
