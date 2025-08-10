@@ -1,5 +1,7 @@
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
 import {
+	confirmDialogAtom,
+	historyRestoreDialogAtom,
 	latencyTestDialogAtom,
 	metadataEditorDialogAtom,
 	settingsDialogAtom,
@@ -17,6 +19,7 @@ import {
 	keyUndoAtom,
 } from "$/states/keybindings.ts";
 import {
+	isDirtyAtom,
 	lyricLinesAtom,
 	newLyricLinesAtom,
 	redoLyricLinesAtom,
@@ -32,7 +35,13 @@ import { parseLyric } from "$/utils/ttml-parser.ts";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import exportTTMLText from "$/utils/ttml-writer.ts";
 import { HomeRegular } from "@fluentui/react-icons";
-import { Button, DropdownMenu, Flex, IconButton, TextField } from "@radix-ui/themes";
+import {
+	Button,
+	DropdownMenu,
+	Flex,
+	IconButton,
+	TextField,
+} from "@radix-ui/themes";
 import { open } from "@tauri-apps/plugin-shell";
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom, withImmer } from "jotai-immer";
@@ -57,8 +66,8 @@ const useWindowSize = () => {
 			});
 		};
 
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
 	return windowSize;
@@ -76,49 +85,90 @@ export const TopMenu: FC = () => {
 	const undoLyricLines = useAtomValue(undoableLyricLinesAtom);
 	const store = useStore();
 	const { t } = useTranslation();
+	const isDirty = useAtomValue(isDirtyAtom);
+	const setConfirmDialog = useSetAtom(confirmDialogAtom);
+	const setHistoryRestoreDialog = useSetAtom(historyRestoreDialogAtom);
 
 	const onNewFile = useCallback(() => {
-		newLyricLine();
-	}, [newLyricLine]);
+		const action = () => newLyricLine();
+		if (isDirty) {
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.newFile.title"),
+				description: t("confirmDialog.newFile.description"),
+				onConfirm: action,
+			});
+		} else {
+			action();
+		}
+	}, [isDirty, newLyricLine, setConfirmDialog, t]);
+
 	const newFileKey = useKeyBindingAtom(keyNewFileAtom, onNewFile, [onNewFile]);
 
 	const onOpenFile = useCallback(() => {
-		const inputEl = document.createElement("input");
-		inputEl.type = "file";
-		inputEl.accept = ".ttml,*/*";
-		inputEl.addEventListener(
-			"change",
-			async () => {
-				const file = inputEl.files?.[0];
-				if (!file) return;
-				try {
-					const ttmlText = await file.text();
-					const ttmlData = parseLyric(ttmlText);
-					setLyricLines(ttmlData);
-					setSaveFileName(file.name);
-				} catch (e) {
-					error("Failed to parse TTML file", e);
-				}
-			},
-			{
-				once: true,
-			},
-		);
-		inputEl.click();
-	}, [setLyricLines, setSaveFileName]);
+		const action = () => {
+			const inputEl = document.createElement("input");
+			inputEl.type = "file";
+			inputEl.accept = ".ttml,*/*";
+			inputEl.addEventListener(
+				"change",
+				async () => {
+					const file = inputEl.files?.[0];
+					if (!file) return;
+					try {
+						const ttmlText = await file.text();
+						const ttmlData = parseLyric(ttmlText);
+						setLyricLines(ttmlData);
+						setSaveFileName(file.name);
+					} catch (e) {
+						error("Failed to parse TTML file", e);
+					}
+				},
+				{
+					once: true,
+				},
+			);
+			inputEl.click();
+		};
+
+		if (isDirty) {
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.openFile.title"),
+				description: t("confirmDialog.openFile.description"),
+				onConfirm: action,
+			});
+		} else {
+			action();
+		}
+	}, [isDirty, setLyricLines, setSaveFileName, setConfirmDialog, t]);
+
 	const openFileKey = useKeyBindingAtom(keyOpenFileAtom, onOpenFile, [
 		onOpenFile,
 	]);
 
 	const onOpenFileFromClipboard = useCallback(async () => {
-		try {
-			const ttmlText = await navigator.clipboard.readText();
-			const ttmlData = parseLyric(ttmlText);
-			setLyricLines(ttmlData);
-		} catch (e) {
-			error("Failed to parse TTML file from clipboard", e);
+		const action = async () => {
+			try {
+				const ttmlText = await navigator.clipboard.readText();
+				const ttmlData = parseLyric(ttmlText);
+				setLyricLines(ttmlData);
+			} catch (e) {
+				error("Failed to parse TTML file from clipboard", e);
+			}
+		};
+
+		if (isDirty) {
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.openFromClipboard.title"),
+				description: t("confirmDialog.openFromClipboard.description"),
+				onConfirm: action,
+			});
+		} else {
+			await action();
 		}
-	}, [setLyricLines]);
+	}, [isDirty, setLyricLines, setConfirmDialog, t]);
 
 	const onSaveFile = useCallback(() => {
 		try {
@@ -246,14 +296,14 @@ export const TopMenu: FC = () => {
 		onSelectAll,
 	]);
 
-	const onSelectInverted = useCallback(() => { }, []);
+	const onSelectInverted = useCallback(() => {}, []);
 	const selectInvertedLinesKey = useKeyBindingAtom(
 		keySelectInvertedAtom,
 		onSelectInverted,
 		[onSelectInverted],
 	);
 
-	const onSelectWordsOfMatchedSelection = useCallback(() => { }, []);
+	const onSelectWordsOfMatchedSelection = useCallback(() => {}, []);
 	const selectWordsOfMatchedSelectionKey = useKeyBindingAtom(
 		keySelectWordsOfMatchedSelectionAtom,
 		onSelectWordsOfMatchedSelection,
@@ -290,13 +340,10 @@ export const TopMenu: FC = () => {
 
 	const onSimpleSegmentation = useCallback(() => {
 		editLyricLines((state) => {
-			const latinReg =
-				/^[0-9A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
+			const latinReg = /^[0-9A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
 
 			for (const line of state.lyricLines) {
-				const chars = line.words.flatMap((w) =>
-					w.word.split(""),
-				);
+				const chars = line.words.flatMap((w) => w.word.split(""));
 				const wordsResult: LyricWord[] = [];
 				let tmpWord = newLyricWord();
 				for (const c of chars) {
@@ -339,17 +386,18 @@ export const TopMenu: FC = () => {
 	}, [editLyricLines]);
 
 	const onJiebaSegmentation = useCallback(async () => {
-		const id = toast(t("topBar.menu.tools.loadingJieba", "正在加载 Jieba 分词算法模块"), {
-			autoClose: false,
-			isLoading: true,
-		});
+		const id = toast(
+			t("topBar.menu.tools.loadingJieba", "正在加载 Jieba 分词算法模块"),
+			{
+				autoClose: false,
+				isLoading: true,
+			},
+		);
 		try {
 			const { default: wasmMoudle } = await import(
 				"$/assets/jieba_rs_wasm_bg.wasm?url"
 			);
-			const { default: init, cut } = await import(
-				"jieba-wasm"
-			);
+			const { default: init, cut } = await import("jieba-wasm");
 			await init({
 				module_or_path: wasmMoudle,
 			});
@@ -358,9 +406,7 @@ export const TopMenu: FC = () => {
 			});
 			editLyricLines((state) => {
 				for (const line of state.lyricLines) {
-					const mergedWords = line.words
-						.map((w) => w.word)
-						.join("");
+					const mergedWords = line.words.map((w) => w.word).join("");
 					const splited = cut(mergedWords, true);
 					line.words = [];
 					for (const word of splited) {
@@ -379,7 +425,10 @@ export const TopMenu: FC = () => {
 			});
 		} catch (err) {
 			toast.update(id, {
-				render: t("topBar.menu.tools.error", "分词失败，请检查控制台错误输出！"),
+				render: t(
+					"topBar.menu.tools.error",
+					"分词失败，请检查控制台错误输出！",
+				),
 				type: "error",
 				isLoading: false,
 				autoClose: 5000,
@@ -389,9 +438,15 @@ export const TopMenu: FC = () => {
 	}, [editLyricLines]);
 
 	return (
-		<Flex p="2" pr="0" align="center" gap="2" style={{
-			whiteSpace: "nowrap",
-		}}>
+		<Flex
+			p="2"
+			pr="0"
+			align="center"
+			gap="2"
+			style={{
+				whiteSpace: "nowrap",
+			}}
+		>
 			{showHomeButton ? (
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger>
@@ -418,7 +473,9 @@ export const TopMenu: FC = () => {
 									<Trans i18nKey="topBar.menu.openLyric">打开 TTML 文件</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item onSelect={onOpenFileFromClipboard}>
-									<Trans i18nKey="topBar.menu.openFromClipboard">从剪切板打开 TTML 文件</Trans>
+									<Trans i18nKey="topBar.menu.openFromClipboard">
+										从剪切板打开 TTML 文件
+									</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onSaveFile}
@@ -426,14 +483,25 @@ export const TopMenu: FC = () => {
 								>
 									<Trans i18nKey="topBar.menu.saveLyric">保存 TTML 文件</Trans>
 								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								<DropdownMenu.Item
+									onSelect={() => setHistoryRestoreDialog(true)}
+								>
+									从历史记录恢复...
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onSaveFileToClipboard}>
-									<Trans i18nKey="topBar.menu.saveLyricToClipboard">保存 TTML 文件到剪切板</Trans>
+									<Trans i18nKey="topBar.menu.saveLyricToClipboard">
+										保存 TTML 文件到剪切板
+									</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<ImportExportLyric />
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onSubmitToAMLLDB}>
-									<Trans i18nKey="topBar.menu.uploadToAMLLDB">上传到 AMLL 歌词数据库</Trans>
+									<Trans i18nKey="topBar.menu.uploadToAMLLDB">
+										上传到 AMLL 歌词数据库
+									</Trans>
 								</DropdownMenu.Item>
 							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
@@ -462,25 +530,33 @@ export const TopMenu: FC = () => {
 									onSelect={onSelectAll}
 									shortcut={formatKeyBindings(selectAllLinesKey)}
 								>
-									<Trans i18nKey="topBar.menu.selectAllLines">选中所有歌词行</Trans>
+									<Trans i18nKey="topBar.menu.selectAllLines">
+										选中所有歌词行
+									</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onUnselectAll}
 									shortcut={formatKeyBindings(unselectAllLinesKey)}
 								>
-									<Trans i18nKey="topBar.menu.unselectAllLines">取消选中所有歌词行</Trans>
+									<Trans i18nKey="topBar.menu.unselectAllLines">
+										取消选中所有歌词行
+									</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onSelectInverted}
 									shortcut={formatKeyBindings(selectInvertedLinesKey)}
 								>
-									<Trans i18nKey="topBar.menu.invertSelectAllLines">反选所有歌词行</Trans>
+									<Trans i18nKey="topBar.menu.invertSelectAllLines">
+										反选所有歌词行
+									</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onSelectWordsOfMatchedSelection}
 									shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
 								>
-									<Trans i18nKey="topBar.menu.selectWordsOfMatchedSelection">选择单词匹配项</Trans>
+									<Trans i18nKey="topBar.menu.selectWordsOfMatchedSelection">
+										选择单词匹配项
+									</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item
@@ -491,7 +567,9 @@ export const TopMenu: FC = () => {
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
-									<Trans i18nKey="topBar.menu.editMetadata">编辑歌词元数据</Trans>
+									<Trans i18nKey="topBar.menu.editMetadata">
+										编辑歌词元数据
+									</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onOpenSettings}>
@@ -507,19 +585,30 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.SubContent>
 								<DropdownMenu.Sub>
 									<DropdownMenu.SubTrigger>
-										<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">使用简单方式对歌词行分词</Trans>
+										<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">
+											使用简单方式对歌词行分词
+										</Trans>
 									</DropdownMenu.SubTrigger>
 									<DropdownMenu.SubContent>
 										<DropdownMenu.Item onSelect={onJiebaSegmentation}>
-											<Trans i18nKey="topBar.menu.splitWordByJieba">使用 JieBa 对歌词行分词</Trans>
+											<Trans i18nKey="topBar.menu.splitWordByJieba">
+												使用 JieBa 对歌词行分词
+											</Trans>
 										</DropdownMenu.Item>
 										<DropdownMenu.Item onSelect={onSimpleSegmentation}>
-											<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">使用简单方式对歌词行分词</Trans>
+											<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">
+												使用简单方式对歌词行分词
+											</Trans>
 										</DropdownMenu.Item>
 									</DropdownMenu.SubContent>
 								</DropdownMenu.Sub>
 								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
-									<Trans i18nKey="settingsDialog.common.latencyTest" defaults="音频/输入延迟测试">音频/输入延迟测试</Trans>
+									<Trans
+										i18nKey="settingsDialog.common.latencyTest"
+										defaults="音频/输入延迟测试"
+									>
+										音频/输入延迟测试
+									</Trans>
 								</DropdownMenu.Item>
 							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
@@ -544,11 +633,14 @@ export const TopMenu: FC = () => {
 					<DropdownMenu.Root>
 						<Toolbar.Button asChild>
 							<DropdownMenu.Trigger>
-								<Button variant="soft" style={{
-									borderTopRightRadius: "0",
-									borderBottomRightRadius: "0",
-									marginRight: "0px",
-								}}>
+								<Button
+									variant="soft"
+									style={{
+										borderTopRightRadius: "0",
+										borderBottomRightRadius: "0",
+										marginRight: "0px",
+									}}
+								>
 									<Trans i18nKey="topBar.menu.file">文件</Trans>
 								</Button>
 							</DropdownMenu.Trigger>
@@ -575,6 +667,11 @@ export const TopMenu: FC = () => {
 							>
 								保存 TTML 文件
 							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onSelect={() => setHistoryRestoreDialog(true)}>
+								从历史记录恢复...
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onSaveFileToClipboard}>
 								保存 TTML 文件到剪切板
 							</DropdownMenu.Item>
@@ -587,12 +684,14 @@ export const TopMenu: FC = () => {
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
 
-					<DropdownMenu.Root >
+					<DropdownMenu.Root>
 						<Toolbar.Button asChild>
-							<DropdownMenu.Trigger style={{
-								borderRadius: "0",
-								marginRight: "0px",
-							}}>
+							<DropdownMenu.Trigger
+								style={{
+									borderRadius: "0",
+									marginRight: "0px",
+								}}
+							>
 								<Button variant="soft">
 									<Trans i18nKey="topBar.menu.edit">编辑</Trans>
 								</Button>
@@ -618,25 +717,33 @@ export const TopMenu: FC = () => {
 								onSelect={onSelectAll}
 								shortcut={formatKeyBindings(selectAllLinesKey)}
 							>
-								<Trans i18nKey="topBar.menu.selectAllLines">选中所有歌词行</Trans>
+								<Trans i18nKey="topBar.menu.selectAllLines">
+									选中所有歌词行
+								</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onUnselectAll}
 								shortcut={formatKeyBindings(unselectAllLinesKey)}
 							>
-								<Trans i18nKey="topBar.menu.unselectAllLines">取消选中所有歌词行</Trans>
+								<Trans i18nKey="topBar.menu.unselectAllLines">
+									取消选中所有歌词行
+								</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onSelectInverted}
 								shortcut={formatKeyBindings(selectInvertedLinesKey)}
 							>
-								<Trans i18nKey="topBar.menu.invertSelectAllLines">反选所有歌词行</Trans>
+								<Trans i18nKey="topBar.menu.invertSelectAllLines">
+									反选所有歌词行
+								</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onSelectWordsOfMatchedSelection}
 								shortcut={formatKeyBindings(selectWordsOfMatchedSelectionKey)}
 							>
-								<Trans i18nKey="topBar.menu.selectWordsOfMatchedSelection">选择单词匹配项</Trans>
+								<Trans i18nKey="topBar.menu.selectWordsOfMatchedSelection">
+									选择单词匹配项
+								</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item
@@ -659,10 +766,13 @@ export const TopMenu: FC = () => {
 					<DropdownMenu.Root>
 						<Toolbar.Button asChild>
 							<DropdownMenu.Trigger>
-								<Button variant="soft" style={{
-									borderRadius: "0",
-									marginRight: "0px",
-								}}>
+								<Button
+									variant="soft"
+									style={{
+										borderRadius: "0",
+										marginRight: "0px",
+									}}
+								>
 									{t("topBar.menu.tool", "工具")}
 								</Button>
 							</DropdownMenu.Trigger>
@@ -670,14 +780,23 @@ export const TopMenu: FC = () => {
 						<DropdownMenu.Content>
 							<DropdownMenu.Sub>
 								<DropdownMenu.SubTrigger>
-									{t("topBar.menu.splitWordBySimpleMethod", "使用简单方式对歌词行分词")}
+									{t(
+										"topBar.menu.splitWordBySimpleMethod",
+										"使用简单方式对歌词行分词",
+									)}
 								</DropdownMenu.SubTrigger>
 								<DropdownMenu.SubContent>
 									<DropdownMenu.Item onSelect={onJiebaSegmentation}>
-										{t("topBar.menu.splitWordByJieba", "使用 JieBa 对歌词行分词")}
+										{t(
+											"topBar.menu.splitWordByJieba",
+											"使用 JieBa 对歌词行分词",
+										)}
 									</DropdownMenu.Item>
 									<DropdownMenu.Item onSelect={onSimpleSegmentation}>
-										{t("topBar.menu.splitWordBySimpleMethod", "使用简单方式对歌词行分词")}
+										{t(
+											"topBar.menu.splitWordBySimpleMethod",
+											"使用简单方式对歌词行分词",
+										)}
 									</DropdownMenu.Item>
 								</DropdownMenu.SubContent>
 							</DropdownMenu.Sub>
@@ -690,10 +809,13 @@ export const TopMenu: FC = () => {
 					<DropdownMenu.Root>
 						<Toolbar.Button asChild>
 							<DropdownMenu.Trigger>
-								<Button variant="soft" style={{
-									borderTopLeftRadius: "0",
-									borderBottomLeftRadius: "0",
-								}}>
+								<Button
+									variant="soft"
+									style={{
+										borderTopLeftRadius: "0",
+										borderBottomLeftRadius: "0",
+									}}
+								>
 									<Trans i18nKey="topBar.menu.help">帮助</Trans>
 								</Button>
 							</DropdownMenu.Trigger>
@@ -707,7 +829,6 @@ export const TopMenu: FC = () => {
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
-
 				</Toolbar.Root>
 			)}
 			<TextField.Root

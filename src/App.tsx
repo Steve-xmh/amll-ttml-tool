@@ -35,7 +35,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { platform, version } from "@tauri-apps/plugin-os";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useStore } from "jotai";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { ToastContainer, toast } from "react-toastify";
 import saveFile from "save-file";
@@ -58,6 +58,12 @@ import { parseLyric as parseTTML } from "./utils/ttml-parser.ts";
 import type { TTMLLyric } from "./utils/ttml-types.ts";
 import exportTTMLText from "./utils/ttml-writer.ts";
 import { useTranslation } from "react-i18next";
+import {
+	autosaveEnabledAtom,
+	autosaveIntervalAtom,
+	autosaveLimitAtom,
+} from "./states/config.ts";
+import { addSnapshot } from "./utils/autosave.ts";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
@@ -124,6 +130,44 @@ function App() {
 	const [hasBackground, setHasBackground] = useState(false);
 	const store = useStore();
 	const { t } = useTranslation();
+
+	const autosaveEnabled = useAtomValue(autosaveEnabledAtom);
+	const autosaveInterval = useAtomValue(autosaveIntervalAtom);
+	const autosaveLimit = useAtomValue(autosaveLimitAtom);
+	const lastSnapshotRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (!autosaveEnabled) {
+			return;
+		}
+
+		const intervalId = setInterval(
+			() => {
+				const currentLyrics = store.get(lyricLinesAtom);
+				const currentSnapshot = JSON.stringify(currentLyrics);
+
+				if (
+					currentSnapshot !== lastSnapshotRef.current &&
+					(currentLyrics.lyricLines.length > 0 ||
+						currentLyrics.metadata.length > 0)
+				) {
+					addSnapshot(currentLyrics, autosaveLimit)
+						.then(() => {
+							log("Autosaved snapshot.");
+							lastSnapshotRef.current = currentSnapshot;
+						})
+						.catch((err) => {
+							logError("Failed to autosave snapshot.", err);
+						});
+				}
+			},
+			autosaveInterval * 60 * 1000,
+		);
+
+		return () => {
+			clearInterval(intervalId);
+		};
+	}, [store, autosaveEnabled, autosaveInterval, autosaveLimit]);
 
 	if (import.meta.env.TAURI_ENV_PLATFORM) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
