@@ -1,5 +1,12 @@
-import { importFromTextDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom, saveFileNameAtom } from "$/states/main.ts";
+import {
+	confirmDialogAtom,
+	importFromTextDialogAtom,
+} from "$/states/dialogs.ts";
+import {
+	isDirtyAtom,
+	lyricLinesAtom,
+	saveFileNameAtom,
+} from "$/states/main.ts";
 import { error } from "$/utils/logging.ts";
 import {
 	type LyricLine,
@@ -16,49 +23,68 @@ import {
 	stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
 import { DropdownMenu } from "@radix-ui/themes";
-import { useSetAtom, useStore } from "jotai";
+import { useAtomValue, useSetAtom, useStore } from "jotai";
+import { useTranslation } from "react-i18next";
 import saveFile from "save-file";
 import { uid } from "uid";
 
 export const ImportExportLyric = () => {
 	const store = useStore();
+	const isDirty = useAtomValue(isDirtyAtom);
+	const setConfirmDialog = useSetAtom(confirmDialogAtom);
+	const { t } = useTranslation();
+
 	const onImportLyric =
 		(parser: (lyric: string) => LyricLine[], extension: string) => () => {
-			const inputEl = document.createElement("input");
-			inputEl.type = "file";
-			inputEl.accept = `.${extension},*/*`;
-			inputEl.addEventListener(
-				"change",
-				async () => {
-					const file = inputEl.files?.[0];
-					if (!file) return;
-					try {
-						const lyricText = await file.text();
-						const lyricLines = parser(lyricText);
-						store.set(lyricLinesAtom, {
-							lyricLines: lyricLines.map((line) => ({
-								...line,
-								words: line.words.map((word) => ({
-									...word,
+			const action = () => {
+				const inputEl = document.createElement("input");
+				inputEl.type = "file";
+				inputEl.accept = `.${extension},*/*`;
+				inputEl.addEventListener(
+					"change",
+					async () => {
+						const file = inputEl.files?.[0];
+						if (!file) return;
+						try {
+							const lyricText = await file.text();
+							const lyricLines = parser(lyricText);
+							store.set(lyricLinesAtom, {
+								lyricLines: lyricLines.map((line) => ({
+									...line,
+									words: line.words.map((word) => ({
+										...word,
+										id: uid(),
+										obscene: false,
+										emptyBeat: 0,
+									})),
+									ignoreSync: false,
 									id: uid(),
-									obscene: false,
-									emptyBeat: 0,
 								})),
-								ignoreSync: false,
-								id: uid(),
-							})),
-							metadata: [],
-						});
-					} catch (e) {
-						error(`Failed to import lyric with format "${extension}"`, e);
-					}
-				},
-				{
-					once: true,
-				},
-			);
-			inputEl.click();
+								metadata: [],
+							});
+						} catch (e) {
+							error(`Failed to import lyric with format "${extension}"`, e);
+						}
+					},
+					{
+						once: true,
+					},
+				);
+				inputEl.click();
+			};
+
+			if (isDirty) {
+				setConfirmDialog({
+					open: true,
+					title: t("confirmDialog.importFile.title"),
+					description: t("confirmDialog.importFile.description"),
+					onConfirm: action,
+				});
+			} else {
+				action();
+			}
 		};
+
 	const onExportLyric =
 		(stringifier: (lines: LyricLine[]) => string, extension: string) =>
 		async () => {
@@ -74,14 +100,28 @@ export const ImportExportLyric = () => {
 				error(`Failed to export lyric with format "${extension}"`, e);
 			}
 		};
+
 	const setImportFromTextDialog = useSetAtom(importFromTextDialogAtom);
+	const onImportFromText = () => {
+		const action = () => setImportFromTextDialog(true);
+		if (isDirty) {
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.importFile.title"),
+				description: t("confirmDialog.importFile.description"),
+				onConfirm: action,
+			});
+		} else {
+			action();
+		}
+	};
 
 	return (
 		<>
 			<DropdownMenu.Sub>
 				<DropdownMenu.SubTrigger>导入歌词...</DropdownMenu.SubTrigger>
 				<DropdownMenu.SubContent>
-					<DropdownMenu.Item onClick={() => setImportFromTextDialog(true)}>
+					<DropdownMenu.Item onClick={onImportFromText}>
 						从纯文本导入
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onImportLyric(parseLrc, "lrc")}>

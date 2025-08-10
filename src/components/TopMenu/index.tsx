@@ -1,5 +1,6 @@
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
 import {
+	confirmDialogAtom,
 	latencyTestDialogAtom,
 	metadataEditorDialogAtom,
 	settingsDialogAtom,
@@ -17,6 +18,7 @@ import {
 	keyUndoAtom,
 } from "$/states/keybindings.ts";
 import {
+	isDirtyAtom,
 	lyricLinesAtom,
 	newLyricLinesAtom,
 	redoLyricLinesAtom,
@@ -76,49 +78,90 @@ export const TopMenu: FC = () => {
 	const undoLyricLines = useAtomValue(undoableLyricLinesAtom);
 	const store = useStore();
 	const { t } = useTranslation();
+	const isDirty = useAtomValue(isDirtyAtom);
+	const setConfirmDialog = useSetAtom(confirmDialogAtom);
 
 	const onNewFile = useCallback(() => {
-		newLyricLine();
-	}, [newLyricLine]);
+		const action = () => newLyricLine();
+		if (isDirty) {
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.newFile.title"),
+				description: t("confirmDialog.newFile.description"),
+				onConfirm: action,
+			});
+		} else {
+			action();
+		}
+	}, [isDirty, newLyricLine, setConfirmDialog, t]);
+
 	const newFileKey = useKeyBindingAtom(keyNewFileAtom, onNewFile, [onNewFile]);
 
 	const onOpenFile = useCallback(() => {
-		const inputEl = document.createElement("input");
-		inputEl.type = "file";
-		inputEl.accept = ".ttml,*/*";
-		inputEl.addEventListener(
-			"change",
-			async () => {
-				const file = inputEl.files?.[0];
-				if (!file) return;
-				try {
-					const ttmlText = await file.text();
-					const ttmlData = parseLyric(ttmlText);
-					setLyricLines(ttmlData);
-					setSaveFileName(file.name);
-				} catch (e) {
-					error("Failed to parse TTML file", e);
-				}
-			},
-			{
-				once: true,
-			},
-		);
-		inputEl.click();
-	}, [setLyricLines, setSaveFileName]);
+		const action = () => {
+			const inputEl = document.createElement("input");
+			inputEl.type = "file";
+			inputEl.accept = ".ttml,*/*";
+			inputEl.addEventListener(
+				"change",
+				async () => {
+					const file = inputEl.files?.[0];
+					if (!file) return;
+					try {
+						const ttmlText = await file.text();
+						const ttmlData = parseLyric(ttmlText);
+						setLyricLines(ttmlData);
+						setSaveFileName(file.name);
+					} catch (e) {
+						error("Failed to parse TTML file", e);
+					}
+				},
+				{
+					once: true,
+				},
+			);
+			inputEl.click();
+		};
+
+		if (isDirty) {
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.openFile.title"),
+				description: t("confirmDialog.openFile.description"),
+				onConfirm: action,
+			});
+		} else {
+			action();
+		}
+	}, [isDirty, setLyricLines, setSaveFileName, setConfirmDialog, t]);
+
 	const openFileKey = useKeyBindingAtom(keyOpenFileAtom, onOpenFile, [
 		onOpenFile,
 	]);
 
 	const onOpenFileFromClipboard = useCallback(async () => {
-		try {
-			const ttmlText = await navigator.clipboard.readText();
-			const ttmlData = parseLyric(ttmlText);
-			setLyricLines(ttmlData);
-		} catch (e) {
-			error("Failed to parse TTML file from clipboard", e);
+		const action = async () => {
+			try {
+				const ttmlText = await navigator.clipboard.readText();
+				const ttmlData = parseLyric(ttmlText);
+				setLyricLines(ttmlData);
+			} catch (e) {
+				error("Failed to parse TTML file from clipboard", e);
+			}
+		};
+
+		if (isDirty) {
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.openFromClipboard.title"),
+				description: t("confirmDialog.openFromClipboard.description"),
+				onConfirm: action,
+			});
+		} else {
+			await action();
 		}
-	}, [setLyricLines]);
+	}, [isDirty, setLyricLines, setConfirmDialog, t]);
+
 
 	const onSaveFile = useCallback(() => {
 		try {

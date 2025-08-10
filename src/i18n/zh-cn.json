@@ -491,5 +491,23 @@
 			"volume": "音乐音量",
 			"playbackRate": "播放速度"
 		}
+	},
+	"confirmDialog": {
+		"newFile": {
+			"title": "确认新建文件",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要新建文件吗？"
+		},
+		"openFile": {
+			"title": "确认打开文件",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"
+		},
+		"openFromClipboard": {
+			"title": "确认从剪贴板打开",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？"
+		},
+		"importFile": {
+			"title": "确认导入歌词",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要导入新歌词吗？"
+		}
 	}
 }
