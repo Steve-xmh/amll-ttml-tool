@@ -66,28 +66,34 @@ export const LyricWordMenu = ({
 						const selectedWords = store.get(selectedWordsAtom);
 						const line = state.lyricLines[lineIndex];
 						if (line) {
-							let firstIndex = -1;
-							let mergedWord = "";
-							for (const w of line.words) {
-								if (selectedWords.has(w.id)) {
-									mergedWord += w.word;
-									if (firstIndex === -1) {
-										firstIndex = line.words.indexOf(w);
-									}
-								}
-							}
-							const newWord = newLyricWord();
-							newWord.word = mergedWord;
-							newWord.startTime = line.words[wordIndex].startTime;
-							state.lyricLines[lineIndex].words = line.words.filter(
-								(w) => !selectedWords.has(w.id),
+							const selectedWordsInLine = line.words.filter((w) =>
+								selectedWords.has(w.id),
 							);
-							if (firstIndex !== -1) {
-								state.lyricLines[lineIndex].words.splice(
-									firstIndex,
-									0,
-									newWord,
+
+							if (selectedWordsInLine.length > 1) {
+								const mergedWord = selectedWordsInLine
+									.map((w) => w.word)
+									.join("");
+								const firstWord = selectedWordsInLine[0];
+								const lastWord =
+									selectedWordsInLine[selectedWordsInLine.length - 1];
+								const firstIndex = line.words.indexOf(firstWord);
+
+								const newWord = newLyricWord();
+								newWord.word = mergedWord;
+								newWord.startTime = firstWord.startTime;
+								newWord.endTime = lastWord.endTime;
+
+								state.lyricLines[lineIndex].words = line.words.filter(
+									(w) => !selectedWords.has(w.id),
 								);
+								if (firstIndex !== -1) {
+									state.lyricLines[lineIndex].words.splice(
+										firstIndex,
+										0,
+										newWord,
+									);
+								}
 							}
 						}
 					});
