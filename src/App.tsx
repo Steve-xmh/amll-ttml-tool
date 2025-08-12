@@ -72,7 +72,10 @@ const Dialogs = lazy(() => import("./components/Dialogs"));
 const AppErrorPage = ({
 	error,
 	resetErrorBoundary,
-}: { error: Error; resetErrorBoundary: () => void }) => {
+}: {
+	error: Error;
+	resetErrorBoundary: () => void;
+}) => {
 	const store = useStore();
 	const { t } = useTranslation();
 

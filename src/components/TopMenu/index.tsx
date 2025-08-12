@@ -94,8 +94,8 @@ export const TopMenu: FC = () => {
 		if (isDirty) {
 			setConfirmDialog({
 				open: true,
-				title: t("confirmDialog.newFile.title"),
-				description: t("confirmDialog.newFile.description"),
+				title: t("confirmDialog.newFile.title", "确认新建文件"),
+				description: t("confirmDialog.newFile.description", "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要新建文件吗？"),
 				onConfirm: action,
 			});
 		} else {
@@ -134,8 +134,8 @@ export const TopMenu: FC = () => {
 		if (isDirty) {
 			setConfirmDialog({
 				open: true,
-				title: t("confirmDialog.openFile.title"),
-				description: t("confirmDialog.openFile.description"),
+				title: t("confirmDialog.openFile.title", "确认打开文件"),
+				description: t("confirmDialog.openFile.description", "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"),
 				onConfirm: action,
 			});
 		} else {
@@ -161,8 +161,8 @@ export const TopMenu: FC = () => {
 		if (isDirty) {
 			setConfirmDialog({
 				open: true,
-				title: t("confirmDialog.openFromClipboard.title"),
-				description: t("confirmDialog.openFromClipboard.description"),
+				title: t("confirmDialog.openFromClipboard.title", "确认从剪贴板打开"),
+				description: t("confirmDialog.openFromClipboard.description", "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？"),
 				onConfirm: action,
 			});
 		} else {
@@ -340,7 +340,7 @@ export const TopMenu: FC = () => {
 
 	const onSimpleSegmentation = useCallback(() => {
 		editLyricLines((state) => {
-			const latinReg = /^[0-9A-z\u00C0-\u00ff'.,-\/#!$%^&*;:{}=\-_`~()]+$/;
+			const latinReg = /^[0-9A-z\u00C0-\u00ff'.,-/#!$%^&*;:{}=\-_`~()]+$/;
 
 			for (const line of state.lyricLines) {
 				const chars = line.words.flatMap((w) => w.word.split(""));
@@ -435,7 +435,7 @@ export const TopMenu: FC = () => {
 			});
 			error(err);
 		}
-	}, [editLyricLines]);
+	}, [t, editLyricLines]);
 
 	return (
 		<Flex
@@ -487,7 +487,7 @@ export const TopMenu: FC = () => {
 								<DropdownMenu.Item
 									onSelect={() => setHistoryRestoreDialog(true)}
 								>
-									从历史记录恢复...
+									{t("topBar.menu.restoreFromHistory", "从历史记录恢复...")}
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onSaveFileToClipboard}>
@@ -573,7 +573,7 @@ export const TopMenu: FC = () => {
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onOpenSettings}>
-									<Trans i18nKey="settingsDialog.title">设置</Trans>
+									<Trans i18nKey="settingsDialog.title">首选项</Trans>
 								</DropdownMenu.Item>
 							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
@@ -622,7 +622,7 @@ export const TopMenu: FC = () => {
 									GitHub
 								</DropdownMenu.Item>
 								<DropdownMenu.Item onSelect={onOpenWiki}>
-									使用说明
+									{t("topBar.menu.helpDoc", "使用说明")}
 								</DropdownMenu.Item>
 							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
@@ -650,36 +650,39 @@ export const TopMenu: FC = () => {
 								onSelect={onNewFile}
 								shortcut={formatKeyBindings(newFileKey)}
 							>
-								新建 TTML 文件
+								{t("topBar.menu.newLyric", "新建 TTML 文件")}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onOpenFile}
 								shortcut={formatKeyBindings(openFileKey)}
 							>
-								打开 TTML 文件
+								{t("topBar.menu.openLyric", "打开 TTML 文件")}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item onSelect={onOpenFileFromClipboard}>
-								从剪切板打开 TTML 文件
+								{t("topBar.menu.openFromClipboard", "从剪切板打开 TTML 文件")}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onSaveFile}
 								shortcut={formatKeyBindings(saveFileKey)}
 							>
-								保存 TTML 文件
+								{t("topBar.menu.saveLyric", "保存 TTML 文件")}
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={() => setHistoryRestoreDialog(true)}>
-								从历史记录恢复...
+								{t("topBar.menu.restoreFromHistory", "从历史记录恢复...")}
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onSaveFileToClipboard}>
-								保存 TTML 文件到剪切板
+								{t(
+									"topBar.menu.saveLyricToClipboard",
+									"保存 TTML 文件到剪切板",
+								)}
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<ImportExportLyric />
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onSubmitToAMLLDB}>
-								上传到 AMLL 歌词数据库
+								{t("topBar.menu.uploadToAMLLDB", "上传到 AMLL 歌词数据库")}
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
@@ -758,7 +761,7 @@ export const TopMenu: FC = () => {
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onOpenSettings}>
-								<Trans i18nKey="settingsDialog.title">设置</Trans>
+								<Trans i18nKey="settingsDialog.title">首选项</Trans>
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
@@ -825,7 +828,7 @@ export const TopMenu: FC = () => {
 								GitHub
 							</DropdownMenu.Item>
 							<DropdownMenu.Item onSelect={onOpenWiki}>
-								使用说明
+								{t("topBar.menu.helpDoc", "使用说明")}
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
@@ -836,7 +839,7 @@ export const TopMenu: FC = () => {
 					flexBasis: "20em",
 				}}
 				mr="2"
-				placeholder="文件名"
+				placeholder={t("common.fileNamePlaceholder", "文件名")}
 				value={saveFileName}
 				onChange={(e) => {
 					setSaveFileName(e.target.value);

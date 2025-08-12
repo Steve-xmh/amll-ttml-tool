@@ -31,14 +31,19 @@ export const SplitWordDialog = memo(() => {
 	return (
 		<Dialog.Root open={splitWordDialog} onOpenChange={splitWordDialogOpen}>
 			<Dialog.Content>
-				<Dialog.Title>{t("splitWordDialog.title", "拆分/替换单词")}</Dialog.Title>
+				<Dialog.Title>
+					{t("splitWordDialog.title", "拆分/替换单词")}
+				</Dialog.Title>
 				<Flex direction="column" gap="2">
 					<Callout.Root color="blue">
 						<Callout.Icon>
 							<Info16Regular />
 						</Callout.Icon>
 						<Callout.Text>
-							{t("splitWordDialog.tip", "拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除")}
+							{t(
+								"splitWordDialog.tip",
+								"拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除",
+							)}
 						</Callout.Text>
 					</Callout.Root>
 					<Text>{t("splitWordDialog.originalWord", "拆分/替换模板")}</Text>
@@ -63,7 +68,9 @@ export const SplitWordDialog = memo(() => {
 								{w.trim() === "" ? (
 									<Text color="gray">
 										{w.length > 0
-											? t("splitWordDialog.spaceCount", "空格x{count}", { count: w.length })
+											? t("splitWordDialog.spaceCount", "空格x{count}", {
+													count: w.length,
+												})
 											: t("splitWordDialog.empty", "空白")}
 									</Text>
 								) : (

@@ -1,5 +1,5 @@
 import {
-    keyDeleteSelectionAtom,
+	keyDeleteSelectionAtom,
 	keyMoveNextLineAtom,
 	keyMoveNextWordAtom,
 	keyMovePrevLineAtom,
@@ -29,9 +29,10 @@ import {
 	type KeyBindingAtom,
 } from "$/states/keybindings";
 import { formatKeyBindings, recordShortcut } from "$/utils/keybindings";
-import { Box, Button, Grid, Table, TextField } from "@radix-ui/themes";
+import { Box, Grid, TextField } from "@radix-ui/themes";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface KeyBindingsEntry {
 	atom: KeyBindingAtom;
@@ -43,41 +44,7 @@ const kb = (thisAtom: KeyBindingAtom, label: string): KeyBindingsEntry => ({
 	label,
 });
 
-const ENTRIES: KeyBindingsEntry[] = [
-	kb(keyNewFileAtom, "新建文件"),
-	kb(keyOpenFileAtom, "打开文件"),
-	kb(keySaveFileAtom, "保存文件"),
-	kb(keyOpenAudioAtom, "打开音频文件"),
-	kb(keyUndoAtom, "撤销"),
-	kb(keyRedoAtom, "重做"),
-	kb(keySelectAllAtom, "全选"),
-	kb(keySelectInvertedAtom, "反选"),
-	kb(keySelectWordsOfMatchedSelectionAtom, "选中同类单词"),
-	kb(keyDeleteSelectionAtom, "删除所选"),
-	kb(keySwitchEditModeAtom, "模式切换 - 切换到编辑模式"),
-	kb(keySwitchSyncModeAtom, "模式切换 - 切换到打轴模式"),
-	kb(keySwitchPreviewModeAtom, "模式切换 - 切换到预览模式"),
-	kb(keyMoveNextWordAtom, "打轴 - 移动到下一个单词"),
-	kb(keyMovePrevWordAtom, "打轴 - 移动到上一个单词"),
-	kb(keyMoveNextLineAtom, "打轴 - 移动到下一行开头"),
-	kb(keyMovePrevLineAtom, "打轴 - 移动到上一行开头"),
-	kb(keySyncStartAtom, "打轴 - 初始打轴"),
-	kb(keySyncNextAtom, "打轴 - 步进打轴"),
-	kb(keySyncEndAtom, "打轴 - 间奏打轴"),
-	kb(keyPlayPauseAtom, "播放 - 暂停/继续播放"),
-	kb(keySeekForwardAtom, "播放 - 快进 5 秒"),
-	kb(keySeekBackwardAtom, "播放 - 快退 5 秒"),
-	kb(keyVolumeUpAtom, "播放 - 调高音量"),
-	kb(keyVolumeDownAtom, "播放 - 调低音量"),
-	kb(keyPlaybackRateUpAtom, "播放 - 增加播放速度"),
-	kb(keyPlaybackRateDownAtom, "播放 - 降低播放速度"),
-];
-
-const KeyBindingsEdit = ({
-	entry,
-}: {
-	entry: KeyBindingsEntry;
-}) => {
+const KeyBindingsEdit = ({ entry }: { entry: KeyBindingsEntry }) => {
 	const [key, setKey] = useAtom(entry.atom);
 	const [listening, setListening] = useState(false);
 
@@ -106,6 +73,116 @@ const KeyBindingsEdit = ({
 };
 
 export const SettingsKeyBindingsDialog = () => {
+	const { t } = useTranslation();
+
+	const ENTRIES: KeyBindingsEntry[] = useMemo(
+		() => [
+			kb(keyNewFileAtom, t("settingsDialog.keybindings.newFile", "新建文件")),
+			kb(keyOpenFileAtom, t("settingsDialog.keybindings.openFile", "打开文件")),
+			kb(keySaveFileAtom, t("settingsDialog.keybindings.saveFile", "保存文件")),
+			kb(
+				keyOpenAudioAtom,
+				t("settingsDialog.keybindings.openAudio", "打开音频文件"),
+			),
+			kb(keyUndoAtom, t("settingsDialog.keybindings.undo", "撤销")),
+			kb(keyRedoAtom, t("settingsDialog.keybindings.redo", "重做")),
+			kb(keySelectAllAtom, t("settingsDialog.keybindings.selectAll", "全选")),
+			kb(
+				keySelectInvertedAtom,
+				t("settingsDialog.keybindings.selectInverted", "反选"),
+			),
+			kb(
+				keySelectWordsOfMatchedSelectionAtom,
+				t(
+					"settingsDialog.keybindings.selectWordsOfMatchedSelection",
+					"选中同类单词",
+				),
+			),
+			kb(
+				keyDeleteSelectionAtom,
+				t("settingsDialog.keybindings.deleteSelection", "删除所选"),
+			),
+			kb(
+				keySwitchEditModeAtom,
+				t(
+					"settingsDialog.keybindings.switchEditMode",
+					"模式切换 - 切换到编辑模式",
+				),
+			),
+			kb(
+				keySwitchSyncModeAtom,
+				t(
+					"settingsDialog.keybindings.switchSyncMode",
+					"模式切换 - 切换到打轴模式",
+				),
+			),
+			kb(
+				keySwitchPreviewModeAtom,
+				t(
+					"settingsDialog.keybindings.switchPreviewMode",
+					"模式切换 - 切换到预览模式",
+				),
+			),
+			kb(
+				keyMoveNextWordAtom,
+				t("settingsDialog.keybindings.moveNextWord", "打轴 - 移动到下一个单词"),
+			),
+			kb(
+				keyMovePrevWordAtom,
+				t("settingsDialog.keybindings.movePrevWord", "打轴 - 移动到上一个单词"),
+			),
+			kb(
+				keyMoveNextLineAtom,
+				t("settingsDialog.keybindings.moveNextLine", "打轴 - 移动到下一行开头"),
+			),
+			kb(
+				keyMovePrevLineAtom,
+				t("settingsDialog.keybindings.movePrevLine", "打轴 - 移动到上一行开头"),
+			),
+			kb(
+				keySyncStartAtom,
+				t("settingsDialog.keybindings.syncStart", "打轴 - 初始打轴"),
+			),
+			kb(
+				keySyncNextAtom,
+				t("settingsDialog.keybindings.syncNext", "打轴 - 步进打轴"),
+			),
+			kb(
+				keySyncEndAtom,
+				t("settingsDialog.keybindings.syncEnd", "打轴 - 间奏打轴"),
+			),
+			kb(
+				keyPlayPauseAtom,
+				t("settingsDialog.keybindings.playPause", "播放 - 暂停/继续播放"),
+			),
+			kb(
+				keySeekForwardAtom,
+				t("settingsDialog.keybindings.seekForward", "播放 - 快进 5 秒"),
+			),
+			kb(
+				keySeekBackwardAtom,
+				t("settingsDialog.keybindings.seekBackward", "播放 - 快退 5 秒"),
+			),
+			kb(
+				keyVolumeUpAtom,
+				t("settingsDialog.keybindings.volumeUp", "播放 - 调高音量"),
+			),
+			kb(
+				keyVolumeDownAtom,
+				t("settingsDialog.keybindings.volumeDown", "播放 - 调低音量"),
+			),
+			kb(
+				keyPlaybackRateUpAtom,
+				t("settingsDialog.keybindings.playbackRateUp", "播放 - 增加播放速度"),
+			),
+			kb(
+				keyPlaybackRateDownAtom,
+				t("settingsDialog.keybindings.playbackRateDown", "播放 - 降低播放速度"),
+			),
+		],
+		[t],
+	);
+
 	return (
 		<Grid columns="2" gapY="2">
 			{ENTRIES.map((entry) => (

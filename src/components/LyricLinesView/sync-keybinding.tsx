@@ -112,44 +112,36 @@ export const SyncKeyBinding: FC = () => {
 
 	// 移动打轴光标
 
-	useKeyBindingAtom(
-		keyMoveNextLineAtom,
-		() => {
-			const location = getCurrentLineLocation(store);
-			if (!location) return;
-			const lastLineIndex = Math.min(
-				location.lines.length,
-				location.lineIndex + 1,
-			);
-			const lastLine = location.lines[lastLineIndex];
-			if (!lastLine) return;
-			store.set(selectedLinesAtom, new Set([lastLine.id]));
-			if (lastLine.words.length === 0) {
-				store.set(selectedWordsAtom, new Set());
-			} else {
-				store.set(selectedWordsAtom, new Set([lastLine.words[0]?.id]));
-			}
-		},
-		[store],
-	);
+	useKeyBindingAtom(keyMoveNextLineAtom, () => {
+		const location = getCurrentLineLocation(store);
+		if (!location) return;
+		const lastLineIndex = Math.min(
+			location.lines.length,
+			location.lineIndex + 1,
+		);
+		const lastLine = location.lines[lastLineIndex];
+		if (!lastLine) return;
+		store.set(selectedLinesAtom, new Set([lastLine.id]));
+		if (lastLine.words.length === 0) {
+			store.set(selectedWordsAtom, new Set());
+		} else {
+			store.set(selectedWordsAtom, new Set([lastLine.words[0]?.id]));
+		}
+	}, [store]);
 
-	useKeyBindingAtom(
-		keyMovePrevLineAtom,
-		() => {
-			const location = getCurrentLineLocation(store);
-			if (!location) return;
-			const lastLineIndex = Math.max(0, location.lineIndex - 1);
-			const lastLine = location.lines[lastLineIndex];
-			if (!lastLine) return;
-			store.set(selectedLinesAtom, new Set([lastLine.id]));
-			if (lastLine.words.length === 0) {
-				store.set(selectedWordsAtom, new Set());
-			} else {
-				store.set(selectedWordsAtom, new Set([lastLine.words[0]?.id]));
-			}
-		},
-		[store],
-	);
+	useKeyBindingAtom(keyMovePrevLineAtom, () => {
+		const location = getCurrentLineLocation(store);
+		if (!location) return;
+		const lastLineIndex = Math.max(0, location.lineIndex - 1);
+		const lastLine = location.lines[lastLineIndex];
+		if (!lastLine) return;
+		store.set(selectedLinesAtom, new Set([lastLine.id]));
+		if (lastLine.words.length === 0) {
+			store.set(selectedWordsAtom, new Set());
+		} else {
+			store.set(selectedWordsAtom, new Set([lastLine.words[0]?.id]));
+		}
+	}, [store]);
 
 	useKeyBindingAtom(keyMoveNextWordAtom, moveToNextWord, [store]);
 

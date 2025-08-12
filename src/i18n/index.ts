@@ -10,6 +10,8 @@ type DeepPartial<T> = {
 
 type TranslationResource = typeof resources;
 
+console.log("Locale Resources", resources);
+
 declare module "i18next" {
 	// Extend CustomTypeOptions
 	interface CustomTypeOptions {
@@ -30,9 +32,7 @@ i18n
 	.use(initReactI18next) // passes i18n down to react-i18next
 	.use(ICU)
 	.init({
-		resources: {
-			translation: resources,
-		},
+		resources,
 		debug: import.meta.env.DEV,
 		fallbackLng: "zh-CN",
 		interpolation: {
@@ -40,6 +40,6 @@ i18n
 		},
 		returnNull: false,
 	})
-	.then(() => {});
+	.then(() => i18n.changeLanguage(localStorage.getItem("language") || navigator.language));
 
 export default i18n;

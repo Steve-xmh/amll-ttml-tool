@@ -52,64 +52,36 @@ import { type FC, memo, useCallback, useEffect, useState } from "react";
 const AudioPlaybackKeyBinding = memo(() => {
 	const store = useStore();
 
-	useKeyBindingAtom(
-		keyPlayPauseAtom,
-		() => {
-			if (audioEngine.musicPlaying) audioEngine.pauseMusic();
-			else audioEngine.resumeOrSeekMusic();
-		},
-		[],
-	);
+	useKeyBindingAtom(keyPlayPauseAtom, () => {
+		if (audioEngine.musicPlaying) audioEngine.pauseMusic();
+		else audioEngine.resumeOrSeekMusic();
+	}, []);
 
-	useKeyBindingAtom(
-		keySeekForwardAtom,
-		() => {
-			audioEngine.seekMusic(
-				Math.min(audioEngine.musicCurrentTime + 5, audioEngine.musicDuration),
-			);
-		},
-		[],
-	);
+	useKeyBindingAtom(keySeekForwardAtom, () => {
+		audioEngine.seekMusic(
+			Math.min(audioEngine.musicCurrentTime + 5, audioEngine.musicDuration),
+		);
+	}, []);
 
-	useKeyBindingAtom(
-		keySeekBackwardAtom,
-		() => {
-			audioEngine.seekMusic(Math.max(audioEngine.musicCurrentTime - 5, 0));
-		},
-		[],
-	);
+	useKeyBindingAtom(keySeekBackwardAtom, () => {
+		audioEngine.seekMusic(Math.max(audioEngine.musicCurrentTime - 5, 0));
+	}, []);
 
-	useKeyBindingAtom(
-		keyVolumeUpAtom,
-		() => {
-			store.set(volumeAtom, (v) => Math.min(1, v + 0.1));
-		},
-		[store],
-	);
+	useKeyBindingAtom(keyVolumeUpAtom, () => {
+		store.set(volumeAtom, (v) => Math.min(1, v + 0.1));
+	}, [store]);
 
-	useKeyBindingAtom(
-		keyVolumeDownAtom,
-		() => {
-			store.set(volumeAtom, (v) => Math.max(0, v - 0.1));
-		},
-		[store],
-	);
+	useKeyBindingAtom(keyVolumeDownAtom, () => {
+		store.set(volumeAtom, (v) => Math.max(0, v - 0.1));
+	}, [store]);
 
-	useKeyBindingAtom(
-		keyPlaybackRateUpAtom,
-		() => {
-			store.set(playbackRateAtom, (v) => Math.min(4, v + 0.25));
-		},
-		[store],
-	);
+	useKeyBindingAtom(keyPlaybackRateUpAtom, () => {
+		store.set(playbackRateAtom, (v) => Math.min(4, v + 0.25));
+	}, [store]);
 
-	useKeyBindingAtom(
-		keyPlaybackRateDownAtom,
-		() => {
-			store.set(playbackRateAtom, (v) => Math.max(0.25, v - 0.25));
-		},
-		[store],
-	);
+	useKeyBindingAtom(keyPlaybackRateDownAtom, () => {
+		store.set(playbackRateAtom, (v) => Math.max(0.25, v - 0.25));
+	}, [store]);
 
 	return null;
 });

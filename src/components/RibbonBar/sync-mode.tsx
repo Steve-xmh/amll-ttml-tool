@@ -74,12 +74,18 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 
 		return (
 			<RibbonFrame ref={ref}>
-				<RibbonSection label={t("ribbonBar.syncMode.currentEmptyBeat", "当前空拍")}>
+				<RibbonSection
+					label={t("ribbonBar.syncMode.currentEmptyBeat", "当前空拍")}
+				>
 					<EmptyBeatField />
 				</RibbonSection>
-				<RibbonSection label={t("ribbonBar.syncMode.syncAdjustment", "打轴调整")}>
+				<RibbonSection
+					label={t("ribbonBar.syncMode.syncAdjustment", "打轴调整")}
+				>
 					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
-						<Text wrap="nowrap" size="1">{t("ribbonBar.syncMode.timeOffset", "时间戳位移")}</Text>
+						<Text wrap="nowrap" size="1">
+							{t("ribbonBar.syncMode.timeOffset", "时间戳位移")}
+						</Text>
 						<TextField.Root
 							type="number"
 							step={1}
@@ -96,21 +102,29 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						<EmptyBeatField />
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label={t("ribbonBar.syncMode.assistSettings", "辅助设置")}>
+				<RibbonSection
+					label={t("ribbonBar.syncMode.assistSettings", "辅助设置")}
+				>
 					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
-						<Text wrap="nowrap" size="1">{t("ribbonBar.syncMode.showTimestampUpdate", "呈现时间戳更新")}</Text>
+						<Text wrap="nowrap" size="1">
+							{t("ribbonBar.syncMode.showTimestampUpdate", "呈现时间戳更新")}
+						</Text>
 						<Checkbox
 							checked={visualizeTimestampUpdate}
 							onCheckedChange={(v) => setVisualizeTimestampUpdate(!!v)}
 						/>
-						<Text wrap="nowrap" size="1">{t("ribbonBar.syncMode.touchSyncPanel", "触控打轴辅助面板")}</Text>
+						<Text wrap="nowrap" size="1">
+							{t("ribbonBar.syncMode.touchSyncPanel", "触控打轴辅助面板")}
+						</Text>
 						<Checkbox
 							checked={showTouchSyncPanel}
 							onCheckedChange={(v) => setShowTouchSyncPanel(!!v)}
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label={t("ribbonBar.syncMode.keyBindingReference", "打轴键位速查")}>
+				<RibbonSection
+					label={t("ribbonBar.syncMode.keyBindingReference", "打轴键位速查")}
+				>
 					<Flex gap="4">
 						<Grid
 							columns="0fr 0fr"

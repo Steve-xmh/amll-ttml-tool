@@ -8,20 +8,22 @@ import { Button, Card, Grid } from "@radix-ui/themes";
 import { useStore } from "jotai";
 import type { FC } from "react";
 import styles from "./index.module.css";
+import { useTranslation } from "react-i18next";
 
 export const TouchSyncPanel: FC = () => {
 	const store = useStore();
+	const { t } = useTranslation();
 	return (
 		<Card m="2" mt="0" style={{ flexShrink: "0" }}>
 			<Grid rows="2" columns="3" gap="2" className={styles.syncButtons}>
 				<Button variant="soft" size="4">
-					跳上词
+					{t("touchSyncPanel.prevWord", "跳上词")}
 				</Button>
 				<Button variant="soft" size="4">
-					跳本词
+					{t("touchSyncPanel.currentWord", "跳本词")}
 				</Button>
 				<Button variant="soft" size="4">
-					跳下词
+					{t("touchSyncPanel.nextWord", "跳下词")}
 				</Button>
 				<Button
 					variant="soft"
@@ -33,7 +35,7 @@ export const TouchSyncPanel: FC = () => {
 						forceInvokeKeyBindingAtom(store, keySyncStartAtom, evt.nativeEvent)
 					}
 				>
-					起始轴
+					{t("ribbonBar.syncMode.startSync", "起始轴")}
 				</Button>
 				<Button
 					variant="soft"
@@ -45,7 +47,7 @@ export const TouchSyncPanel: FC = () => {
 						forceInvokeKeyBindingAtom(store, keySyncNextAtom, evt.nativeEvent)
 					}
 				>
-					连续轴
+					{t("ribbonBar.syncMode.continuousSync", "连续轴")}
 				</Button>
 				<Button
 					variant="soft"
@@ -57,7 +59,7 @@ export const TouchSyncPanel: FC = () => {
 						forceInvokeKeyBindingAtom(store, keySyncEndAtom, evt.nativeEvent)
 					}
 				>
-					结束轴
+					{t("ribbonBar.syncMode.endSync", "结束轴")}
 				</Button>
 			</Grid>
 		</Card>

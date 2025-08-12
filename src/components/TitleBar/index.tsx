@@ -46,7 +46,7 @@ export const TitleBar: FC = () => {
 				<SegmentedControl.Root
 					value={toolMode}
 					onValueChange={(v) => setToolMode(v as ToolMode)}
-				// size="1"
+					// size="1"
 				>
 					<SegmentedControl.Item value={ToolMode.Edit}>
 						{t("topBar.modeBtns.edit", "编辑")}

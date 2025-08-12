@@ -406,7 +406,7 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						</Button>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label={t("ribbonBar.editMode.timing", "行时间戳")}>
+				<RibbonSection label={t("ribbonBar.editMode.lineTiming", "行时间戳")}>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
 							label={t("ribbonBar.editMode.startTime", "起始时间")}
@@ -444,7 +444,7 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label={t("ribbonBar.editMode.timing", "词时间戳")}>
+				<RibbonSection label={t("ribbonBar.editMode.wordTiming", "词时间戳")}>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
 							label={t("ribbonBar.editMode.startTime", "起始时间")}
@@ -469,7 +469,9 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label={t("ribbonBar.editMode.wordProperties", "单词属性")}>
+				<RibbonSection
+					label={t("ribbonBar.editMode.wordProperties", "单词属性")}
+				>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
 							label={t("ribbonBar.editMode.wordContent", "单词内容")}
@@ -486,7 +488,9 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label={t("ribbonBar.editMode.secondaryContent", "次要内容")}>
+				<RibbonSection
+					label={t("ribbonBar.editMode.secondaryContent", "次要内容")}
+				>
 					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
 						<EditField
 							label={t("ribbonBar.editMode.translatedLyric", "翻译歌词")}

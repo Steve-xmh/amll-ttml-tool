@@ -44,8 +44,11 @@ export const HistoryRestoreDialog = () => {
 	const handleRestore = (snapshotId: number) => {
 		setConfirmDialog({
 			open: true,
-			title: t("historyRestoreDialog.confirm.title"),
-			description: t("historyRestoreDialog.confirm.description"),
+			title: t("historyRestoreDialog.confirm.title", "确认恢复"),
+			description: t(
+				"historyRestoreDialog.confirm.description",
+				"此操作将覆盖当前编辑器中的所有内容，确定要恢复此快照吗？",
+			),
 			onConfirm: async () => {
 				const snapshot = await getSnapshot(snapshotId);
 				if (snapshot) {
@@ -62,16 +65,21 @@ export const HistoryRestoreDialog = () => {
 			setSnapshots((prev) => prev.filter((s) => s.id !== snapshotId));
 		} catch (err) {
 			console.error("Failed to delete snapshot", err);
-			toast.error("删除快照失败");
+			toast.error(t("historyRestoreDialog.deleteFailed", "删除快照失败"));
 		}
 	};
 
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
 			<Dialog.Content>
-				<Dialog.Title>{t("historyRestoreDialog.title")}</Dialog.Title>
+				<Dialog.Title>
+					{t("historyRestoreDialog.title", "从历史记录恢复")}
+				</Dialog.Title>
 				<Dialog.Description>
-					{t("historyRestoreDialog.description")}
+					{t(
+						"historyRestoreDialog.description",
+						"选择一个自动保存的快照进行恢复",
+					)}
 				</Dialog.Description>
 
 				<Box mt="4" style={{ maxHeight: "50vh" }}>
@@ -84,7 +92,7 @@ export const HistoryRestoreDialog = () => {
 							<Table.Header>
 								<Table.Row>
 									<Table.ColumnHeaderCell>
-										{t("historyRestoreDialog.tableHeader")}
+										{t("historyRestoreDialog.tableHeader", "保存时间")}
 									</Table.ColumnHeaderCell>
 									<Table.ColumnHeaderCell />
 								</Table.Row>
@@ -102,7 +110,7 @@ export const HistoryRestoreDialog = () => {
 														size="1"
 														onClick={() => handleRestore(snap.id)}
 													>
-														{t("historyRestoreDialog.restoreButton")}
+														{t("historyRestoreDialog.restoreButton", "恢复")}
 													</Button>
 													<IconButton
 														size="1"
@@ -120,7 +128,10 @@ export const HistoryRestoreDialog = () => {
 									<Table.Row>
 										<Table.Cell colSpan={2} align="center">
 											<Text color="gray" size="2">
-												{t("historyRestoreDialog.noHistory")}
+												{t(
+													"historyRestoreDialog.noHistory",
+													"没有可用的历史记录",
+												)}
 											</Text>
 										</Table.Cell>
 									</Table.Row>
@@ -133,7 +144,7 @@ export const HistoryRestoreDialog = () => {
 				<Flex gap="3" mt="4" justify="end">
 					<Dialog.Close>
 						<Button variant="soft" color="gray">
-							{t("historyRestoreDialog.cancelButton")}
+							{t("historyRestoreDialog.cancelButton", "取消")}
 						</Button>
 					</Dialog.Close>
 				</Flex>

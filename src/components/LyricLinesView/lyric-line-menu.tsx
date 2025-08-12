@@ -5,11 +5,7 @@ import { useSetImmerAtom } from "jotai-immer";
 
 const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);
 
-export const LyricLineMenu = ({
-	lineIndex,
-}: {
-	lineIndex: number;
-}) => {
+export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 	const selectedLinesSize = useAtomValue(selectedLinesSizeAtom);
 	const selectedLines = useAtomValue(selectedLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);

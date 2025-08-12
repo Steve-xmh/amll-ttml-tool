@@ -68,23 +68,25 @@ const LyricLineScroller = ({
 	lineAtom: Atom<LyricLine>;
 	wordsContainer: HTMLDivElement | null;
 }) => {
-	const scrollToIndexAtom = useMemo(() =>
-		atom((get) => {
-			const line = get(lineAtom);
-			const selectedWords = get(selectedWordsAtom);
-			if (selectedWords.size === 0) return Number.NaN;
-			let scrollToIndex = Number.NaN;
-			let i = 0;
-			for (const word of line.words) {
-				if (selectedWords.has(word.id)) {
-					scrollToIndex = i;
-					break;
+	const scrollToIndexAtom = useMemo(
+		() =>
+			atom((get) => {
+				const line = get(lineAtom);
+				const selectedWords = get(selectedWordsAtom);
+				if (selectedWords.size === 0) return Number.NaN;
+				let scrollToIndex = Number.NaN;
+				let i = 0;
+				for (const word of line.words) {
+					if (selectedWords.has(word.id)) {
+						scrollToIndex = i;
+						break;
+					}
+					i++;
 				}
-				i++;
-			}
-			return scrollToIndex;
-		})
-		, [lineAtom]);
+				return scrollToIndex;
+			}),
+		[lineAtom],
+	);
 	const scrollToIndex = useAtomValue(scrollToIndexAtom);
 
 	useEffect(() => {
@@ -132,9 +134,10 @@ const SubLineEdit = memo(
 		);
 
 		const label = useMemo(
-			() => type === "translatedLyric"
-				? t("lyricLineView.translatedLabel", "翻译：")
-				: t("lyricLineView.romanLabel", "音译："),
+			() =>
+				type === "translatedLyric"
+					? t("lyricLineView.translatedLabel", "翻译：")
+					: t("lyricLineView.romanLabel", "音译："),
 			[type, t],
 		);
 
@@ -161,7 +164,9 @@ const SubLineEdit = memo(
 							setEditing(true);
 						}}
 					>
-						{line[type] || <Text color="gray">{t("lyricLineView.empty", "无")}</Text>}
+						{line[type] || (
+							<Text color="gray">{t("lyricLineView.empty", "无")}</Text>
+						)}
 					</Button>
 				)}
 			</Flex>

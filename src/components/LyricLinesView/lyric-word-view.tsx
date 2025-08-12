@@ -695,7 +695,10 @@ const useDisplayWord = (word: string, isWordBlank: boolean) => {
 	const { t } = useTranslation();
 	return useMemo(() => {
 		if (word === "") return t("lyricWordView.empty", "空白");
-		if (isWordBlank) return t("lyricWordView.spaceCount", "空格 x{count}", { count: word.length });
+		if (isWordBlank)
+			return t("lyricWordView.spaceCount", "空格 x{count}", {
+				count: word.length,
+			});
 		return word;
 	}, [word, isWordBlank, t]);
 };

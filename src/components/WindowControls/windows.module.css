@@ -40,7 +40,9 @@
 		}
 
 		&.close {
-			transition: background-color 0.25s, color 0.25s;
+			transition:
+				background-color 0.25s,
+				color 0.25s;
 
 			&:hover,
 			&:focus {

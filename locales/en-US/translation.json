@@ -2,10 +2,27 @@
 	"app": {
 		"loadingEditPage": "Loading Edit Page",
 		"loadingSyncPage": "Loading Sync Page",
-		"loadingAMLLPreviewPage": "Loading AMLL Lyrics Preview Page"
+		"loadingAMLLPreviewPage": "Loading AMLL Lyrics Preview Page",
+		"error": {
+			"title": "Oops, an error occurred!",
+			"description": "An error occurred while running AMLL TTML Tools",
+			"checkDevTools": "Details can be found in Developer Tools",
+			"saveLyrics": "Try saving current lyrics",
+			"tryRestart": "Try reloading the app",
+			"details": "Approximate error info:"
+		},
+		"wip": {
+			"warning": "This refactored version is still under development. Please keep backups of your project to avoid accidents!"
+		}
 	},
 	"topBar": {
 		"menu": {
+			"tools": {
+				"loadingJieba": "Loading Jieba tokenizer module",
+				"processing": "Tokenizing, please wait...",
+				"completed": "Tokenization complete!",
+				"error": "Tokenization failed, please check console errors!"
+			},
 			"file": "File",
 			"newLyric": "New Lyrics",
 			"openLyric": "Open Lyrics",
@@ -23,6 +40,7 @@
 			"exportLyricToLys": "Export as Lyricify Syllable",
 			"exportLyricToAss": "Export as ASS subtitles",
 			"uploadToAMLLDB": "Upload to AMLL Lyrics Database",
+			"helpDoc": "Documentation (Simplified Chinese)",
 			"about": "About",
 			"edit": "Edit",
 			"undo": "Undo",
@@ -38,7 +56,16 @@
 			"splitWordByJieba": "Split words (using JieBa)",
 			"view": "View",
 			"tool": "Tools",
-			"restoreFromHistory": "Restore from History..."
+			"restoreFromHistory": "Restore from History...",
+			"openFromClipboard": "Open TTML from Clipboard",
+			"saveLyricToClipboard": "Save TTML to Clipboard",
+			"selectWordsOfMatchedSelection": "Select words matching selection",
+			"editMetadata": "Edit Lyrics Metadata",
+			"help": "Help",
+			"loadingJieba": "Loading Jieba tokenizer module",
+			"processing": "Tokenizing, please wait...",
+			"completed": "Tokenization complete!",
+			"error": "Tokenization failed, please check console errors!"
 		},
 		"modeBtns": {
 			"edit": "Edit Mode",
@@ -51,7 +78,80 @@
 		"appName": "Apple Music-like Lyrics TTML Tool",
 		"description": "A Word-by-Word TTML Editing and Timeline Tool for Apple Music-like Lyrics",
 		"githubBtn": "Github",
-		"tutorialBtn": "Quick Tutorial"
+		"tutorialBtn": "Quick Tutorial",
+		"buildDate": "Build Date: {date}",
+		"gitCommit": "Git Commit: {commit}"
+	},
+	"metadataDialog": {
+		"builtinOptions": {
+			"musicName": "Track Name",
+			"artists": "Track Artists",
+			"album": "Album Name",
+			"ncmMusicId": "NetEase Music ID",
+			"qqMusicId": "QQ Music ID",
+			"spotifyId": "Spotify Track ID",
+			"appleMusicId": "Apple Music Track ID",
+			"isrc": "Track ISRC Code",
+			"ttmlAuthorGithub": "Lyrics Author GitHub ID",
+			"ttmlAuthorGithubLogin": "Lyrics Author GitHub Username"
+		}
+	},
+	"settingsDialog": {
+		"title": "Preferences",
+		"tab": {
+			"common": "General",
+			"keybindings": "Keybindings"
+		},
+		"keybindings": {
+			"newFile": "New File",
+			"openFile": "Open File",
+			"saveFile": "Save File",
+			"openAudio": "Open Audio File",
+			"undo": "Undo",
+			"redo": "Redo",
+			"selectAll": "Select All",
+			"selectInverted": "Invert Selection",
+			"selectWordsOfMatchedSelection": "Select similar words",
+			"deleteSelection": "Delete Selection",
+			"switchEditMode": "Mode Switch - Switch to Edit Mode",
+			"switchSyncMode": "Mode Switch - Switch to Sync Mode",
+			"switchPreviewMode": "Mode Switch - Switch to Preview Mode",
+			"moveNextWord": "Sync - Move to next word",
+			"movePrevWord": "Sync - Move to previous word",
+			"moveNextLine": "Sync - Move to next line start",
+			"movePrevLine": "Sync - Move to previous line start",
+			"syncStart": "Sync - Initial sync",
+			"syncNext": "Sync - Step sync",
+			"syncEnd": "Sync - Ending sync",
+			"playPause": "Playback - Play/Pause",
+			"seekForward": "Playback - Seek forward 5s",
+			"seekBackward": "Playback - Seek backward 5s",
+			"volumeUp": "Playback - Volume up",
+			"volumeDown": "Playback - Volume down",
+			"playbackRateUp": "Playback - Increase speed",
+			"playbackRateDown": "Playback - Decrease speed"
+		},
+		"common": {
+			"latencyTest": "Audio/Input Latency Test"
+		}
+	},
+	"common": {
+		"about": "About",
+		"fileNamePlaceholder": "File Name"
+	},
+	"splitWordDialog": {
+		"title": "Split/Replace Word",
+		"tip": "After splitting, new words will evenly divide the original word's start/end time. Empty beats will be cleared.",
+		"originalWord": "Split/Replace Template",
+		"delimiter": "Delimiter",
+		"previewTitle": "Split Preview",
+		"spaceCount": "Space x{count}",
+		"empty": "Empty"
+	},
+	"lyricLineView": {
+		"translatedLabel": "Translation:",
+		"romanLabel": "Romanization:",
+		"empty": "None"
 	},
 	"contextMenu": {
 		"deleteLine": "Delete selected line",
@@ -231,6 +331,7 @@
 			"new": "New",
 			"lyricLine": "Lyric Line",
 			"timing": "Line Timing",
+			"lineTiming": "Line Timing",
 			"startTime": "Start Time",
 			"endTime": "End Time",
 			"lineProperties": "Line Properties",
@@ -244,7 +345,9 @@
 			"secondaryContent": "Secondary Content",
 			"translatedLyric": "Translation",
 			"romanLyric": "Romanization",
-			"multipleValues": "Multiple values..."
+			"multipleValues": "Multiple values...",
+			"wordContent": "Word Content",
+			"obscene": "Obscene"
 		},
 		"syncMode": {
 			"currentEmptyBeat": "Current Empty Beat",
@@ -254,13 +357,40 @@
 			"showTimestampUpdate": "Show Timestamp Updates",
 			"touchSyncPanel": "Touch Sync Panel",
 			"keyBindingReference": "Key Binding Reference",
-			"startAxis": "Start Axis",
-			"continuousAxis": "Continuous Axis",
-			"endAxis": "End Axis"
+			"startSync": "Start Sync",
+			"continuousSync": "Continuous Sync",
+			"endSync": "End Sync"
+		},
+		"previewMode": {
+			"lyrics": "Lyrics",
+			"showTranslation": "Show Translation",
+			"showRoman": "Show Romanization",
+			"word": "Word",
+			"fadeWidth": "Fade Width"
 		}
 	},
 	"settings": {
 		"common": {
+			"language": "Interface Language",
+			"languageDesc": "Select the language for the interface",
+			"layoutMode": "Editor Layout Mode",
+			"layoutModeDesc": {
+				"line1": "Simple layout satisfies most basic needs",
+				"line2": "Switch to Advanced Mode if you need more efficient syncing"
+			},
+			"layoutModeOptions": {
+				"simple": "Simple Mode",
+				"advance": "Advanced Mode"
+			},
+			"syncJudgeMode": "Sync Timestamp Judgment Mode",
+			"syncJudgeModeDesc": "Set how timestamps are judged when syncing. Default is 'First key down'.",
+			"syncJudgeModeOptions": {
+				"firstKeyDown": "First key down time",
+				"lastKeyUp": "Last key up time",
+				"middleKey": "Middle of key down & up"
+			},
+			"volume": "Music Volume",
+			"playbackRate": "Playback Speed",
 			"autosave": {
 				"title": "Autosave",
 				"enable": "Enable Autosave",
@@ -270,7 +400,36 @@
 		}
 	},
 	"submitToAMLLDB": {
-		"closeWarning": "Close warning message"
+		"closeWarning": "Close warning message",
+		"validation": {
+			"missingMusicName": "Metadata missing track name",
+			"missingArtists": "Metadata missing track artists",
+			"missingAlbum": "Metadata missing album name",
+			"missingMusicId": "Metadata missing platform track ID"
+		},
+		"defaultReason": "New lyrics submission",
+		"errors": {
+			"validation": "Submission validation failed:\n{{errors}}",
+			"noLyrics": "There's no lyrics content yet?",
+			"uploadFailed": "Failed to request upload lyrics file: {{status}} {{statusText}}",
+			"submitFailed": "Submission failed, check console for reason!"
+		},
+		"labels": {
+			"submit": "Lyrics Submit/Correction"
+		},
+		"issueTitle": "[Lyrics Submit/Fix] {{name}}",
+		"unknownTitle": "Unknown Title",
+		"unknownArtist": "Unknown Artist",
+		"description": "Submit lyrics to AMLL Lyrics Database",
+		"title": "Submit lyrics to AMLL Lyrics Database (Simplified Chinese users only)",
+		"chineseOnlyWarning": "This feature is only available to Simplified Chinese users of AMLL Lyrics Database. If you are editing lyrics to use them in other software, please follow that software's way to submit lyrics!",
+		"thankYou": "First of all, thank you for your generous lyrics contribution!",
+		"cc0Agreement": "By submitting you agree to",
+		"cc0Rights": "use the CC0 license and fully waive ownership of the lyrics",
+		"andSubmit": "and submit to the lyrics database!",
+		"futureUse": "And the lyrics will be used as default TTML source by AMLL systems in the future!",
+		"rightsWarning": "If you value retaining ownership, please do NOT submit!",
+		"submitInstructions": "Enter the following info then jump to the GitHub issue submission page!"
 	},
 	"confirmDialog": {
 		"newFile": {
@@ -300,6 +459,17 @@
 			"title": "Confirm Restore",
 			"description": "This will overwrite all content in the current editor. Are you sure you want to restore this snapshot?"
 		},
-		"cancelButton": "Cancel"
+		"cancelButton": "Cancel",
+		"deleteFailed": "Failed to delete snapshot"
+	},
+	"touchSyncPanel": {
+		"prevWord": "Jump Previous Word",
+		"currentWord": "Jump Current Word",
+		"nextWord": "Jump Next Word"
+	},
+	"pwa": {
+		"offlineReady": "Site successfully cached for offline use",
+		"updateRefresh": "Site updated, refresh to use the latest version!",
+		"refresh": "Refresh"
 	}
 }

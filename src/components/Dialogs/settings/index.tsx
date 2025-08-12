@@ -18,9 +18,15 @@ export const SettingsDialog = memo(() => {
 				<Dialog.Title>{t("settingsDialog.title", "首选项")}</Dialog.Title>
 				<Tabs.Root>
 					<Tabs.List>
-						<Tabs.Trigger value="common">{t("settingsDialog.tab.common", "常规")}</Tabs.Trigger>
-						<Tabs.Trigger value="keybinding">{t("settingsDialog.tab.keybindings", "按键绑定")}</Tabs.Trigger>
-						<Tabs.Trigger value="about">{t("common.about", "关于")}</Tabs.Trigger>
+						<Tabs.Trigger value="common">
+							{t("settingsDialog.tab.common", "常规")}
+						</Tabs.Trigger>
+						<Tabs.Trigger value="keybinding">
+							{t("settingsDialog.tab.keybindings", "按键绑定")}
+						</Tabs.Trigger>
+						<Tabs.Trigger value="about">
+							{t("common.about", "关于")}
+						</Tabs.Trigger>
 					</Tabs.List>
 					<Box pt="3">
 						<Tabs.Content value="common">
