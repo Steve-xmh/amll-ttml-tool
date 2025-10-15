@@ -6,7 +6,7 @@ import {
 	splitWordStateAtom,
 } from "$/states/main";
 import {
-	LyricLine,
+	type LyricLine,
 	type LyricWord,
 	newLyricLine,
 	newLyricWord,
@@ -116,18 +116,19 @@ export const LyricWordMenu = ({
 			<ContextMenu.Separator />
 
 			<ContextMenu.Item
+				disabled={selectedWordsSize !== 1}
+				onSelect={() => afterToNewLine()}
+			>
+				此后单词拆至新行
+			</ContextMenu.Item>
+
+			<ContextMenu.Item
 				disabled={selectedWordsSize === 0}
 				onSelect={() => selectedToNewLine()}
 			>
 				所选单词拆至新行
 			</ContextMenu.Item>
 
-			<ContextMenu.Item
-				disabled={selectedWordsSize !== 1}
-				onSelect={() => afterToNewLine()}
-			>
-				此后单词拆至新行
-			</ContextMenu.Item>
 			<ContextMenu.Separator />
 		</>
 	);
@@ -147,7 +148,11 @@ export const LyricWordMenu = ({
 					return true;
 				});
 			}
-			const newLine = newLyricLine();
+			const newLine = {
+				...newLyricLine(),
+				isBG: state.lyricLines[lineIndex].isBG,
+				isDuet: state.lyricLines[lineIndex].isDuet,
+			} as LyricLine;
 			newLine.words.push(...selectedWords);
 			normalizeLineTime(newLine);
 			affectedLines.forEach(normalizeLineTime);
@@ -164,7 +169,11 @@ export const LyricWordMenu = ({
 			if (/^\s*$/.test(word.word) && !word.startTime && !word.endTime)
 				line.words.splice(wordIndex, 1);
 			const wordsToMove = line.words.splice(wordIndex);
-			const newLine = newLyricLine();
+			const newLine = {
+				...newLyricLine(),
+				isBG: line.isBG,
+				isDuet: line.isDuet,
+			} as LyricLine;
 			newLine.words.push(...wordsToMove);
 			normalizeLineTime(line);
 			normalizeLineTime(newLine);

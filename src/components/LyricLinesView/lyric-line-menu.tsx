@@ -12,20 +12,32 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 	const selectedLines = useAtomValue(selectedLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 
-	const lines = useAtomValue(lyricLinesAtom).lyricLines.filter((line) =>
+	const lineObjs = useAtomValue(lyricLinesAtom);
+	const selectedLineObjs = lineObjs.lyricLines.filter((line) =>
 		selectedLines.has(line.id),
 	);
-
 	const [Bgchecked, setBgChecked] = React.useState(() => {
-		if (lines.every((line) => line.isBG)) return true;
-		else if (lines.every((line) => !line.isBG)) return false;
+		if (selectedLineObjs.every((line) => line.isBG)) return true;
+		else if (selectedLineObjs.every((line) => !line.isBG)) return false;
 		else return "indeterminate" as const;
 	});
 	const [DuetChecked, setDuetChecked] = React.useState(() => {
-		if (lines.every((line) => line.isDuet)) return true;
-		else if (lines.every((line) => !line.isDuet)) return false;
+		if (selectedLineObjs.every((line) => line.isDuet)) return true;
+		else if (selectedLineObjs.every((line) => !line.isDuet)) return false;
 		else return "indeterminate" as const;
 	});
+	const combineEnabled = (() => {
+		if (selectedLinesSize < 2) return null;
+		const lineIdxs = lineObjs.lyricLines
+			.filter((line) => selectedLines.has(line.id))
+			.map((line) => lineObjs.lyricLines.indexOf(line));
+		const minIdx = Math.min(...lineIdxs);
+		const maxIdx = Math.max(...lineIdxs);
+		if (lineIdxs.length !== maxIdx - minIdx + 1) return null;
+		for (let i = minIdx; i <= maxIdx; i++)
+			if (!lineIdxs.includes(i)) return null;
+		return { minIdx, maxIdx };
+	})();
 
 	function bgOnCheck(checked: boolean) {
 		setBgChecked(checked);
@@ -76,6 +88,9 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 			>
 				在之后插入新行
 			</ContextMenu.Item>
+			<ContextMenu.Item onSelect={combineLines} disabled={!combineEnabled}>
+				合并所选行
+			</ContextMenu.Item>
 			<ContextMenu.Item
 				onClick={() => {
 					editLyricLines((state) => {
@@ -93,4 +108,21 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 			</ContextMenu.Item>
 		</>
 	);
+
+	function combineLines() {
+		editLyricLines((state) => {
+			if (!combineEnabled) return;
+			const { minIdx, maxIdx } = combineEnabled;
+			const target = state.lyricLines[minIdx];
+			for (let i = minIdx + 1; i <= maxIdx; i++) {
+				const line = state.lyricLines[i];
+				target.words.push(...line.words);
+			}
+			state.lyricLines.splice(minIdx + 1, maxIdx - minIdx);
+			if (target.words.length) {
+				target.startTime = target.words[0].startTime;
+				target.endTime = target.words[target.words.length - 1].endTime;
+			}
+		});
+	}
 };
