@@ -159,6 +159,10 @@ export const LyricWordMenu = ({
 		editLyricLines((state) => {
 			const line = state.lyricLines[lineIndex];
 			if (!line) return;
+			const word = line.words[wordIndex];
+			if (!word) return;
+			if (/^\s*$/.test(word.word) && !word.startTime && !word.endTime)
+				line.words.splice(wordIndex, 1);
 			const wordsToMove = line.words.splice(wordIndex);
 			const newLine = newLyricLine();
 			newLine.words.push(...wordsToMove);
