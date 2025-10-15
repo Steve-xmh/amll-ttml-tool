@@ -1,5 +1,5 @@
 import { lyricLinesAtom, selectedLinesAtom } from "$/states/main";
-import { newLyricLine } from "$/utils/ttml-types";
+import { type LyricLine, newLyricLine, newLyricWord } from "$/utils/ttml-types";
 import { ContextMenu } from "@radix-ui/themes";
 import { atom, useAtomValue } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
@@ -88,6 +88,9 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 			>
 				在之后插入新行
 			</ContextMenu.Item>
+			<ContextMenu.Item onSelect={copyLines} disabled={selectedLinesSize === 0}>
+				拷贝所选行
+			</ContextMenu.Item>
 			<ContextMenu.Item onSelect={combineLines} disabled={!combineEnabled}>
 				合并所选行
 			</ContextMenu.Item>
@@ -123,6 +126,23 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 				target.startTime = target.words[0].startTime;
 				target.endTime = target.words[target.words.length - 1].endTime;
 			}
+		});
+	}
+
+	function copyLines() {
+		editLyricLines((state) => {
+			state.lyricLines = state.lyricLines.flatMap((line) => {
+				if (!selectedLines.has(line.id)) return line;
+				const newLine: LyricLine = {
+					...line,
+					id: newLyricLine().id,
+					words: line.words.map((word) => ({
+						...word,
+						id: newLyricWord().id,
+					})),
+				};
+				return [line, newLine];
+			});
 		});
 	}
 };
