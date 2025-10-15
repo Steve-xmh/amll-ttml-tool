@@ -71,7 +71,7 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 			</ContextMenu.CheckboxItem>
 			<ContextMenu.Separator />
 			<ContextMenu.Item
-				onClick={() => {
+				onSelect={() => {
 					editLyricLines((state) => {
 						state.lyricLines.splice(lineIndex, 0, newLyricLine());
 					});
@@ -80,7 +80,7 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 				在之前插入新行
 			</ContextMenu.Item>
 			<ContextMenu.Item
-				onClick={() => {
+				onSelect={() => {
 					editLyricLines((state) => {
 						state.lyricLines.splice(lineIndex + 1, 0, newLyricLine());
 					});
@@ -92,7 +92,7 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 				合并所选行
 			</ContextMenu.Item>
 			<ContextMenu.Item
-				onClick={() => {
+				onSelect={() => {
 					editLyricLines((state) => {
 						if (selectedLinesSize === 0) {
 							state.lyricLines.splice(lineIndex, 1);

@@ -52,7 +52,7 @@ export const LyricWordMenu = ({
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				disabled={!(selectedWordsSize > 1 && selectedLinesSize === 1)}
-				onClick={() => {
+				onSelect={() => {
 					editLyricLines((state) => {
 						const selectedWords = store.get(selectedWordsAtom);
 						const line = state.lyricLines[lineIndex];
@@ -95,7 +95,7 @@ export const LyricWordMenu = ({
 
 			<ContextMenu.Item
 				disabled={selectedWordsSize === 0}
-				onClick={() => {
+				onSelect={() => {
 					editLyricLines((state) => {
 						const selectedWords = store.get(selectedWordsAtom);
 						for (const line of state.lyricLines) {
