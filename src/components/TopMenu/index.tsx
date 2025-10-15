@@ -403,12 +403,8 @@ export const TopMenu: FC = () => {
 					let index = 0;
 					const intervals = syllables.map((syl) => {
 						const left = token.substring(index);
-						const reg = new RegExp(
-							syl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-							"i"
-						);
-						const match = left.match(reg);
-						const end = index + (match?.index ?? 0) + syl.length;
+						const match = left.toLowerCase().indexOf(syl.toLowerCase());
+						const end = index + (match < 0 ? 0 : match) + syl.length;
 						return { begin: index, end: (index = end) };
 					});
 					intervals.forEach((itv, index) => {
