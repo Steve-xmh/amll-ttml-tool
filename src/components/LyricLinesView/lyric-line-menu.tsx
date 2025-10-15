@@ -77,7 +77,7 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 					});
 				}}
 			>
-				在之前插入新行
+				在前插入空行
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				onSelect={() => {
@@ -86,13 +86,13 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 					});
 				}}
 			>
-				在之后插入新行
+				在后插入空行
 			</ContextMenu.Item>
 			<ContextMenu.Item onSelect={copyLines} disabled={selectedLinesSize === 0}>
-				拷贝所选行
+				拷贝行
 			</ContextMenu.Item>
 			<ContextMenu.Item onSelect={combineLines} disabled={!combineEnabled}>
-				合并所选行
+				合并行
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				onSelect={() => {
@@ -107,7 +107,7 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 					});
 				}}
 			>
-				删除所选行
+				删除行
 			</ContextMenu.Item>
 		</>
 	);

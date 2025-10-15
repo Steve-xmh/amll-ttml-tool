@@ -48,7 +48,7 @@ export const LyricWordMenu = ({
 					setOpenSplitWordDialog(true);
 				}}
 			>
-				拆分或替换单词
+				拆分或替换单词…
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				disabled={!(selectedWordsSize > 1 && selectedLinesSize === 1)}
@@ -110,7 +110,7 @@ export const LyricWordMenu = ({
 					});
 				}}
 			>
-				删除所选单词
+				删除单词
 			</ContextMenu.Item>
 
 			<ContextMenu.Separator />
