@@ -644,6 +644,11 @@ export const TopMenu: FC = () => {
 												使用 JieBa 对歌词行分词
 											</Trans>
 										</DropdownMenu.Item>
+										<DropdownMenu.Item onSelect={onCompromiseSegmentation}>
+											<Trans i18nKey="topBar.menu.splitWordByCompromise">
+												使用 Compromise 对歌词行分词
+											</Trans>
+										</DropdownMenu.Item>
 										<DropdownMenu.Item onSelect={onSimpleSegmentation}>
 											<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">
 												使用简单方式对歌词行分词
@@ -842,6 +847,12 @@ export const TopMenu: FC = () => {
 										{t(
 											"topBar.menu.splitWordByJieba",
 											"使用 JieBa 对歌词行分词",
+										)}
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onSelect={onCompromiseSegmentation}>
+										{t(
+											"topBar.menu.splitWordByCompromise",
+											"使用 Compromise 对歌词行分词",
 										)}
 									</DropdownMenu.Item>
 									<DropdownMenu.Item onSelect={onSimpleSegmentation}>
