@@ -408,8 +408,7 @@ export const TopMenu: FC = () => {
 						return { begin: index, end: (index = end) };
 					});
 					intervals.forEach((itv, index) => {
-						if (index == 0) itv.begin = 0;
-						else if (index == intervals.length - 1) itv.end = token.length;
+						if (index == intervals.length - 1) itv.end = token.length;
 						else {
 							const nextItv = intervals[index + 1];
 							itv.end = nextItv.begin;
@@ -419,6 +418,7 @@ export const TopMenu: FC = () => {
 								nextItv.begin -= 1;
 							}
 						}
+						if (index == 0) itv.begin = 0;
 					});
 					return intervals.map((itv) => token.substring(itv.begin, itv.end));
 				});
