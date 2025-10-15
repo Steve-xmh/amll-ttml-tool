@@ -5,8 +5,7 @@ import {
 	selectedWordsAtom,
 	splitWordStateAtom,
 } from "$/states/main";
-import { newLyricWord } from "$/utils/ttml-types";
-import type { LyricWord } from "@applemusic-like-lyrics/lyric";
+import { type LyricWord, newLyricLine, newLyricWord } from "$/utils/ttml-types";
 import { ContextMenu } from "@radix-ui/themes";
 import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
@@ -34,21 +33,8 @@ export const LyricWordMenu = ({
 	return (
 		<>
 			<ContextMenu.Item
-				disabled={selectedWordsSize === 0}
-				onClick={() => {
-					editLyricLines((state) => {
-						const selectedWords = store.get(selectedWordsAtom);
-						for (const line of state.lyricLines) {
-							line.words = line.words.filter((w) => !selectedWords.has(w.id));
-						}
-					});
-				}}
-			>
-				删除所选单词
-			</ContextMenu.Item>
-			<ContextMenu.Item
 				disabled={selectedWordsSize !== 1}
-				onClick={() => {
+				onSelect={() => {
 					setSplitState({
 						wordIndex,
 						lineIndex,
@@ -57,7 +43,7 @@ export const LyricWordMenu = ({
 					setOpenSplitWordDialog(true);
 				}}
 			>
-				拆分此单词/在此处替换单词
+				拆分或替换单词
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				disabled={!(selectedWordsSize > 1 && selectedLinesSize === 1)}
@@ -101,6 +87,68 @@ export const LyricWordMenu = ({
 			>
 				合并单词
 			</ContextMenu.Item>
+
+			<ContextMenu.Item
+				disabled={selectedWordsSize === 0}
+				onClick={() => {
+					editLyricLines((state) => {
+						const selectedWords = store.get(selectedWordsAtom);
+						for (const line of state.lyricLines) {
+							line.words = line.words.filter((w) => !selectedWords.has(w.id));
+						}
+					});
+				}}
+			>
+				删除所选单词
+			</ContextMenu.Item>
+
+			<ContextMenu.Separator />
+
+			<ContextMenu.Item
+				disabled={selectedWordsSize === 0}
+				onSelect={() => selectedToNewLine()}
+			>
+				所选单词拆至新行
+			</ContextMenu.Item>
+
+			<ContextMenu.Item
+				disabled={selectedWordsSize !== 1}
+				onSelect={() => afterToNewLine()}
+			>
+				此后单词拆至新行
+			</ContextMenu.Item>
+			<ContextMenu.Separator />
 		</>
 	);
+
+	function selectedToNewLine() {
+		editLyricLines((state) => {
+			const selectedWordIds = store.get(selectedWordsAtom);
+			const selectedWords: LyricWord[] = [];
+			for (const line of state.lyricLines) {
+				line.words = line.words.filter((w) => {
+					if (selectedWordIds.has(w.id)) {
+						selectedWords.push(w);
+						return false;
+					}
+					return true;
+				});
+			}
+			const newLine = newLyricLine();
+			newLine.words.push(...selectedWords);
+			state.lyricLines.splice(lineIndex + 1, 0, newLine);
+		});
+	}
+
+	function afterToNewLine() {
+		editLyricLines((state) => {
+			const line = state.lyricLines[lineIndex];
+			if (line) {
+				const wordsToMove = line.words.splice(wordIndex);
+				const newLine = newLyricLine();
+				newLine.words.push(...wordsToMove);
+				state.lyricLines.splice(lineIndex + 1, 0, newLine);
+			}
+		});
+	}
 };
