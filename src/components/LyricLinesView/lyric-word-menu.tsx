@@ -5,7 +5,12 @@ import {
 	selectedWordsAtom,
 	splitWordStateAtom,
 } from "$/states/main";
-import { type LyricWord, newLyricLine, newLyricWord } from "$/utils/ttml-types";
+import {
+	LyricLine,
+	type LyricWord,
+	newLyricLine,
+	newLyricWord,
+} from "$/utils/ttml-types";
 import { ContextMenu } from "@radix-ui/themes";
 import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
@@ -94,7 +99,13 @@ export const LyricWordMenu = ({
 					editLyricLines((state) => {
 						const selectedWords = store.get(selectedWordsAtom);
 						for (const line of state.lyricLines) {
-							line.words = line.words.filter((w) => !selectedWords.has(w.id));
+							const originalLength = line.words.length;
+							const filteredWords = line.words.filter(
+								(w) => !selectedWords.has(w.id),
+							);
+							line.words = filteredWords;
+							if (originalLength !== filteredWords.length)
+								normalizeLineTime(line);
 						}
 					});
 				}}
@@ -125,10 +136,12 @@ export const LyricWordMenu = ({
 		editLyricLines((state) => {
 			const selectedWordIds = store.get(selectedWordsAtom);
 			const selectedWords: LyricWord[] = [];
+			const affectedLines: LyricLine[] = [];
 			for (const line of state.lyricLines) {
 				line.words = line.words.filter((w) => {
 					if (selectedWordIds.has(w.id)) {
 						selectedWords.push(w);
+						affectedLines.push(line);
 						return false;
 					}
 					return true;
@@ -136,6 +149,8 @@ export const LyricWordMenu = ({
 			}
 			const newLine = newLyricLine();
 			newLine.words.push(...selectedWords);
+			normalizeLineTime(newLine);
+			affectedLines.forEach(normalizeLineTime);
 			state.lyricLines.splice(lineIndex + 1, 0, newLine);
 		});
 	}
@@ -143,12 +158,19 @@ export const LyricWordMenu = ({
 	function afterToNewLine() {
 		editLyricLines((state) => {
 			const line = state.lyricLines[lineIndex];
-			if (line) {
-				const wordsToMove = line.words.splice(wordIndex);
-				const newLine = newLyricLine();
-				newLine.words.push(...wordsToMove);
-				state.lyricLines.splice(lineIndex + 1, 0, newLine);
-			}
+			if (!line) return;
+			const wordsToMove = line.words.splice(wordIndex);
+			const newLine = newLyricLine();
+			newLine.words.push(...wordsToMove);
+			normalizeLineTime(line);
+			normalizeLineTime(newLine);
+			state.lyricLines.splice(lineIndex + 1, 0, newLine);
 		});
+	}
+
+	function normalizeLineTime(line: LyricLine) {
+		if (line.words.length === 0) return;
+		line.startTime = line.words[0].startTime;
+		line.endTime = line.words[line.words.length - 1].endTime;
 	}
 };
