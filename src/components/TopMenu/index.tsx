@@ -51,6 +51,8 @@ import { Trans } from "react-i18next";
 import { toast } from "react-toastify";
 import saveFile from "save-file";
 import { useTranslation } from "react-i18next";
+import nlp from "compromise";
+import nlpSpeech from "compromise-speech";
 
 const useWindowSize = () => {
 	const [windowSize, setWindowSize] = useState({
@@ -381,6 +383,53 @@ export const TopMenu: FC = () => {
 					wordsResult.push(tmpWord);
 				}
 				line.words = wordsResult;
+			}
+		});
+	}, [editLyricLines]);
+
+	const onCompromiseSegmentation = useCallback(() => {
+		const latin = `0-9A-Za-z\\u00C0-\\u00ff'.,\\-/#!$%^&*;:{}=\\-_\`~()`;
+		const tokenReg = new RegExp(`[${latin}]+|\\s+|[^${latin}]`, "gu");
+		const fullLatinReg = new RegExp(`^[${latin}]+$`);
+		const nlpWithPlg = nlp.extend(nlpSpeech);
+		editLyricLines((state) => {
+			for (const line of state.lyricLines) {
+				const wholeLine = line.words.map((w) => w.word).join("");
+				const tokens = (wholeLine.match(tokenReg) || []).flatMap((token) => {
+					if (!fullLatinReg.test(token)) return token;
+					const doc = nlpWithPlg(token);
+					const syllables = (doc.syllables() as string[][]).flat();
+					if (syllables.length <= 1) return token;
+					let index = 0;
+					const intervals = syllables.map((syl) => {
+						const left = token.substring(index);
+						const reg = new RegExp(
+							syl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+							"i"
+						);
+						const match = left.match(reg);
+						const end = index + (match?.index ?? 0) + syl.length;
+						return { begin: index, end: (index = end) };
+					});
+					intervals.forEach((itv, index) => {
+						if (index == 0) itv.begin = 0;
+						else if (index == intervals.length - 1) itv.end = token.length;
+						else {
+							const nextItv = intervals[index + 1];
+							itv.end = nextItv.begin;
+							if (/['’]/.test(token.charAt(itv.end - 1))) {
+								// move the apostrophe to next syllable
+								itv.end -= 1;
+								nextItv.begin -= 1;
+							}
+						}
+					});
+					return intervals.map((itv) => token.substring(itv.begin, itv.end));
+				});
+				line.words = tokens.map((t) => ({
+					...newLyricWord(),
+					word: t,
+				}));
 			}
 		});
 	}, [editLyricLines]);
