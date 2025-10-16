@@ -15,3 +15,10 @@
 	flex-grow: 0;
 	flex-shrink: 1;
 }
+
+.leftSide,
+.rightSide {
+	display: flex;
+	width: 0;
+	flex: 1;
+}
