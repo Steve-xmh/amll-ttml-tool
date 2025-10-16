@@ -118,21 +118,25 @@ export default function WindowControls(props: WindowControlsProps) {
 	return (
 		<div className={styles.windowControls}>
 			{placeLeft && systemControls}
-			<div className={styles.slot}>{props.startChildren}</div>
-			<div
-				className={styles.spacer}
-				onClick={props.onSpacerClicked}
-				data-tauri-drag-region
-			/>
+			<div className={styles.leftSide}>
+				<div className={styles.slot}>{props.startChildren}</div>
+				<div
+					className={styles.spacer}
+					onClick={props.onSpacerClicked}
+					data-tauri-drag-region
+				/>
+			</div>
 			<div className={styles.slot} data-tauri-drag-region>
 				{props.titleChildren}
 			</div>
-			<div
-				className={styles.spacer}
-				onClick={props.onSpacerClicked}
-				data-tauri-drag-region
-			/>
-			<div className={styles.slot}>{props.endChildren}</div>
+			<div className={styles.rightSide}>
+				<div
+					className={styles.spacer}
+					onClick={props.onSpacerClicked}
+					data-tauri-drag-region
+				/>
+				<div className={styles.slot}>{props.endChildren}</div>
+			</div>
 			{!placeLeft && systemControls}
 		</div>
 	);
