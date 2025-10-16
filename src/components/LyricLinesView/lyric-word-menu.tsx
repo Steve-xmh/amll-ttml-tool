@@ -14,6 +14,7 @@ import {
 import { ContextMenu } from "@radix-ui/themes";
 import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
+import { useTranslation } from "react-i18next";
 
 const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);
 const selectedWordsSizeAtom = atom((get) => get(selectedWordsAtom).size);
@@ -27,6 +28,8 @@ export const LyricWordMenu = ({
 	wordAtom: Atom<LyricWord>;
 	lineIndex: number;
 }) => {
+	const { t } = useTranslation();
+
 	const store = useStore();
 	const selectedWordsSize = useAtomValue(selectedWordsSizeAtom);
 	const selectedLinesSize = useAtomValue(selectedLinesSizeAtom);
@@ -48,7 +51,7 @@ export const LyricWordMenu = ({
 					setOpenSplitWordDialog(true);
 				}}
 			>
-				拆分或替换单词…
+				{t("contextMenu.splitReplaceWord", "拆分或替换单词…")}
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				disabled={!(selectedWordsSize > 1 && selectedLinesSize === 1)}
@@ -90,7 +93,7 @@ export const LyricWordMenu = ({
 					});
 				}}
 			>
-				合并单词
+				{t("contextMenu.combineWords", "合并单词")}
 			</ContextMenu.Item>
 
 			<ContextMenu.Item
@@ -110,7 +113,10 @@ export const LyricWordMenu = ({
 					});
 				}}
 			>
-				删除单词
+				{t("contextMenu.deleteWords", {
+					count: selectedWordsSize,
+					defaultValue: "删除单词",
+				})}
 			</ContextMenu.Item>
 
 			<ContextMenu.Separator />
@@ -119,14 +125,17 @@ export const LyricWordMenu = ({
 				disabled={selectedWordsSize !== 1}
 				onSelect={() => afterToNewLine()}
 			>
-				此后单词拆至新行
+				{t("contextMenu.moveFollowingWordToNewLine", "此后单词拆至新行")}
 			</ContextMenu.Item>
 
 			<ContextMenu.Item
 				disabled={selectedWordsSize === 0}
 				onSelect={() => selectedToNewLine()}
 			>
-				所选单词拆至新行
+				{t("contextMenu.moveWordToNewLine", {
+					count: selectedWordsSize,
+					defaultValue: "所选单词拆至新行",
+				})}
 			</ContextMenu.Item>
 
 			<ContextMenu.Separator />

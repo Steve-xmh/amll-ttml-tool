@@ -4,10 +4,13 @@ import { ContextMenu } from "@radix-ui/themes";
 import { atom, useAtomValue } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);
 
 export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
+	const { t } = useTranslation();
+
 	const selectedLinesSize = useAtomValue(selectedLinesSizeAtom);
 	const selectedLines = useAtomValue(selectedLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
@@ -61,13 +64,13 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 	return (
 		<>
 			<ContextMenu.CheckboxItem checked={Bgchecked} onCheckedChange={bgOnCheck}>
-				背景歌词
+				{t("contextMenu.bgLyric", "背景歌词")}
 			</ContextMenu.CheckboxItem>
 			<ContextMenu.CheckboxItem
 				checked={DuetChecked}
 				onCheckedChange={duetOnCheck}
 			>
-				对唱歌词
+				{t("contextMenu.duetLyric", "对唱歌词")}
 			</ContextMenu.CheckboxItem>
 			<ContextMenu.Separator />
 			<ContextMenu.Item
@@ -77,7 +80,7 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 					});
 				}}
 			>
-				在前插入空行
+				{t("contextMenu.insertLineBefore", "在前插入空行")}
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				onSelect={() => {
@@ -86,13 +89,16 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 					});
 				}}
 			>
-				在后插入空行
+				{t("contextMenu.insertLineAfter", "在后插入空行")}
 			</ContextMenu.Item>
 			<ContextMenu.Item onSelect={copyLines} disabled={selectedLinesSize === 0}>
-				拷贝行
+				{t("contextMenu.copyLine", {
+					count: selectedLinesSize,
+					defaultValue: "复制行",
+				})}
 			</ContextMenu.Item>
 			<ContextMenu.Item onSelect={combineLines} disabled={!combineEnabled}>
-				合并行
+				{t("contextMenu.combineLine", "合并行")}
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				onSelect={() => {
@@ -107,7 +113,10 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 					});
 				}}
 			>
-				删除行
+				{t("contextMenu.deleteLine", {
+					count: selectedLinesSize,
+					defaultValue: "删除行",
+				})}
 			</ContextMenu.Item>
 		</>
 	);
