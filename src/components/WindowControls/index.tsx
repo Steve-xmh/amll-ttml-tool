@@ -117,8 +117,8 @@ export default function WindowControls(props: WindowControlsProps) {
 
 	return (
 		<div className={styles.windowControls}>
-			{placeLeft && systemControls}
 			<div className={styles.leftSide}>
+				{placeLeft && systemControls}
 				<div className={styles.slot}>{props.startChildren}</div>
 				<div
 					className={styles.spacer}
@@ -136,8 +136,8 @@ export default function WindowControls(props: WindowControlsProps) {
 					data-tauri-drag-region
 				/>
 				<div className={styles.slot}>{props.endChildren}</div>
+				{!placeLeft && systemControls}
 			</div>
-			{!placeLeft && systemControls}
 		</div>
 	);
 }
