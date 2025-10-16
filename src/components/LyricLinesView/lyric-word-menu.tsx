@@ -191,8 +191,8 @@ export const LyricWordMenu = ({
 	}
 
 	function normalizeLineTime(line: LyricLine) {
-		if (line.words.length === 0) return;
-		line.startTime = line.words[0].startTime;
-		line.endTime = line.words[line.words.length - 1].endTime;
+		if (!line.words.length) return;
+		line.startTime = line.words[0].startTime || line.startTime;
+		line.endTime = line.words[line.words.length - 1].endTime || line.endTime;
 	}
 };

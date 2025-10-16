@@ -132,8 +132,8 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 			}
 			state.lyricLines.splice(minIdx + 1, maxIdx - minIdx);
 			if (target.words.length) {
-				target.startTime = target.words[0].startTime;
-				target.endTime = target.words[target.words.length - 1].endTime;
+				target.startTime = target.words[0].startTime || target.startTime;
+				target.endTime = target.words[target.words.length - 1].endTime || target.endTime;
 			}
 		});
 	}
