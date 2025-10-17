@@ -1,0 +1,19 @@
+.waveformContainer {
+	cursor: text;
+	transform: translateZ(0);
+  will-change: transform;
+}
+.waveformContainer ::part(progress) {
+	background-color: var(--accent-a4);
+}
+.waveformContainer ::part(cursor) {
+	box-shadow: 0 0 0 1px var(--accent-a11);
+}
+.waveformContainer ::part(hover) {
+	display: flex;
+	align-items: center;
+}
+.waveformContainer ::part(hover-label) {
+	padding: 0 0.5rem;
+	transition: none;
+}
