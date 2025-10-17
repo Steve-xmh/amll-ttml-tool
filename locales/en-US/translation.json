@@ -54,6 +54,7 @@
 			"showRomanLyricLines": "Show lyrics pronunciation",
 			"splitWordBySimpleMethod": "Split words (simple)",
 			"splitWordByJieba": "Split words (using JieBa)",
+			"splitWordByCompromise": "Split words (using Compromise)",
 			"view": "View",
 			"tool": "Tools",
 			"restoreFromHistory": "Restore from History...",
