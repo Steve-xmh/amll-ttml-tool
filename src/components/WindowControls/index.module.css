@@ -1,6 +1,6 @@
 .windowControls {
 	display: flex;
-	align-items: center;
+	align-items: stretch;
 	width: 100%;
 	font-size: 12px;
 	user-select: none;
@@ -14,4 +14,12 @@
 .slot {
 	flex-grow: 0;
 	flex-shrink: 1;
+	margin: auto 0;
+}
+
+.leftSide,
+.rightSide {
+	display: flex;
+	width: 0;
+	flex: 1;
 }

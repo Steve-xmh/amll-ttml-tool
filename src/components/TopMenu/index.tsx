@@ -51,6 +51,8 @@ import { Trans } from "react-i18next";
 import { toast } from "react-toastify";
 import saveFile from "save-file";
 import { useTranslation } from "react-i18next";
+import nlp from "compromise";
+import nlpSpeech from "compromise-speech";
 
 const useWindowSize = () => {
 	const [windowSize, setWindowSize] = useState({
@@ -385,6 +387,49 @@ export const TopMenu: FC = () => {
 		});
 	}, [editLyricLines]);
 
+	const onCompromiseSegmentation = useCallback(() => {
+		const latin = `0-9A-Za-z\\u00C0-\\u00ff'.,\\-/#!$%^&*;:{}=\\-_\`~()`;
+		const tokenReg = new RegExp(`[${latin}]+|\\s+|[^${latin}]`, "gu");
+		const fullLatinReg = new RegExp(`^[${latin}]+$`);
+		const nlpWithPlg = nlp.extend(nlpSpeech);
+		editLyricLines((state) => {
+			for (const line of state.lyricLines) {
+				const wholeLine = line.words.map((w) => w.word).join("");
+				const tokens = (wholeLine.match(tokenReg) || []).flatMap((token) => {
+					if (!fullLatinReg.test(token)) return token;
+					const doc = nlpWithPlg(token);
+					const syllables = (doc.syllables() as string[][]).flat();
+					if (syllables.length <= 1) return token;
+					let index = 0;
+					const intervals = syllables.map((syl) => {
+						const left = token.substring(index);
+						const match = left.toLowerCase().indexOf(syl.toLowerCase());
+						const end = index + (match < 0 ? 0 : match) + syl.length;
+						return { begin: index, end: (index = end) };
+					});
+					intervals.forEach((itv, index) => {
+						if (index == intervals.length - 1) itv.end = token.length;
+						else {
+							const nextItv = intervals[index + 1];
+							itv.end = nextItv.begin;
+							if (/['’]/.test(token.charAt(itv.end - 1))) {
+								// move the apostrophe to next syllable
+								itv.end -= 1;
+								nextItv.begin -= 1;
+							}
+						}
+						if (index == 0) itv.begin = 0;
+					});
+					return intervals.map((itv) => token.substring(itv.begin, itv.end));
+				});
+				line.words = tokens.map((t) => ({
+					...newLyricWord(),
+					word: t,
+				}));
+			}
+		});
+	}, [editLyricLines]);
+
 	const onJiebaSegmentation = useCallback(async () => {
 		const id = toast(
 			t("topBar.menu.tools.loadingJieba", "正在加载 Jieba 分词算法模块"),
@@ -595,6 +640,11 @@ export const TopMenu: FC = () => {
 												使用 JieBa 对歌词行分词
 											</Trans>
 										</DropdownMenu.Item>
+										<DropdownMenu.Item onSelect={onCompromiseSegmentation}>
+											<Trans i18nKey="topBar.menu.splitWordByCompromise">
+												使用 Compromise 对歌词行分词
+											</Trans>
+										</DropdownMenu.Item>
 										<DropdownMenu.Item onSelect={onSimpleSegmentation}>
 											<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">
 												使用简单方式对歌词行分词
@@ -793,6 +843,12 @@ export const TopMenu: FC = () => {
 										{t(
 											"topBar.menu.splitWordByJieba",
 											"使用 JieBa 对歌词行分词",
+										)}
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onSelect={onCompromiseSegmentation}>
+										{t(
+											"topBar.menu.splitWordByCompromise",
+											"使用 Compromise 对歌词行分词",
 										)}
 									</DropdownMenu.Item>
 									<DropdownMenu.Item onSelect={onSimpleSegmentation}>
