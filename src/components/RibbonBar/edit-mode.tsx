@@ -27,6 +27,7 @@ import {
 	type FC,
 	forwardRef,
 	useCallback,
+	useId,
 	useLayoutEffect,
 	useMemo,
 	useState,
@@ -236,14 +237,16 @@ function CheckboxField<
 		[itemAtom],
 	);
 	const isDisabled = useAtomValue(isDisabledAtom);
+	const checkboxId = useId();
 
 	return (
 		<>
 			<Text wrap="nowrap" size="1">
-				{label}
+				<label htmlFor={checkboxId}>{label}</label>
 			</Text>
 			<Checkbox
 				disabled={isDisabled}
+				id={checkboxId}
 				checked={
 					currentValue
 						? currentValue === MULTIPLE_VALUES
