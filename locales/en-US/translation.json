@@ -155,17 +155,18 @@
 		"empty": "None"
 	},
 	"contextMenu": {
-		"deleteLine": "Delete selected line",
-		"insertBeforeLine": "New line before selection",
-		"insertAfterLine": "New line after selection",
-		"toggleBGLine": "Toggle Background Vocal for the line",
-		"toggleDuetLine": "Toggle Duet Vocal for the line",
-		"deleteWord": "Delete this word",
-		"splitWord": "Split this word",
-		"wipNotification": {
-			"title": "Function currently not available",
-			"content": "Give us some time and we'll give you back a new sky~"
-		}
+		"splitReplaceWord": "Split or replace word…",
+		"combineWords": "Combine words",
+		"deleteWords": "Delete {count, plural, one {word} other {words}}",
+		"moveFollowingWordToNewLine": "Move followings to new line",
+		"moveWordToNewLine": "Move {count, plural, one {word} other {words}} to new line",
+		"bgLyric": "Background line",
+		"duetLyric": "Duet line",
+		"insertLineBefore": "Insert new line before",
+		"insertLineAfter": "Insert new line after",
+		"copyLine": "Duplicate {count, plural, one {line} other {lines}}",
+		"combineLine": "Combine lines",
+		"deleteLine": "Delete {count, plural, one {line} other {lines}}"
 	},
 	"lyricEditor": {
 		"addNewLineBtn": "New line"
