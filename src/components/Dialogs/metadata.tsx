@@ -22,6 +22,11 @@ import styles from "./metadata.module.css";
 interface SelectOption {
 	label: string;
 	value: string;
+	validation?: {
+		verifier: (value: string) => boolean;
+		message: string;
+		mandatory?: boolean;
+	};
 }
 
 export const MetadataEditor = () => {
