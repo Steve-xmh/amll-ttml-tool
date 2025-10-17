@@ -40,7 +40,7 @@ import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
-	MouseEvent,
+	type MouseEvent,
 	type PropsWithChildren,
 	type SyntheticEvent,
 	memo,
@@ -207,9 +207,10 @@ const LyricWordViewEditSpan = ({
 								const words = line.words.filter((w) => selectedWords.has(w.id));
 								collectedWords.push(...words);
 								if (!isCopyingWords) {
-									const deletedAtBounds =line.words.length > 0 &&
+									const deletedAtBounds =
+										line.words.length > 0 &&
 										(selectedWords.has(line.words[0].id) ||
-										selectedWords.has(line.words[line.words.length - 1].id));
+											selectedWords.has(line.words[line.words.length - 1].id));
 									line.words = line.words.filter(
 										(w) => !selectedWords.has(w.id),
 									);
@@ -274,7 +275,7 @@ function WordEditField<F extends keyof LyricWord, V extends LyricWord[F]>({
 	fieldName,
 	formatter,
 	parser,
-	textFieldStyle,
+	// textFieldStyle,
 	children,
 	...other
 }: PropsWithChildren<
@@ -677,7 +678,6 @@ const LyricWorldViewSync: FC<{
 	);
 
 	return (
-		// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 		<div
 			className={className}
 			onClick={(evt) => {
