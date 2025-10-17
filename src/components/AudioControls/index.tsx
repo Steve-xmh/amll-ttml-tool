@@ -11,7 +11,6 @@
 
 import { AudioSlider } from "$/components/AudioControls/audio-slider.tsx";
 import {
-	audioElAtom,
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
@@ -191,7 +190,7 @@ export const AudioControls: FC = memo(() => {
 									</Text>
 									<Text wrap="nowrap">播放速度</Text>
 									<Slider
-										min={0.05}
+										min={0.1}
 										max={2}
 										defaultValue={[playbackRate]}
 										step={0.05}
