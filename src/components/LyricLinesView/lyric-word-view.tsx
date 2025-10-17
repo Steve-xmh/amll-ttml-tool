@@ -55,6 +55,7 @@ import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordMenu } from "./lyric-word-menu";
 import { useTranslation } from "react-i18next";
+import { normalizeLineTime } from "./utils.ts";
 
 const isDraggingAtom = atom(false);
 
@@ -205,10 +206,15 @@ const LyricWordViewEditSpan = ({
 							for (const line of state.lyricLines) {
 								const words = line.words.filter((w) => selectedWords.has(w.id));
 								collectedWords.push(...words);
-								if (!isCopyingWords)
+								if (!isCopyingWords) {
+									const deletedAtBounds =line.words.length > 0 &&
+										(selectedWords.has(line.words[0].id) ||
+										selectedWords.has(line.words[line.words.length - 1].id));
 									line.words = line.words.filter(
 										(w) => !selectedWords.has(w.id),
 									);
+									if (deletedAtBounds) normalizeLineTime(line);
+								}
 							}
 							const targetLine = state.lyricLines.find(
 								({ id }) => id === line.id,
@@ -228,11 +234,12 @@ const LyricWordViewEditSpan = ({
 									collectedWords.forEach((w) => v.add(w.id));
 								});
 							}
-							targetLine.words.splice(
-								targetIndex + (insertRight ? 1 : 0),
-								0,
-								...collectedWords,
-							);
+							const insertPosition = targetIndex + (insertRight ? 1 : 0);
+							const insertedAtBounds =
+								insertPosition === 0 ||
+								insertPosition === targetLine.words.length;
+							targetLine.words.splice(insertPosition, 0, ...collectedWords);
+							if (insertedAtBounds) normalizeLineTime(targetLine);
 						});
 					}}
 					onDragLeave={(evt) => {
