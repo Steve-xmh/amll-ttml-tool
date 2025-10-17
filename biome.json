@@ -14,5 +14,12 @@
 			},
 			"a11y": "off"
 		}
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "off"
+			}
+		}
 	}
 }
