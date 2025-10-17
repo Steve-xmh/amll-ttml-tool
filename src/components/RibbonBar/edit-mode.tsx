@@ -289,7 +289,10 @@ function CheckboxField<
 	);
 }
 
-function EditModeField() {
+function EditModeField({
+	simpleModeLabel = "简单模式",
+	advanceModeLabel = "高级模式",
+}) {
 	const [layoutMode, setLayoutMode] = useAtom(layoutModeAtom);
 	return (
 		<>
@@ -301,12 +304,12 @@ function EditModeField() {
 				<Flex gapY="3" direction="column">
 					<Text wrap="nowrap" size="1">
 						<RadioGroup.Item value={LayoutMode.Simple}>
-							{t("settings.common.layoutModeOptions.simple", "简单模式")}
+							{simpleModeLabel}
 						</RadioGroup.Item>
 					</Text>
 					<Text wrap="nowrap" size="1">
 						<RadioGroup.Item value={LayoutMode.Advance}>
-							{t("settings.common.layoutModeOptions.advance", "高级模式")}
+							{advanceModeLabel}
 						</RadioGroup.Item>
 					</Text>
 				</Flex>
@@ -548,7 +551,16 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 					</Grid>
 				</RibbonSection>
 				<RibbonSection label={t("ribbonBar.editMode.layoutMode", "布局模式")}>
-					<EditModeField />
+					<EditModeField
+						simpleModeLabel={t(
+							"settings.common.layoutModeOptions.simple",
+							"简单模式",
+						)}
+						advanceModeLabel={t(
+							"settings.common.layoutModeOptions.advance",
+							"高级模式",
+						)}
+					/>
 				</RibbonSection>
 			</RibbonFrame>
 		);
