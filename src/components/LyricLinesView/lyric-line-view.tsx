@@ -44,7 +44,6 @@ import { splitAtom } from "jotai/utils";
 import {
 	type FC,
 	Fragment,
-	type RefObject,
 	type SyntheticEvent,
 	memo,
 	useCallback,

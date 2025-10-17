@@ -130,11 +130,8 @@ export const LyricLineMenu = ({ lineIndex }: { lineIndex: number }) => {
 				const line = state.lyricLines[i];
 				target.words.push(...line.words);
 			}
+			target.endTime = state.lyricLines[maxIdx].endTime;
 			state.lyricLines.splice(minIdx + 1, maxIdx - minIdx);
-			if (target.words.length) {
-				target.startTime = target.words[0].startTime || target.startTime;
-				target.endTime = target.words[target.words.length - 1].endTime || target.endTime;
-			}
 		});
 	}
 
