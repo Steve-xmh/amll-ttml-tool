@@ -97,7 +97,10 @@ export const TopMenu: FC = () => {
 			setConfirmDialog({
 				open: true,
 				title: t("confirmDialog.newFile.title", "确认新建文件"),
-				description: t("confirmDialog.newFile.description", "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要新建文件吗？"),
+				description: t(
+					"confirmDialog.newFile.description",
+					"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要新建文件吗？",
+				),
 				onConfirm: action,
 			});
 		} else {
@@ -137,7 +140,10 @@ export const TopMenu: FC = () => {
 			setConfirmDialog({
 				open: true,
 				title: t("confirmDialog.openFile.title", "确认打开文件"),
-				description: t("confirmDialog.openFile.description", "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"),
+				description: t(
+					"confirmDialog.openFile.description",
+					"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？",
+				),
 				onConfirm: action,
 			});
 		} else {
@@ -164,7 +170,10 @@ export const TopMenu: FC = () => {
 			setConfirmDialog({
 				open: true,
 				title: t("confirmDialog.openFromClipboard.title", "确认从剪贴板打开"),
-				description: t("confirmDialog.openFromClipboard.description", "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？"),
+				description: t(
+					"confirmDialog.openFromClipboard.description",
+					"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？",
+				),
 				onConfirm: action,
 			});
 		} else {
@@ -405,10 +414,12 @@ export const TopMenu: FC = () => {
 						const left = token.substring(index);
 						const match = left.toLowerCase().indexOf(syl.toLowerCase());
 						const end = index + (match < 0 ? 0 : match) + syl.length;
-						return { begin: index, end: (index = end) };
+						const nextBegin = index;
+						index = end;
+						return { begin: nextBegin, end };
 					});
 					intervals.forEach((itv, index) => {
-						if (index == intervals.length - 1) itv.end = token.length;
+						if (index === intervals.length - 1) itv.end = token.length;
 						else {
 							const nextItv = intervals[index + 1];
 							itv.end = nextItv.begin;
@@ -418,7 +429,7 @@ export const TopMenu: FC = () => {
 								nextItv.begin -= 1;
 							}
 						}
-						if (index == 0) itv.begin = 0;
+						if (index === 0) itv.begin = 0;
 					});
 					return intervals.map((itv) => token.substring(itv.begin, itv.end));
 				});
@@ -608,7 +619,7 @@ export const TopMenu: FC = () => {
 									onSelect={onDeleteSelection}
 									shortcut={formatKeyBindings(deleteSelectionKey)}
 								>
-									<Trans i18nKey="contextMenu.deleteWord">删除选定单词</Trans>
+									<Trans i18nKey="contextMenu.deleteWords">删除选定单词</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
@@ -803,7 +814,7 @@ export const TopMenu: FC = () => {
 								onSelect={onDeleteSelection}
 								shortcut={formatKeyBindings(deleteSelectionKey)}
 							>
-								<Trans i18nKey="contextMenu.deleteWord">删除选定单词</Trans>
+								<Trans i18nKey="contextMenu.deleteWords">删除选定单词</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
