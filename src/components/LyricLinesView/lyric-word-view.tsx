@@ -164,6 +164,7 @@ const LyricWordViewEditSpan = ({
 					draggable={toolMode === ToolMode.Edit}
 					onDragStart={(evt) => {
 						if (!isWordSelected) onWordSelect(evt);
+						evt.dataTransfer.effectAllowed = "copyMove";
 						evt.dataTransfer.dropEffect = "move";
 						store.set(isDraggingAtom, true);
 						evt.stopPropagation();
@@ -185,6 +186,8 @@ const LyricWordViewEditSpan = ({
 							evt.currentTarget.classList.remove(styles.dropLeft);
 							evt.currentTarget.classList.add(styles.dropRight);
 						}
+						const isCopyingWords = evt.ctrlKey || evt.metaKey;
+						evt.dataTransfer.dropEffect = isCopyingWords ? "copy" : "move";
 					}}
 					onDrop={(evt) => {
 						evt.currentTarget.classList.remove(styles.dropLeft);
