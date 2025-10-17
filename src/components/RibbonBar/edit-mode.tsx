@@ -20,8 +20,16 @@ import {
 	type LyricWord,
 	newLyricLine,
 } from "$/utils/ttml-types.ts";
-import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
-import { atom, useAtomValue, useSetAtom, useStore } from "jotai";
+import {
+	Button,
+	Checkbox,
+	Grid,
+	Text,
+	TextField,
+	RadioGroup,
+	Flex,
+} from "@radix-ui/themes";
+import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
@@ -34,6 +42,7 @@ import {
 } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 import { useTranslation } from "react-i18next";
+import { LayoutMode, layoutModeAtom } from "$/states/config";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");
 
@@ -279,6 +288,32 @@ function CheckboxField<
 	);
 }
 
+function EditModeField() {
+	const [layoutMode, setLayoutMode] = useAtom(layoutModeAtom);
+	return (
+		<>
+			<RadioGroup.Root
+				value={layoutMode}
+				onValueChange={(v) => setLayoutMode(v as LayoutMode)}
+				size="1"
+			>
+				<Flex gapY="3" direction="column">
+					<Text wrap="nowrap" size="1">
+						<RadioGroup.Item value={LayoutMode.Simple}>
+							简单模式
+						</RadioGroup.Item>
+					</Text>
+					<Text wrap="nowrap" size="1">
+						<RadioGroup.Item value={LayoutMode.Advance}>
+							高级模式
+						</RadioGroup.Item>
+					</Text>
+				</Flex>
+			</RadioGroup.Root>
+		</>
+	);
+}
+
 // function DropdownField<
 // 	L extends Word extends true ? LyricWord : LyricLine,
 // 	F extends keyof L,
@@ -510,6 +545,9 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							textFieldStyle={{ width: "20em" }}
 						/>
 					</Grid>
+				</RibbonSection>
+				<RibbonSection label={"布局模式"}>
+					<EditModeField />
 				</RibbonSection>
 			</RibbonFrame>
 		);
