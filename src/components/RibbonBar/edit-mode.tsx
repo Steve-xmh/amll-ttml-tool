@@ -43,6 +43,7 @@ import {
 import { RibbonFrame, RibbonSection } from "./common";
 import { useTranslation } from "react-i18next";
 import { LayoutMode, layoutModeAtom } from "$/states/config";
+import { t } from "i18next";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");
 
@@ -300,12 +301,12 @@ function EditModeField() {
 				<Flex gapY="3" direction="column">
 					<Text wrap="nowrap" size="1">
 						<RadioGroup.Item value={LayoutMode.Simple}>
-							简单模式
+							{t("settings.common.layoutModeOptions.simple", "简单模式")}
 						</RadioGroup.Item>
 					</Text>
 					<Text wrap="nowrap" size="1">
 						<RadioGroup.Item value={LayoutMode.Advance}>
-							高级模式
+							{t("settings.common.layoutModeOptions.advance", "高级模式")}
 						</RadioGroup.Item>
 					</Text>
 				</Flex>
@@ -546,7 +547,7 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						/>
 					</Grid>
 				</RibbonSection>
-				<RibbonSection label={"布局模式"}>
+				<RibbonSection label={t("ribbonBar.editMode.layoutMode", "布局模式")}>
 					<EditModeField />
 				</RibbonSection>
 			</RibbonFrame>

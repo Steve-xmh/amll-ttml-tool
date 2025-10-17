@@ -186,7 +186,12 @@
       "obscene": "不雅用语",
       "secondaryContent": "次要内容",
       "translatedLyric": "翻译歌词",
-      "romanLyric": "音译歌词"
+      "romanLyric": "音译歌词",
+      "layoutMode": "布局模式",
+      "layoutModeOptions": {
+        "simple": "简单模式",
+        "advance": "高级模式"
+      }
     },
     "previewMode": {
       "lyrics": "歌词",
