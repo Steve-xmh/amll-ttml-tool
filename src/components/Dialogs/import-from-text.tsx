@@ -1,5 +1,5 @@
-import { importFromTextDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom } from "$/states/main.ts";
+import { confirmDialogAtom, importFromTextDialogAtom } from "$/states/dialogs.ts";
+import { isDirtyAtom, lyricLinesAtom } from "$/states/main.ts";
 import { error as logError } from "$/utils/logging.ts";
 import {
 	type LyricLine,
@@ -17,12 +17,13 @@ import {
 	TextArea,
 	TextField,
 } from "@radix-ui/themes";
-import { atom, useAtom, useStore } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { type PropsWithChildren, memo, useCallback } from "react";
 import { toast } from "react-toastify";
 // import styles from "./import-from-text.module.css";
 import error = toast.error;
+import { useTranslation } from "react-i18next";
 
 // type IModelDeltaDecoration = monaco.editor.IModelDeltaDecoration;
 // type IEditorDecorationsCollection = monaco.editor.IEditorDecorationsCollection;
@@ -94,6 +95,10 @@ const ImportFromTextEditor = memo(() => {
 });
 
 export const ImportFromText = () => {
+	const setConfirmDialog = useSetAtom(confirmDialogAtom);
+	const isDirty = useAtomValue(isDirtyAtom);
+	const { t } = useTranslation();
+
 	const [importFromTextDialog, setImportFromTextDialog] = useAtom(
 		importFromTextDialogAtom,
 	);
@@ -287,8 +292,24 @@ export const ImportFromText = () => {
 						<Button
 							onClick={() => {
 								try {
-									onImport(store.get(textValueAtom));
-									setImportFromTextDialog(false);
+									const importAction = () => {
+										onImport(store.get(textValueAtom));
+										setImportFromTextDialog(false);
+									};
+									if (isDirty)
+										setConfirmDialog({
+											open: true,
+											title: t(
+												"confirmDialog.importFile.title",
+												"确认导入歌词",
+											),
+											description: t(
+												"confirmDialog.importFile.description",
+												"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要导入歌词吗？",
+											),
+											onConfirm: () => importAction(),
+										});
+									else importAction();
 								} catch (e) {
 									error(
 										"导入纯文本歌词失败，请检查输入的文本是否正确，或者导入设置是否正确",
