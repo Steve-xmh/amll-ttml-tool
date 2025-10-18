@@ -14,6 +14,7 @@ import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
 import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import styles from "./audio-spectrogram.module.css";
 import { msToTimestamp } from "$/utils/timestamp";
+import colorMap from "./colorMap.json";
 
 export const AudioSpectrogram = () => {
 	const setCurrentTime = useSetAtom(currentTimeAtom);
@@ -47,7 +48,6 @@ export const AudioSpectrogram = () => {
 		const ws = WaveSurfer.create({
 			container: wsContainerRef.current,
 			height: height * (1 - spectrogramHeightRatio),
-			hideScrollbar: true,
 			waveColor: primaryFillColor,
 			progressColor: fontColor,
 			cursorColor: fontColor,
@@ -101,11 +101,11 @@ export const AudioSpectrogram = () => {
 					// windowFunc: 'hann' | 'hamming' | 'blackman' | 'bartlett' | 'cosine' | 'gauss' | 'lanczoz' | 'rectangular' | 'triangular'
 					//
 					// Color mapping for frequency intensity:
-					// colorMap: createColor,
+					colorMap: colorMap,
 					//
 					// Gain and range for color scaling:
-					// gainDB: 20,        // Brightness adjustment (default: 20dB)
-					// rangeDB: 80,       // Dynamic range (default: 80dB)
+					gainDB: 20,        // Brightness adjustment (default: 20dB)
+					rangeDB: 70,       // Dynamic range (default: 80dB)
 					//
 					// Overlap between FFT windows:
 					// noverlap: null,    // Auto-calculated by default, or set manually
