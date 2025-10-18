@@ -6,20 +6,33 @@ import {
 import { audioEngine } from "$/utils/audio";
 // import { msToTimestamp } from "$/utils/timestamp.ts";
 import { Text } from "@radix-ui/themes";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
 import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
 import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
+import RegionsPlugin, {
+	type RegionParams,
+} from "wavesurfer.js/dist/plugins/regions.esm.js";
 import styles from "./audio-spectrogram.module.css";
 import { msToTimestamp } from "$/utils/timestamp";
 import colorMap from "./colorMap.json";
+import {
+	lyricLinesAtom,
+	selectedLinesAtom,
+	ToolMode,
+	toolModeAtom,
+} from "$/states/main";
 
 export const AudioSpectrogram = () => {
 	const setCurrentTime = useSetAtom(currentTimeAtom);
 	const setCurrentDuration = useSetAtom(currentDurationAtom);
 	const setAudioPlaying = useSetAtom(audioPlayingAtom);
+
+	const regionsRef = useRef<ReturnType<typeof RegionsPlugin.create> | null>(
+		null,
+	);
 
 	const wsContainerRef = useRef<HTMLDivElement>(null);
 	const waveSurferRef = useRef<WaveSurfer | null>(null);
@@ -45,6 +58,9 @@ export const AudioSpectrogram = () => {
 
 		const spectrogramHeightRatio = 0.8;
 
+		const regions = RegionsPlugin.create();
+		regionsRef.current = regions;
+
 		const ws = WaveSurfer.create({
 			container: wsContainerRef.current,
 			height: height * (1 - spectrogramHeightRatio),
@@ -58,9 +74,7 @@ export const AudioSpectrogram = () => {
 			sampleRate: 44100,
 			plugins: [
 				ZoomPlugin.create({
-					// the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
 					scale: 0.3,
-					// Optionally, specify the maximum pixels-per-second factor while zooming
 					maxZoom: 200,
 				}),
 				SpectrogramPlugin.create({
@@ -85,6 +99,7 @@ export const AudioSpectrogram = () => {
 					labelSize: fontSize,
 					labelPreferLeft: false,
 				}),
+				regions,
 			],
 			media: audioEngine.audioEl,
 		});
@@ -148,6 +163,49 @@ export const AudioSpectrogram = () => {
 		setCurrentTime,
 		setAudioPlaying,
 	]);
+
+	const selectedLines = useAtomValue(selectedLinesAtom);
+	const toolMode = useAtomValue(toolModeAtom);
+	const lyricLines = useAtomValue(lyricLinesAtom).lyricLines;
+
+	useEffect(() => {
+		const ws = waveSurferRef.current;
+		const regions = regionsRef.current;
+		if (!ws || !regions) return;
+		const maintainRegion = (params: RegionParams) => {
+			const existingRegions = regions.getRegions();
+			const targetRegion = existingRegions.find((r) => r.id === params.id);
+			if (targetRegion) {
+				targetRegion.setOptions({
+					start: params.start,
+					end: params.end,
+				});
+			} else regions.addRegion(params);
+		};
+
+		if (toolMode !== ToolMode.Sync) {
+			regions.clearRegions();
+			return;
+		}
+		for (const line of lyricLines) {
+			if (!selectedLines.has(line.id)) continue;
+			for (const word of line.words) {
+				const lineWordIds = line.words.map((w) => w.id);
+				regions.getRegions().forEach((region) => {
+					if (!lineWordIds.includes(region.id)) region.remove();
+				});
+				maintainRegion({
+					id: word.id,
+					start: word.startTime / 1000,
+					end: word.endTime / 1000,
+					color: "transparent",
+					drag: false,
+					content: word.word,
+				});
+			}
+			break;
+		}
+	}, [selectedLines, lyricLines, toolMode]);
 
 	return (
 		<div
