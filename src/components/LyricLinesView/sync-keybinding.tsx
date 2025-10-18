@@ -40,18 +40,21 @@ export const SyncKeyBinding: FC = () => {
 				0,
 				audioEngine.musicCurrentTime * 1000 + syncTimeOffset,
 			);
-			let adjustedTime = currentTime;
-			switch (store.get(syncJudgeModeAtom)) {
-				case SyncJudgeMode.FirstKeyDownTime:
-					adjustedTime -= evt.downTimeOffset;
-					break;
-				case SyncJudgeMode.LastKeyUpTime:
-					break;
-				case SyncJudgeMode.MiddleKeyTime:
-					adjustedTime -= currentTime - evt.downTimeOffset / 2;
-					break;
+			let timeAdjustment = 0;
+			if (audioEngine.musicPlaying) {
+				switch (store.get(syncJudgeModeAtom)) {
+					case SyncJudgeMode.FirstKeyDownTime:
+						timeAdjustment -= evt.downTimeOffset;
+						break;
+					case SyncJudgeMode.LastKeyUpTime:
+						break;
+					case SyncJudgeMode.MiddleKeyTime:
+						timeAdjustment -= currentTime - evt.downTimeOffset / 2;
+						break;
+				}
+				timeAdjustment *= audioEngine.musicPlayBackRate;
 			}
-			return Math.max(0, adjustedTime) | 0;
+			return Math.max(0, currentTime + timeAdjustment) | 0;
 		},
 		[store],
 	);
@@ -152,16 +155,9 @@ export const SyncKeyBinding: FC = () => {
 	useKeyBindingAtom(
 		keySyncStartAtom,
 		(evt) => {
-			const syncTimeOffset = store.get(syncTimeOffsetAtom);
 			const location = getCurrentLocation(store);
 			if (!location) return;
-			const currentTime =
-				Math.max(
-					0,
-					audioEngine.musicCurrentTime * 1000 -
-						evt.downTimeOffset +
-						syncTimeOffset,
-				) | 0;
+			const currentTime = calcJudgeTime(evt);
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const line = state.lyricLines[location.lineIndex];
