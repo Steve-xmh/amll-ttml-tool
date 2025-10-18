@@ -33,6 +33,8 @@ import {
 	MusicNote2Filled,
 	PauseFilled,
 	PlayFilled,
+	ChevronUpFilled,
+	ChevronDownFilled,
 } from "@fluentui/react-icons";
 import {
 	Card,
@@ -47,6 +49,7 @@ import {
 } from "@radix-ui/themes";
 import { useAtom, useAtomValue, useStore } from "jotai";
 import { type FC, memo, useCallback, useEffect, useState } from "react";
+import { AudioSpectrogram } from "./audio-spectrogram";
 
 const AudioPlaybackKeyBinding = memo(() => {
 	const store = useStore();
@@ -87,6 +90,7 @@ const AudioPlaybackKeyBinding = memo(() => {
 
 export const AudioControls: FC = memo(() => {
 	const [audioLoaded, setAudioLoaded] = useState(false);
+	const [spectrogramVisible, setSpectrogramVisible] = useState(false);
 	const currentTime = useAtomValue(currentTimeAtom);
 	const currentDuration = useAtomValue(currentDurationAtom);
 	const [audioPlaying, setAudioPlaying] = useAtom(audioPlayingAtom);
@@ -167,74 +171,97 @@ export const AudioControls: FC = memo(() => {
 		<Card m="2" mt="0">
 			<Inset>
 				<AudioPlaybackKeyBinding />
-				<Flex align="center" px="2" gapX="2">
-					<HoverCard.Root>
-						<HoverCard.Trigger>
-							<IconButton my="2" variant="soft" onClick={onLoadMusic}>
-								<MusicNote2Filled />
+				<Flex direction="column">
+					{spectrogramVisible && <AudioSpectrogram />}
+					<Flex align="center" px="2" gapX="2">
+						<HoverCard.Root>
+							<HoverCard.Trigger>
+								<IconButton my="2" variant="soft" onClick={onLoadMusic}>
+									<MusicNote2Filled />
+								</IconButton>
+							</HoverCard.Trigger>
+							<HoverCard.Content>
+								<Flex direction="column" align="center">
+									<Grid columns="0fr 7em 2em" gap="2" align="baseline">
+										<Text wrap="nowrap">音量</Text>
+										<Slider
+											min={0}
+											max={1}
+											defaultValue={[volume]}
+											step={0.01}
+											onValueChange={(v) => setVolume(v[0])}
+										/>
+										<Text wrap="nowrap" color="gray" size="1">
+											{(volume * 100).toFixed()}%
+										</Text>
+										<Text wrap="nowrap">播放速度</Text>
+										<Slider
+											min={0.1}
+											max={2}
+											defaultValue={[playbackRate]}
+											step={0.05}
+											onValueChange={(v) => setPlaybackRate(v[0])}
+										/>
+										<Text wrap="nowrap" color="gray" size="1">
+											{playbackRate.toFixed(2)}x
+										</Text>
+									</Grid>
+									<Text
+										wrap="nowrap"
+										align="center"
+										mt="2"
+										size="1"
+										color="gray"
+									>
+										点击图标按钮以加载音乐
+									</Text>
+								</Flex>
+							</HoverCard.Content>
+						</HoverCard.Root>
+						<Tooltip content="暂停 / 播放音乐">
+							<IconButton
+								my="2"
+								ml="0"
+								variant="soft"
+								disabled={!audioLoaded}
+								onClick={onTogglePlay}
+							>
+								{audioPlaying ? <PauseFilled /> : <PlayFilled />}
 							</IconButton>
-						</HoverCard.Trigger>
-						<HoverCard.Content>
-							<Flex direction="column" align="center">
-								<Grid columns="0fr 7em 2em" gap="2" align="baseline">
-									<Text wrap="nowrap">音量</Text>
-									<Slider
-										min={0}
-										max={1}
-										defaultValue={[volume]}
-										step={0.01}
-										onValueChange={(v) => setVolume(v[0])}
-									/>
-									<Text wrap="nowrap" color="gray" size="1">
-										{(volume * 100).toFixed()}%
-									</Text>
-									<Text wrap="nowrap">播放速度</Text>
-									<Slider
-										min={0.1}
-										max={2}
-										defaultValue={[playbackRate]}
-										step={0.05}
-										onValueChange={(v) => setPlaybackRate(v[0])}
-									/>
-									<Text wrap="nowrap" color="gray" size="1">
-										{playbackRate.toFixed(2)}x
-									</Text>
-								</Grid>
-								<Text wrap="nowrap" align="center" mt="2" size="1" color="gray">
-									点击图标按钮以加载音乐
-								</Text>
-							</Flex>
-						</HoverCard.Content>
-					</HoverCard.Root>
-					<Tooltip content="暂停 / 播放音乐">
-						<IconButton
-							my="2"
-							ml="0"
-							variant="soft"
-							disabled={!audioLoaded}
-							onClick={onTogglePlay}
+						</Tooltip>
+						<Text
+							size="2"
+							style={{
+								minWidth: "5.5em",
+								textAlign: "left",
+							}}
 						>
-							{audioPlaying ? <PauseFilled /> : <PlayFilled />}
-						</IconButton>
-					</Tooltip>
-					<Text
-						size="2"
-						style={{
-							minWidth: "5.5em",
-							textAlign: "left",
-						}}
-					>
-						{msToTimestamp(currentTime)}
-					</Text>
-					<AudioSlider />
-					<Text
-						size="2"
-						style={{
-							minWidth: "5.5em",
-						}}
-					>
-						{msToTimestamp(currentDuration)}
-					</Text>
+							{msToTimestamp(currentTime)}
+						</Text>
+						<AudioSlider />
+						<Text
+							size="2"
+							style={{
+								minWidth: "5.5em",
+							}}
+						>
+							{msToTimestamp(currentDuration)}
+						</Text>
+						<Tooltip content="展开 / 收起频谱图">
+							<IconButton
+								my="2"
+								ml="0"
+								variant="soft"
+								onClick={() => setSpectrogramVisible(!spectrogramVisible)}
+							>
+								{spectrogramVisible ? (
+									<ChevronDownFilled />
+								) : (
+									<ChevronUpFilled />
+								)}
+							</IconButton>
+						</Tooltip>
+					</Flex>
 				</Flex>
 			</Inset>
 		</Card>

@@ -1,7 +1,5 @@
 .waveformContainer {
 	cursor: text;
-	transform: translateZ(0);
-  will-change: transform;
 }
 .waveformContainer ::part(progress) {
 	background-color: var(--accent-a4);
