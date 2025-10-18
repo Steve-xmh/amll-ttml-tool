@@ -38,5 +38,5 @@
 	color: white;
 	text-shadow: #0004 0 0 2px;
 	background-color: #0003;
-	transform: translateY(2.5rem);
+	margin-top: 2.5rem !important;
 }
