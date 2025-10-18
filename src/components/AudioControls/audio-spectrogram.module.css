@@ -7,7 +7,9 @@
 	background-color: var(--accent-a4);
 }
 .spectrogramContainer ::part(cursor) {
-	box-shadow: 0 0 0 1px var(--accent-a11);
+	box-shadow:
+		0 0 0 1px var(--accent-a11),
+		0 0 0 3px #0002;
 }
 .spectrogramContainer ::part(hover-label) {
 	padding: 0 0.5rem;
