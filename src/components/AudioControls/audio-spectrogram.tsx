@@ -55,63 +55,26 @@ export const AudioSpectrogram = () => {
 			normalize: true,
 			cursorWidth: 0,
 			barHeight: 0.8,
+			sampleRate: 44100,
 			plugins: [
 				ZoomPlugin.create({
 					// the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
-					scale: 0.5,
+					scale: 0.3,
 					// Optionally, specify the maximum pixels-per-second factor while zooming
-					maxZoom: 100,
+					maxZoom: 200,
 				}),
 				SpectrogramPlugin.create({
-					// Display frequency labels on the left side
-					labels: true,
-
-					// Height of the spectrogram in pixels
+					labels: false,
 					height: height * spectrogramHeightRatio,
-
-					// Render separate spectrograms for each audio channel
-					// Set to false to combine all channels into one spectrogram
-					splitChannels: false,
-
-					// Frequency scale type:
-					// - 'linear': Standard linear frequency scale (0-20kHz)
-					// - 'logarithmic': Logarithmic scale, better for low frequencies
-					// - 'mel': Mel scale based on human hearing perception (default)
-					// - 'bark': Bark scale for psychoacoustic analysis
-					// - 'erb': ERB scale for auditory filter modeling
-					scale: "mel",
-
-					// Frequency range to display (in Hz)
-					frequencyMax: 4000, // Maximum frequency to show
-					frequencyMin: 0, // Minimum frequency to show
-
-					// FFT parameters
-					fftSamples: 1024, // Number of samples for FFT (must be power of 2)
-					// Higher values = better frequency resolution, slower rendering
-
-					// Visual styling
-					labelsBackground: "transparent", // Background for frequency labels
-
-					// Performance optimization
-					useWebWorker: true, // Use web worker for FFT calculations (improves performance)
-
-					// Additional options you can configure:
-					//
-					// Window function for FFT (affects frequency resolution vs time resolution):
-					// windowFunc: 'hann' | 'hamming' | 'blackman' | 'bartlett' | 'cosine' | 'gauss' | 'lanczoz' | 'rectangular' | 'triangular'
-					//
-					// Color mapping for frequency intensity:
-					colorMap: colorMap,
-					//
-					// Gain and range for color scaling:
-					gainDB: 20,        // Brightness adjustment (default: 20dB)
-					rangeDB: 70,       // Dynamic range (default: 80dB)
-					//
-					// Overlap between FFT windows:
-					// noverlap: null,    // Auto-calculated by default, or set manually
-					//
-					// Maximum canvas width for performance:
-					// maxCanvasWidth: 30000,  // Split large spectrograms into multiple canvases
+					colorMap,
+					fftSamples: 1024,
+					noverlap: 512,
+					frequencyMin: 100,
+					frequencyMax: 22050,
+					scale: "linear",
+					gainDB: 20,
+					rangeDB: 80,
+					windowFunc: "hann",
 				}),
 				HoverPlugin.create({
 					formatTimeCallback: (v) => msToTimestamp(Math.round(v * 1000)),
