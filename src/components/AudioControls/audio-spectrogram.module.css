@@ -24,3 +24,19 @@
 	transform: translate(-50%, -50%);
 	pointer-events: none;
 }
+
+.spectrogramContainer ::part(region) {
+	box-shadow: 0 0 0 2px var(--accent-a7);
+	margin: 0 1px;
+	background-color: var(--accent-a3);
+	border-radius: 0;
+}
+.spectrogramContainer ::part(region-handle) {
+	display: none;
+}
+.spectrogramContainer ::part(region-content) {
+	color: white;
+	text-shadow: #0004 0 0 2px;
+	background-color: #0003;
+	transform: translateY(2.5rem);
+}
