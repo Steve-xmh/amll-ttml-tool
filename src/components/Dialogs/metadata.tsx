@@ -112,10 +112,10 @@ export const MetadataEditor = () => {
 				),
 				value: "appleMusicId",
 				validation: {
-					verifier: (value: string) => /^\d{10}$/.test(value),
+					verifier: pureNumber,
 					message: t(
 						"metadataDialog.builtinOptions.appleMusicIdInvalidMsg",
-						"Apple Music ID 应为 10 位数字",
+						"Apple Music ID 应为纯数字",
 					),
 					severe: true,
 				},
