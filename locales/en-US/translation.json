@@ -333,6 +333,7 @@
 		"spaceCount": "Space x{count}"
 	},
 	"ribbonBar": {
+		"loading": "Panel loading...",
 		"editMode": {
 			"new": "New",
 			"lyricLine": "Lyric Line",

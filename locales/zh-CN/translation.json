@@ -172,6 +172,7 @@
 		"spaceCount": "空格 x{count}"
 	},
 	"ribbonBar": {
+		"loading": "面板载入中...",
 		"editMode": {
 			"multipleValues": "多个值...",
 			"new": "新建",
