@@ -82,7 +82,7 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 				<RibbonSection
 					label={t("ribbonBar.syncMode.syncAdjustment", "打轴调整")}
 				>
-					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
+					<Grid columns="0fr 0fr" gap="4" gapY="1" flexGrow="1" align="center">
 						<Text wrap="nowrap" size="1">
 							{t("ribbonBar.syncMode.timeOffset", "时间戳位移")}
 						</Text>
@@ -128,7 +128,7 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 					<Flex gap="4">
 						<Grid
 							columns="0fr 0fr"
-							gap="2"
+							gap="4"
 							gapY="1"
 							flexGrow="1"
 							align="center"
