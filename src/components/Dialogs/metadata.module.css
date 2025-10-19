@@ -9,7 +9,8 @@
 
 		> td:first-child {
 			text-align: end;
-			vertical-align: center;
+			vertical-align: top;
+			line-height: 2.25rem;
 		}
 	}
 }

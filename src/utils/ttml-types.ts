@@ -18,6 +18,7 @@ import { uid } from "uid";
 export interface TTMLMetadata {
 	key: string;
 	value: string[];
+	error?: boolean;
 }
 
 export interface TTMLLyric {
