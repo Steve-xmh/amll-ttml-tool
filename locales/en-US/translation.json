@@ -23,25 +23,25 @@
 		"menu": {
 			"tools": {
 				"loadingJieba": "Loading Jieba tokenizer module",
-				"processing": "Tokenizing, please wait...",
+				"processing": "Tokenizing, please wait…",
 				"completed": "Tokenization complete!",
 				"error": "Tokenization failed, please check console errors!"
 			},
 			"file": "File",
-			"newLyric": "New Lyrics",
-			"openLyric": "Open Lyrics",
-			"saveLyric": "Save Lyrics",
+			"newLyric": "New lyrics",
+			"openLyric": "Open lyrics",
+			"saveLyric": "Save lyrics",
 			"importLyric": {
-				"import": "Import Lyrics…",
-				"fromPlainText": "Import from plain text",
-				"fromLyRiC": "Import from LyRiC file",
-				"fromESLyRiC": "Import from ESLyRiC file",
-				"fromQRC": "Import from QRC file",
-				"fromYRC": "Import from YRC file",
-				"fromLrcfySylb": "Import from Lyricify Syllable file"
+				"import": "Import lyrics",
+				"fromPlainText": "Import from plain text…",
+				"fromLyRiC": "Import from LyRiC file…",
+				"fromESLyRiC": "Import from ESLyRiC file…",
+				"fromQRC": "Import from QRC file…",
+				"fromYRC": "Import from YRC file…",
+				"fromLrcfySylb": "Import from Lyricify Syllable file…"
 			},
 			"exportLyric": {
-				"export": "Export Lyrics…",
+				"export": "Export lyrics",
 				"toPlainText": "Export as plain text",
 				"toLyRiC": "Export to LyRiC",
 				"toESLyRiC": "Export to ESLyRiC",
@@ -68,11 +68,11 @@
 			"splitWordByCompromise": "Split words (using Compromise)",
 			"view": "View",
 			"tool": "Tools",
-			"restoreFromHistory": "Restore from History...",
+			"restoreFromHistory": "Restore from History…",
 			"openFromClipboard": "Open TTML from Clipboard",
 			"saveLyricToClipboard": "Save TTML to Clipboard",
 			"selectWordsOfMatchedSelection": "Select words matching selection",
-			"editMetadata": "Edit Lyrics Metadata",
+			"editMetadata": "Edit lyrics metadata…",
 			"help": "Help",
 			"loadingJieba": "Loading Jieba tokenizer module",
 			"processing": "Tokenizing, please wait...",
@@ -152,7 +152,7 @@
 			"playbackRateDown": "Playback - Decrease speed"
 		},
 		"common": {
-			"latencyTest": "Audio/Input Latency Test"
+			"latencyTest": "Audio/input latency test"
 		}
 	},
 	"textImportDialog": {
@@ -371,7 +371,7 @@
 		"spaceCount": "Space x{count}"
 	},
 	"ribbonBar": {
-		"loading": "Panel loading...",
+		"loading": "Panel loading…",
 		"editMode": {
 			"new": "New",
 			"lyricLine": "Lyric Line",
@@ -390,7 +390,7 @@
 			"secondaryContent": "Secondary Content",
 			"translatedLyric": "Translation",
 			"romanLyric": "Romanization",
-			"multipleValues": "Multiple values...",
+			"multipleValues": "Multiple values…",
 			"wordContent": "Word Content",
 			"obscene": "Obscene",
 			"layoutMode": "Layout",
@@ -451,10 +451,10 @@
 	},
 	"audioPanel": {
 		"volume": "Volume",
-		"playbackRate": "Playback Rate",
+		"playbackRate": "Playback rate",
 		"clickToLoadMusic": "Click the icon button to load music",
-		"playPause": "Play / Pause Music",
-		"expandSpectrogram": "Expand / Collapse Spectrogram",
+		"playPause": "Play / pause music",
+		"expandSpectrogram": "Expand / collapse spectrogram",
 		"waitForSpectrogram": "Waiting for spectrogram to load…"
 	},
 	"submitToAMLLDB": {

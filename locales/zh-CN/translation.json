@@ -209,9 +209,9 @@
 		"spaceCount": "空格 x{count}"
 	},
 	"ribbonBar": {
-		"loading": "面板载入中...",
+		"loading": "面板载入中…",
 		"editMode": {
-			"multipleValues": "多个值...",
+			"multipleValues": "多个值…",
 			"new": "新建",
 			"lyricLine": "歌词行",
 			"lineTiming": "行时间戳",
@@ -265,7 +265,7 @@
 		"menu": {
 			"tools": {
 				"loadingJieba": "正在加载 Jieba 分词算法模块",
-				"processing": "正在分词中，请稍等...",
+				"processing": "正在分词中，请稍等…",
 				"completed": "分词完成！",
 				"error": "分词失败，请检查控制台错误输出！"
 			},
@@ -274,16 +274,16 @@
 			"openLyric": "打开 TTML 文件",
 			"openFromClipboard": "从剪切板打开 TTML 文件",
 			"saveLyric": "保存 TTML 文件",
-			"restoreFromHistory": "从历史记录恢复...",
+			"restoreFromHistory": "从历史记录恢复…",
 			"saveLyricToClipboard": "保存 TTML 文件到剪切板",
 			"importLyric": {
-				"import": "导入歌词…",
-				"fromPlainText": "从纯文本导入",
-				"fromLyRiC": "从 LyRiC 文件导入",
-				"fromESLyRiC": "从 ESLyRiC 文件导入",
-				"fromQRC": "从 QRC 文件导入",
-				"fromYRC": "从 YRC 文件导入",
-				"fromLrcfySylb": "从 Lyricify Syllable 文件导入"
+				"import": "导入歌词",
+				"fromPlainText": "从纯文本导入…",
+				"fromLyRiC": "从 LyRiC 文件导入…",
+				"fromESLyRiC": "从 ESLyRiC 文件导入…",
+				"fromQRC": "从 QRC 文件导入…",
+				"fromYRC": "从 YRC 文件导入…",
+				"fromLrcfySylb": "从 Lyricify Syllable 文件导入…"
 			},
 			"exportLyric": {
 				"export": "导出歌词…",
