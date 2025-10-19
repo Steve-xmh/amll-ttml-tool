@@ -26,7 +26,8 @@ interface SelectOption {
 	validation?: {
 		verifier: (value: string) => boolean;
 		message: string;
-		mandatory?: boolean;
+		/** red for true, orange for false */
+		severe?: boolean;
 	};
 }
 
@@ -54,7 +55,6 @@ export const MetadataEditor = () => {
 				validation: {
 					verifier: (value: string) => !/^.+[,;&，；、].+$/.test(value),
 					message: "如果有多个艺术家，请多次添加该键值，避免使用分隔符",
-					mandatory: false,
 				},
 			},
 			{
@@ -69,7 +69,7 @@ export const MetadataEditor = () => {
 				validation: {
 					verifier: pureNumber,
 					message: "网易云音乐 ID 应为纯数字",
-					mandatory: true,
+					severe: true,
 				},
 			},
 			{
@@ -79,7 +79,7 @@ export const MetadataEditor = () => {
 				validation: {
 					verifier: (value: string) => /^[a-zA-Z0-9]{14}$/.test(value),
 					message: "QQ 音乐 ID 应为 14 位字母或数字",
-					mandatory: true,
+					severe: true,
 				},
 			},
 			{
@@ -89,7 +89,7 @@ export const MetadataEditor = () => {
 				validation: {
 					verifier: (value: string) => /^[a-zA-Z0-9]{22}$/.test(value),
 					message: "Spotify ID 应为 22 位字母或数字",
-					mandatory: true,
+					severe: true,
 				},
 			},
 			{
@@ -102,7 +102,7 @@ export const MetadataEditor = () => {
 				validation: {
 					verifier: (value: string) => /^\d{10}$/.test(value),
 					message: "Apple Music ID 应为 10 位数字",
-					mandatory: true,
+					severe: true,
 				},
 			},
 			{
@@ -113,7 +113,7 @@ export const MetadataEditor = () => {
 					verifier: (value: string) =>
 						/^[A-Z]{2}-?[A-Z0-9]{3}-?\d{2}-?\d{5}$/.test(value),
 					message: "ISRC 编码格式应为 CC-XXX-YY-NNNNN",
-					mandatory: true,
+					severe: true,
 				},
 			},
 			{
@@ -126,7 +126,7 @@ export const MetadataEditor = () => {
 				validation: {
 					verifier: (value: string) => /^\d+$/.test(value),
 					message: "GitHub ID 应为纯数字",
-					mandatory: true,
+					severe: true,
 				},
 			},
 			{
@@ -142,7 +142,7 @@ export const MetadataEditor = () => {
 							value,
 						),
 					message: "GitHub 用户名应为不长于 39 字符的字母、数字或短横线",
-					mandatory: true,
+					severe: true,
 				},
 			},
 		];
@@ -196,8 +196,13 @@ export const MetadataEditor = () => {
 						)}
 						{lyricLines.metadata.map((v, i) => {
 							const validation = toDisplayValidation(v.key);
-							if (validation)
-								v.error = v.value.some((val) => !validation.verifier(val));
+							if (validation) {
+								const error = v.value.some((val) => !validation.verifier(val));
+								if (error !== !!v.error)
+									setLyricLines((prev) => {
+										prev.metadata[i].error = error;
+									});
+							}
 							return (
 								<Fragment key={`metadata-${v.key}`}>
 									{v.value.map((vv, ii) => (
@@ -214,20 +219,20 @@ export const MetadataEditor = () => {
 																const metadataItem = prev.metadata[i];
 																metadataItem.value[ii] = newValue;
 																if (validation) {
-																	metadataItem.error = metadataItem.value.some(
+																	const error = metadataItem.value.some(
 																		(vv) => !validation.verifier(vv),
 																	);
+																	if (error !== !!metadataItem.error)
+																		metadataItem.error = error;
 																}
 															});
 														}}
 														color={
-															!validation
-																? undefined
-																: !v.error
-																	? undefined
-																	: validation.mandatory
-																		? "red"
-																		: "orange"
+															validation && v.error
+																? validation.severe
+																	? "red"
+																	: "orange"
+																: undefined
 														}
 													/>
 													<IconButton
@@ -253,7 +258,7 @@ export const MetadataEditor = () => {
 											<Flex direction="column">
 												{validation && v.error && (
 													<Text
-														color={validation.mandatory ? "red" : "orange"}
+														color={validation.severe ? "red" : "orange"}
 														size="1"
 														mb="1"
 														mt="1"
