@@ -419,6 +419,14 @@
 			}
 		}
 	},
+	"audioPanel": {
+		"volume": "Volume",
+		"playbackRate": "Playback Rate",
+		"clickToLoadMusic": "Click the icon button to load music",
+		"playPause": "Play / Pause Music",
+		"expandSpectrogram": "Expand / Collapse Spectrogram",
+		"waitForSpectrogram": "Waiting for spectrogram to load…"
+	},
 	"submitToAMLLDB": {
 		"closeWarning": "Close warning message",
 		"validation": {

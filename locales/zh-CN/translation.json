@@ -11,9 +11,9 @@
 		"wip": {
 			"warning": "本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！"
 		},
-		"empty":{
-			"title":"没有歌词行",
-			"description":"在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词"
+		"empty": {
+			"title": "没有歌词行",
+			"description": "在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词"
 		}
 	},
 	"historyRestoreDialog": {
@@ -77,14 +77,20 @@
 				"lastKeyUp": "最后一个按键抬起时间",
 				"middleKey": "取按键按下和抬起的中间值"
 			},
-			"volume": "音乐音量",
-			"playbackRate": "播放速度",
 			"autosave": {
 				"enable": "启用自动保存",
 				"interval": "保存间隔 (分钟)",
 				"limit": "保留快照数量"
 			}
 		}
+	},
+	"audioPanel": {
+		"volume": "音量",
+		"playbackRate": "播放速度",
+		"clickToLoadMusic": "点击图标按钮以加载音乐",
+		"playPause": "播放 / 暂停音乐",
+		"expandSpectrogram": "展开 / 收起频谱图",
+		"waitForSpectrogram": "等待频谱图装载…"
 	},
 	"settingsDialog": {
 		"title": "首选项",
