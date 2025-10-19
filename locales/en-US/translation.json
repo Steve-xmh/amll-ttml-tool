@@ -94,7 +94,7 @@
 			"qqMusicId": "QQ Music ID",
 			"qqMusicIdInvalidMsg": "QQ Music ID should be alphanumeric",
 			"spotifyId": "Spotify Track ID",
-			"spotifyIdInvalidMsg": "Spotify Track ID should be 22 alphanumeric characters",
+			"spotifyIdInvalidMsg": "Spotify Track ID should be alphanumeric",
 			"appleMusicId": "Apple Music Track ID",
 			"appleMusicIdInvalidMsg": "Apple Music Track ID should be numeric",
 			"isrc": "Track ISRC Code",

@@ -41,7 +41,8 @@ export const MetadataEditor = () => {
 	const { t } = useTranslation();
 
 	const builtinOptions: SelectOption[] = useMemo(() => {
-		const pureNumber = (value: string) => /^\d+$/.test(value);
+		const numeric = (value: string) => /^\d+$/.test(value);
+		const alphanumeric = (value: string) => /^[a-zA-Z0-9]+$/.test(value);
 		return [
 			{
 				// 歌词所匹配的歌曲名
@@ -70,7 +71,7 @@ export const MetadataEditor = () => {
 				label: t("metadataDialog.builtinOptions.ncmMusicId", "网易云音乐 ID"),
 				value: "ncmMusicId",
 				validation: {
-					verifier: pureNumber,
+					verifier: numeric,
 					message: t(
 						"metadataDialog.builtinOptions.ncmMusicIdInvalidMsg",
 						"网易云音乐 ID 应为纯数字",
@@ -83,7 +84,7 @@ export const MetadataEditor = () => {
 				label: t("metadataDialog.builtinOptions.qqMusicId", "QQ 音乐 ID"),
 				value: "qqMusicId",
 				validation: {
-					verifier: (value: string) => /^[a-zA-Z0-9]+$/.test(value),
+					verifier: alphanumeric,
 					message: t(
 						"metadataDialog.builtinOptions.qqMusicIdInvalidMsg",
 						"QQ 音乐 ID 应为字母或数字",
@@ -96,10 +97,10 @@ export const MetadataEditor = () => {
 				label: t("metadataDialog.builtinOptions.spotifyId", "Spotify 音乐 ID"),
 				value: "spotifyId",
 				validation: {
-					verifier: (value: string) => /^[a-zA-Z0-9]{22}$/.test(value),
+					verifier: alphanumeric,
 					message: t(
 						"metadataDialog.builtinOptions.spotifyIdInvalidMsg",
-						"Spotify ID 应为 22 位字母或数字",
+						"Spotify ID 应为字母或数字",
 					),
 					severe: true,
 				},
@@ -112,7 +113,7 @@ export const MetadataEditor = () => {
 				),
 				value: "appleMusicId",
 				validation: {
-					verifier: pureNumber,
+					verifier: numeric,
 					message: t(
 						"metadataDialog.builtinOptions.appleMusicIdInvalidMsg",
 						"Apple Music ID 应为纯数字",
@@ -142,7 +143,7 @@ export const MetadataEditor = () => {
 				),
 				value: "ttmlAuthorGithub",
 				validation: {
-					verifier: (value: string) => /^\d+$/.test(value),
+					verifier: numeric,
 					message: t(
 						"metadataDialog.builtinOptions.ttmlAuthorGithubInvalidMsg",
 						"GitHub ID 应为纯数字",
