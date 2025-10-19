@@ -92,7 +92,7 @@
 			"ncmMusicId": "NetEase Music ID",
 			"ncmMusicIdInvalidMsg": "NetEase Music ID should be numeric",
 			"qqMusicId": "QQ Music ID",
-			"qqMusicIdInvalidMsg": "QQ Music ID should be 14 alphanumeric characters",
+			"qqMusicIdInvalidMsg": "QQ Music ID should be alphanumeric",
 			"spotifyId": "Spotify Track ID",
 			"spotifyIdInvalidMsg": "Spotify Track ID should be 22 alphanumeric characters",
 			"appleMusicId": "Apple Music Track ID",

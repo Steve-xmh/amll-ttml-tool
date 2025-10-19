@@ -83,10 +83,10 @@ export const MetadataEditor = () => {
 				label: t("metadataDialog.builtinOptions.qqMusicId", "QQ 音乐 ID"),
 				value: "qqMusicId",
 				validation: {
-					verifier: (value: string) => /^[a-zA-Z0-9]{14}$/.test(value),
+					verifier: (value: string) => /^[a-zA-Z0-9]+$/.test(value),
 					message: t(
 						"metadataDialog.builtinOptions.qqMusicIdInvalidMsg",
-						"QQ 音乐 ID 应为 14 位字母或数字",
+						"QQ 音乐 ID 应为字母或数字",
 					),
 					severe: true,
 				},
