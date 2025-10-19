@@ -349,7 +349,12 @@
 			"romanLyric": "Romanization",
 			"multipleValues": "Multiple values...",
 			"wordContent": "Word Content",
-			"obscene": "Obscene"
+			"obscene": "Obscene",
+			"layoutMode": "Layout",
+			"layoutModeOptions": {
+				"simple": "Simple Mode",
+				"advance": "Advanced Mode"
+			}
 		},
 		"syncMode": {
 			"currentEmptyBeat": "Current Empty Beat",
