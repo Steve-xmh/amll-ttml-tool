@@ -135,15 +135,15 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							justify="center"
 						>
 							<Text wrap="nowrap" size="1">
-								起始轴
+								{t("ribbonBar.syncMode.startSync", "起始轴")}
 							</Text>
 							<KeyBinding kbdAtom={keySyncStartAtom} />
 							<Text wrap="nowrap" size="1">
-								连续轴
+								{t("ribbonBar.syncMode.continuousSync", "连续轴")}
 							</Text>
 							<KeyBinding kbdAtom={keySyncNextAtom} />
 							<Text wrap="nowrap" size="1">
-								结束轴
+								{t("ribbonBar.syncMode.endSync", "结束轴")}
 							</Text>
 							<KeyBinding kbdAtom={keySyncEndAtom} />
 						</Grid>
