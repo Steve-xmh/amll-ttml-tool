@@ -411,15 +411,15 @@
 		},
 		"defaultReason": "New lyrics submission",
 		"errors": {
-			"validation": "Submission validation failed:\n{{errors}}",
+			"validation": "Submission validation failed:\n{errors}",
 			"noLyrics": "There's no lyrics content yet?",
-			"uploadFailed": "Failed to request upload lyrics file: {{status}} {{statusText}}",
+			"uploadFailed": "Failed to request upload lyrics file: {status} {statusText}",
 			"submitFailed": "Submission failed, check console for reason!"
 		},
 		"labels": {
 			"submit": "Lyrics Submit/Correction"
 		},
-		"issueTitle": "[Lyrics Submit/Fix] {{name}}",
+		"issueTitle": "[Lyrics Submit/Fix] {name}",
 		"unknownTitle": "Unknown Title",
 		"unknownArtist": "Unknown Artist",
 		"description": "Submit lyrics to AMLL Lyrics Database",

@@ -135,15 +135,15 @@
 		},
 		"defaultReason": "新歌词提交",
 		"errors": {
-			"validation": "提交验证失败：\n{{errors}}",
+			"validation": "提交验证失败：\n{errors}",
 			"noLyrics": "歌词还什么都没有呢？",
-			"uploadFailed": "发送上传歌词文件请求失败：{{status}} {{statusText}}",
+			"uploadFailed": "发送上传歌词文件请求失败：{status} {statusText}",
 			"submitFailed": "提交发生错误，请查看控制台确认原因！"
 		},
 		"labels": {
 			"submit": "歌词提交/补正"
 		},
-		"issueTitle": "[歌词提交/修正] {{name}}",
+		"issueTitle": "[歌词提交/修正] {name}",
 		"unknownTitle": "未知曲名",
 		"unknownArtist": "未知歌手",
 		"description": "提交歌词到 AMLL 歌词数据库",
