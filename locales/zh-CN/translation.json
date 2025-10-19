@@ -10,6 +10,10 @@
 		},
 		"wip": {
 			"warning": "本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！"
+		},
+		"empty": {
+			"title": "没有歌词行",
+			"description": "在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词"
 		}
 	},
 	"historyRestoreDialog": {
@@ -73,14 +77,20 @@
 				"lastKeyUp": "最后一个按键抬起时间",
 				"middleKey": "取按键按下和抬起的中间值"
 			},
-			"volume": "音乐音量",
-			"playbackRate": "播放速度",
 			"autosave": {
 				"enable": "启用自动保存",
 				"interval": "保存间隔 (分钟)",
 				"limit": "保留快照数量"
 			}
 		}
+	},
+	"audioPanel": {
+		"volume": "音量",
+		"playbackRate": "播放速度",
+		"clickToLoadMusic": "点击图标按钮以加载音乐",
+		"playPause": "播放 / 暂停音乐",
+		"expandSpectrogram": "展开 / 收起频谱图",
+		"waitForSpectrogram": "等待频谱图装载…"
 	},
 	"settingsDialog": {
 		"title": "首选项",
@@ -121,6 +131,29 @@
 			"latencyTest": "音频/输入延迟测试"
 		}
 	},
+	"textImportDialog": {
+		"title": "导入纯文本歌词",
+		"actionButton": "导入歌词",
+		"contentMode": {
+			"caption": "导入模式",
+			"withTranslation": "歌词和翻译歌词",
+			"withRoman": "歌词和音译歌词",
+			"withBoth": "歌词和翻译、音译歌词"
+		},
+		"separationMode": {
+			"caption": "歌词分行（翻译和音译）模式",
+			"multipleLine": "多行交错分隔",
+			"sameLine": "同行分隔"
+		},
+		"separator": "歌词行分隔符",
+		"swapTransAndRoman": "交换翻译行和音译行",
+		"wordSeparator": "单词分隔符",
+		"enableSpecialPrefix": "启用特殊前缀",
+		"bgLyricPrefix": "背景歌词前缀",
+		"duetLyricPrefix": "对唱歌词前缀",
+		"enableEmptyBeat": "启用空拍",
+		"emptyBeatSymbol": "空拍符号"
+	},
 	"common": {
 		"about": "关于",
 		"fileNamePlaceholder": "文件名"
@@ -143,15 +176,15 @@
 		},
 		"defaultReason": "新歌词提交",
 		"errors": {
-			"validation": "提交验证失败：\n{{errors}}",
+			"validation": "提交验证失败：\n{errors}",
 			"noLyrics": "歌词还什么都没有呢？",
-			"uploadFailed": "发送上传歌词文件请求失败：{{status}} {{statusText}}",
+			"uploadFailed": "发送上传歌词文件请求失败：{status} {statusText}",
 			"submitFailed": "提交发生错误，请查看控制台确认原因！"
 		},
 		"labels": {
 			"submit": "歌词提交/补正"
 		},
-		"issueTitle": "[歌词提交/修正] {{name}}",
+		"issueTitle": "[歌词提交/修正] {name}",
 		"unknownTitle": "未知曲名",
 		"unknownArtist": "未知歌手",
 		"description": "提交歌词到 AMLL 歌词数据库",
@@ -176,8 +209,9 @@
 		"spaceCount": "空格 x{count}"
 	},
 	"ribbonBar": {
+		"loading": "面板载入中…",
 		"editMode": {
-			"multipleValues": "多个值...",
+			"multipleValues": "多个值…",
 			"new": "新建",
 			"lyricLine": "歌词行",
 			"lineTiming": "行时间戳",
@@ -231,7 +265,7 @@
 		"menu": {
 			"tools": {
 				"loadingJieba": "正在加载 Jieba 分词算法模块",
-				"processing": "正在分词中，请稍等...",
+				"processing": "正在分词中，请稍等…",
 				"completed": "分词完成！",
 				"error": "分词失败，请检查控制台错误输出！"
 			},
@@ -240,8 +274,27 @@
 			"openLyric": "打开 TTML 文件",
 			"openFromClipboard": "从剪切板打开 TTML 文件",
 			"saveLyric": "保存 TTML 文件",
-			"restoreFromHistory": "从历史记录恢复...",
+			"restoreFromHistory": "从历史记录恢复…",
 			"saveLyricToClipboard": "保存 TTML 文件到剪切板",
+			"importLyric": {
+				"import": "导入歌词",
+				"fromPlainText": "从纯文本导入…",
+				"fromLyRiC": "从 LyRiC 文件导入…",
+				"fromESLyRiC": "从 ESLyRiC 文件导入…",
+				"fromQRC": "从 QRC 文件导入…",
+				"fromYRC": "从 YRC 文件导入…",
+				"fromLrcfySylb": "从 Lyricify Syllable 文件导入…"
+			},
+			"exportLyric": {
+				"export": "导出歌词…",
+				"toPlainText": "导出为纯文本",
+				"toLyRiC": "导出到 LyRiC",
+				"toESLyRiC": "导导出到 ESLyRiC",
+				"toQRC": "导出到 QRC",
+				"toYRC": "导出到 YRC",
+				"toLrcfySylb": "导出到 Lyricify Syllable",
+				"toASS": "导出到 ASS 字幕"
+			},
 			"uploadToAMLLDB": "上传到 AMLL 歌词数据库",
 			"edit": "编辑",
 			"undo": "撤销",

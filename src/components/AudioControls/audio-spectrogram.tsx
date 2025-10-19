@@ -24,8 +24,10 @@ import {
 	ToolMode,
 	toolModeAtom,
 } from "$/states/main";
+import { useTranslation } from "react-i18next";
 
 export const AudioSpectrogram = () => {
+	const { t } = useTranslation();
 	const setCurrentTime = useSetAtom(currentTimeAtom);
 	const setCurrentDuration = useSetAtom(currentDurationAtom);
 	const setAudioPlaying = useSetAtom(audioPlayingAtom);
@@ -218,7 +220,9 @@ export const AudioSpectrogram = () => {
 			}}
 		>
 			<div className={styles.loadingTip}>
-				<Text color="gray">等待频谱图装载…</Text>
+				<Text color="gray">
+					{t("audioPanel.waitForSpectrogram", "等待频谱图装载…")}
+				</Text>
 			</div>
 			<div
 				className={styles.spectrogramContainer}

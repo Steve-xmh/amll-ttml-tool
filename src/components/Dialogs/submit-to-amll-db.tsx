@@ -142,7 +142,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 			const errors = validateMetadata(metadatas, t);
 			if (errors.length > 0) {
 				toast.error(
-					t("submitToAMLLDB.errors.validation", "提交验证失败：\n{{errors}}", {
+					t("submitToAMLLDB.errors.validation", "提交验证失败：\n{errors}", {
 						errors: errors.join("\n"),
 					}),
 				);
@@ -174,7 +174,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 				throw new Error(
 					t(
 						"submitToAMLLDB.errors.uploadFailed",
-						"发送上传歌词文件请求失败：{{status}} {{statusText}}",
+						"发送上传歌词文件请求失败：{status} {statusText}",
 						{
 							status: uploadResp.status,
 							statusText: uploadResp.statusText,
@@ -195,7 +195,7 @@ export const SubmitToAMLLDBDialog = memo(() => {
 			);
 			issueUrl.searchParams.append(
 				"title",
-				t("submitToAMLLDB.issueTitle", "[歌词提交/修正] {{name}}", { name }),
+				t("submitToAMLLDB.issueTitle", "[歌词提交/修正] {name}", { name }),
 			);
 			issueUrl.searchParams.append(
 				"body",

@@ -1,8 +1,10 @@
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { type PropsWithChildren, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 
 export const SuspensePlaceHolder = (props: PropsWithChildren) => {
+	const { t } = useTranslation();
 	return (
 		<Suspense
 			fallback={
@@ -24,7 +26,7 @@ export const SuspensePlaceHolder = (props: PropsWithChildren) => {
 					>
 						<Spinner />
 						<Text color="gray" size="1">
-							面板载入中...
+							{t("ribbonBar.loading", "面板载入中...")}
 						</Text>
 					</motion.div>
 				</Flex>

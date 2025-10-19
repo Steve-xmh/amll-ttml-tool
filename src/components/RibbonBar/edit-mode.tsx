@@ -43,7 +43,6 @@ import {
 import { RibbonFrame, RibbonSection } from "./common";
 import { useTranslation } from "react-i18next";
 import { LayoutMode, layoutModeAtom } from "$/states/config";
-import { t } from "i18next";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");
 
@@ -465,7 +464,7 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 					</Grid>
 				</RibbonSection>
 				<RibbonSection label={t("ribbonBar.editMode.lineProperties", "行属性")}>
-					<Grid columns="0fr 1fr" gap="2" gapY="1" flexGrow="1" align="center">
+					<Grid columns="0fr 0fr" gap="4" gapY="1" flexGrow="1" align="center">
 						<CheckboxField
 							label={t("ribbonBar.editMode.bgLyric", "背景歌词")}
 							isWordField={false}

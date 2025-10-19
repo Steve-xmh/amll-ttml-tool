@@ -29,6 +29,7 @@ import {
 } from "react";
 import { ViewportList, type ViewportListRef } from "react-viewport-list";
 import { LyricLineView } from "./lyric-line-view";
+import { useTranslation } from "react-i18next";
 
 const lyricLinesOnlyAtom = splitAtom(
 	focusAtom(lyricLinesAtom, (o) => o.prop("lyricLines")),
@@ -39,6 +40,7 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 	const viewRef = useRef<ViewportListRef>(null);
 	const viewElRef = useRef<HTMLDivElement>(null);
 	const toolMode = useAtomValue(toolModeAtom);
+	const { t } = useTranslation();
 
 	const scrollToIndexAtom = useMemo(
 		() =>
@@ -92,9 +94,12 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 				height="100%"
 				ref={ref}
 			>
-				<Text color="gray">没有歌词行</Text>
+				<Text color="gray">{t("app.empty.title", "没有歌词行")}</Text>
 				<Text color="gray">
-					在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词
+					{t(
+						"app.empty.description",
+						"在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词",
+					)}
 				</Text>
 			</Flex>
 		);
