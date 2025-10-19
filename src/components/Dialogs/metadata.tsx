@@ -54,7 +54,10 @@ export const MetadataEditor = () => {
 				value: "artists",
 				validation: {
 					verifier: (value: string) => !/^.+[,;&，；、].+$/.test(value),
-					message: "如果有多个艺术家，请多次添加该键值，避免使用分隔符",
+					message: t(
+						"metadataDialog.builtinOptions.artistsInvalidMsg",
+						"如果有多个艺术家，请多次添加该键值，避免使用分隔符",
+					),
 				},
 			},
 			{
@@ -68,7 +71,10 @@ export const MetadataEditor = () => {
 				value: "ncmMusicId",
 				validation: {
 					verifier: pureNumber,
-					message: "网易云音乐 ID 应为纯数字",
+					message: t(
+						"metadataDialog.builtinOptions.ncmMusicIdInvalidMsg",
+						"网易云音乐 ID 应为纯数字",
+					),
 					severe: true,
 				},
 			},
@@ -78,7 +84,10 @@ export const MetadataEditor = () => {
 				value: "qqMusicId",
 				validation: {
 					verifier: (value: string) => /^[a-zA-Z0-9]{14}$/.test(value),
-					message: "QQ 音乐 ID 应为 14 位字母或数字",
+					message: t(
+						"metadataDialog.builtinOptions.qqMusicIdInvalidMsg",
+						"QQ 音乐 ID 应为 14 位字母或数字",
+					),
 					severe: true,
 				},
 			},
@@ -88,7 +97,10 @@ export const MetadataEditor = () => {
 				value: "spotifyId",
 				validation: {
 					verifier: (value: string) => /^[a-zA-Z0-9]{22}$/.test(value),
-					message: "Spotify ID 应为 22 位字母或数字",
+					message: t(
+						"metadataDialog.builtinOptions.spotifyIdInvalidMsg",
+						"Spotify ID 应为 22 位字母或数字",
+					),
 					severe: true,
 				},
 			},
@@ -101,7 +113,10 @@ export const MetadataEditor = () => {
 				value: "appleMusicId",
 				validation: {
 					verifier: (value: string) => /^\d{10}$/.test(value),
-					message: "Apple Music ID 应为 10 位数字",
+					message: t(
+						"metadataDialog.builtinOptions.appleMusicIdInvalidMsg",
+						"Apple Music ID 应为 10 位数字",
+					),
 					severe: true,
 				},
 			},
@@ -112,7 +127,10 @@ export const MetadataEditor = () => {
 				validation: {
 					verifier: (value: string) =>
 						/^[A-Z]{2}-?[A-Z0-9]{3}-?\d{2}-?\d{5}$/.test(value),
-					message: "ISRC 编码格式应为 CC-XXX-YY-NNNNN",
+					message: t(
+						"metadataDialog.builtinOptions.isrcInvalidMsg",
+						"ISRC 编码格式应为 CC-XXX-YY-NNNNN",
+					),
 					severe: true,
 				},
 			},
@@ -125,7 +143,10 @@ export const MetadataEditor = () => {
 				value: "ttmlAuthorGithub",
 				validation: {
 					verifier: (value: string) => /^\d+$/.test(value),
-					message: "GitHub ID 应为纯数字",
+					message: t(
+						"metadataDialog.builtinOptions.ttmlAuthorGithubInvalidMsg",
+						"GitHub ID 应为纯数字",
+					),
 					severe: true,
 				},
 			},
@@ -141,7 +162,10 @@ export const MetadataEditor = () => {
 						/^(?!.*--)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(
 							value,
 						),
-					message: "GitHub 用户名应为不长于 39 字符的字母、数字或短横线",
+					message: t(
+						"metadataDialog.builtinOptions.ttmlAuthorGithubLoginInvalidMsg",
+						"GitHub username should be alphanumeric or hyphens, up to 39 characters",
+					),
 					severe: true,
 				},
 			},
@@ -262,6 +286,7 @@ export const MetadataEditor = () => {
 														size="1"
 														mb="1"
 														mt="1"
+														wrap="wrap"
 													>
 														{validation.message}
 													</Text>

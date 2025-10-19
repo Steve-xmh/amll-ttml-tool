@@ -87,14 +87,22 @@
 		"builtinOptions": {
 			"musicName": "Track Name",
 			"artists": "Track Artists",
+			"artistsInvalidMsg": "If there are multiple artists, please add this key multiple times instead of using delimiters",
 			"album": "Album Name",
 			"ncmMusicId": "NetEase Music ID",
+			"ncmMusicIdInvalidMsg": "NetEase Music ID should be numeric",
 			"qqMusicId": "QQ Music ID",
+			"qqMusicIdInvalidMsg": "QQ Music ID should be 14 alphanumeric characters",
 			"spotifyId": "Spotify Track ID",
+			"spotifyIdInvalidMsg": "Spotify Track ID should be 22 alphanumeric characters",
 			"appleMusicId": "Apple Music Track ID",
+			"appleMusicIdInvalidMsg": "Apple Music Track ID should be numeric",
 			"isrc": "Track ISRC Code",
+			"isrcInvalidMsg": "ISRC code format should be CC-XXX-YY-NNNNN",
 			"ttmlAuthorGithub": "Lyrics Author GitHub ID",
-			"ttmlAuthorGithubLogin": "Lyrics Author GitHub Username"
+			"ttmlAuthorGithubInvalidMsg": "GitHub ID should be numeric",
+			"ttmlAuthorGithubLogin": "Lyrics Author GitHub Username",
+			"ttmlAuthorGithubLoginInvalidMsg": "GitHub username should be alphanumeric or hyphens, up to 39 characters"
 		}
 	},
 	"settingsDialog": {
