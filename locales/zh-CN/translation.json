@@ -36,7 +36,7 @@
 			"qqMusicId": "QQ 音乐 ID",
 			"qqMusicIdInvalidMsg": "QQ 音乐 ID 应为字母或数字",
 			"spotifyId": "Spotify 音乐 ID",
-			"spotifyIdInvalidMsg": "Spotify 音乐 ID 应为 22 位字母或数字",
+			"spotifyIdInvalidMsg": "Spotify 音乐 ID 应为字母或数字",
 			"appleMusicId": "Apple Music 音乐 ID",
 			"appleMusicIdInvalidMsg": "Apple Music 音乐 ID 应为纯数字",
 			"isrc": "歌曲的 ISRC 号码",
