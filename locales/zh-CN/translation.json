@@ -10,6 +10,10 @@
 		},
 		"wip": {
 			"warning": "本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！"
+		},
+		"empty":{
+			"title":"没有歌词行",
+			"description":"在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词"
 		}
 	},
 	"historyRestoreDialog": {
