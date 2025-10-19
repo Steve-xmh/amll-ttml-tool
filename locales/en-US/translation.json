@@ -326,7 +326,7 @@
 	},
 	"lyricWordView": {
 		"empty": "Empty",
-		"spaceCount": "Space x{{count}}"
+		"spaceCount": "Space x{count}"
 	},
 	"ribbonBar": {
 		"editMode": {
