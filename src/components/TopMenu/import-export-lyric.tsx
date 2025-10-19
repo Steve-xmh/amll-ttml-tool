@@ -1,5 +1,12 @@
-import { importFromTextDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom, saveFileNameAtom } from "$/states/main.ts";
+import {
+	confirmDialogAtom,
+	importFromTextDialogAtom,
+} from "$/states/dialogs.ts";
+import {
+	isDirtyAtom,
+	lyricLinesAtom,
+	saveFileNameAtom,
+} from "$/states/main.ts";
 import { error } from "$/utils/logging.ts";
 import {
 	type LyricLine,
@@ -16,49 +23,55 @@ import {
 	stringifyYrc,
 } from "@applemusic-like-lyrics/lyric";
 import { DropdownMenu } from "@radix-ui/themes";
-import { useSetAtom, useStore } from "jotai";
+import { useAtomValue, useSetAtom, useStore } from "jotai";
+import { useTranslation } from "react-i18next";
 import saveFile from "save-file";
 import { uid } from "uid";
 
 export const ImportExportLyric = () => {
 	const store = useStore();
-	const onImportLyric =
-		(parser: (lyric: string) => LyricLine[], extension: string) => () => {
-			const inputEl = document.createElement("input");
-			inputEl.type = "file";
-			inputEl.accept = `.${extension},*/*`;
-			inputEl.addEventListener(
-				"change",
-				async () => {
-					const file = inputEl.files?.[0];
-					if (!file) return;
-					try {
-						const lyricText = await file.text();
-						const lyricLines = parser(lyricText);
-						store.set(lyricLinesAtom, {
-							lyricLines: lyricLines.map((line) => ({
-								...line,
-								words: line.words.map((word) => ({
-									...word,
-									id: uid(),
-									obscene: false,
-									emptyBeat: 0,
-								})),
-								ignoreSync: false,
+	const setConfirmDialog = useSetAtom(confirmDialogAtom);
+	const isDirty = useAtomValue(isDirtyAtom);
+	const { t } = useTranslation();
+	const onImportLyric = (
+		parser: (lyric: string) => LyricLine[],
+		extension: string,
+	) => {
+		const inputEl = document.createElement("input");
+		inputEl.type = "file";
+		inputEl.accept = `.${extension},*/*`;
+		inputEl.addEventListener(
+			"change",
+			async () => {
+				const file = inputEl.files?.[0];
+				if (!file) return;
+				try {
+					const lyricText = await file.text();
+					const lyricLines = parser(lyricText);
+					store.set(lyricLinesAtom, {
+						lyricLines: lyricLines.map((line) => ({
+							...line,
+							words: line.words.map((word) => ({
+								...word,
 								id: uid(),
+								obscene: false,
+								emptyBeat: 0,
 							})),
-							metadata: [],
-						});
-					} catch (e) {
-						error(`Failed to import lyric with format "${extension}"`, e);
-					}
-				},
-				{
-					once: true,
-				},
-			);
-			inputEl.click();
-		};
+							ignoreSync: false,
+							id: uid(),
+						})),
+						metadata: [],
+					});
+				} catch (e) {
+					error(`Failed to import lyric with format "${extension}"`, e);
+				}
+			},
+			{
+				once: true,
+			},
+		);
+		inputEl.click();
+	};
 	const onExportLyric =
 		(stringifier: (lines: LyricLine[]) => string, extension: string) =>
 		async () => {
@@ -76,6 +89,22 @@ export const ImportExportLyric = () => {
 		};
 	const setImportFromTextDialog = useSetAtom(importFromTextDialogAtom);
 
+	const onImportLyricWithConfirm: (
+		...params: Parameters<typeof onImportLyric>
+	) => undefined = (...params) => {
+		if (isDirty)
+			setConfirmDialog({
+				open: true,
+				title: t("confirmDialog.importFile.title", "确认导入歌词"),
+				description: t(
+					"confirmDialog.importFile.description",
+					"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要导入歌词吗？",
+				),
+				onConfirm: () => onImportLyric(...params),
+			});
+		else onImportLyric(...params);
+	};
+
 	return (
 		<>
 			<DropdownMenu.Sub>
@@ -84,19 +113,29 @@ export const ImportExportLyric = () => {
 					<DropdownMenu.Item onClick={() => setImportFromTextDialog(true)}>
 						从纯文本导入
 					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onImportLyric(parseLrc, "lrc")}>
+					<DropdownMenu.Item
+						onClick={() => onImportLyricWithConfirm(parseLrc, "lrc")}
+					>
 						从 LyRiC 文件导入
 					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onImportLyric(parseEslrc, "lrc")}>
+					<DropdownMenu.Item
+						onClick={() => onImportLyricWithConfirm(parseEslrc, "lrc")}
+					>
 						从 ESLyRiC 文件导入
 					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onImportLyric(parseQrc, "qrc")}>
+					<DropdownMenu.Item
+						onClick={() => onImportLyricWithConfirm(parseQrc, "qrc")}
+					>
 						从 QRC 文件导入
 					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onImportLyric(parseYrc, "yrc")}>
+					<DropdownMenu.Item
+						onClick={() => onImportLyricWithConfirm(parseYrc, "yrc")}
+					>
 						从 YRC 文件导入
 					</DropdownMenu.Item>
-					<DropdownMenu.Item onClick={onImportLyric(parseLys, "lys")}>
+					<DropdownMenu.Item
+						onClick={() => onImportLyricWithConfirm(parseLys, "lys")}
+					>
 						从 Lyricify Syllable 文件导入
 					</DropdownMenu.Item>
 				</DropdownMenu.SubContent>

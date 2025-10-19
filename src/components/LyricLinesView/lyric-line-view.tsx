@@ -44,7 +44,6 @@ import { splitAtom } from "jotai/utils";
 import {
 	type FC,
 	Fragment,
-	type RefObject,
 	type SyntheticEvent,
 	memo,
 	useCallback,
@@ -460,35 +459,38 @@ export const LyricLineView: FC<{
 									)}
 									ref={wordsContainerRef}
 								>
-									{words.map((wordAtom, wi) => (
-										<Fragment key={`word-${wi}`}>
-											{enableInsert && (
-												<IconButton
-													size="1"
-													variant="soft"
-													onClick={(evt) => {
-														evt.preventDefault();
-														evt.stopPropagation();
-														editLyricLines((state) => {
-															state.lyricLines[lineIndex].words.splice(
-																wi,
-																0,
-																newLyricWord(),
-															);
-														});
-													}}
-												>
-													<AddFilled />
-												</IconButton>
-											)}
-											<LyricWordView
-												wordAtom={wordAtom}
-												wordIndex={wi}
-												line={line}
-												lineIndex={lineIndex}
-											/>
-										</Fragment>
-									))}
+									{words.map((wordAtom, wi) => {
+										const word = store.get(wordAtom);
+										return (
+											<Fragment key={`word-${word.id}`}>
+												{enableInsert && (
+													<IconButton
+														size="1"
+														variant="soft"
+														onClick={(evt) => {
+															evt.preventDefault();
+															evt.stopPropagation();
+															editLyricLines((state) => {
+																state.lyricLines[lineIndex].words.splice(
+																	wi,
+																	0,
+																	newLyricWord(),
+																);
+															});
+														}}
+													>
+														<AddFilled />
+													</IconButton>
+												)}
+												<LyricWordView
+													wordAtom={wordAtom}
+													wordIndex={wi}
+													line={line}
+													lineIndex={lineIndex}
+												/>
+											</Fragment>
+										);
+									})}
 									{enableInsert && (
 										<IconButton
 											size="1"

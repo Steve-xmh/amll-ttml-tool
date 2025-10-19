@@ -22,7 +22,11 @@ import {
 } from "$/states/main.ts";
 import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
 import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
-import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
+import {
+	newLyricWord,
+	type LyricLine,
+	type LyricWord,
+} from "$/utils/ttml-types.ts";
 import {
 	CutRegular,
 	DeleteRegular,
@@ -36,6 +40,7 @@ import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
+	type MouseEvent,
 	type PropsWithChildren,
 	type SyntheticEvent,
 	memo,
@@ -50,9 +55,9 @@ import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordMenu } from "./lyric-word-menu";
 import { useTranslation } from "react-i18next";
+import { normalizeLineTime } from "./utils.ts";
 
 const isDraggingAtom = atom(false);
-const draggingIdAtom = atom("");
 
 const useWordBlank = (word: string) =>
 	useMemo(
@@ -90,8 +95,55 @@ const LyricWordViewEditSpan = ({
 		[wordAtom],
 	);
 	const isWordSelected = useAtomValue(isWordSelectedAtom);
+	const selectedWords = useAtomValue(selectedWordsAtom);
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const toolMode = useAtomValue(toolModeAtom);
+
+	function onWordSelect(evt: MouseEvent<HTMLSpanElement>) {
+		if (evt.ctrlKey || evt.metaKey) {
+			setSelectedWords((v) => {
+				if (v.has(word.id)) {
+					v.delete(word.id);
+				} else {
+					v.add(word.id);
+				}
+			});
+		} else if (evt.shiftKey) {
+			setSelectedWords((v) => {
+				if (v.size > 0) {
+					let minBoundry = Number.NaN;
+					let maxBoundry = Number.NaN;
+					line.words.forEach((word, i) => {
+						if (v.has(word.id)) {
+							if (Number.isNaN(minBoundry)) minBoundry = i;
+							if (Number.isNaN(maxBoundry)) maxBoundry = i;
+
+							minBoundry = Math.min(minBoundry, i, wordIndex);
+							maxBoundry = Math.max(maxBoundry, i, wordIndex);
+						}
+					});
+					for (let i = minBoundry; i <= maxBoundry; i++) {
+						v.add(line.words[i].id);
+					}
+				} else {
+					v.add(word.id);
+				}
+			});
+		} else {
+			setSelectedLines((state) => {
+				if (!state.has(line.id) || state.size !== 1) {
+					state.clear();
+					state.add(line.id);
+				}
+			});
+			setSelectedWords((state) => {
+				if (!state.has(word.id) || state.size !== 1) {
+					state.clear();
+					state.add(word.id);
+				}
+			});
+		}
+	}
 
 	return (
 		<ContextMenu.Root
@@ -109,13 +161,13 @@ const LyricWordViewEditSpan = ({
 			}}
 		>
 			<ContextMenu.Trigger>
-				{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 				<span
 					draggable={toolMode === ToolMode.Edit}
 					onDragStart={(evt) => {
+						if (!isWordSelected) onWordSelect(evt);
+						evt.dataTransfer.effectAllowed = "copyMove";
 						evt.dataTransfer.dropEffect = "move";
 						store.set(isDraggingAtom, true);
-						store.set(draggingIdAtom, word.id);
 						evt.stopPropagation();
 					}}
 					onDragEnd={() => {
@@ -123,7 +175,6 @@ const LyricWordViewEditSpan = ({
 					}}
 					onDragOver={(evt) => {
 						if (!store.get(isDraggingAtom)) return;
-						if (store.get(draggingIdAtom) === word.id) return;
 						if (isWordSelected) return;
 						evt.preventDefault();
 						evt.dataTransfer.dropEffect = "move";
@@ -136,56 +187,61 @@ const LyricWordViewEditSpan = ({
 							evt.currentTarget.classList.remove(styles.dropLeft);
 							evt.currentTarget.classList.add(styles.dropRight);
 						}
+						const isCopyingWords = evt.ctrlKey || evt.metaKey;
+						evt.dataTransfer.dropEffect = isCopyingWords ? "copy" : "move";
 					}}
 					onDrop={(evt) => {
 						evt.currentTarget.classList.remove(styles.dropLeft);
 						evt.currentTarget.classList.remove(styles.dropRight);
 						if (!store.get(isDraggingAtom)) return;
+						if (isWordSelected) return;
+
 						const rect = evt.currentTarget.getBoundingClientRect();
 						const innerX = evt.clientX - rect.left;
-						const targetIds = new Set(store.get(selectedWordsAtom));
-						const draggingId = store.get(draggingIdAtom);
-						if (!isWordSelected) {
-							targetIds.clear();
-							targetIds.add(draggingId);
-						}
-						if (innerX < rect.width / 2) {
-							editLyricLines((state) => {
-								const collectedWords = [];
-								for (const line of state.lyricLines) {
-									const words = line.words.filter((w) => targetIds.has(w.id));
-									collectedWords.push(...words);
-									line.words = line.words.filter((w) => !targetIds.has(w.id));
+						const insertRight = innerX > rect.width / 2;
+
+						const isCopyingWords = evt.ctrlKey || evt.metaKey;
+						editLyricLines((state) => {
+							let collectedWords: LyricWord[] = [];
+							for (const line of state.lyricLines) {
+								const words = line.words.filter((w) => selectedWords.has(w.id));
+								collectedWords.push(...words);
+								if (!isCopyingWords) {
+									const deletedAtBounds =
+										line.words.length > 0 &&
+										(selectedWords.has(line.words[0].id) ||
+											selectedWords.has(line.words[line.words.length - 1].id));
+									line.words = line.words.filter(
+										(w) => !selectedWords.has(w.id),
+									);
+									if (deletedAtBounds) normalizeLineTime(line);
 								}
-								const targetLine = state.lyricLines.find(
-									(l) => l.id === line.id,
-								);
-								if (!targetLine) return;
-								const targetIndex = targetLine.words.findIndex(
-									(w) => w.id === word.id,
-								);
-								if (targetIndex < 0) return;
-								targetLine.words.splice(targetIndex, 0, ...collectedWords);
-							});
-						} else {
-							editLyricLines((state) => {
-								const collectedWords = [];
-								for (const line of state.lyricLines) {
-									const words = line.words.filter((w) => targetIds.has(w.id));
-									collectedWords.push(...words);
-									line.words = line.words.filter((w) => !targetIds.has(w.id));
-								}
-								const targetLine = state.lyricLines.find(
-									(l) => l.id === line.id,
-								);
-								if (!targetLine) return;
-								const targetIndex = targetLine.words.findIndex(
-									(w) => w.id === word.id,
-								);
-								if (targetIndex < 0) return;
-								targetLine.words.splice(targetIndex + 1, 0, ...collectedWords);
-							});
-						}
+							}
+							const targetLine = state.lyricLines.find(
+								({ id }) => id === line.id,
+							);
+							if (!targetLine) throw new Error("Target line not found");
+							const targetIndex = targetLine.words.findIndex(
+								(w) => w.id === word.id,
+							);
+							if (targetIndex < 0) throw new Error("Target word not found");
+							if (isCopyingWords) {
+								collectedWords = collectedWords.map((w) => ({
+									...w,
+									id: newLyricWord().id,
+								}));
+								setSelectedWords((v) => {
+									v.clear();
+									collectedWords.forEach((w) => v.add(w.id));
+								});
+							}
+							const insertPosition = targetIndex + (insertRight ? 1 : 0);
+							const insertedAtBounds =
+								insertPosition === 0 ||
+								insertPosition === targetLine.words.length;
+							targetLine.words.splice(insertPosition, 0, ...collectedWords);
+							if (insertedAtBounds) normalizeLineTime(targetLine);
+						});
 					}}
 					onDragLeave={(evt) => {
 						evt.currentTarget.classList.remove(styles.dropLeft);
@@ -196,49 +252,7 @@ const LyricWordViewEditSpan = ({
 					onClick={(evt) => {
 						evt.stopPropagation();
 						evt.preventDefault();
-						if (evt.ctrlKey || evt.metaKey) {
-							setSelectedWords((v) => {
-								if (v.has(word.id)) {
-									v.delete(word.id);
-								} else {
-									v.add(word.id);
-								}
-							});
-						} else if (evt.shiftKey) {
-							setSelectedWords((v) => {
-								if (v.size > 0) {
-									let minBoundry = Number.NaN;
-									let maxBoundry = Number.NaN;
-									line.words.forEach((word, i) => {
-										if (v.has(word.id)) {
-											if (Number.isNaN(minBoundry)) minBoundry = i;
-											if (Number.isNaN(maxBoundry)) maxBoundry = i;
-
-											minBoundry = Math.min(minBoundry, i, wordIndex);
-											maxBoundry = Math.max(maxBoundry, i, wordIndex);
-										}
-									});
-									for (let i = minBoundry; i <= maxBoundry; i++) {
-										v.add(line.words[i].id);
-									}
-								} else {
-									v.add(word.id);
-								}
-							});
-						} else {
-							setSelectedLines((state) => {
-								if (!state.has(line.id) || state.size !== 1) {
-									state.clear();
-									state.add(line.id);
-								}
-							});
-							setSelectedWords((state) => {
-								if (!state.has(word.id) || state.size !== 1) {
-									state.clear();
-									state.add(word.id);
-								}
-							});
-						}
+						onWordSelect(evt);
 					}}
 				>
 					{children}
@@ -261,7 +275,7 @@ function WordEditField<F extends keyof LyricWord, V extends LyricWord[F]>({
 	fieldName,
 	formatter,
 	parser,
-	textFieldStyle,
+	// textFieldStyle,
 	children,
 	...other
 }: PropsWithChildren<
@@ -664,7 +678,6 @@ const LyricWorldViewSync: FC<{
 	);
 
 	return (
-		// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 		<div
 			className={className}
 			onClick={(evt) => {

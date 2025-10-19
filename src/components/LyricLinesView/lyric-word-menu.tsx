@@ -15,6 +15,7 @@ import { ContextMenu } from "@radix-ui/themes";
 import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import { useTranslation } from "react-i18next";
+import { normalizeLineTime } from "./utils";
 
 const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);
 const selectedWordsSizeAtom = atom((get) => get(selectedWordsAtom).size);
@@ -148,6 +149,10 @@ export const LyricWordMenu = ({
 			const selectedWords: LyricWord[] = [];
 			const affectedLines: LyricLine[] = [];
 			for (const line of state.lyricLines) {
+				const deletedAtBounds =
+					line.words.length > 0 &&
+					(selectedWordIds.has(line.words[0].id) ||
+						selectedWordIds.has(line.words[line.words.length - 1].id));
 				line.words = line.words.filter((w) => {
 					if (selectedWordIds.has(w.id)) {
 						selectedWords.push(w);
@@ -156,6 +161,7 @@ export const LyricWordMenu = ({
 					}
 					return true;
 				});
+				if (deletedAtBounds) normalizeLineTime(line);
 			}
 			const newLine = {
 				...newLyricLine(),
@@ -164,7 +170,6 @@ export const LyricWordMenu = ({
 			} as LyricLine;
 			newLine.words.push(...selectedWords);
 			normalizeLineTime(newLine);
-			affectedLines.forEach(normalizeLineTime);
 			state.lyricLines.splice(lineIndex + 1, 0, newLine);
 		});
 	}
@@ -188,11 +193,5 @@ export const LyricWordMenu = ({
 			normalizeLineTime(newLine);
 			state.lyricLines.splice(lineIndex + 1, 0, newLine);
 		});
-	}
-
-	function normalizeLineTime(line: LyricLine) {
-		if (!line.words.length) return;
-		line.startTime = line.words[0].startTime || line.startTime;
-		line.endTime = line.words[line.words.length - 1].endTime || line.endTime;
 	}
 };

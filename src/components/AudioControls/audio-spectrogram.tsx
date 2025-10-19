@@ -5,19 +5,34 @@ import {
 } from "$/states/audio.ts";
 import { audioEngine } from "$/utils/audio";
 // import { msToTimestamp } from "$/utils/timestamp.ts";
-import { Card } from "@radix-ui/themes";
-import { useSetAtom } from "jotai";
+import { Text } from "@radix-ui/themes";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
-import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
-import styles from "./audio-slider.module.css";
+import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
+import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
+import RegionsPlugin, {
+	type RegionParams,
+} from "wavesurfer.js/dist/plugins/regions.esm.js";
+import styles from "./audio-spectrogram.module.css";
 import { msToTimestamp } from "$/utils/timestamp";
+import colorMap from "./colorMap.json";
+import {
+	lyricLinesAtom,
+	selectedLinesAtom,
+	ToolMode,
+	toolModeAtom,
+} from "$/states/main";
 
-export const AudioSlider = () => {
+export const AudioSpectrogram = () => {
 	const setCurrentTime = useSetAtom(currentTimeAtom);
 	const setCurrentDuration = useSetAtom(currentDurationAtom);
 	const setAudioPlaying = useSetAtom(audioPlayingAtom);
+
+	const regionsRef = useRef<ReturnType<typeof RegionsPlugin.create> | null>(
+		null,
+	);
 
 	const wsContainerRef = useRef<HTMLDivElement>(null);
 	const waveSurferRef = useRef<WaveSurfer | null>(null);
@@ -41,18 +56,40 @@ export const AudioSlider = () => {
 		const primaryFillColor =
 			canvasStyles.getPropertyValue("--accent-a4") || "#00ffa21e";
 
+		const spectrogramHeightRatio = 0.8;
+
+		const regions = RegionsPlugin.create();
+		regionsRef.current = regions;
+
 		const ws = WaveSurfer.create({
 			container: wsContainerRef.current,
-			height,
-			hideScrollbar: true,
+			height: height * (1 - spectrogramHeightRatio),
 			waveColor: primaryFillColor,
 			progressColor: fontColor,
 			cursorColor: fontColor,
 			dragToSeek: true,
+			normalize: true,
 			cursorWidth: 0,
 			barHeight: 0.8,
+			sampleRate: 44100,
 			plugins: [
-				RegionsPlugin.create(),
+				ZoomPlugin.create({
+					scale: 0.3,
+					maxZoom: 200,
+				}),
+				SpectrogramPlugin.create({
+					labels: false,
+					height: height * spectrogramHeightRatio,
+					colorMap,
+					fftSamples: 1024,
+					noverlap: 512,
+					frequencyMin: 100,
+					frequencyMax: 22050,
+					scale: "linear",
+					gainDB: 20,
+					rangeDB: 80,
+					windowFunc: "hann",
+				}),
 				HoverPlugin.create({
 					formatTimeCallback: (v) => msToTimestamp(Math.round(v * 1000)),
 					lineColor: fontColor,
@@ -62,6 +99,7 @@ export const AudioSlider = () => {
 					labelSize: fontSize,
 					labelPreferLeft: false,
 				}),
+				regions,
 			],
 			media: audioEngine.audioEl,
 		});
@@ -103,6 +141,7 @@ export const AudioSlider = () => {
 		const handleSeek = () =>
 			setCurrentTime((audioEngine.musicCurrentTime * 1000) | 0);
 
+		if (audioEngine.musicLoaded) handleMusicLoad();
 		audioEngine.addEventListener("music-load", handleMusicLoad);
 		audioEngine.addEventListener("music-unload", handleMusicUnload);
 		audioEngine.addEventListener("music-resume", handlePlay);
@@ -125,20 +164,67 @@ export const AudioSlider = () => {
 		setAudioPlaying,
 	]);
 
+	const selectedLines = useAtomValue(selectedLinesAtom);
+	const toolMode = useAtomValue(toolModeAtom);
+	const lyricLines = useAtomValue(lyricLinesAtom).lyricLines;
+
+	useEffect(() => {
+		const ws = waveSurferRef.current;
+		const regions = regionsRef.current;
+		if (!ws || !regions) return;
+		const maintainRegion = (params: RegionParams) => {
+			const existingRegions = regions.getRegions();
+			const targetRegion = existingRegions.find((r) => r.id === params.id);
+			if (targetRegion) {
+				targetRegion.setOptions({
+					start: params.start,
+					end: params.end,
+				});
+			} else regions.addRegion(params);
+		};
+
+		if (toolMode !== ToolMode.Sync) {
+			regions.clearRegions();
+			return;
+		}
+		for (const line of lyricLines) {
+			if (!selectedLines.has(line.id)) continue;
+			for (const word of line.words) {
+				const lineWordIds = line.words.map((w) => w.id);
+				regions.getRegions().forEach((region) => {
+					if (!lineWordIds.includes(region.id)) region.remove();
+				});
+				maintainRegion({
+					id: word.id,
+					start: word.startTime / 1000,
+					end: word.endTime / 1000,
+					color: "transparent",
+					drag: false,
+					content: word.word,
+				});
+			}
+			break;
+		}
+	}, [selectedLines, lyricLines, toolMode]);
+
 	return (
-		<Card
+		<div
 			style={{
 				alignSelf: "center",
+				height: "12.5rem",
 				width: "100%",
-				height: "2.5em",
 				padding: "0",
+				position: "relative",
 			}}
 		>
+			<div className={styles.loadingTip}>
+				<Text color="gray">等待频谱图装载…</Text>
+			</div>
 			<div
-				className={styles.waveformContainer}
+				className={styles.spectrogramContainer}
 				ref={wsContainerRef}
 				style={{ width: "100%", height: "100%", overflow: "hidden" }}
 			></div>
-		</Card>
+		</div>
 	);
 };

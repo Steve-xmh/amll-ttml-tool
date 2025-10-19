@@ -1,0 +1,42 @@
+.spectrogramContainer {
+	cursor: text;
+	transform: translateZ(0);
+	will-change: transform;
+}
+.spectrogramContainer ::part(progress) {
+	background-color: var(--accent-a4);
+}
+.spectrogramContainer ::part(cursor) {
+	box-shadow:
+		0 0 0 1px var(--accent-a11),
+		0 0 0 3px #0002;
+}
+.spectrogramContainer ::part(hover-label) {
+	padding: 0 0.5rem;
+	line-height: 2.5rem;
+	transition: none;
+}
+
+.loadingTip {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+
+.spectrogramContainer ::part(region) {
+	box-shadow: 0 0 0 2px var(--accent-a7);
+	margin: 0 1px;
+	background-color: var(--accent-a3);
+	border-radius: 0;
+}
+.spectrogramContainer ::part(region-handle) {
+	display: none;
+}
+.spectrogramContainer ::part(region-content) {
+	color: white;
+	text-shadow: #0004 0 0 2px;
+	background-color: #0003;
+	margin-top: 2.5rem !important;
+}

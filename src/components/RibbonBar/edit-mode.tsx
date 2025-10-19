@@ -20,19 +20,30 @@ import {
 	type LyricWord,
 	newLyricLine,
 } from "$/utils/ttml-types.ts";
-import { Button, Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
-import { atom, useAtomValue, useSetAtom, useStore } from "jotai";
+import {
+	Button,
+	Checkbox,
+	Grid,
+	Text,
+	TextField,
+	RadioGroup,
+	Flex,
+} from "@radix-ui/themes";
+import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
 	forwardRef,
 	useCallback,
+	useId,
 	useLayoutEffect,
 	useMemo,
 	useState,
 } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
 import { useTranslation } from "react-i18next";
+import { LayoutMode, layoutModeAtom } from "$/states/config";
+import { t } from "i18next";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");
 
@@ -236,14 +247,16 @@ function CheckboxField<
 		[itemAtom],
 	);
 	const isDisabled = useAtomValue(isDisabledAtom);
+	const checkboxId = useId();
 
 	return (
 		<>
 			<Text wrap="nowrap" size="1">
-				{label}
+				<label htmlFor={checkboxId}>{label}</label>
 			</Text>
 			<Checkbox
 				disabled={isDisabled}
+				id={checkboxId}
 				checked={
 					currentValue
 						? currentValue === MULTIPLE_VALUES
@@ -272,6 +285,35 @@ function CheckboxField<
 					});
 				}}
 			/>
+		</>
+	);
+}
+
+function EditModeField({
+	simpleModeLabel = "简单模式",
+	advanceModeLabel = "高级模式",
+}) {
+	const [layoutMode, setLayoutMode] = useAtom(layoutModeAtom);
+	return (
+		<>
+			<RadioGroup.Root
+				value={layoutMode}
+				onValueChange={(v) => setLayoutMode(v as LayoutMode)}
+				size="1"
+			>
+				<Flex gapY="3" direction="column">
+					<Text wrap="nowrap" size="1">
+						<RadioGroup.Item value={LayoutMode.Simple}>
+							{simpleModeLabel}
+						</RadioGroup.Item>
+					</Text>
+					<Text wrap="nowrap" size="1">
+						<RadioGroup.Item value={LayoutMode.Advance}>
+							{advanceModeLabel}
+						</RadioGroup.Item>
+					</Text>
+				</Flex>
+			</RadioGroup.Root>
 		</>
 	);
 }
@@ -507,6 +549,18 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							textFieldStyle={{ width: "20em" }}
 						/>
 					</Grid>
+				</RibbonSection>
+				<RibbonSection label={t("ribbonBar.editMode.layoutMode", "布局模式")}>
+					<EditModeField
+						simpleModeLabel={t(
+							"settings.common.layoutModeOptions.simple",
+							"简单模式",
+						)}
+						advanceModeLabel={t(
+							"settings.common.layoutModeOptions.advance",
+							"高级模式",
+						)}
+					/>
 				</RibbonSection>
 			</RibbonFrame>
 		);

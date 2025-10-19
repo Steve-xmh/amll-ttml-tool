@@ -33,14 +33,22 @@
 		"builtinOptions": {
 			"musicName": "歌曲名称",
 			"artists": "歌曲的艺术家",
+			"artistsInvalidMsg": "如果有多个艺术家，请多次添加该键值，避免使用分隔符号；若艺术家名本身包含分隔符号，请忽略此提示",
 			"album": "歌曲的专辑名",
 			"ncmMusicId": "网易云音乐 ID",
+			"ncmMusicIdInvalidMsg": "网易云音乐 ID 应为纯数字",
 			"qqMusicId": "QQ 音乐 ID",
+			"qqMusicIdInvalidMsg": "QQ 音乐 ID 应为字母或数字",
 			"spotifyId": "Spotify 音乐 ID",
+			"spotifyIdInvalidMsg": "Spotify 音乐 ID 应为字母或数字",
 			"appleMusicId": "Apple Music 音乐 ID",
+			"appleMusicIdInvalidMsg": "Apple Music 音乐 ID 应为纯数字",
 			"isrc": "歌曲的 ISRC 号码",
+			"isrcInvalidMsg": "ISRC 号码格式应为 CC-XXX-YY-NNNNN",
 			"ttmlAuthorGithub": "逐词歌词作者 GitHub ID",
-			"ttmlAuthorGithubLogin": "逐词歌词作者 GitHub 用户名"
+			"ttmlAuthorGithubInvalidMsg": "GitHub ID 应为纯数字",
+			"ttmlAuthorGithubLogin": "逐词歌词作者 GitHub 用户名",
+			"ttmlAuthorGithubLoginInvalidMsg": "GitHub 用户名应为不长于 39 字符的字母、数字或短横线"
 		}
 	},
 	"aboutModal": {
@@ -191,7 +199,12 @@
 			"obscene": "不雅用语",
 			"secondaryContent": "次要内容",
 			"translatedLyric": "翻译歌词",
-			"romanLyric": "音译歌词"
+			"romanLyric": "音译歌词",
+			"layoutMode": "布局模式",
+			"layoutModeOptions": {
+				"simple": "简单模式",
+				"advance": "高级模式"
+			}
 		},
 		"previewMode": {
 			"lyrics": "歌词",
@@ -263,6 +276,10 @@
 		"openFromClipboard": {
 			"title": "确认从剪贴板打开",
 			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？"
+		},
+		"importFile": {
+			"title": "确认导入歌词",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要导入歌词吗？"
 		}
 	},
 	"contextMenu": {
