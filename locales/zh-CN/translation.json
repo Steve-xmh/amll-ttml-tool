@@ -131,6 +131,29 @@
 			"latencyTest": "音频/输入延迟测试"
 		}
 	},
+	"textImportDialog": {
+		"title": "导入纯文本歌词",
+		"actionButton": "导入歌词",
+		"contentMode": {
+			"caption": "导入模式",
+			"withTranslation": "歌词和翻译歌词",
+			"withRoman": "歌词和音译歌词",
+			"withBoth": "歌词和翻译、音译歌词"
+		},
+		"separationMode": {
+			"caption": "歌词分行（翻译和音译）模式",
+			"multipleLine": "多行交错分隔",
+			"sameLine": "同行分隔"
+		},
+		"separator": "歌词行分隔符",
+		"swapTransAndRoman": "交换翻译行和音译行",
+		"wordSeparator": "单词分隔符",
+		"enableSpecialPrefix": "启用特殊前缀",
+		"bgLyricPrefix": "背景歌词前缀",
+		"duetLyricPrefix": "对唱歌词前缀",
+		"enableEmptyBeat": "启用空拍",
+		"emptyBeatSymbol": "空拍符号"
+	},
 	"common": {
 		"about": "关于",
 		"fileNamePlaceholder": "文件名"

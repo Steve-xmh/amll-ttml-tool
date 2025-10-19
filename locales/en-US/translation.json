@@ -155,6 +155,29 @@
 			"latencyTest": "Audio/Input Latency Test"
 		}
 	},
+	"textImportDialog": {
+		"title": "Import Lyrics from Plain Text",
+		"actionButton": "Import",
+		"contentMode": {
+			"caption": "Text content",
+			"withTranslation": "Lyrics with translation",
+			"withRoman": "Lyrics with romanization",
+			"withBoth": "Lyrics with both"
+		},
+		"separationMode": {
+			"caption": "Translation/Romanization Format",
+			"multipleLine": "Interleaved Multiple Lines",
+			"sameLine": "Same Line Separation"
+		},
+		"separator": "Line Separator",
+		"swapTransAndRoman": "Swap translation and romanization lines",
+		"wordSeparator": "Word Separator",
+		"enableSpecialPrefix": "Enable Special Prefix",
+		"bgLyricPrefix": "Background Lyric Prefix",
+		"duetLyricPrefix": "Duet Lyric Prefix",
+		"enableEmptyBeat": "Enable Empty Beat",
+		"emptyBeatSymbol": "Empty Beat Symbol"
+	},
 	"common": {
 		"about": "About",
 		"fileNamePlaceholder": "File Name"
