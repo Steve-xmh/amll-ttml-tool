@@ -29,7 +29,7 @@
 		"builtinOptions": {
 			"musicName": "歌曲名称",
 			"artists": "歌曲的艺术家",
-			"artistsInvalidMsg": "如果有多个艺术家，请多次添加该键值，避免使用分隔符",
+			"artistsInvalidMsg": "如果有多个艺术家，请多次添加该键值，避免使用分隔符号；若艺术家名本身包含分隔符号，请忽略此提示",
 			"album": "歌曲的专辑名",
 			"ncmMusicId": "网易云音乐 ID",
 			"ncmMusicIdInvalidMsg": "网易云音乐 ID 应为纯数字",
