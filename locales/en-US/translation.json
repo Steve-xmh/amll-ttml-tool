@@ -87,7 +87,7 @@
 		"builtinOptions": {
 			"musicName": "Track Name",
 			"artists": "Track Artists",
-			"artistsInvalidMsg": "If there are multiple artists, please add this key multiple times instead of using delimiters",
+			"artistsInvalidMsg": "If there are multiple artists, please add this key multiple times instead of using delimiters; if an artist name contains delimiters, please ignore this message",
 			"album": "Album Name",
 			"ncmMusicId": "NetEase Music ID",
 			"ncmMusicIdInvalidMsg": "NetEase Music ID should be numeric",
