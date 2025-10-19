@@ -43,7 +43,6 @@ import {
 import { RibbonFrame, RibbonSection } from "./common";
 import { useTranslation } from "react-i18next";
 import { LayoutMode, layoutModeAtom } from "$/states/config";
-import { t } from "i18next";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");
 

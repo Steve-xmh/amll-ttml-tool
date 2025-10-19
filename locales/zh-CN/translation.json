@@ -253,6 +253,25 @@
 			"saveLyric": "保存 TTML 文件",
 			"restoreFromHistory": "从历史记录恢复...",
 			"saveLyricToClipboard": "保存 TTML 文件到剪切板",
+			"importLyric": {
+				"import": "导入歌词…",
+				"fromPlainText": "从纯文本导入",
+				"fromLyRiC": "从 LyRiC 文件导入",
+				"fromESLyRiC": "从 ESLyRiC 文件导入",
+				"fromQRC": "从 QRC 文件导入",
+				"fromYRC": "从 YRC 文件导入",
+				"fromLrcfySylb": "从 Lyricify Syllable 文件导入"
+			},
+			"exportLyric": {
+				"export": "导出歌词…",
+				"toPlainText": "导出为纯文本",
+				"toLyRiC": "导出到 LyRiC",
+				"toESLyRiC": "导导出到 ESLyRiC",
+				"toQRC": "导出到 QRC",
+				"toYRC": "导出到 YRC",
+				"toLrcfySylb": "导出到 Lyricify Syllable",
+				"toASS": "导出到 ASS 字幕"
+			},
 			"uploadToAMLLDB": "上传到 AMLL 歌词数据库",
 			"edit": "编辑",
 			"undo": "撤销",

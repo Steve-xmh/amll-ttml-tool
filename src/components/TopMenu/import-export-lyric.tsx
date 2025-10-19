@@ -108,58 +108,65 @@ export const ImportExportLyric = () => {
 	return (
 		<>
 			<DropdownMenu.Sub>
-				<DropdownMenu.SubTrigger>导入歌词...</DropdownMenu.SubTrigger>
+				<DropdownMenu.SubTrigger>
+					{t("topBar.menu.importLyric.import", "导入歌词...")}
+				</DropdownMenu.SubTrigger>
 				<DropdownMenu.SubContent>
 					<DropdownMenu.Item onClick={() => setImportFromTextDialog(true)}>
-						从纯文本导入
+						{t("topBar.menu.importLyric.fromPlainText", "从纯文本导入")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item
 						onClick={() => onImportLyricWithConfirm(parseLrc, "lrc")}
 					>
-						从 LyRiC 文件导入
+						{t("topBar.menu.importLyric.fromLyRiC", "从 LyRiC 文件导入")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item
 						onClick={() => onImportLyricWithConfirm(parseEslrc, "lrc")}
 					>
-						从 ESLyRiC 文件导入
+						{t("topBar.menu.importLyric.fromESLyRiC", "从 ESLyRiC 文件导入")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item
 						onClick={() => onImportLyricWithConfirm(parseQrc, "qrc")}
 					>
-						从 QRC 文件导入
+						{t("topBar.menu.importLyric.fromQRC", "从 QRC 文件导入")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item
 						onClick={() => onImportLyricWithConfirm(parseYrc, "yrc")}
 					>
-						从 YRC 文件导入
+						{t("topBar.menu.importLyric.fromYRC", "从 YRC 文件导入")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item
 						onClick={() => onImportLyricWithConfirm(parseLys, "lys")}
 					>
-						从 Lyricify Syllable 文件导入
+						{t(
+							"topBar.menu.importLyric.fromLrcfySylb",
+							"从 Lyricify Syllable 文件导入",
+						)}
 					</DropdownMenu.Item>
 				</DropdownMenu.SubContent>
 			</DropdownMenu.Sub>
 			<DropdownMenu.Sub>
-				<DropdownMenu.SubTrigger>导出歌词...</DropdownMenu.SubTrigger>
+				<DropdownMenu.SubTrigger>
+					{t("topBar.menu.exportLyric.export", "导出歌词...")}
+				</DropdownMenu.SubTrigger>
 				<DropdownMenu.SubContent>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyLrc, "lrc")}>
-						导出到 LyRiC
+						{t("topBar.menu.exportLyric.toLyRiC", "导出到 LyRiC")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyEslrc, "lrc")}>
-						导出到 ESLyRiC
+						{t("topBar.menu.exportLyric.toESLyRiC", "导出到 ESLyRiC")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyQrc, "qrc")}>
-						导出到 QRC
+						{t("topBar.menu.exportLyric.toQRC", "导出到 QRC")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyYrc, "yrc")}>
-						导出到 YRC
+						{t("topBar.menu.exportLyric.toYRC", "导出到 YRC")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyLys, "lys")}>
-						导出到 Lyricify Syllable
+						{t("topBar.menu.exportLyric.toLrcfySylb", "导出到 Lyricify Syllable")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyAss, "ass")}>
-						导出到 ASS 字幕
+						{t("topBar.menu.exportLyric.toASS", "导出到 ASS 字幕")}
 					</DropdownMenu.Item>
 				</DropdownMenu.SubContent>
 			</DropdownMenu.Sub>
