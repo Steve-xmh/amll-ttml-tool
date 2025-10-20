@@ -177,6 +177,7 @@ export const LyricLineView: FC<{
 	lineAtom: Atom<LyricLine>;
 	lineIndex: number;
 }> = memo(({ lineAtom, lineIndex }) => {
+	const { t } = useTranslation();
 	const line = useAtomValue(lineAtom);
 	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const lineSelectedAtom = useMemo(() => {
@@ -510,7 +511,7 @@ export const LyricLineView: FC<{
 									)}
 									{toolMode === ToolMode.Edit && (
 										<TextField.Root
-											placeholder="插入单词…"
+											placeholder={t("lyricLineView.insertWord", "插入单词…")}
 											className={classNames(
 												styles.insertWordField,
 												words.length === 0 && styles.empty,

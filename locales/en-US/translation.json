@@ -50,8 +50,8 @@
 				"toLrcfySylb": "Export to Lyricify Syllable",
 				"toASS": "Export to ASS subtitles"
 			},
-			"uploadToAMLLDB": "Upload to AMLL Lyrics Database",
-			"helpDoc": "Documentation",
+			"uploadToAMLLDB": "Upload to database (CN only)",
+			"helpDoc": "Documentation (CN)",
 			"about": "About",
 			"edit": "Edit",
 			"undo": "Undo",
@@ -65,9 +65,9 @@
 			"splitWordByCompromise": "Split words (using Compromise)",
 			"view": "View",
 			"tool": "Tools",
-			"restoreFromHistory": "Restore from History…",
-			"openFromClipboard": "Open TTML from Clipboard",
-			"saveLyricToClipboard": "Save TTML to Clipboard",
+			"restoreFromHistory": "Restore from history…",
+			"openFromClipboard": "Open TTML from clipboard",
+			"saveLyricToClipboard": "Save TTML to clipboard",
 			"selectWordsOfMatchedSelection": "Select words matching selection",
 			"editMetadata": "Edit lyrics metadata…",
 			"help": "Help",
@@ -78,7 +78,7 @@
 		},
 		"modeBtns": {
 			"edit": "Edit",
-			"sync": "Timing",
+			"sync": "Time",
 			"preview": "Preview"
 		},
 		"appName": "Apple Music-like Lyrics TTML Tool"
@@ -91,6 +91,15 @@
 		"gitCommit": "Git Commit: {commit}"
 	},
 	"metadataDialog": {
+		"title": "Metadata Editor",
+		"key": "Key",
+		"value": "Value",
+		"empty": "No metadata",
+		"addValue": "Add",
+		"addKeyValue": "Add new key-value",
+		"customKey": "Custom Key",
+		"addPresets": "Add all preset keys",
+		"info": "Learn more",
 		"builtinOptions": {
 			"musicName": "Track Name",
 			"artists": "Track Artists",
@@ -185,12 +194,14 @@
 		"delimiter": "Delimiter",
 		"previewTitle": "Split Preview",
 		"spaceCount": "Space x{count}",
-		"empty": "Empty"
+		"empty": "Empty",
+		"actionButton": "Confirm"
 	},
 	"lyricLineView": {
 		"translatedLabel": "Translation:",
 		"romanLabel": "Romanization:",
-		"empty": "None"
+		"empty": "None",
+		"insertWord": "Insert Word Here…"
 	},
 	"contextMenu": {
 		"splitReplaceWord": "Split or replace word…",
@@ -349,7 +360,9 @@
 		"importFile": {
 			"title": "Confirm Import Lyrics",
 			"description": "You have unsaved changes. If you proceed, these changes will be lost. Are you sure you want to import new lyrics?"
-		}
+		},
+		"confirm": "Confirm",
+		"cancel": "Cancel"
 	},
 	"historyRestoreDialog": {
 		"title": "Restore from History",

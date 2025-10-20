@@ -104,7 +104,7 @@ export const SplitWordDialog = memo(() => {
 							});
 						}}
 					>
-						拆分/替换
+						{t("splitWordDialog.actionButton", "执行")}
 					</Button>
 				</Dialog.Close>
 			</Dialog.Content>

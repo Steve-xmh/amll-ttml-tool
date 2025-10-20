@@ -30,6 +30,15 @@
 		"cancelButton": "取消"
 	},
 	"metadataDialog": {
+		"title": "元数据编辑器",
+		"key": "元数据类型",
+		"value": "值",
+		"empty": "无任何元数据",
+		"addValue": "添加",
+		"addKeyValue": "添加新键值",
+		"customKey": "自定义键名",
+		"addPresets": "一键添加所有预设键",
+		"info": "了解详情",
 		"builtinOptions": {
 			"musicName": "歌曲名称",
 			"artists": "歌曲的艺术家",
@@ -165,7 +174,8 @@
 		"delimiter": "分隔符",
 		"previewTitle": "拆分预览",
 		"spaceCount": "空格x{count}",
-		"empty": "空白"
+		"empty": "空白",
+		"actionButton": "确认"
 	},
 	"submitToAMLLDB": {
 		"validation": {
@@ -202,7 +212,8 @@
 	"lyricLineView": {
 		"translatedLabel": "翻译：",
 		"romanLabel": "音译：",
-		"empty": "无"
+		"empty": "无",
+		"insertWord": "插入单词…"
 	},
 	"lyricWordView": {
 		"empty": "空白",
@@ -328,7 +339,9 @@
 		"importFile": {
 			"title": "确认导入歌词",
 			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要导入歌词吗？"
-		}
+		},
+		"confirm": "Confirm",
+		"cancel": "Cancel"
 	},
 	"contextMenu": {
 		"splitReplaceWord": "拆分或替换单词…",
