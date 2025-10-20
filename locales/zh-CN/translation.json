@@ -213,7 +213,8 @@
 		"translatedLabel": "翻译：",
 		"romanLabel": "音译：",
 		"empty": "无",
-		"insertWord": "插入单词…"
+		"insertWord": "插入单词…",
+		"insertLine": "在此插入新行"
 	},
 	"lyricWordView": {
 		"empty": "空白",

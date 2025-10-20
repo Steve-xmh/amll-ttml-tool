@@ -201,7 +201,8 @@
 		"translatedLabel": "Translation:",
 		"romanLabel": "Romanization:",
 		"empty": "None",
-		"insertWord": "Insert Word Here…"
+		"insertWord": "Insert word here…",
+		"insertLine": "Insert new line here"
 	},
 	"contextMenu": {
 		"splitReplaceWord": "Split or replace word…",

@@ -277,7 +277,7 @@ export const LyricLineView: FC<{
 						setEnableInsert(false);
 					}}
 				>
-					在此插入新行
+					{t("lyricLineView.insertLine", "在此插入新行")}
 				</Button>
 			)}
 			<ContextMenu.Root
@@ -599,7 +599,7 @@ export const LyricLineView: FC<{
 						setEnableInsert(false);
 					}}
 				>
-					在此插入新行
+					{t("lyricLineView.insertLine", "在此插入新行")}
 				</Button>
 			)}
 		</>
