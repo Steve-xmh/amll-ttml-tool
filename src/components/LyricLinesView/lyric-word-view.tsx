@@ -33,8 +33,9 @@ import {
 	PaddingLeftRegular,
 	PaddingRightRegular,
 	SplitVerticalRegular,
+	TaskListLtrRegular,
 } from "@fluentui/react-icons";
-import { ContextMenu, IconButton, TextField } from "@radix-ui/themes";
+import { ContextMenu, IconButton, TextField, Tooltip } from "@radix-ui/themes";
 import classNames from "classnames";
 import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
@@ -363,14 +364,14 @@ const LyricWordViewEditAdvance = ({
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const setOpenSplitWordDialog = useSetAtom(splitWordDialogAtom);
 	const setSplitState = useSetAtom(splitWordStateAtom);
-	const word = useAtomValue(wordAtom);
+	const currentWord = useAtomValue(wordAtom);
 	const isWordSelectedAtom = useMemo(
 		() => atom((get) => get(selectedWordsAtom).has(get(wordAtom).id)),
 		[wordAtom],
 	);
 	const isWordSelected = useAtomValue(isWordSelectedAtom);
 
-	const isWordBlank = useWordBlank(word.word);
+	const isWordBlank = useWordBlank(currentWord.word);
 
 	const className = useMemo(
 		() =>
@@ -417,7 +418,7 @@ const LyricWordViewEditAdvance = ({
 								setSplitState({
 									wordIndex,
 									lineIndex,
-									word: word.word,
+									word: currentWord.word,
 								});
 								setOpenSplitWordDialog(true);
 							}}
@@ -466,22 +467,38 @@ const LyricWordViewEditAdvance = ({
 							<PaddingRightRegular />
 						</TextField.Slot>
 					</WordEditField>
-					<WordEditField
-						size="1"
-						type="number"
-						min={0}
-						wordAtom={wordAtom}
-						fieldName="emptyBeat"
-						formatter={String}
-						parser={Number.parseInt}
-						style={{
-							minWidth: "0",
-						}}
-					>
-						<TextField.Slot>
-							<SplitVerticalRegular />
-						</TextField.Slot>
-					</WordEditField>
+					<div className={styles.advanceBar}>
+						<WordEditField
+							size="1"
+							type="number"
+							min={0}
+							wordAtom={wordAtom}
+							fieldName="emptyBeat"
+							formatter={String}
+							parser={Number.parseInt}
+							style={{
+								minWidth: "0",
+							}}
+						>
+							<TextField.Slot>
+								<SplitVerticalRegular />
+							</TextField.Slot>
+						</WordEditField>
+						<IconButton
+							variant="soft"
+							size="1"
+							onClick={() => {
+								editLyricLines((state) => {
+									for (const line of state.lyricLines)
+										for (const word of line.words)
+											if (word.word === currentWord.word)
+												word.emptyBeat = currentWord.emptyBeat;
+								});
+							}}
+						>
+							<TaskListLtrRegular />
+						</IconButton>
+					</div>
 				</LyricWordViewEditSpan>
 			</ContextMenu.Trigger>
 			<ContextMenu.Content>
