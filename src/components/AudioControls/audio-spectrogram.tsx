@@ -1,30 +1,30 @@
+// import { msToTimestamp } from "$/utils/timestamp.ts";
+import { Text } from "@radix-ui/themes";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import WaveSurfer from "wavesurfer.js";
+import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
+import RegionsPlugin, {
+	type RegionParams,
+} from "wavesurfer.js/dist/plugins/regions.esm.js";
+import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
+import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
 } from "$/states/audio.ts";
-import { audioEngine } from "$/utils/audio";
-// import { msToTimestamp } from "$/utils/timestamp.ts";
-import { Text } from "@radix-ui/themes";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useRef } from "react";
-import WaveSurfer from "wavesurfer.js";
-import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
-import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
-import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
-import RegionsPlugin, {
-	type RegionParams,
-} from "wavesurfer.js/dist/plugins/regions.esm.js";
-import styles from "./audio-spectrogram.module.css";
-import { msToTimestamp } from "$/utils/timestamp";
-import colorMap from "./colorMap.json";
 import {
 	lyricLinesAtom,
 	selectedLinesAtom,
 	ToolMode,
 	toolModeAtom,
 } from "$/states/main";
-import { useTranslation } from "react-i18next";
+import { audioEngine } from "$/utils/audio";
+import { msToTimestamp } from "$/utils/timestamp";
+import styles from "./audio-spectrogram.module.css";
+import colorMap from "./colorMap.json";
 
 export const AudioSpectrogram = () => {
 	const { t } = useTranslation();

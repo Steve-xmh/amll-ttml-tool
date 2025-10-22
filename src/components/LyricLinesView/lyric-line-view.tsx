@@ -9,21 +9,6 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
-import {
-	ToolMode,
-	lyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
-	toolModeAtom,
-} from "$/states/main.ts";
-import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
-import { msToTimestamp } from "$/utils/timestamp.ts";
-import {
-	type LyricLine,
-	newLyricLine,
-	newLyricWord,
-} from "$/utils/ttml-types.ts";
 import {
 	AddFilled,
 	TextAlignRightFilled,
@@ -39,13 +24,13 @@ import {
 } from "@radix-ui/themes";
 import classNames from "classnames";
 import { type Atom, atom, useAtomValue, useStore } from "jotai";
-import { useSetImmerAtom } from "jotai-immer";
 import { splitAtom } from "jotai/utils";
+import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
 	Fragment,
-	type SyntheticEvent,
 	memo,
+	type SyntheticEvent,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -53,10 +38,25 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
+import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
+import {
+	lyricLinesAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
+	ToolMode,
+	toolModeAtom,
+} from "$/states/main.ts";
+import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import {
+	type LyricLine,
+	newLyricLine,
+	newLyricWord,
+} from "$/utils/ttml-types.ts";
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordView } from "./lyric-word-view";
-import { useTranslation } from "react-i18next";
 
 const isDraggingAtom = atom(false);
 

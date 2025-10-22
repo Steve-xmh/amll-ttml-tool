@@ -1,3 +1,8 @@
+import { SegmentedControl, Text } from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
+import { type FC, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import WindowControls from "$/components/WindowControls";
 import {
 	keySwitchEditModeAtom,
@@ -5,17 +10,12 @@ import {
 	keySwitchSyncModeAtom,
 } from "$/states/keybindings.ts";
 import {
-	ToolMode,
 	selectedLinesAtom,
 	selectedWordsAtom,
+	ToolMode,
 	toolModeAtom,
 } from "$/states/main.ts";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
-import { SegmentedControl, Text } from "@radix-ui/themes";
-import { useAtom } from "jotai";
-import { useSetImmerAtom } from "jotai-immer";
-import { type FC, useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { TopMenu } from "../TopMenu/index.tsx";
 import styles from "./index.module.css";
 

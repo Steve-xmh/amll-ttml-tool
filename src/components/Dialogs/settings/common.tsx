@@ -1,13 +1,4 @@
-import { playbackRateAtom, volumeAtom } from "$/states/audio";
-import {
-	LayoutMode,
-	SyncJudgeMode,
-	autosaveEnabledAtom,
-	autosaveIntervalAtom,
-	autosaveLimitAtom,
-	layoutModeAtom,
-	syncJudgeModeAtom,
-} from "$/states/config.ts";
+import resources from "virtual:i18next-loader";
 import {
 	Flex,
 	Select,
@@ -18,7 +9,16 @@ import {
 } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
-import resources from "virtual:i18next-loader";
+import { playbackRateAtom, volumeAtom } from "$/states/audio";
+import {
+	autosaveEnabledAtom,
+	autosaveIntervalAtom,
+	autosaveLimitAtom,
+	LayoutMode,
+	layoutModeAtom,
+	SyncJudgeMode,
+	syncJudgeModeAtom,
+} from "$/states/config.ts";
 
 const languageOptions: readonly string[] = Object.keys(resources);
 
@@ -37,7 +37,7 @@ export const SettingsCommonTab = () => {
 		try {
 			// Define a minimal interface to avoid using any
 			interface DisplayNamesLike {
-				new(
+				new (
 					locales: string | string[],
 					options: { type: string },
 				): {

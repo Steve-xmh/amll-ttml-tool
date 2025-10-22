@@ -13,8 +13,8 @@
 }
 
 .radix-themes {
-	--default-font-family: "MiSans", Inter, system-ui, Avenir, Helvetica, Arial,
-		sans-serif;
+	--default-font-family:
+		"MiSans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 ::-webkit-scrollbar-track {

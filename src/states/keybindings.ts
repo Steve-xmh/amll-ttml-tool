@@ -1,7 +1,7 @@
 import type { WritableAtom } from "jotai";
 import {
-	type KeyBindingsConfig,
 	atomWithKeybindingStorage,
+	type KeyBindingsConfig,
 } from "../utils/keybindings.ts";
 
 // https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values

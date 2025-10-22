@@ -1,15 +1,15 @@
+import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
+import { useAtom, useAtomValue } from "jotai";
+import { memo, useEffect, useRef, useState } from "react";
 import {
-	SyncJudgeMode,
 	latencyTestBPMAtom,
+	SyncJudgeMode,
 	syncJudgeModeAtom,
 } from "$/states/config";
 import { latencyTestDialogAtom } from "$/states/dialogs.ts";
 import { keySyncNextAtom } from "$/states/keybindings";
 import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings";
-import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
-import { useAtom, useAtomValue } from "jotai";
-import { memo, useEffect, useRef, useState } from "react";
 
 const BeepVisualizer = ({ enable }: { enable: boolean }) => {
 	return (

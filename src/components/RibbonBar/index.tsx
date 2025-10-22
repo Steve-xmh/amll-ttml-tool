@@ -9,12 +9,12 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
-import { ToolMode, toolModeAtom } from "$/states/main.ts";
 import { Card, Inset } from "@radix-ui/themes";
 import { AnimatePresence } from "framer-motion";
 import { useAtomValue } from "jotai";
 import { forwardRef, lazy, memo } from "react";
+import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
+import { ToolMode, toolModeAtom } from "$/states/main.ts";
 
 const EditModeRibbonBar = lazy(() => import("./edit-mode"));
 const SyncModeRibbonBar = lazy(() => import("./sync-mode"));

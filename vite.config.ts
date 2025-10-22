@@ -1,12 +1,12 @@
 // import MillionLint from "@million/lint";
+import { exec } from "node:child_process";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
-import { exec } from "node:child_process";
 import ConditionalCompile from "unplugin-preprocessor-directives/vite";
-import { type Plugin, defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import i18nextLoader from "vite-plugin-i18next-loader";
 import { VitePWA } from "vite-plugin-pwa";
 // 由于这个插件会除去 Source Map 注释，所以考虑移除

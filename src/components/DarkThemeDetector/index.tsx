@@ -9,9 +9,9 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { DarkMode, autoDarkModeAtom, darkModeAtom } from "$/states/main.ts";
 import { useAtomValue, useSetAtom } from "jotai";
 import { type FC, useEffect } from "react";
+import { autoDarkModeAtom, DarkMode, darkModeAtom } from "$/states/main.ts";
 
 const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 

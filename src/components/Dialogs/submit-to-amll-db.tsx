@@ -1,11 +1,3 @@
-import {
-	generateNameFromMetadataAtom,
-	hideSubmitAMLLDBWarningAtom,
-} from "$/states/config.ts";
-import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom } from "$/states/main";
-import { error } from "$/utils/logging.ts";
-import exportTTMLText from "$/utils/ttml-writer";
 import { ErrorCircle16Regular, Info16Regular } from "@fluentui/react-icons";
 import {
 	Box,
@@ -19,13 +11,20 @@ import {
 	TextArea,
 	TextField,
 } from "@radix-ui/themes";
+import type { TFunction } from "i18next";
 import { atom, useAtom, useAtomValue, useStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { memo, useLayoutEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
+import { memo, useCallback, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import {
+	generateNameFromMetadataAtom,
+	hideSubmitAMLLDBWarningAtom,
+} from "$/states/config.ts";
+import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
+import { lyricLinesAtom } from "$/states/main";
 import type { TTMLMetadata } from "$/utils/ttml-types";
-import type { TFunction } from "i18next";
+import exportTTMLText from "$/utils/ttml-writer";
 
 enum UploadDBType {
 	Official = "official",

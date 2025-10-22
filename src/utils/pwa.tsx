@@ -1,7 +1,7 @@
 import { registerSW } from "virtual:pwa-register";
-import { toast } from "react-toastify";
-import { t } from "i18next";
 import { Button, Flex } from "@radix-ui/themes";
+import { t } from "i18next";
+import { toast } from "react-toastify";
 
 const refresh = registerSW({
 	onOfflineReady() {

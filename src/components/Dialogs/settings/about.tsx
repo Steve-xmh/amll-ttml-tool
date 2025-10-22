@@ -1,5 +1,5 @@
-import { Button, Text } from "@radix-ui/themes";
 import { BUILD_TIME, GIT_COMMIT } from "virtual:buildmeta";
+import { Button, Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
 export const SettingsAboutTab = () => {

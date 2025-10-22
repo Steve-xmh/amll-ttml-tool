@@ -3,14 +3,6 @@
 // #else
 import "@applemusic-like-lyrics/core/style.css";
 // #endif
-import { audioPlayingAtom, currentTimeAtom } from "$/states/audio.ts";
-import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
-import {
-	lyricWordFadeWidthAtom,
-	showRomanLinesAtom,
-	showTranslationLinesAtom,
-} from "$/states/preview.ts";
-import { audioEngine } from "$/utils/audio";
 import {
 	LyricPlayer,
 	type LyricPlayerRef,
@@ -20,6 +12,14 @@ import structuredClone from "@ungap/structured-clone";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { memo, useEffect, useMemo, useRef } from "react";
+import { audioPlayingAtom, currentTimeAtom } from "$/states/audio.ts";
+import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
+import {
+	lyricWordFadeWidthAtom,
+	showRomanLinesAtom,
+	showTranslationLinesAtom,
+} from "$/states/preview.ts";
+import { audioEngine } from "$/utils/audio";
 import styles from "./index.module.css";
 
 export const AMLLWrapper = memo(() => {

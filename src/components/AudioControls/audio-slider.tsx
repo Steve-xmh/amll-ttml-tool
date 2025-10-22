@@ -1,9 +1,3 @@
-import {
-	audioPlayingAtom,
-	currentDurationAtom,
-	currentTimeAtom,
-} from "$/states/audio.ts";
-import { audioEngine } from "$/utils/audio";
 // import { msToTimestamp } from "$/utils/timestamp.ts";
 import { Card } from "@radix-ui/themes";
 import { useSetAtom } from "jotai";
@@ -11,8 +5,14 @@ import { useCallback, useEffect, useRef } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
-import styles from "./audio-slider.module.css";
+import {
+	audioPlayingAtom,
+	currentDurationAtom,
+	currentTimeAtom,
+} from "$/states/audio.ts";
+import { audioEngine } from "$/utils/audio";
 import { msToTimestamp } from "$/utils/timestamp";
+import styles from "./audio-slider.module.css";
 
 export const AudioSlider = () => {
 	const setCurrentTime = useSetAtom(currentTimeAtom);

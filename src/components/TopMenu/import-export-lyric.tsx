@@ -1,14 +1,4 @@
 import {
-	confirmDialogAtom,
-	importFromTextDialogAtom,
-} from "$/states/dialogs.ts";
-import {
-	isDirtyAtom,
-	lyricLinesAtom,
-	saveFileNameAtom,
-} from "$/states/main.ts";
-import { error } from "$/utils/logging.ts";
-import {
 	type LyricLine,
 	parseEslrc,
 	parseLrc,
@@ -27,6 +17,16 @@ import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { useTranslation } from "react-i18next";
 import saveFile from "save-file";
 import { uid } from "uid";
+import {
+	confirmDialogAtom,
+	importFromTextDialogAtom,
+} from "$/states/dialogs.ts";
+import {
+	isDirtyAtom,
+	lyricLinesAtom,
+	saveFileNameAtom,
+} from "$/states/main.ts";
+import { error } from "$/utils/logging.ts";
 
 export const ImportExportLyric = () => {
 	const store = useStore();
@@ -163,7 +163,10 @@ export const ImportExportLyric = () => {
 						{t("topBar.menu.exportLyric.toYRC", "导出到 YRC")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyLys, "lys")}>
-						{t("topBar.menu.exportLyric.toLrcfySylb", "导出到 Lyricify Syllable")}
+						{t(
+							"topBar.menu.exportLyric.toLrcfySylb",
+							"导出到 Lyricify Syllable",
+						)}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={onExportLyric(stringifyAss, "ass")}>
 						{t("topBar.menu.exportLyric.toASS", "导出到 ASS 字幕")}

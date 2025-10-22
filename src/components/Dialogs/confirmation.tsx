@@ -1,7 +1,7 @@
-import { confirmDialogAtom } from "$/states/dialogs";
 import { Button, Dialog, Flex } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
+import { confirmDialogAtom } from "$/states/dialogs";
 
 export const ConfirmationDialog = () => {
 	const [dialogState, setDialogState] = useAtom(confirmDialogAtom);

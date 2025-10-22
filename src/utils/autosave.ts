@@ -1,5 +1,5 @@
-import type { TTMLLyric } from "$/utils/ttml-types";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
+import type { TTMLLyric } from "$/utils/ttml-types";
 
 const DB_NAME = "amll-autosave-db";
 const STORE_NAME = "snapshots";

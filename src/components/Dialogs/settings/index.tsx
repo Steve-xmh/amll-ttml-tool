@@ -1,8 +1,8 @@
-import { settingsDialogAtom } from "$/states/dialogs.ts";
 import { Box, Dialog, Tabs } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
+import { settingsDialogAtom } from "$/states/dialogs.ts";
 import { SettingsAboutTab } from "./about";
 import { SettingsCommonTab } from "./common";
 import { SettingsKeyBindingsDialog } from "./keybindings";

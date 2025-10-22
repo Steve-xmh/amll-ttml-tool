@@ -9,16 +9,10 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {
-	ToolMode,
-	lyricLinesAtom,
-	selectedLinesAtom,
-	toolModeAtom,
-} from "$/states/main.ts";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { atom, useAtomValue } from "jotai";
-import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
+import { focusAtom } from "jotai-optics";
 import {
 	type FC,
 	forwardRef,
@@ -27,9 +21,15 @@ import {
 	useMemo,
 	useRef,
 } from "react";
-import { ViewportList, type ViewportListRef } from "react-viewport-list";
-import { LyricLineView } from "./lyric-line-view";
 import { useTranslation } from "react-i18next";
+import { ViewportList, type ViewportListRef } from "react-viewport-list";
+import {
+	lyricLinesAtom,
+	selectedLinesAtom,
+	ToolMode,
+	toolModeAtom,
+} from "$/states/main.ts";
+import { LyricLineView } from "./lyric-line-view";
 
 const lyricLinesOnlyAtom = splitAtom(
 	focusAtom(lyricLinesAtom, (o) => o.prop("lyricLines")),

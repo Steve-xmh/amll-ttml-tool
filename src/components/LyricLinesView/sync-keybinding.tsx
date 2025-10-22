@@ -1,3 +1,6 @@
+import { produce } from "immer";
+import { useStore } from "jotai";
+import { type FC, useCallback } from "react";
 import { SyncJudgeMode, syncJudgeModeAtom } from "$/states/config.ts";
 import {
 	keyMoveNextLineAtom,
@@ -28,9 +31,6 @@ import {
 	isSynchronizableLine,
 	isSynchronizableWord,
 } from "$/utils/lyric-states.ts";
-import { produce } from "immer";
-import { useStore } from "jotai";
-import { type FC, useCallback } from "react";
 
 export const SyncKeyBinding: FC = () => {
 	const store = useStore();
