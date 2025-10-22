@@ -123,6 +123,8 @@
 			"switchPreviewMode": "模式切换 - 切换到预览模式",
 			"moveNextWord": "打轴 - 移动到下一个单词",
 			"movePrevWord": "打轴 - 移动到上一个单词",
+			"moveNextWordAndPlay": "打轴 - 移动到下一个单词并播放",
+			"movePrevWordAndPlay": "打轴 - 移动到上一个单词并播放",
 			"moveNextLine": "打轴 - 移动到下一行开头",
 			"movePrevLine": "打轴 - 移动到上一行开头",
 			"syncStart": "打轴 - 初始打轴",

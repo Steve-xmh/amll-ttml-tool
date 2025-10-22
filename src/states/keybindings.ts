@@ -95,6 +95,12 @@ export const keyMoveNextLineAtom = atomWithKeybindingStorage("moveNextLine", [
 export const keyMovePrevLineAtom = atomWithKeybindingStorage("movePrevLine", [
 	"KeyW",
 ]);
+export const keyMovePrevWordAndPlayAtom = atomWithKeybindingStorage("movePrevWordAndPlay", [
+	"KeyR",
+]);
+export const keyMoveNextWordAndPlayAtom = atomWithKeybindingStorage("moveNextWordAndPlay", [
+	"KeyY",
+]);
 // 打轴 - 记录时间戳
 export const keySyncStartAtom = atomWithKeybindingStorage("syncStart", [
 	"KeyF",

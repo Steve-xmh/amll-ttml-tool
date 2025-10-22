@@ -143,6 +143,8 @@
 			"switchPreviewMode": "Mode Switch - Switch to Preview Mode",
 			"moveNextWord": "Timing - Move to next word",
 			"movePrevWord": "Timing - Move to previous word",
+			"moveNextWordAndPlay": "Timing - Move to next word and play",
+			"movePrevWordAndPlay": "Timing - Move to previous word and play",
 			"moveNextLine": "Timing - Move to next line start",
 			"movePrevLine": "Timing - Move to previous line start",
 			"syncStart": "Timing - Mark begin",

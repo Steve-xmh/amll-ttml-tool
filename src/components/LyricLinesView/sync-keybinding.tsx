@@ -1,8 +1,10 @@
 import { SyncJudgeMode, syncJudgeModeAtom } from "$/states/config.ts";
 import {
 	keyMoveNextLineAtom,
+	keyMoveNextWordAndPlayAtom,
 	keyMoveNextWordAtom,
 	keyMovePrevLineAtom,
+	keyMovePrevWordAndPlayAtom,
 	keyMovePrevWordAtom,
 	keySyncEndAtom,
 	keySyncNextAtom,
@@ -59,8 +61,8 @@ export const SyncKeyBinding: FC = () => {
 		[store],
 	);
 
-	const moveToNextWord = useCallback(
-		function moveToNextWord(): boolean {
+	const moveToNextWordBase = useCallback(
+		(play: boolean): boolean => {
 			const location = getCurrentLocation(store);
 			if (!location) return false;
 			const nextWord = findNextWord(
@@ -72,13 +74,23 @@ export const SyncKeyBinding: FC = () => {
 			store.set(selectedWordsAtom, new Set([nextWord.word.id]));
 			store.set(selectedLinesAtom, new Set([nextWord.line.id]));
 			store.set(currentEmptyBeatAtom, 0);
+			if (play) audioEngine.seekMusic(nextWord.word.startTime / 1000);
 			return true;
 		},
 		[store],
 	);
 
-	const moveToPrevWord = useCallback(
-		function moveToPrevWord(): boolean {
+	const moveToNextWord = useCallback(
+		() => moveToNextWordBase(false),
+		[moveToNextWordBase],
+	);
+	const moveToNextWordAndPlay = useCallback(
+		() => moveToNextWordBase(true),
+		[moveToNextWordBase],
+	);
+
+	const moveToPrevWordBase = useCallback(
+		(play: boolean): boolean => {
 			const location = getCurrentLocation(store);
 			if (!location) return false;
 			if (location.wordIndex === 0) {
@@ -99,6 +111,7 @@ export const SyncKeyBinding: FC = () => {
 						.find(isSynchronizableWord);
 					if (!lastWord) return false;
 					store.set(selectedWordsAtom, new Set([lastWord.id]));
+					if (play) audioEngine.seekMusic(lastWord.startTime / 1000);
 				}
 			} else {
 				const prevWord = location.line.words
@@ -107,10 +120,19 @@ export const SyncKeyBinding: FC = () => {
 					.find(isSynchronizableWord);
 				if (!prevWord) return false;
 				store.set(selectedWordsAtom, new Set([prevWord.id]));
+				if (play) audioEngine.seekMusic(prevWord.startTime / 1000);
 			}
 			return true;
 		},
 		[store],
+	);
+	const moveToPrevWord = useCallback(
+		() => moveToPrevWordBase(false),
+		[moveToPrevWordBase],
+	);
+	const moveToPrevWordAndPlay = useCallback(
+		() => moveToPrevWordBase(true),
+		[moveToPrevWordBase],
 	);
 
 	// 移动打轴光标
@@ -147,8 +169,9 @@ export const SyncKeyBinding: FC = () => {
 	}, [store]);
 
 	useKeyBindingAtom(keyMoveNextWordAtom, moveToNextWord, [store]);
-
+	useKeyBindingAtom(keyMoveNextWordAndPlayAtom, moveToNextWordAndPlay, [store]);
 	useKeyBindingAtom(keyMovePrevWordAtom, moveToPrevWord, [store]);
+	useKeyBindingAtom(keyMovePrevWordAndPlayAtom, moveToPrevWordAndPlay, [store]);
 
 	// 记录时间戳（主要打轴按键）
 

@@ -1,8 +1,10 @@
 import {
 	keyDeleteSelectionAtom,
 	keyMoveNextLineAtom,
+	keyMoveNextWordAndPlayAtom,
 	keyMoveNextWordAtom,
 	keyMovePrevLineAtom,
+	keyMovePrevWordAndPlayAtom,
 	keyMovePrevWordAtom,
 	keyNewFileAtom,
 	keyOpenAudioAtom,
@@ -130,6 +132,20 @@ export const SettingsKeyBindingsDialog = () => {
 			kb(
 				keyMovePrevWordAtom,
 				t("settingsDialog.keybindings.movePrevWord", "打轴 - 移动到上一个单词"),
+			),
+			kb(
+				keyMoveNextWordAndPlayAtom,
+				t(
+					"settingsDialog.keybindings.moveNextWordAndPlay",
+					"打轴 - 移动到下一个单词并播放",
+				),
+			),
+			kb(
+				keyMovePrevWordAndPlayAtom,
+				t(
+					"settingsDialog.keybindings.movePrevWordAndPlay",
+					"打轴 - 移动到上一个单词并播放",
+				),
 			),
 			kb(
 				keyMoveNextLineAtom,
