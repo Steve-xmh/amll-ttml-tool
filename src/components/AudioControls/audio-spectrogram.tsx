@@ -74,10 +74,11 @@ export const AudioSpectrogram = () => {
 			cursorWidth: 0,
 			barHeight: 0.8,
 			sampleRate: 44100,
+			minPxPerSec: 100,
 			plugins: [
 				ZoomPlugin.create({
-					scale: 0.3,
-					maxZoom: 200,
+					scale: 0.4,
+					maxZoom: 300,
 				}),
 				SpectrogramPlugin.create({
 					labels: false,
@@ -91,6 +92,7 @@ export const AudioSpectrogram = () => {
 					gainDB: 20,
 					rangeDB: 80,
 					windowFunc: "hann",
+					useWebWorker: true,
 				}),
 				HoverPlugin.create({
 					formatTimeCallback: (v) => msToTimestamp(Math.round(v * 1000)),
