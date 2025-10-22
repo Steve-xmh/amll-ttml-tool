@@ -340,43 +340,24 @@ export const LyricLineView: FC<{
 							)
 								? selectedLines
 								: new Set([store.get(draggingIdAtom)]);
-							if (innerY < rect.height / 2) {
-								editLyricLines((state) => {
-									const filteredLines = state.lyricLines.filter(
-										(l) => !selectedLineIds.has(l.id),
-									);
-									const targetLines = state.lyricLines.filter((l) =>
-										selectedLineIds.has(l.id),
-									);
-									const targetIndex = filteredLines.findIndex(
-										(l) => l.id === line.id,
-									);
-									if (targetIndex < 0) return;
-									state.lyricLines = [
-										...filteredLines.slice(0, targetIndex),
-										...targetLines,
-										...filteredLines.slice(targetIndex),
-									];
-								});
-							} else {
-								editLyricLines((state) => {
-									const filteredLines = state.lyricLines.filter(
-										(l) => !selectedLineIds.has(l.id),
-									);
-									const targetLines = state.lyricLines.filter((l) =>
-										selectedLineIds.has(l.id),
-									);
-									const targetIndex = filteredLines.findIndex(
-										(l) => l.id === line.id,
-									);
-									if (targetIndex < 0) return;
-									state.lyricLines = [
-										...filteredLines.slice(0, targetIndex + 1),
-										...targetLines,
-										...filteredLines.slice(targetIndex + 2),
-									];
-								});
-							}
+							const indexDelta = innerY >= rect.height / 2 ? 1 : 0;
+							editLyricLines((state) => {
+								const filteredLines = state.lyricLines.filter(
+									(l) => !selectedLineIds.has(l.id),
+								);
+								const targetLines = state.lyricLines.filter((l) =>
+									selectedLineIds.has(l.id),
+								);
+								const targetIndex = filteredLines.findIndex(
+									(l) => l.id === line.id,
+								);
+								if (targetIndex < 0) return;
+								state.lyricLines = [
+									...filteredLines.slice(0, targetIndex + indexDelta),
+									...targetLines,
+									...filteredLines.slice(targetIndex + indexDelta),
+								];
+							});
 						}}
 						onDragLeave={(evt) => {
 							evt.currentTarget.classList.remove(styles.dropTop);
