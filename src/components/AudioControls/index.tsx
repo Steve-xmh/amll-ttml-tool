@@ -20,6 +20,7 @@ import {
 import {
 	keyPlayPauseAtom,
 	keyPlaybackRateDownAtom,
+	keyPlaybackRateResetAtom,
 	keyPlaybackRateUpAtom,
 	keySeekBackwardAtom,
 	keySeekForwardAtom,
@@ -84,6 +85,10 @@ const AudioPlaybackKeyBinding = memo(() => {
 
 	useKeyBindingAtom(keyPlaybackRateDownAtom, () => {
 		store.set(playbackRateAtom, (v) => Math.max(0.25, v - 0.25));
+	}, [store]);
+
+	useKeyBindingAtom(keyPlaybackRateResetAtom, () => {
+		store.set(playbackRateAtom, 1);
 	}, [store]);
 
 	return null;

@@ -136,7 +136,8 @@
 			"volumeUp": "播放 - 调高音量",
 			"volumeDown": "播放 - 调低音量",
 			"playbackRateUp": "播放 - 增加播放速度",
-			"playbackRateDown": "播放 - 降低播放速度"
+			"playbackRateDown": "播放 - 降低播放速度",
+			"playbackRateReset": "播放 - 重置播放速度"
 		},
 		"common": {
 			"latencyTest": "音频/输入延迟测试"

@@ -156,7 +156,8 @@
 			"volumeUp": "Playback - Volume up",
 			"volumeDown": "Playback - Volume down",
 			"playbackRateUp": "Playback - Increase speed",
-			"playbackRateDown": "Playback - Decrease speed"
+			"playbackRateDown": "Playback - Decrease speed",
+			"playbackRateReset": "Playback - Reset speed"
 		},
 		"common": {
 			"latencyTest": "Audio/input latency test"

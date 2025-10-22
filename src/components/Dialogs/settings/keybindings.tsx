@@ -10,6 +10,7 @@ import {
 	keyOpenAudioAtom,
 	keyOpenFileAtom,
 	keyPlaybackRateDownAtom,
+	keyPlaybackRateResetAtom,
 	keyPlaybackRateUpAtom,
 	keyPlayPauseAtom,
 	keyRedoAtom,
@@ -194,6 +195,10 @@ export const SettingsKeyBindingsDialog = () => {
 			kb(
 				keyPlaybackRateDownAtom,
 				t("settingsDialog.keybindings.playbackRateDown", "播放 - 降低播放速度"),
+			),
+			kb(
+				keyPlaybackRateResetAtom,
+				t("settingsDialog.keybindings.playbackRateReset", "播放 - 重置播放速度"),
 			),
 		],
 		[t],
