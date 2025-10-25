@@ -10,24 +10,13 @@
  */
 
 import {
-	lyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
-} from "$/states/main.ts";
-import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
-import {
-	type LyricLine,
-	type LyricWord,
-	newLyricLine,
-} from "$/utils/ttml-types.ts";
-import {
 	Button,
 	Checkbox,
+	Flex,
 	Grid,
+	RadioGroup,
 	Text,
 	TextField,
-	RadioGroup,
-	Flex,
 } from "@radix-ui/themes";
 import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
@@ -40,9 +29,20 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { RibbonFrame, RibbonSection } from "./common";
 import { useTranslation } from "react-i18next";
 import { LayoutMode, layoutModeAtom } from "$/states/config";
+import {
+	lyricLinesAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
+} from "$/states/main.ts";
+import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
+import {
+	type LyricLine,
+	type LyricWord,
+	newLyricLine,
+} from "$/utils/ttml-types.ts";
+import { RibbonFrame, RibbonSection } from "./common";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");
 

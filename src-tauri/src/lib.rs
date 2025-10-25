@@ -1,7 +1,3 @@
-use std::path;
-
-use serde_json::to_string;
-
 #[derive(serde::Serialize)]
 struct OpenFileData {
     pub filename: String,

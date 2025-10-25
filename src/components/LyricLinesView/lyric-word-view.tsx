@@ -9,24 +9,6 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { currentTimeAtom } from "$/states/audio";
-import { LayoutMode, layoutModeAtom } from "$/states/config.ts";
-import { splitWordDialogAtom } from "$/states/dialogs.ts";
-import {
-	ToolMode,
-	lyricLinesAtom,
-	selectedLinesAtom,
-	selectedWordsAtom,
-	splitWordStateAtom,
-	toolModeAtom,
-} from "$/states/main.ts";
-import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
-import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
-import {
-	newLyricWord,
-	type LyricLine,
-	type LyricWord,
-} from "$/utils/ttml-types.ts";
 import {
 	CutRegular,
 	DeleteRegular,
@@ -42,9 +24,9 @@ import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
 	type MouseEvent,
+	memo,
 	type PropsWithChildren,
 	type SyntheticEvent,
-	memo,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -52,10 +34,28 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
+import { currentTimeAtom } from "$/states/audio";
+import { LayoutMode, layoutModeAtom } from "$/states/config.ts";
+import { splitWordDialogAtom } from "$/states/dialogs.ts";
+import {
+	lyricLinesAtom,
+	selectedLinesAtom,
+	selectedWordsAtom,
+	splitWordStateAtom,
+	ToolMode,
+	toolModeAtom,
+} from "$/states/main.ts";
+import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
+import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
+import {
+	type LyricLine,
+	type LyricWord,
+	newLyricWord,
+} from "$/utils/ttml-types.ts";
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordMenu } from "./lyric-word-menu";
-import { useTranslation } from "react-i18next";
 import { normalizeLineTime } from "./utils.ts";
 
 const isDraggingAtom = atom(false);

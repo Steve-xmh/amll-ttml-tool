@@ -10,6 +10,17 @@
  */
 
 import {
+	Checkbox,
+	Flex,
+	Grid,
+	Slider,
+	Text,
+	TextField,
+} from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { type FC, forwardRef } from "react";
+import { useTranslation } from "react-i18next";
+import {
 	keySyncEndAtom,
 	keySyncNextAtom,
 	keySyncStartAtom,
@@ -21,19 +32,8 @@ import {
 	visualizeTimestampUpdateAtom,
 } from "$/states/sync.ts";
 import { useCurrentLocation } from "$/utils/lyric-states.ts";
-import {
-	Checkbox,
-	Flex,
-	Grid,
-	Slider,
-	Text,
-	TextField,
-} from "@radix-ui/themes";
-import { useAtom } from "jotai";
-import { type FC, forwardRef } from "react";
 import { KeyBinding } from "../KeyBinding/index.tsx";
 import { RibbonFrame, RibbonSection } from "./common";
-import { useTranslation } from "react-i18next";
 
 const EmptyBeatField = () => {
 	const [currentEmptyBeat, setCurrentEmptyBeat] = useAtom(currentEmptyBeatAtom);

@@ -1,4 +1,9 @@
+import { Box, Grid, TextField } from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
+	type KeyBindingAtom,
 	keyDeleteSelectionAtom,
 	keyMoveNextLineAtom,
 	keyMoveNextWordAndPlayAtom,
@@ -29,13 +34,8 @@ import {
 	keyUndoAtom,
 	keyVolumeDownAtom,
 	keyVolumeUpAtom,
-	type KeyBindingAtom,
 } from "$/states/keybindings";
 import { formatKeyBindings, recordShortcut } from "$/utils/keybindings";
-import { Box, Grid, TextField } from "@radix-ui/themes";
-import { useAtom } from "jotai";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 interface KeyBindingsEntry {
 	atom: KeyBindingAtom;
@@ -198,7 +198,10 @@ export const SettingsKeyBindingsDialog = () => {
 			),
 			kb(
 				keyPlaybackRateResetAtom,
-				t("settingsDialog.keybindings.playbackRateReset", "播放 - 重置播放速度"),
+				t(
+					"settingsDialog.keybindings.playbackRateReset",
+					"播放 - 重置播放速度",
+				),
 			),
 		],
 		[t],

@@ -40,6 +40,8 @@ i18n
 		},
 		returnNull: false,
 	})
-	.then(() => i18n.changeLanguage(localStorage.getItem("language") || navigator.language));
+	.then(() =>
+		i18n.changeLanguage(localStorage.getItem("language") || navigator.language),
+	);
 
 export default i18n;

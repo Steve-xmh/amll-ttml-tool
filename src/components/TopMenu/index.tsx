@@ -1,3 +1,21 @@
+import { HomeRegular } from "@fluentui/react-icons";
+import {
+	Button,
+	DropdownMenu,
+	Flex,
+	IconButton,
+	TextField,
+} from "@radix-ui/themes";
+import { open } from "@tauri-apps/plugin-shell";
+import nlp from "compromise";
+import nlpSpeech from "compromise-speech";
+import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { useSetImmerAtom, withImmer } from "jotai-immer";
+import { Toolbar } from "radix-ui";
+import { type FC, useCallback, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import saveFile from "save-file";
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
 import {
 	confirmDialogAtom,
@@ -26,33 +44,14 @@ import {
 	saveFileNameAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	undoLyricLinesAtom,
 	undoableLyricLinesAtom,
+	undoLyricLinesAtom,
 } from "$/states/main.ts";
 import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { error, log } from "$/utils/logging.ts";
 import { parseLyric } from "$/utils/ttml-parser.ts";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import exportTTMLText from "$/utils/ttml-writer.ts";
-import { HomeRegular } from "@fluentui/react-icons";
-import {
-	Button,
-	DropdownMenu,
-	Flex,
-	IconButton,
-	TextField,
-} from "@radix-ui/themes";
-import { open } from "@tauri-apps/plugin-shell";
-import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
-import { useSetImmerAtom, withImmer } from "jotai-immer";
-import { Toolbar } from "radix-ui";
-import { type FC, useCallback, useEffect, useState } from "react";
-import { Trans } from "react-i18next";
-import { toast } from "react-toastify";
-import saveFile from "save-file";
-import { useTranslation } from "react-i18next";
-import nlp from "compromise";
-import nlpSpeech from "compromise-speech";
 
 const useWindowSize = () => {
 	const [windowSize, setWindowSize] = useState({

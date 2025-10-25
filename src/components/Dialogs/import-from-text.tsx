@@ -1,15 +1,4 @@
 import {
-	confirmDialogAtom,
-	importFromTextDialogAtom,
-} from "$/states/dialogs.ts";
-import { isDirtyAtom, lyricLinesAtom } from "$/states/main.ts";
-import { error as logError } from "$/utils/logging.ts";
-import {
-	type LyricLine,
-	newLyricLine,
-	newLyricWord,
-} from "$/utils/ttml-types.ts";
-import {
 	Button,
 	Dialog,
 	Flex,
@@ -22,10 +11,23 @@ import {
 } from "@radix-ui/themes";
 import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { type PropsWithChildren, memo, useCallback } from "react";
+import { memo, type PropsWithChildren, useCallback } from "react";
 import { toast } from "react-toastify";
+import {
+	confirmDialogAtom,
+	importFromTextDialogAtom,
+} from "$/states/dialogs.ts";
+import { isDirtyAtom, lyricLinesAtom } from "$/states/main.ts";
+import { error as logError } from "$/utils/logging.ts";
+import {
+	type LyricLine,
+	newLyricLine,
+	newLyricWord,
+} from "$/utils/ttml-types.ts";
+
 // import styles from "./import-from-text.module.css";
 import error = toast.error;
+
 import { useTranslation } from "react-i18next";
 
 // type IModelDeltaDecoration = monaco.editor.IModelDeltaDecoration;

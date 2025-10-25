@@ -1,6 +1,4 @@
-import { confirmDialogAtom, historyRestoreDialogAtom } from "$/states/dialogs";
-import { lyricLinesAtom } from "$/states/main";
-import { deleteSnapshot, getSnapshot, listSnapshots } from "$/utils/autosave";
+import { DeleteRegular } from "@fluentui/react-icons";
 import {
 	Box,
 	Button,
@@ -15,7 +13,9 @@ import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { DeleteRegular } from "@fluentui/react-icons";
+import { confirmDialogAtom, historyRestoreDialogAtom } from "$/states/dialogs";
+import { lyricLinesAtom } from "$/states/main";
+import { deleteSnapshot, getSnapshot, listSnapshots } from "$/utils/autosave";
 
 interface SnapshotItem {
 	id: number;

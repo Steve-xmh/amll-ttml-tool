@@ -1,10 +1,10 @@
-import { lyricLinesAtom, selectedLinesAtom } from "$/states/main";
-import { type LyricLine, newLyricLine, newLyricWord } from "$/utils/ttml-types";
 import { ContextMenu } from "@radix-ui/themes";
 import { atom, useAtomValue } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import { lyricLinesAtom, selectedLinesAtom } from "$/states/main";
+import { type LyricLine, newLyricLine, newLyricWord } from "$/utils/ttml-types";
 
 const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);
 

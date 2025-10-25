@@ -13,8 +13,8 @@ import { Flex, Separator, Text } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import {
 	type FC,
-	type PropsWithChildren,
 	forwardRef,
+	type PropsWithChildren,
 	useImperativeHandle,
 	useRef,
 } from "react";

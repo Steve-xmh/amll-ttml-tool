@@ -3,9 +3,9 @@
  */
 
 import classNames from "classnames";
+import { useRef } from "react";
 import type { SystemControlProps } from "./index.tsx";
 import styles from "./windows.module.css";
-import { useRef } from "react";
 
 export function WindowsSystemsControls(props: SystemControlProps) {
 	const snapOverlayRef = useRef<ReturnType<typeof setTimeout> | null>(null);

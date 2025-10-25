@@ -9,33 +9,12 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { AudioSlider } from "$/components/AudioControls/audio-slider.tsx";
 import {
-	audioPlayingAtom,
-	currentDurationAtom,
-	currentTimeAtom,
-	playbackRateAtom,
-	volumeAtom,
-} from "$/states/audio.ts";
-import {
-	keyPlayPauseAtom,
-	keyPlaybackRateDownAtom,
-	keyPlaybackRateResetAtom,
-	keyPlaybackRateUpAtom,
-	keySeekBackwardAtom,
-	keySeekForwardAtom,
-	keyVolumeDownAtom,
-	keyVolumeUpAtom,
-} from "$/states/keybindings.ts";
-import { audioEngine } from "$/utils/audio";
-import { useKeyBindingAtom } from "$/utils/keybindings.ts";
-import { msToTimestamp } from "$/utils/timestamp.ts";
-import {
+	ChevronDownFilled,
+	ChevronUpFilled,
 	MusicNote2Filled,
 	PauseFilled,
 	PlayFilled,
-	ChevronUpFilled,
-	ChevronDownFilled,
 } from "@fluentui/react-icons";
 import {
 	Card,
@@ -50,8 +29,29 @@ import {
 } from "@radix-ui/themes";
 import { useAtom, useAtomValue, useStore } from "jotai";
 import { type FC, memo, useCallback, useEffect, useState } from "react";
-import { AudioSpectrogram } from "./audio-spectrogram";
 import { useTranslation } from "react-i18next";
+import { AudioSlider } from "$/components/AudioControls/audio-slider.tsx";
+import {
+	audioPlayingAtom,
+	currentDurationAtom,
+	currentTimeAtom,
+	playbackRateAtom,
+	volumeAtom,
+} from "$/states/audio.ts";
+import {
+	keyPlaybackRateDownAtom,
+	keyPlaybackRateResetAtom,
+	keyPlaybackRateUpAtom,
+	keyPlayPauseAtom,
+	keySeekBackwardAtom,
+	keySeekForwardAtom,
+	keyVolumeDownAtom,
+	keyVolumeUpAtom,
+} from "$/states/keybindings.ts";
+import { audioEngine } from "$/utils/audio";
+import { useKeyBindingAtom } from "$/utils/keybindings.ts";
+import { msToTimestamp } from "$/utils/timestamp.ts";
+import { AudioSpectrogram } from "./audio-spectrogram";
 
 const AudioPlaybackKeyBinding = memo(() => {
 	const store = useStore();

@@ -1,5 +1,3 @@
-import { splitWordDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
 import { Info16Regular } from "@fluentui/react-icons";
 import {
 	Button,
@@ -13,9 +11,11 @@ import {
 import { useAtom } from "jotai";
 import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
 import { memo, useMemo, useState } from "react";
-import styles from "./split-word.module.css";
-import { newLyricWord } from "$/utils/ttml-types";
 import { useTranslation } from "react-i18next";
+import { splitWordDialogAtom } from "$/states/dialogs.ts";
+import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
+import { newLyricWord } from "$/utils/ttml-types";
+import styles from "./split-word.module.css";
 
 export const SplitWordDialog = memo(() => {
 	const [splitWordDialog, splitWordDialogOpen] = useAtom(splitWordDialogAtom);

@@ -1,3 +1,7 @@
+import { ContextMenu } from "@radix-ui/themes";
+import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
+import { useTranslation } from "react-i18next";
 import { splitWordDialogAtom } from "$/states/dialogs";
 import {
 	lyricLinesAtom,
@@ -11,10 +15,6 @@ import {
 	newLyricLine,
 	newLyricWord,
 } from "$/utils/ttml-types";
-import { ContextMenu } from "@radix-ui/themes";
-import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
-import { useSetImmerAtom } from "jotai-immer";
-import { useTranslation } from "react-i18next";
 import { normalizeLineTime } from "./utils";
 
 const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);

@@ -1,11 +1,11 @@
+import { type createStore, useAtomValue } from "jotai";
+import { useMemo } from "react";
 import {
 	lyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
 } from "$/states/main.ts";
 import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
-import { type createStore, useAtomValue } from "jotai";
-import { useMemo } from "react";
 
 export interface LineLocationResult {
 	lines: LyricLine[];

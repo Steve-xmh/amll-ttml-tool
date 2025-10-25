@@ -1,4 +1,3 @@
-import { log, warn } from "$/utils/logging.ts";
 import {
 	type ReactNode,
 	useCallback,
@@ -6,6 +5,7 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import { log, warn } from "$/utils/logging.ts";
 import styles from "./index.module.css";
 import { MacOSSystemsControls } from "./macos.tsx";
 import { WindowsSystemsControls } from "./windows.tsx";

@@ -1,5 +1,3 @@
-import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom } from "$/states/main.ts";
 import {
 	Add16Regular,
 	Delete16Regular,
@@ -18,6 +16,8 @@ import { useAtom } from "jotai";
 import { useImmerAtom } from "jotai-immer";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
+import { lyricLinesAtom } from "$/states/main.ts";
 import styles from "./metadata.module.css";
 
 interface SelectOption {

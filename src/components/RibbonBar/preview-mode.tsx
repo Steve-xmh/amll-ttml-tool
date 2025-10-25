@@ -9,16 +9,16 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
+import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	lyricWordFadeWidthAtom,
 	showRomanLinesAtom,
 	showTranslationLinesAtom,
 } from "$/states/preview.ts";
-import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
-import { useAtom } from "jotai";
-import { forwardRef } from "react";
 import { RibbonFrame, RibbonSection } from "./common";
-import { useTranslation } from "react-i18next";
 
 export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
