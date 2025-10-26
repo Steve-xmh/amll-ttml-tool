@@ -42,9 +42,20 @@ export const SyncKeyBinding: FC = () => {
 				0,
 				audioEngine.musicCurrentTime * 1000 + syncTimeOffset,
 			);
+			const syncJudgeMode = store.get(syncJudgeModeAtom);
+			if (syncJudgeMode === SyncJudgeMode.FirstKeyDownTimeLegacy) {
+				return (
+					Math.max(
+						0,
+						audioEngine.musicCurrentTime * 1000 -
+							evt.downTimeOffset +
+							syncTimeOffset,
+					) | 0
+				);
+			}
 			let timeAdjustment = 0;
 			if (audioEngine.musicPlaying) {
-				switch (store.get(syncJudgeModeAtom)) {
+				switch (syncJudgeMode) {
 					case SyncJudgeMode.FirstKeyDownTime:
 						timeAdjustment -= evt.downTimeOffset;
 						break;

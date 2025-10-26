@@ -2,6 +2,7 @@ import { atomWithStorage } from "jotai/utils";
 
 export enum SyncJudgeMode {
 	FirstKeyDownTime = "first-keydown-time",
+	FirstKeyDownTimeLegacy = "first-keydown-time-legacy",
 	LastKeyUpTime = "last-keyup-time",
 	MiddleKeyTime = "middle-key-time",
 }

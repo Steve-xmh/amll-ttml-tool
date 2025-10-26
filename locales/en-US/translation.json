@@ -295,6 +295,7 @@
 			"syncJudgeModeDesc": "Set how timestamps are judged when syncing. Default is 'First key down'.",
 			"syncJudgeModeOptions": {
 				"firstKeyDown": "First key down time",
+				"firstKeyDownLegacy": "First key down time (legacy)",
 				"lastKeyUp": "Last key up time",
 				"middleKey": "Middle of key down & up"
 			},

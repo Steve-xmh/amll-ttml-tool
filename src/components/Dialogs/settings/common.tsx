@@ -158,6 +158,12 @@ export const SettingsCommonTab = () => {
 									"取按键按下和抬起的中间值",
 								)}
 							</Select.Item>
+							<Select.Item value={SyncJudgeMode.FirstKeyDownTimeLegacy}>
+								{t(
+									"settings.common.syncJudgeModeOptions.firstKeyDownLegacy",
+									"首个按键按下时间（旧版）",
+								)}
+							</Select.Item>
 						</Select.Content>
 					</Select.Root>
 				</Flex>

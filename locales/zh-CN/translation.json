@@ -83,6 +83,7 @@
 			"syncJudgeModeDesc": "设置打轴时间戳的判定模式，默认为\"首个按键按下时间\"。",
 			"syncJudgeModeOptions": {
 				"firstKeyDown": "首个按键按下时间",
+				"firstKeyDownLegacy": "首个按键按下时间（旧版）",
 				"lastKeyUp": "最后一个按键抬起时间",
 				"middleKey": "取按键按下和抬起的中间值"
 			},
