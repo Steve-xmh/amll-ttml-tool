@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"@applemusic-like-lyrics/core": "0.2.0-alpha.5",
-		"@applemusic-like-lyrics/lyric": "^0.3.0",
+		"@applemusic-like-lyrics/lyric": "^0.2.4",
 		"@applemusic-like-lyrics/react": "0.2.0-alpha.5",
 		"@dnd-kit/core": "^6.3.1",
 		"@million/lint": "^1.0.14",
