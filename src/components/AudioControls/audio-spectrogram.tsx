@@ -8,7 +8,7 @@ import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
 import RegionsPlugin, {
 	type RegionParams,
 } from "wavesurfer.js/dist/plugins/regions.esm.js";
-import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
+import SpectrogramPlugin from "./spectrogramPlugin/";
 import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import {
 	audioPlayingAtom,
