@@ -18,7 +18,7 @@ interface WorkerMessage {
 		fftSamples: number;
 		windowFunc: string;
 		alpha?: number;
-		noverlap: number;
+		hopSize: number;
 		scale: "linear" | "logarithmic" | "mel" | "bark" | "erb";
 		gain: number;
 		noiseFloor: number;
@@ -36,7 +36,7 @@ interface WorkerResponse {
 }
 
 // Worker message handler
-self.onmessage = function (e: MessageEvent<WorkerMessage>) {
+self.onmessage = (e: MessageEvent<WorkerMessage>) => {
 	const { type, id, audioData, options } = e.data;
 
 	if (type === "calculateFrequencies") {
@@ -73,7 +73,7 @@ function calculateFrequencies(
 		fftSamples,
 		windowFunc,
 		alpha,
-		noverlap,
+		hopSize,
 		gain,
 		noiseFloor,
 		maxThresOfMaxMagnitude,
@@ -89,13 +89,6 @@ function calculateFrequencies(
 	if (!fft || fft.bufferSize !== fftSamples) {
 		fft = new (FFT as any)(fftSamples, sampleRate, windowFunc, alpha || 0.16);
 	}
-
-	// Calculate hop size
-	let actualNoverlap = noverlap || Math.max(0, Math.round(fftSamples * 0.5));
-	const maxOverlap = fftSamples * 0.5;
-	actualNoverlap = Math.min(actualNoverlap, maxOverlap);
-	const minHopSize = Math.max(64, fftSamples * 0.25);
-	const hopSize = Math.max(minHopSize, fftSamples - actualNoverlap);
 
 	const frequencies: Uint8Array[][] = [];
 
@@ -115,7 +108,7 @@ function calculateFrequencies(
 			const freqBins = new Uint8Array(spectrum.length);
 			const maxMagnitude = Math.max(
 				noiseFloor,
-				...spectrum.slice(0, maxThresOfMaxMagnitude),
+				...spectrum.slice(0, spectrum.length * maxThresOfMaxMagnitude),
 			);
 			const colorIndices = spectrum.map((magnitude) => {
 				const normalized = magnitude / maxMagnitude;
@@ -125,7 +118,7 @@ function calculateFrequencies(
 			for (let j = 0; j < spectrum.length; j++) {
 				const linearIndex = j;
 				const logIndex =
-					Math.exp((j * Math.log(spectrum.length)) / spectrum.length) - 1;
+					Math.exp((j * Math.log(spectrum.length)) / (spectrum.length - 1)) - 1;
 				const blendedIndex = linearIndex * (1 - logRatio) + logIndex * logRatio;
 				const flooredIndex = Math.floor(blendedIndex);
 				const ceiledIndex = Math.min(
