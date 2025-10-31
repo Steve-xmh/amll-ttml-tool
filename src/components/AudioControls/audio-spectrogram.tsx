@@ -8,7 +8,7 @@ import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
 import RegionsPlugin, {
 	type RegionParams,
 } from "wavesurfer.js/dist/plugins/regions.esm.js";
-import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
+import SpectrogramPlugin from "./spectrogramPlugin/";
 import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import {
 	audioPlayingAtom,
@@ -83,16 +83,15 @@ export const AudioSpectrogram = () => {
 				SpectrogramPlugin.create({
 					labels: false,
 					height: height * spectrogramHeightRatio,
-					colorMap,
 					fftSamples: 1024,
-					noverlap: 512,
-					frequencyMin: 100,
+					hopSize: 256,
+					frequencyMin: 1000,
 					frequencyMax: 22050,
-					scale: "linear",
-					gainDB: 20,
-					rangeDB: 80,
-					windowFunc: "hann",
-					useWebWorker: true,
+					minFreqThresOfMaxMagnitude: 8000,
+					gain: 6,
+					logRatio: 0.3,
+					noiseFloor: 2e-3,
+					windowFunc: "rectangular",
 				}),
 				HoverPlugin.create({
 					formatTimeCallback: (v) => msToTimestamp(Math.round(v * 1000)),
