@@ -23,21 +23,38 @@ import App from "./App.tsx";
 import "./i18n/index.ts";
 import "./index.css";
 import "./utils/pwa.tsx";
+import { wasm_start } from "@applemusic-like-lyrics/lyric";
 
-enableMapSet();
+async function startApp() {
+	try {
+		wasm_start();
+	} catch (e) {
+		console.error("Error calling wasm_start:", e);
+	}
 
-Sentry.init({
-	dsn: import.meta.env.SENTRY_DSN,
-	integrations: [],
-});
+	enableMapSet();
 
-createRoot(document.getElementById("root")!).render(
-	<StrictMode>
-		<SpeedInsights />
-		<Analytics />
-		<Provider>
-			<App />
-			{/* <DevTools position="bottom-right" /> */}
-		</Provider>
-	</StrictMode>,
-);
+	Sentry.init({
+		dsn: import.meta.env.SENTRY_DSN,
+		integrations: [],
+	});
+
+	const rootEl = document.getElementById("root");
+
+	if (!rootEl) {
+		throw new Error("Could not find root element");
+	}
+
+	createRoot(rootEl).render(
+		<StrictMode>
+			<SpeedInsights />
+			<Analytics />
+			<Provider>
+				<App />
+				{/* <DevTools position="bottom-right" /> */}
+			</Provider>
+		</StrictMode>,
+	);
+}
+
+startApp();
