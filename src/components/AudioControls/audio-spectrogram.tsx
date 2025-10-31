@@ -91,7 +91,7 @@ export const AudioSpectrogram = () => {
 					gain: 6,
 					logRatio: 0.3,
 					noiseFloor: 2e-3,
-					windowFunc: "hann",
+					windowFunc: "rectangular",
 				}),
 				HoverPlugin.create({
 					formatTimeCallback: (v) => msToTimestamp(Math.round(v * 1000)),
