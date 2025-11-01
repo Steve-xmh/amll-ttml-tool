@@ -6,7 +6,8 @@
 			"!**/node_modules",
 			"!**/dist",
 			"!**/build",
-			"!**/target"
+			"!**/target",
+			"!**/pkg"
 		]
 	},
 	"formatter": {
