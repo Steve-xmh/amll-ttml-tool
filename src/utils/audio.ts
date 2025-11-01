@@ -1,3 +1,5 @@
+import { audioBufferAtom } from "$/states/audio.ts";
+import { globalStore } from "$/states/store.ts";
 import { log } from "./logging.ts";
 
 // Magic, pending original dev's explanation
@@ -161,6 +163,7 @@ class AudioEngine extends EventTarget {
 		if (this.musicBuffer) {
 			this.pauseMusic();
 			this.musicBuffer = null;
+			globalStore.set(audioBufferAtom, null);
 			audioEl.src = "";
 			this.dispatchEvent(new Event("music-unload"));
 		}
@@ -169,6 +172,7 @@ class AudioEngine extends EventTarget {
 			audioEl.onloadedmetadata = async () => {
 				const audioData = await src.arrayBuffer();
 				this.musicBuffer = await this.ctx.decodeAudioData(audioData);
+				globalStore.set(audioBufferAtom, this.musicBuffer);
 				this.connectAudioToContext();
 				this.setupAudioListeners();
 				audioEl.onloadedmetadata = null;

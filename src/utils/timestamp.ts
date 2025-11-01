@@ -23,17 +23,22 @@ export function parseTimespan(timeSpan: string): number {
 	throw new TypeError(`时间戳字符串解析失败：${timeSpan}`);
 }
 
-export function msToTimestamp(timeMS: number, skipSafeCheck = false): string {
+export function msToTimestamp(
+	timeMS: number,
+	options: { ms?: boolean } = {},
+): string {
 	let t = timeMS;
 	if (t === Number.POSITIVE_INFINITY) {
 		return "99:99.999";
 	}
-	if (skipSafeCheck) {
-		t = t | 0;
-	} else if (!Number.isSafeInteger(t) || t < 0) {
-		throw new Error(`Invalid timestamp: ${t}`);
+
+	if (t < 0 || Number.isNaN(t)) {
+		t = 0;
 	}
-	t = timeMS / 1000;
+
+	t = Math.round(t);
+
+	t = t / 1000;
 	const secs = t % 60;
 	t = (t - secs) / 60;
 	const mins = t % 60;
@@ -42,6 +47,14 @@ export function msToTimestamp(timeMS: number, skipSafeCheck = false): string {
 	const h = hrs.toString().padStart(2, "0");
 	const m = mins.toString().padStart(2, "0");
 	const s = secs.toFixed(3).padStart(6, "0");
+	const s_no_ms = Math.floor(secs).toString().padStart(2, "0");
+
+	if (options.ms === false) {
+		if (hrs > 0) {
+			return `${h}:${m}:${s_no_ms}`;
+		}
+		return `${m}:${s_no_ms}`;
+	}
 
 	if (hrs > 0) {
 		return `${h}:${m}:${s}`;
