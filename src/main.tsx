@@ -24,6 +24,7 @@ import "./i18n/index.ts";
 import "./index.css";
 import "./utils/pwa.tsx";
 import { wasm_start } from "@applemusic-like-lyrics/lyric";
+import { globalStore } from "./states/store.ts";
 
 async function startApp() {
 	try {
@@ -49,7 +50,7 @@ async function startApp() {
 		<StrictMode>
 			<SpeedInsights />
 			<Analytics />
-			<Provider>
+			<Provider store={globalStore}>
 				<App />
 				{/* <DevTools position="bottom-right" /> */}
 			</Provider>

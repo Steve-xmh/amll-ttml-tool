@@ -1,0 +1,15 @@
+{
+  "name": "wasm-spectrogram",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "wasm_spectrogram_bg.wasm",
+    "wasm_spectrogram.js",
+    "wasm_spectrogram.d.ts"
+  ],
+  "main": "wasm_spectrogram.js",
+  "types": "wasm_spectrogram.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
