@@ -1,4 +1,10 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import {
+	forwardRef,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useRef,
+} from "react";
 import { msToTimestamp } from "$/utils/timestamp";
 
 const RULER_HEIGHT = 24;
@@ -35,70 +41,77 @@ export const TimelineRuler = forwardRef<
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const lastScrollLeft = useRef(0);
 
-	const drawRuler = (scrollLeft: number) => {
-		lastScrollLeft.current = scrollLeft;
-		const canvas = canvasRef.current;
-		if (!canvas || containerWidth === 0) return;
+	const drawRuler = useCallback(
+		(scrollLeft: number) => {
+			lastScrollLeft.current = scrollLeft;
+			const canvas = canvasRef.current;
+			if (!canvas || containerWidth === 0) return;
 
-		const dpr = window.devicePixelRatio || 1;
-		const width = containerWidth * dpr;
-		const height = RULER_HEIGHT * dpr;
+			const dpr = window.devicePixelRatio || 1;
+			const width = containerWidth * dpr;
+			const height = RULER_HEIGHT * dpr;
 
-		if (canvas.width !== width) canvas.width = width;
-		if (canvas.height !== height) canvas.height = height;
+			if (canvas.width !== width) canvas.width = width;
+			if (canvas.height !== height) canvas.height = height;
 
-		const ctx = canvas.getContext("2d");
-		if (!ctx) return;
+			const ctx = canvas.getContext("2d");
+			if (!ctx) return;
 
-		ctx.scale(dpr, dpr);
-		ctx.clearRect(0, 0, containerWidth, RULER_HEIGHT);
+			ctx.scale(dpr, dpr);
+			ctx.clearRect(0, 0, containerWidth, RULER_HEIGHT);
 
-		const styles = getComputedStyle(canvas);
-		const textColor = styles.getPropertyValue("--gray-11").trim();
-		const lineColor = styles.getPropertyValue("--gray-9").trim();
+			const styles = getComputedStyle(canvas);
+			const textColor = styles.getPropertyValue("--gray-11").trim();
+			const lineColor = styles.getPropertyValue("--gray-9").trim();
 
-		ctx.fillStyle = textColor;
-		ctx.strokeStyle = lineColor;
-		ctx.textAlign = "center";
+			ctx.fillStyle = textColor;
+			ctx.strokeStyle = lineColor;
+			ctx.textAlign = "center";
 
-		const { major, minor } = getTickInterval(zoom);
+			const { major, minor } = getTickInterval(zoom);
 
-		const startTime = scrollLeft / zoom;
-		const endTime = (scrollLeft + containerWidth) / zoom;
-		const firstMajorTick = Math.ceil(startTime / major) * major;
+			const startTime = scrollLeft / zoom;
+			const endTime = (scrollLeft + containerWidth) / zoom;
+			const firstMajorTick = Math.ceil(startTime / major) * major;
 
-		ctx.beginPath();
-		const firstMinorTick = Math.ceil(startTime / minor) * minor;
-		for (let time = firstMinorTick; time <= endTime; time += minor) {
-			const x = time * zoom - scrollLeft;
-			ctx.moveTo(x, RULER_HEIGHT - 5);
-			ctx.lineTo(x, RULER_HEIGHT);
-		}
-		ctx.stroke();
+			ctx.beginPath();
+			const firstMinorTick = Math.ceil(startTime / minor) * minor;
+			for (let time = firstMinorTick; time <= endTime; time += minor) {
+				const x = time * zoom - scrollLeft;
+				ctx.moveTo(x, RULER_HEIGHT - 5);
+				ctx.lineTo(x, RULER_HEIGHT);
+			}
+			ctx.stroke();
 
-		ctx.beginPath();
-		for (let time = firstMajorTick; time <= endTime; time += major) {
-			if (time < 0 || time > duration) continue;
-			const x = time * zoom - scrollLeft;
+			ctx.beginPath();
+			for (let time = firstMajorTick; time <= endTime; time += major) {
+				if (time < 0 || time > duration) continue;
+				const x = time * zoom - scrollLeft;
 
-			ctx.moveTo(x, RULER_HEIGHT - 10);
-			ctx.lineTo(x, RULER_HEIGHT);
+				ctx.moveTo(x, RULER_HEIGHT - 10);
+				ctx.lineTo(x, RULER_HEIGHT);
 
-			const label = msToTimestamp(time * 1000);
-			ctx.fillText(label, x, RULER_HEIGHT - 12);
-		}
-		ctx.stroke();
-	};
-
-	useImperativeHandle(ref, () => ({
-		draw(scrollLeft: number) {
-			drawRuler(scrollLeft);
+				const label = msToTimestamp(time * 1000);
+				ctx.fillText(label, x, RULER_HEIGHT - 12);
+			}
+			ctx.stroke();
 		},
-	}));
+		[containerWidth, duration, zoom],
+	);
+
+	useImperativeHandle(
+		ref,
+		() => ({
+			draw(scrollLeft: number) {
+				drawRuler(scrollLeft);
+			},
+		}),
+		[drawRuler],
+	);
 
 	useEffect(() => {
 		drawRuler(lastScrollLeft.current);
-	}, [zoom, containerWidth, duration]);
+	}, [drawRuler]);
 
 	const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		const canvas = canvasRef.current;

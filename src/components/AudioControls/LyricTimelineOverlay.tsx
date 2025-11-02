@@ -141,6 +141,7 @@ function commitPreviewLine(previewLine: ProcessedLyricLine) {
 				const updatedWord = updatedWordsMap.get(originalWord.id);
 
 				if (updatedWord) {
+					// biome-ignore lint/correctness/noUnusedVariables: 为了移除 type 属性
 					const { type, ...word } = updatedWord;
 					return word;
 				} else {
