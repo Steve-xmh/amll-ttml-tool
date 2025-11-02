@@ -1,27 +1,25 @@
 import type { FC } from "react";
-import type { LyricLine, LyricWord } from "$/utils/ttml-types";
+import type { WordSegment } from "$/utils/segment-processing.ts";
 
 interface LyricWordSegmentProps {
-	word: LyricWord;
-	line: LyricLine;
+	segment: WordSegment;
+	lineStartTime: number;
 	zoom: number;
 }
 
 export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
-	word,
-	line,
+	segment,
+	lineStartTime,
 	zoom,
 }) => {
-	if (
-		word.startTime == null ||
-		word.endTime == null ||
-		word.endTime <= word.startTime
-	) {
+	const { startTime, endTime, word } = segment;
+
+	if (startTime == null || endTime == null || endTime <= startTime) {
 		return null;
 	}
 
-	const left = ((word.startTime - line.startTime) / 1000) * zoom;
-	const width = ((word.endTime - word.startTime) / 1000) * zoom;
+	const left = ((startTime - lineStartTime) / 1000) * zoom;
+	const width = ((endTime - startTime) / 1000) * zoom;
 
 	return (
 		<div
@@ -44,9 +42,10 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 				padding: "0 4px",
 				fontSize: "15px",
 				boxSizing: "border-box",
+				pointerEvents: "none",
 			}}
 		>
-			{word.word}
+			{word}
 		</div>
 	);
 };

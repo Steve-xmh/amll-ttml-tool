@@ -10,6 +10,7 @@ import {
 	useState,
 } from "react";
 import { audioBufferAtom, currentTimeAtom } from "$/states/audio.ts";
+import { isDraggingAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import { LyricTimelineOverlay } from "./LyricTimelineOverlay";
@@ -75,8 +76,10 @@ export const AudioSpectrogram: FC = () => {
 	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 	const [targetScrollLeft, setTargetScrollLeft] = useState<number | null>(null);
 	const [containerWidth, setContainerWidth] = useState(0);
+	const [scrollLeft, setScrollLeft] = useState(0);
 	const [isHovering, setIsHovering] = useState(false);
 	const [hoverPositionPx, setHoverPositionPx] = useState(0);
+	const isDragging = useAtomValue(isDraggingAtom);
 
 	const rulerRef = useRef<TimelineRulerHandle>(null);
 	const tileCache = useRef<Map<string, { bitmap: ImageBitmap; width: number }>>(
@@ -191,15 +194,7 @@ export const AudioSpectrogram: FC = () => {
 		updateVisibleTiles();
 	}, [audioBuffer, zoom, gain, renderTrigger, updateVisibleTiles]);
 
-	const handleSeek = (event: React.MouseEvent<HTMLDivElement>) => {
-		if (!scrollContainerRef.current || !audioBuffer) {
-			return;
-		}
-
-		const rect = event.currentTarget.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const timeInSeconds = clickX / zoom;
-
+	const handleRulerSeek = (timeInSeconds: number) => {
 		audioEngine.seekMusic(timeInSeconds);
 		setCurrentTime(Math.round(timeInSeconds * 1000));
 	};
@@ -215,32 +210,37 @@ export const AudioSpectrogram: FC = () => {
 			if (event.ctrlKey) {
 				event.preventDefault();
 
-				const rect = container.getBoundingClientRect();
-				const mouseX = event.clientX - rect.left;
+				setZoom((currentZoom) => {
+					const rect = container.getBoundingClientRect();
+					const mouseX = event.clientX - rect.left;
+					const timeAtCursor = (container.scrollLeft + mouseX) / currentZoom;
 
-				const timeAtCursor = (container.scrollLeft + mouseX) / zoom;
+					const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
+					const newZoom = Math.max(
+						50,
+						Math.min(currentZoom * zoomFactor, 10000),
+					);
 
-				const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
-				const newZoom = Math.max(50, Math.min(zoom * zoomFactor, 10000));
+					if (newZoom === currentZoom) return currentZoom;
 
-				if (newZoom === zoom) {
-					return;
-				}
+					const newScrollLeft = timeAtCursor * newZoom - mouseX;
 
-				const newScrollLeft = timeAtCursor * newZoom - mouseX;
+					setTargetScrollLeft(newScrollLeft);
+					setScrollLeft(newScrollLeft);
+					setHoverPositionPx(timeAtCursor * newZoom);
 
-				setZoom(newZoom);
-				setTargetScrollLeft(newScrollLeft);
-				setHoverPositionPx(timeAtCursor * newZoom);
+					return newZoom;
+				});
 			} else {
 				const scrollAmount = event.deltaY + event.deltaX;
 				if (scrollAmount !== 0) {
 					event.preventDefault();
 					container.scrollLeft += scrollAmount;
+					setScrollLeft(container.scrollLeft);
 				}
 			}
 		},
-		[zoom, setZoom, setHoverPositionPx],
+		[setZoom, setScrollLeft, setTargetScrollLeft, setHoverPositionPx],
 	);
 
 	useLayoutEffect(() => {
@@ -279,8 +279,9 @@ export const AudioSpectrogram: FC = () => {
 
 	const handleContainerScroll = () => {
 		if (!scrollContainerRef.current) return;
-		const scrollLeft = scrollContainerRef.current.scrollLeft;
-		rulerRef.current?.draw(scrollLeft);
+		const newScrollLeft = scrollContainerRef.current.scrollLeft;
+		setScrollLeft(newScrollLeft);
+		rulerRef.current?.draw(newScrollLeft);
 		updateVisibleTiles();
 	};
 
@@ -324,6 +325,7 @@ export const AudioSpectrogram: FC = () => {
 				zoom={zoom}
 				duration={audioBuffer?.duration || 0}
 				containerWidth={containerWidth}
+				onSeek={handleRulerSeek}
 			/>
 			<div
 				ref={scrollContainerRef}
@@ -341,7 +343,6 @@ export const AudioSpectrogram: FC = () => {
 						height: "100%",
 						position: "relative",
 					}}
-					onClick={handleSeek}
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
 					onMouseMove={handleMouseMove}
@@ -356,14 +357,18 @@ export const AudioSpectrogram: FC = () => {
 							top: 0,
 							width: "2px",
 							height: "100%",
-							backgroundColor: "var(--accent-9)",
+							backgroundColor: "var(--red-9)",
 							zIndex: 10,
 							pointerEvents: "none",
 						}}
 					/>
 					<Theme appearance="dark">
-						<LyricTimelineOverlay zoom={zoom} />
-						{isHovering && audioBuffer && (
+						<LyricTimelineOverlay
+							zoom={zoom}
+							scrollLeft={scrollLeft}
+							clientWidth={containerWidth}
+						/>
+						{isHovering && audioBuffer && !isDragging && (
 							<div
 								style={{
 									position: "absolute",

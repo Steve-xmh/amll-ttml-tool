@@ -3,17 +3,18 @@ import { msToTimestamp } from "$/utils/timestamp";
 
 const RULER_HEIGHT = 24;
 
-interface TimelineRulerProps {
-	zoom: number;
-	duration: number;
-	containerWidth: number;
-}
-
 export interface TimelineRulerHandle {
 	draw: (scrollLeft: number) => void;
 }
 
 const TICK_INTERVALS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600];
+
+interface TimelineRulerProps {
+	zoom: number;
+	duration: number;
+	containerWidth: number;
+	onSeek: (timeInSeconds: number) => void;
+}
 
 function getTickInterval(zoom: number) {
 	const minPxPerTick = 50;
@@ -30,7 +31,7 @@ function getTickInterval(zoom: number) {
 export const TimelineRuler = forwardRef<
 	TimelineRulerHandle,
 	TimelineRulerProps
->(({ zoom, duration, containerWidth }, ref) => {
+>(({ zoom, duration, containerWidth, onSeek }, ref) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const lastScrollLeft = useRef(0);
 
@@ -99,6 +100,21 @@ export const TimelineRuler = forwardRef<
 		drawRuler(lastScrollLeft.current);
 	}, [zoom, containerWidth, duration]);
 
+	const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+
+		const rect = canvas.getBoundingClientRect();
+		const clickX = event.clientX - rect.left;
+		const scrollLeft = lastScrollLeft.current;
+
+		const timeInSeconds = (scrollLeft + clickX) / zoom;
+
+		if (timeInSeconds >= 0 && timeInSeconds <= duration) {
+			onSeek(timeInSeconds);
+		}
+	};
+
 	return (
 		<canvas
 			ref={canvasRef}
@@ -107,6 +123,7 @@ export const TimelineRuler = forwardRef<
 				height: `${RULER_HEIGHT}px`,
 				backgroundColor: "var(--white-3)",
 			}}
+			onClick={handleClick}
 		/>
 	);
 });
