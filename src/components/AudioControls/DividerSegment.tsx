@@ -38,6 +38,7 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 	};
 
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: <hr> 在这里不适用
 		<div
 			style={{
 				position: "absolute",
@@ -50,6 +51,10 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 				zIndex: 2,
 			}}
 			onMouseDown={startDrag}
+			role="separator"
+			tabIndex={0}
+			aria-orientation="horizontal"
+			aria-valuenow={timeMs}
 		/>
 	);
 };

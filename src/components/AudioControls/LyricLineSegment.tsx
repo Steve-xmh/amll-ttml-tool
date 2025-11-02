@@ -77,7 +77,7 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 						/>
 					)}
 					<DividerSegment
-						key={`divider-${index}`}
+						key={`divider-${segment.id}`}
 						lineId={displayLine.id}
 						segmentIndex={index}
 						timeMs={segment.endTime}

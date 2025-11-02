@@ -226,65 +226,60 @@ export const AudioSpectrogram: FC = () => {
 		setVisibleTiles(newVisibleTiles);
 	}, [audioBuffer, zoom, gain]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: renderTrigger 用来重运行这个 effect
 	useEffect(() => {
 		updateVisibleTiles();
-	}, [audioBuffer, zoom, gain, renderTrigger, updateVisibleTiles]);
+	}, [updateVisibleTiles, renderTrigger]);
 
 	const handleRulerSeek = (timeInSeconds: number) => {
 		audioEngine.seekMusic(timeInSeconds);
 		setCurrentTime(Math.round(timeInSeconds * 1000));
 	};
 
-	const handleWheelScroll = useCallback(
-		(event: WheelEvent) => {
-			if (!scrollContainerRef.current) {
-				return;
-			}
+	const handleWheelScroll = useCallback((event: WheelEvent) => {
+		if (!scrollContainerRef.current) {
+			return;
+		}
 
-			const container = scrollContainerRef.current;
+		const container = scrollContainerRef.current;
 
-			if (event.ctrlKey) {
+		if (event.ctrlKey) {
+			event.preventDefault();
+
+			setZoom((currentZoom) => {
+				const rect = container.getBoundingClientRect();
+				const mouseX = event.clientX - rect.left;
+				const timeAtCursor = (container.scrollLeft + mouseX) / currentZoom;
+
+				const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
+				const newZoom = Math.max(50, Math.min(currentZoom * zoomFactor, 10000));
+
+				if (newZoom === currentZoom) return currentZoom;
+
+				const newScrollLeft = timeAtCursor * newZoom - mouseX;
+
+				setTargetScrollLeft(newScrollLeft);
+				setScrollLeft(newScrollLeft);
+				setHoverPositionPx(timeAtCursor * newZoom);
+
+				return newZoom;
+			});
+		} else {
+			const scrollAmount = event.deltaY + event.deltaX;
+			if (scrollAmount !== 0) {
 				event.preventDefault();
-
-				setZoom((currentZoom) => {
-					const rect = container.getBoundingClientRect();
-					const mouseX = event.clientX - rect.left;
-					const timeAtCursor = (container.scrollLeft + mouseX) / currentZoom;
-
-					const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
-					const newZoom = Math.max(
-						50,
-						Math.min(currentZoom * zoomFactor, 10000),
-					);
-
-					if (newZoom === currentZoom) return currentZoom;
-
-					const newScrollLeft = timeAtCursor * newZoom - mouseX;
-
-					setTargetScrollLeft(newScrollLeft);
-					setScrollLeft(newScrollLeft);
-					setHoverPositionPx(timeAtCursor * newZoom);
-
-					return newZoom;
-				});
-			} else {
-				const scrollAmount = event.deltaY + event.deltaX;
-				if (scrollAmount !== 0) {
-					event.preventDefault();
-					container.scrollLeft += scrollAmount;
-					setScrollLeft(container.scrollLeft);
-				}
+				container.scrollLeft += scrollAmount;
+				setScrollLeft(container.scrollLeft);
 			}
-		},
-		[setZoom, setScrollLeft, setTargetScrollLeft, setHoverPositionPx],
-	);
+		}
+	}, []);
 
 	useLayoutEffect(() => {
 		if (targetScrollLeft !== null && scrollContainerRef.current) {
 			scrollContainerRef.current.scrollLeft = targetScrollLeft;
 			setTargetScrollLeft(null);
 		}
-	}, [zoom, targetScrollLeft]);
+	}, [targetScrollLeft]);
 
 	useEffect(() => {
 		const container = scrollContainerRef.current;
@@ -373,6 +368,7 @@ export const AudioSpectrogram: FC = () => {
 					position: "relative",
 				}}
 			>
+				{/** biome-ignore lint/a11y/useSemanticElements: <fieldset> 在这里不适用 */}
 				<div
 					style={{
 						width: `${totalWidth}px`,
@@ -382,6 +378,7 @@ export const AudioSpectrogram: FC = () => {
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
 					onMouseMove={handleMouseMove}
+					role="group"
 				>
 					{visibleTiles.map((tile) => (
 						<TileComponent key={tile.tileId} {...tile} />
