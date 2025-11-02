@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
-export function init_thread_pool(num_threads: number): Promise<any>;
 export function generate_spectrogram_image(audio_data: Float32Array, sample_rate: number, fft_size: number, hop_length: number, img_width: number, img_height: number, gain: number): Uint8Array;
+export function init_thread_pool(num_threads: number): Promise<any>;
 export function initThreadPool(num_threads: number): Promise<any>;
 export function wbg_rayon_start_worker(receiver: number): void;
 export class wbg_rayon_PoolBuilder {
@@ -9,20 +9,20 @@ export class wbg_rayon_PoolBuilder {
   free(): void;
   [Symbol.dispose](): void;
   numThreads(): number;
-  receiver(): number;
   build(): void;
+  receiver(): number;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
-  readonly init_thread_pool: (a: number) => any;
   readonly generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number, number];
+  readonly init_thread_pool: (a: number) => any;
   readonly __wbg_wbg_rayon_poolbuilder_free: (a: number, b: number) => void;
+  readonly initThreadPool: (a: number) => any;
+  readonly wbg_rayon_poolbuilder_build: (a: number) => void;
   readonly wbg_rayon_poolbuilder_numThreads: (a: number) => number;
   readonly wbg_rayon_poolbuilder_receiver: (a: number) => number;
-  readonly wbg_rayon_poolbuilder_build: (a: number) => void;
-  readonly initThreadPool: (a: number) => any;
   readonly wbg_rayon_start_worker: (a: number) => void;
   readonly memory: WebAssembly.Memory;
   readonly __wbindgen_exn_store: (a: number) => void;

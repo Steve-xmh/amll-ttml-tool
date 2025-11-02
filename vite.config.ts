@@ -135,6 +135,10 @@ export default defineConfig({
 	base: process.env.TAURI_ENV_PLATFORM ? "/" : "./",
 	clearScreen: false,
 	server: {
+		headers: {
+			"Cross-Origin-Embedder-Policy": "require-corp",
+			"Cross-Origin-Opener-Policy": "same-origin",
+		},
 		strictPort: true,
 	},
 	envPrefix: ["VITE_", "TAURI_", "AMLL_", "SENTRY_"],
