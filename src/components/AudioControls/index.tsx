@@ -36,6 +36,7 @@ import {
 	currentDurationAtom,
 	currentTimeAtom,
 	playbackRateAtom,
+	spectrogramGainAtom,
 	volumeAtom,
 } from "$/states/audio.ts";
 import {
@@ -102,6 +103,7 @@ export const AudioControls: FC = memo(() => {
 	const [audioPlaying, setAudioPlaying] = useAtom(audioPlayingAtom);
 	const [volume, setVolume] = useAtom(volumeAtom);
 	const [playbackRate, setPlaybackRate] = useAtom(playbackRateAtom);
+	const [gain, setGain] = useAtom(spectrogramGainAtom);
 	const { t } = useTranslation();
 
 	const onLoadMusic = useCallback(() => {
@@ -179,7 +181,9 @@ export const AudioControls: FC = memo(() => {
 			<Inset>
 				<AudioPlaybackKeyBinding />
 				<Flex direction="column">
-					{spectrogramVisible && <AudioSpectrogram />}
+					<div style={{ display: spectrogramVisible ? "flex" : "none" }}>
+						<AudioSpectrogram />
+					</div>
 					<Flex align="center" px="2" gapX="2">
 						<HoverCard.Root>
 							<HoverCard.Trigger>
@@ -200,6 +204,19 @@ export const AudioControls: FC = memo(() => {
 										/>
 										<Text wrap="nowrap" color="gray" size="1">
 											{(volume * 100).toFixed()}%
+										</Text>
+										<Text wrap="nowrap">
+											{t("audioPanel.gain", "频谱增益")}
+										</Text>
+										<Slider
+											min={1}
+											max={20}
+											defaultValue={[gain]}
+											step={1}
+											onValueChange={(v) => setGain(v[0])}
+										/>
+										<Text wrap="nowrap" color="gray" size="1">
+											{gain.toFixed(1)}
 										</Text>
 										<Text wrap="nowrap">
 											{t("audioPanel.playbackRate", "播放速度")}

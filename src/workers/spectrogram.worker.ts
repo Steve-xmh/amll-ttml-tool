@@ -5,6 +5,7 @@ import init, {
 } from "../pkg/spectrogram/wasm_spectrogram";
 
 let wasmInitialized = false;
+let threadPoolInitialized = false;
 let fullAudioData: Float32Array | null = null;
 let audioSampleRate: number = 0;
 
@@ -22,7 +23,10 @@ self.onmessage = async (event: MessageEvent) => {
 	if (type === "INIT") {
 		fullAudioData = event.data.audioData;
 		audioSampleRate = event.data.sampleRate;
-		await initThreadPool(navigator.hardwareConcurrency);
+		if (!threadPoolInitialized) {
+			await initThreadPool(navigator.hardwareConcurrency);
+			threadPoolInitialized = true;
+		}
 		self.postMessage({ type: "INIT_COMPLETE" });
 	} else if (type === "GET_TILE") {
 		if (!fullAudioData || !audioSampleRate) {
@@ -77,6 +81,7 @@ self.onmessage = async (event: MessageEvent) => {
 					tileId,
 					imageBitmap,
 					renderedWidth: tileWidthPx,
+					gain: gain,
 				},
 				{
 					transfer: [imageBitmap],
