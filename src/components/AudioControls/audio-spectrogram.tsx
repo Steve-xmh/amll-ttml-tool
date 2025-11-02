@@ -9,7 +9,11 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { audioBufferAtom, currentTimeAtom } from "$/states/audio.ts";
+import {
+	audioBufferAtom,
+	currentTimeAtom,
+	spectrogramGainAtom,
+} from "$/states/audio.ts";
 import { isDraggingAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
@@ -18,6 +22,7 @@ import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 
 const TILE_DURATION_S = 5;
 const SPECTROGRAM_HEIGHT = 256;
+const LOD_WIDTHS = [512, 1024, 2048, 4096];
 
 interface TileComponentProps {
 	tileId: string;
@@ -67,8 +72,8 @@ export const AudioSpectrogram: FC = () => {
 	const setCurrentTime = useSetAtom(currentTimeAtom);
 	const currentTime = currentTimeInMs / 1000;
 
-	const [zoom, setZoom] = useState(500);
-	const [gain, setGain] = useState(9.0);
+	const [zoom, setZoom] = useState(200);
+	const gain = useAtomValue(spectrogramGainAtom);
 	const [visibleTiles, setVisibleTiles] = useState<TileComponentProps[]>([]);
 	const [renderTrigger, setRenderTrigger] = useState(0);
 
@@ -82,9 +87,9 @@ export const AudioSpectrogram: FC = () => {
 	const isDragging = useAtomValue(isDraggingAtom);
 
 	const rulerRef = useRef<TimelineRulerHandle>(null);
-	const tileCache = useRef<Map<string, { bitmap: ImageBitmap; width: number }>>(
-		new Map(),
-	);
+	const tileCache = useRef<
+		Map<string, { bitmap: ImageBitmap; width: number; gain: number }>
+	>(new Map());
 	const requestedTiles = useRef<Set<string>>(new Set());
 
 	useEffect(() => {
@@ -95,21 +100,46 @@ export const AudioSpectrogram: FC = () => {
 		workerRef.current = worker;
 
 		worker.onmessage = (event: MessageEvent) => {
-			const { type, tileId, imageBitmap, renderedWidth } = event.data;
-			if (type === "TILE_READY" || type === "INIT_COMPLETE") {
-				if (tileId && imageBitmap && renderedWidth) {
-					const existingEntry = tileCache.current.get(tileId);
+			const {
+				type,
+				tileId,
+				imageBitmap,
+				renderedWidth,
+				gain: renderedGain,
+			} = event.data;
 
-					if (!existingEntry || renderedWidth >= existingEntry.width) {
-						tileCache.current.set(tileId, {
+			if (type === "TILE_READY") {
+				if (tileId && imageBitmap && renderedWidth && renderedGain != null) {
+					const tileIndex = tileId.split("-")[1];
+					if (tileIndex == null) {
+						imageBitmap.close();
+						requestedTiles.current.delete(tileId);
+						return;
+					}
+					const cacheId = `tile-${tileIndex}`;
+
+					const existingEntry = tileCache.current.get(cacheId);
+
+					if (
+						!existingEntry ||
+						renderedWidth >= existingEntry.width ||
+						renderedGain !== existingEntry.gain
+					) {
+						if (existingEntry?.bitmap) {
+							existingEntry.bitmap.close();
+						}
+						tileCache.current.set(cacheId, {
 							bitmap: imageBitmap,
 							width: renderedWidth,
+							gain: renderedGain,
 						});
 					} else {
 						imageBitmap.close();
 					}
 					requestedTiles.current.delete(tileId);
 				}
+				setRenderTrigger((c) => c + 1);
+			} else if (type === "INIT_COMPLETE") {
 				setRenderTrigger((c) => c + 1);
 			}
 		};
@@ -154,37 +184,43 @@ export const AudioSpectrogram: FC = () => {
 
 		const newVisibleTiles: TileComponentProps[] = [];
 
-		for (let i = firstVisibleIndex - 1; i <= lastVisibleIndex + 1; i++) {
+		for (let i = firstVisibleIndex - 2; i <= lastVisibleIndex + 2; i++) {
 			if (i < 0 || i >= totalTiles) continue;
 
-			const tileId = `tile-${i}`;
-			const tileStartTime = i * TILE_DURATION_S;
+			const cacheId = `tile-${i}`;
+			const targetLodWidth =
+				LOD_WIDTHS.find((w) => w >= tileDisplayWidthPx) ||
+				LOD_WIDTHS[LOD_WIDTHS.length - 1];
 
-			const cacheEntry = tileCache.current.get(tileId);
-			const targetRenderWidth = Math.min(8192, Math.ceil(tileDisplayWidthPx));
+			const cacheEntry = tileCache.current.get(cacheId);
+			const currentBitmap = cacheEntry?.bitmap;
+			const currentWidth = cacheEntry?.width || 0;
+			const currentGain = cacheEntry?.gain;
 
-			if (
-				(!cacheEntry || cacheEntry.width < targetRenderWidth) &&
-				!requestedTiles.current.has(tileId)
-			) {
-				requestedTiles.current.add(tileId);
+			const needsRequest =
+				(targetLodWidth > currentWidth || currentGain !== gain) &&
+				targetLodWidth > 0;
+
+			const reqId = `req-${i}-w${targetLodWidth}-g${gain}`;
+
+			if (needsRequest && !requestedTiles.current.has(reqId)) {
+				requestedTiles.current.add(reqId);
 				workerRef.current?.postMessage({
 					type: "GET_TILE",
-					tileId,
-					startTime: tileStartTime,
-					endTime: tileStartTime + TILE_DURATION_S,
+					tileId: reqId,
+					startTime: i * TILE_DURATION_S,
+					endTime: i * TILE_DURATION_S + TILE_DURATION_S,
 					gain: gain,
-					tileWidthPx: targetRenderWidth,
+					tileWidthPx: targetLodWidth,
 				});
 			}
 
-			const bitmap = cacheEntry?.bitmap;
 			newVisibleTiles.push({
-				tileId,
+				tileId: cacheId,
 				left: i * tileDisplayWidthPx,
 				width: tileDisplayWidthPx,
-				canvasWidth: bitmap?.width || targetRenderWidth,
-				bitmap: bitmap,
+				canvasWidth: currentBitmap?.width || targetLodWidth,
+				bitmap: currentBitmap,
 			});
 		}
 		setVisibleTiles(newVisibleTiles);
@@ -261,7 +297,7 @@ export const AudioSpectrogram: FC = () => {
 		};
 	}, [handleWheelScroll]);
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		const container = scrollContainerRef.current;
 		if (!container) return;
 
