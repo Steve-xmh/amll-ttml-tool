@@ -50,14 +50,6 @@ function handleError(f, args) {
 function isLikeNone(x) {
     return x === undefined || x === null;
 }
-/**
- * @param {number} num_threads
- * @returns {Promise<any>}
- */
-export function init_thread_pool(num_threads) {
-    const ret = wasm.init_thread_pool(num_threads);
-    return ret;
-}
 
 let cachedFloat32ArrayMemory0 = null;
 
@@ -113,6 +105,15 @@ export function generate_spectrogram_image(audio_data, sample_rate, fft_size, ho
  * @param {number} num_threads
  * @returns {Promise<any>}
  */
+export function init_thread_pool(num_threads) {
+    const ret = wasm.init_thread_pool(num_threads);
+    return ret;
+}
+
+/**
+ * @param {number} num_threads
+ * @returns {Promise<any>}
+ */
 export function initThreadPool(num_threads) {
     const ret = wasm.initThreadPool(num_threads);
     return ret;
@@ -157,15 +158,15 @@ export class wbg_rayon_PoolBuilder {
         const ret = wasm.wbg_rayon_poolbuilder_numThreads(this.__wbg_ptr);
         return ret >>> 0;
     }
+    build() {
+        wasm.wbg_rayon_poolbuilder_build(this.__wbg_ptr);
+    }
     /**
      * @returns {number}
      */
     receiver() {
         const ret = wasm.wbg_rayon_poolbuilder_receiver(this.__wbg_ptr);
         return ret >>> 0;
-    }
-    build() {
-        wasm.wbg_rayon_poolbuilder_build(this.__wbg_ptr);
     }
 }
 if (Symbol.dispose) wbg_rayon_PoolBuilder.prototype[Symbol.dispose] = wbg_rayon_PoolBuilder.prototype.free;

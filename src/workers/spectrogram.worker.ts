@@ -1,5 +1,7 @@
+import { log } from "$/utils/logging";
 import init, {
 	generate_spectrogram_image,
+	initThreadPool,
 } from "../pkg/spectrogram/wasm_spectrogram";
 
 let wasmInitialized = false;
@@ -20,6 +22,7 @@ self.onmessage = async (event: MessageEvent) => {
 	if (type === "INIT") {
 		fullAudioData = event.data.audioData;
 		audioSampleRate = event.data.sampleRate;
+		await initThreadPool(navigator.hardwareConcurrency);
 		self.postMessage({ type: "INIT_COMPLETE" });
 	} else if (type === "GET_TILE") {
 		if (!fullAudioData || !audioSampleRate) {
@@ -40,6 +43,9 @@ self.onmessage = async (event: MessageEvent) => {
 		);
 
 		const TILE_HEIGHT = 256;
+
+		const t0 = performance.now();
+
 		const pixelData = generate_spectrogram_image(
 			audioSlice,
 			audioSampleRate,
@@ -49,6 +55,10 @@ self.onmessage = async (event: MessageEvent) => {
 			TILE_HEIGHT,
 			gain,
 		);
+
+		const t1 = performance.now();
+
+		log(`[Worker] ${tileId} width ${tileWidthPx} ${(t1 - t0).toFixed(2)} ms`);
 
 		const canvas = new OffscreenCanvas(tileWidthPx, TILE_HEIGHT);
 		const ctx = canvas.getContext("2d");

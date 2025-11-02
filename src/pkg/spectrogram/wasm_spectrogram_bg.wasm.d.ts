@@ -1,12 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
-export const init_thread_pool: (a: number) => any;
 export const generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number, number];
+export const init_thread_pool: (a: number) => any;
 export const __wbg_wbg_rayon_poolbuilder_free: (a: number, b: number) => void;
+export const initThreadPool: (a: number) => any;
+export const wbg_rayon_poolbuilder_build: (a: number) => void;
 export const wbg_rayon_poolbuilder_numThreads: (a: number) => number;
 export const wbg_rayon_poolbuilder_receiver: (a: number) => number;
-export const wbg_rayon_poolbuilder_build: (a: number) => void;
-export const initThreadPool: (a: number) => any;
 export const wbg_rayon_start_worker: (a: number) => void;
 export const memory: WebAssembly.Memory;
 export const __wbindgen_exn_store: (a: number) => void;
