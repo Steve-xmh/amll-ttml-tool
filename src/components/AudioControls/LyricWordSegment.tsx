@@ -1,4 +1,7 @@
-import type { FC } from "react";
+import { useAtom } from "jotai";
+import type { FC, KeyboardEvent, MouseEvent } from "react";
+import { selectedWordIdAtom } from "$/states/dnd.ts";
+import { audioEngine } from "$/utils/audio.ts";
 import type { WordSegment } from "$/utils/segment-processing.ts";
 
 interface LyricWordSegmentProps {
@@ -12,6 +15,8 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	lineStartTime,
 	zoom,
 }) => {
+	const [selectedWordId, setSelectedWordId] = useAtom(selectedWordIdAtom);
+
 	const { startTime, endTime, word } = segment;
 
 	if (startTime == null || endTime == null || endTime <= startTime) {
@@ -21,7 +26,41 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	const left = ((startTime - lineStartTime) / 1000) * zoom;
 	const width = ((endTime - startTime) / 1000) * zoom;
 
+	const isSelected = selectedWordId === segment.id;
+
+	const handleClick = (e: MouseEvent<HTMLDivElement>) => {
+		e.stopPropagation();
+		setSelectedWordId(segment.id);
+	};
+
+	const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setSelectedWordId(segment.id);
+		if (startTime != null && endTime != null) {
+			audioEngine.auditionRange(startTime / 1000, endTime / 1000);
+		}
+	};
+
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			e.stopPropagation();
+			setSelectedWordId(segment.id);
+		}
+
+		if (e.key === " ") {
+			e.preventDefault();
+			e.stopPropagation();
+			setSelectedWordId(segment.id);
+			if (startTime != null && endTime != null) {
+				audioEngine.auditionRange(startTime / 1000, endTime / 1000);
+			}
+		}
+	};
+
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: 在这里用 <button> 显然不正确
 		<div
 			style={{
 				position: "absolute",
@@ -42,8 +81,14 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 				padding: "0 4px",
 				fontSize: "15px",
 				boxSizing: "border-box",
-				pointerEvents: "none",
+				pointerEvents: "auto",
+				backgroundColor: isSelected ? "var(--accent-a6)" : "transparent",
 			}}
+			onClick={handleClick}
+			onContextMenu={handleContextMenu}
+			role="button"
+			tabIndex={0}
+			onKeyDown={handleKeyDown}
 		>
 			{word}
 		</div>

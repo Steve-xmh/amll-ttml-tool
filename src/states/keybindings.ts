@@ -138,3 +138,18 @@ export const keyPlaybackRateResetAtom = atomWithKeybindingStorage(
 	"playbackRateReset",
 	["Quote"],
 );
+
+// 频谱图相关控制
+// 试听相关
+export const keyAuditionSelectionBeforeAtom = atomWithKeybindingStorage(
+	"auditionSelectionBefore",
+	["KeyQ"],
+);
+export const keyAuditionSelectionAtom = atomWithKeybindingStorage(
+	"auditionSelection",
+	["KeyS"],
+);
+export const keyAuditionSelectionAfterAtom = atomWithKeybindingStorage(
+	"auditionSelectionAfter",
+	["KeyW"],
+);

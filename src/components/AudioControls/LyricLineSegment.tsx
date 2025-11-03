@@ -1,6 +1,6 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, { type FC } from "react";
-import { previewLineAtom } from "$/states/dnd.ts";
+import { previewLineAtom, selectedWordIdAtom } from "$/states/dnd.ts";
 import type { ProcessedLyricLine } from "$/utils/segment-processing.ts";
 import { DividerSegment } from "./DividerSegment.tsx";
 import { GapSegment } from "./GapSegment.tsx";
@@ -13,6 +13,7 @@ interface LyricLineSegmentProps {
 
 export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 	const previewLine = useAtomValue(previewLineAtom);
+	const setSelectedWordId = useSetAtom(selectedWordIdAtom);
 
 	let displayLine: ProcessedLyricLine;
 	if (previewLine && previewLine.id === line.id) {
@@ -27,6 +28,10 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 
 	const { startTime, endTime, segments } = displayLine;
 
+	const handleBackgroundClick = () => {
+		setSelectedWordId(null);
+	};
+
 	if (startTime == null || endTime == null || endTime <= startTime) {
 		return null;
 	}
@@ -39,6 +44,8 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 	}
 
 	return (
+		// biome-ignore lint/a11y/useKeyWithClickEvents: 此功能仅限鼠标
+		// biome-ignore lint/a11y/noStaticElementInteractions: 此功能仅限鼠标
 		<div
 			style={{
 				left: `${left}px`,
@@ -46,11 +53,12 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 				height: "100%",
 				backgroundColor: "var(--accent-a3)",
 				border: "1px solid var(--accent-11)",
-				borderRadius: "var(--radius-2)",
+				borderRadius: "var(--radius-1)",
 				position: "absolute",
 				boxSizing: "border-box",
-				pointerEvents: "none",
+				pointerEvents: "auto",
 			}}
+			onClick={handleBackgroundClick}
 		>
 			<DividerSegment
 				key="divider-start"
