@@ -1,0 +1,16 @@
+.gapSegment {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	box-sizing: border-box;
+	pointer-events: none;
+	background: repeating-linear-gradient(
+		45deg,
+		var(--gray-a4),
+		var(--gray-a4) 5px,
+		var(--gray-a3) 5px,
+		var(--gray-a3) 10px
+	);
+	border: 1px solid var(--accent-8);
+	border-radius: var(--radius-1);
+}

@@ -1,0 +1,9 @@
+.lineSegment {
+	height: 100%;
+	background-color: var(--accent-a3);
+	border: 1px solid var(--accent-8);
+	border-radius: var(--radius-1);
+	position: absolute;
+	box-sizing: border-box;
+	pointer-events: auto;
+}

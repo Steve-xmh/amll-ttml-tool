@@ -1,0 +1,25 @@
+.wordSegment {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	border: 1px solid var(--accent-8);
+	border-radius: var(--radius-1);
+	color: var(--gray-12);
+	display: flex;
+	align-items: normal;
+	justify-content: center;
+	user-select: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 0 4px;
+	font-size: 15px;
+	box-sizing: border-box;
+	pointer-events: auto;
+}
+
+.wordSegment:hover,
+.wordSegment:focus-visible {
+	border-color: var(--accent-13);
+	outline: none;
+}

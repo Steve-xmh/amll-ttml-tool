@@ -3,6 +3,7 @@ import type { FC, KeyboardEvent, MouseEvent } from "react";
 import { selectedWordIdAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import type { WordSegment } from "$/utils/segment-processing.ts";
+import styles from "./LyricWordSegment.module.css";
 
 interface LyricWordSegmentProps {
 	segment: WordSegment;
@@ -59,31 +60,17 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 		}
 	};
 
+	const dynamicStyles = {
+		left: `${left}px`,
+		width: `${width}px`,
+		backgroundColor: isSelected ? "var(--accent-a6)" : "transparent",
+	};
+
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: 在这里用 <button> 显然不正确
 		<div
-			style={{
-				position: "absolute",
-				left: `${left}px`,
-				width: `${width}px`,
-				top: "0",
-				height: "100%",
-				border: "1px solid var(--accent-12)",
-				borderRadius: "var(--radius-1)",
-				color: "var(--gray-12)",
-				display: "flex",
-				alignItems: "normal",
-				justifyContent: "center",
-				userSelect: "none",
-				whiteSpace: "nowrap",
-				overflow: "hidden",
-				textOverflow: "ellipsis",
-				padding: "0 4px",
-				fontSize: "15px",
-				boxSizing: "border-box",
-				pointerEvents: "auto",
-				backgroundColor: isSelected ? "var(--accent-a6)" : "transparent",
-			}}
+			className={styles.wordSegment}
+			style={dynamicStyles}
 			onClick={handleClick}
 			onContextMenu={handleContextMenu}
 			role="button"

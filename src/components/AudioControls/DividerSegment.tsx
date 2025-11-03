@@ -6,6 +6,7 @@ import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
 } from "$/utils/timeline-mutations.ts";
+import styles from "./DividerSegment.module.css";
 
 interface DividerSegmentProps {
 	lineId: string;
@@ -81,19 +82,15 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 
 	const left = ((timeMs - lineStartTime) / 1000) * zoom - DIVIDER_WIDTH_PX / 2;
 
+	const dynamicStyles = {
+		left: `${left}px`,
+	};
+
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: <hr> 在这里不适用
 		<div
-			style={{
-				position: "absolute",
-				left: `${left}px`,
-				width: `${DIVIDER_WIDTH_PX}px`,
-				top: 0,
-				bottom: 0,
-				cursor: "ew-resize",
-				pointerEvents: "auto",
-				zIndex: 2,
-			}}
+			className={styles.divider}
+			style={dynamicStyles}
 			onMouseDown={startDrag}
 			role="separator"
 			tabIndex={0}

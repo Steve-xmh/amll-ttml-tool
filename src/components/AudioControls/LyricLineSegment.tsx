@@ -4,6 +4,7 @@ import { previewLineAtom, selectedWordIdAtom } from "$/states/dnd.ts";
 import type { ProcessedLyricLine } from "$/utils/segment-processing.ts";
 import { DividerSegment } from "./DividerSegment.tsx";
 import { GapSegment } from "./GapSegment.tsx";
+import styles from "./LyricLineSegment.module.css";
 import { LyricWordSegment } from "./LyricWordSegment.tsx";
 
 interface LyricLineSegmentProps {
@@ -43,21 +44,17 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 		return null;
 	}
 
+	const dynamicStyles = {
+		left: `${left}px`,
+		width: `${width}px`,
+	};
+
 	return (
 		// biome-ignore lint/a11y/useKeyWithClickEvents: 此功能仅限鼠标
 		// biome-ignore lint/a11y/noStaticElementInteractions: 此功能仅限鼠标
 		<div
-			style={{
-				left: `${left}px`,
-				width: `${width}px`,
-				height: "100%",
-				backgroundColor: "var(--accent-a3)",
-				border: "1px solid var(--accent-11)",
-				borderRadius: "var(--radius-1)",
-				position: "absolute",
-				boxSizing: "border-box",
-				pointerEvents: "auto",
-			}}
+			className={styles.lineSegment}
+			style={dynamicStyles}
 			onClick={handleBackgroundClick}
 		>
 			<DividerSegment
