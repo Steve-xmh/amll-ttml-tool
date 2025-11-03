@@ -14,3 +14,5 @@ export const dragDetailsAtom = atom<DragDetails | null>(null);
 export const previewLineAtom = atom<ProcessedLyricLine | null>(null);
 
 export const isDraggingAtom = atom((get) => get(dragDetailsAtom) !== null);
+
+export const selectedWordIdAtom = atom<string | null>(null);

@@ -52,6 +52,7 @@ import {
 import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
+import { AuditionKeyBinding } from "../KeyBinding/AuditionKeyBinding";
 import { AudioSpectrogram } from "./audio-spectrogram";
 
 const AudioPlaybackKeyBinding = memo(() => {
@@ -180,6 +181,7 @@ export const AudioControls: FC = memo(() => {
 		<Card m="2" mt="0">
 			<Inset>
 				<AudioPlaybackKeyBinding />
+				<AuditionKeyBinding />
 				<Flex direction="column">
 					<div style={{ display: spectrogramVisible ? "flex" : "none" }}>
 						<AudioSpectrogram />

@@ -11,6 +11,7 @@ import {
 } from "react";
 import {
 	audioBufferAtom,
+	auditionTimeAtom,
 	currentTimeAtom,
 	spectrogramGainAtom,
 } from "$/states/audio.ts";
@@ -71,6 +72,7 @@ export const AudioSpectrogram: FC = () => {
 	const currentTimeInMs = useAtomValue(currentTimeAtom);
 	const setCurrentTime = useSetAtom(currentTimeAtom);
 	const currentTime = currentTimeInMs / 1000;
+	const auditionTime = useAtomValue(auditionTimeAtom);
 
 	const [zoom, setZoom] = useState(200);
 	const gain = useAtomValue(spectrogramGainAtom);
@@ -332,6 +334,7 @@ export const AudioSpectrogram: FC = () => {
 
 	const totalWidth = audioBuffer ? audioBuffer.duration * zoom : 0;
 	const cursorPosition = currentTime * zoom;
+	const auditionCursorPosition = auditionTime ? auditionTime * zoom : null;
 
 	const clampedHoverPositionPx = Math.max(
 		0,
@@ -395,6 +398,20 @@ export const AudioSpectrogram: FC = () => {
 							pointerEvents: "none",
 						}}
 					/>
+					{auditionCursorPosition !== null && (
+						<div
+							style={{
+								position: "absolute",
+								left: `${auditionCursorPosition}px`,
+								top: 0,
+								width: "2px",
+								height: "100%",
+								backgroundColor: "var(--blue-a9)",
+								zIndex: 9,
+								pointerEvents: "none",
+							}}
+						/>
+					)}
 					<Theme appearance="dark">
 						<LyricTimelineOverlay
 							zoom={zoom}

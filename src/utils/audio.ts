@@ -1,10 +1,12 @@
-import { audioBufferAtom } from "$/states/audio.ts";
+import { audioBufferAtom, auditionTimeAtom } from "$/states/audio.ts";
 import { globalStore } from "$/states/store.ts";
 import { log } from "./logging.ts";
 
 // Magic, pending original dev's explanation
 // Even don't know where should I put this after refactoring
 // const DELAY = 0.05; // 50ms
+
+let auditionProgressInterval: NodeJS.Timeout | null = null;
 
 class AudioEngine extends EventTarget {
 	//#region Audio context basics
@@ -85,6 +87,8 @@ class AudioEngine extends EventTarget {
 	//#endregion
 
 	//#region Playback
+	private auditionSourceNode: AudioBufferSourceNode | null = null;
+
 	get musicLoaded() {
 		return !!this.musicBuffer;
 	}
@@ -150,6 +154,87 @@ class AudioEngine extends EventTarget {
 		if (!this._audioEl) return;
 		this._audioEl.pause();
 		this.dispatchEvent(new Event("music-pause"));
+	}
+
+	/**
+	 * 试听一个音频片段
+	 *
+	 * 只应该用来播放较短的音频，不然播放进度可能不准
+	 *
+	 * @param startTimeInSeconds 音频片段的开始时间
+	 * @param endTimeInSeconds 音频片段的结束时间
+	 * @returns
+	 */
+	auditionRange(startTimeInSeconds: number, endTimeInSeconds: number) {
+		if (!this.musicBuffer) {
+			console.warn("musicBuffer 为 null, 无法预览音频");
+			return;
+		}
+
+		if (this.auditionSourceNode) {
+			try {
+				this.auditionSourceNode.stop(0);
+				this.auditionSourceNode.disconnect();
+			} catch (e) {
+				console.error("停止 AudioNode 失败:", e);
+			}
+			this.auditionSourceNode = null;
+		}
+
+		if (auditionProgressInterval) {
+			clearInterval(auditionProgressInterval);
+			auditionProgressInterval = null;
+		}
+
+		globalStore.set(auditionTimeAtom, null);
+
+		const durationInSeconds = endTimeInSeconds - startTimeInSeconds;
+
+		if (durationInSeconds <= 0) {
+			return;
+		}
+
+		this.resumeContext();
+
+		const audioCtxStartTime = this.ctx.currentTime;
+		const mediaStartTime = startTimeInSeconds;
+
+		const source = this.ctx.createBufferSource();
+		source.buffer = this.musicBuffer;
+		source.connect(this.gain);
+		this.auditionSourceNode = source;
+
+		const newIntervalId = setInterval(() => {
+			const elapsedTime = this.ctx.currentTime - audioCtxStartTime;
+			const currentAuditionTime = mediaStartTime + elapsedTime;
+
+			if (currentAuditionTime >= endTimeInSeconds) {
+				clearInterval(newIntervalId);
+				if (auditionProgressInterval === newIntervalId) {
+					auditionProgressInterval = null;
+					globalStore.set(auditionTimeAtom, null);
+				}
+			} else {
+				globalStore.set(auditionTimeAtom, currentAuditionTime);
+			}
+		}, 16);
+
+		auditionProgressInterval = newIntervalId;
+
+		source.addEventListener("ended", () => {
+			if (auditionProgressInterval === newIntervalId) {
+				clearInterval(auditionProgressInterval);
+				auditionProgressInterval = null;
+				globalStore.set(auditionTimeAtom, null);
+			}
+
+			if (this.auditionSourceNode === source) {
+				this.auditionSourceNode = null;
+			}
+			source.disconnect();
+		});
+
+		source.start(audioCtxStartTime, mediaStartTime, durationInSeconds);
 	}
 
 	//#endregion
