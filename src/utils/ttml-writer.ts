@@ -16,10 +16,8 @@
  */
 
 import { log } from "./logging.ts";
-import { msToTimestamp as origMsToTimestamp } from "./timestamp";
+import { msToTimestamp } from "./timestamp";
 import type { LyricLine, LyricWord, TTMLLyric } from "./ttml-types";
-
-const msToTimestamp = (time: number) => origMsToTimestamp(time);
 
 export default function exportTTMLText(
 	ttmlLyric: TTMLLyric,
