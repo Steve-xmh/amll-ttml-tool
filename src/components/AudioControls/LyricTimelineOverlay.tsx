@@ -12,6 +12,7 @@ import {
 	getUpdatedLineForDivider,
 } from "$/utils/timeline-mutations";
 import { LyricLineSegment } from "./LyricLineSegment";
+import styles from "./LyricTimelineOverlay.module.css";
 
 interface LyricTimelineOverlayProps {
 	zoom: number;
@@ -118,16 +119,7 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	});
 
 	return (
-		<div
-			style={{
-				position: "absolute",
-				top: 0,
-				left: 0,
-				width: "100%",
-				height: "100%",
-				pointerEvents: "none",
-			}}
-		>
+		<div className={styles.overlay}>
 			{visibleLines.map((line) => (
 				<LyricLineSegment key={line.id} line={line} zoom={zoom} />
 			))}
