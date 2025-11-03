@@ -4,6 +4,9 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
 	type KeyBindingAtom,
+	keyAuditionSelectionAfterAtom,
+	keyAuditionSelectionAtom,
+	keyAuditionSelectionBeforeAtom,
 	keyDeleteSelectionAtom,
 	keyMoveNextLineAtom,
 	keyMoveNextWordAndPlayAtom,
@@ -201,6 +204,27 @@ export const SettingsKeyBindingsDialog = () => {
 				t(
 					"settingsDialog.keybindings.playbackRateReset",
 					"播放 - 重置播放速度",
+				),
+			),
+			kb(
+				keyAuditionSelectionBeforeAtom,
+				t(
+					"settingsDialog.keybindings.auditionSelectionBefore",
+					"频谱图 - 试听选中音节前 500 毫秒",
+				),
+			),
+			kb(
+				keyAuditionSelectionAtom,
+				t(
+					"settingsDialog.keybindings.auditionSelection",
+					"频谱图 - 试听选中音节",
+				),
+			),
+			kb(
+				keyAuditionSelectionAfterAtom,
+				t(
+					"settingsDialog.keybindings.auditionSelectionAfter",
+					"频谱图 - 试听选中音节后 500 毫秒",
 				),
 			),
 		],
