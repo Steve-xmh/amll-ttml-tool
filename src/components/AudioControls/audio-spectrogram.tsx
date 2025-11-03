@@ -18,6 +18,7 @@ import {
 import { isDraggingAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
+import styles from "./audio-spectrogram.module.css";
 import { LyricTimelineOverlay } from "./LyricTimelineOverlay";
 import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 
@@ -332,9 +333,50 @@ export const AudioSpectrogram: FC = () => {
 		}
 	};
 
+	const handleScrubMove = useCallback(
+		(event: MouseEvent) => {
+			if (!scrollContainerRef.current || !audioBuffer) return;
+
+			const rect = scrollContainerRef.current.getBoundingClientRect();
+			const mouseX = event.clientX - rect.left;
+
+			const clampedMouseX = Math.max(0, Math.min(mouseX, rect.width));
+
+			const timeAtCursor =
+				(scrollContainerRef.current.scrollLeft + clampedMouseX) / zoom;
+
+			const clampedTime = Math.max(
+				0,
+				Math.min(timeAtCursor, audioBuffer.duration),
+			);
+
+			audioEngine.seekMusic(clampedTime);
+			setCurrentTime(clampedTime * 1000);
+		},
+		[audioBuffer, zoom, setCurrentTime],
+	);
+
+	const handleScrubEnd = useCallback(() => {
+		window.removeEventListener("mousemove", handleScrubMove);
+		window.removeEventListener("mouseup", handleScrubEnd);
+	}, [handleScrubMove]);
+
+	const handleScrubStart = useCallback(
+		(event: React.MouseEvent) => {
+			event.preventDefault();
+
+			handleScrubMove(event.nativeEvent);
+
+			window.addEventListener("mousemove", handleScrubMove);
+			window.addEventListener("mouseup", handleScrubEnd, { once: true });
+		},
+		[handleScrubMove, handleScrubEnd],
+	);
+
 	const totalWidth = audioBuffer ? audioBuffer.duration * zoom : 0;
 	const cursorPosition = currentTime * zoom;
 	const auditionCursorPosition = auditionTime ? auditionTime * zoom : null;
+	const handleLeftPosition = cursorPosition - scrollLeft;
 
 	const clampedHoverPositionPx = Math.max(
 		0,
@@ -345,15 +387,7 @@ export const AudioSpectrogram: FC = () => {
 	const hoverTimeFormatted = msToTimestamp(hoverTimeS * 1000);
 
 	return (
-		<div
-			style={{
-				height: "16rem",
-				width: "100%",
-				display: "flex",
-				flexDirection: "column",
-				backgroundColor: "var(--gray-2)",
-			}}
-		>
+		<div className={styles.spectrogramContainer}>
 			<TimelineRuler
 				ref={rulerRef}
 				zoom={zoom}
@@ -361,6 +395,20 @@ export const AudioSpectrogram: FC = () => {
 				containerWidth={containerWidth}
 				onSeek={handleRulerSeek}
 			/>
+			{audioBuffer && (
+				// biome-ignore lint/a11y/noStaticElementInteractions: 全局快捷键已经可以处理播放控制了，不应该再在这里额外添加处理
+				<div
+					className={styles.playheadScrubHandle}
+					style={{
+						left: `${handleLeftPosition}px`,
+						display:
+							handleLeftPosition < 0 || handleLeftPosition > containerWidth
+								? "none"
+								: "block",
+					}}
+					onMouseDown={handleScrubStart}
+				/>
+			)}
 			<div
 				ref={scrollContainerRef}
 				onScroll={handleContainerScroll}
@@ -387,15 +435,9 @@ export const AudioSpectrogram: FC = () => {
 						<TileComponent key={tile.tileId} {...tile} />
 					))}
 					<div
+						className={styles.playheadCursor}
 						style={{
-							position: "absolute",
 							left: `${cursorPosition}px`,
-							top: 0,
-							width: "2px",
-							height: "100%",
-							backgroundColor: "var(--red-9)",
-							zIndex: 10,
-							pointerEvents: "none",
 						}}
 					/>
 					{auditionCursorPosition !== null && (
