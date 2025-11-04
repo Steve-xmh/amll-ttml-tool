@@ -10,9 +10,14 @@ import { LyricWordSegment } from "./LyricWordSegment.tsx";
 interface LyricLineSegmentProps {
 	line: ProcessedLyricLine;
 	zoom: number;
+	allLines: ProcessedLyricLine[];
 }
 
-export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
+export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
+	line,
+	zoom,
+	allLines,
+}) => {
 	const previewLine = useAtomValue(previewLineAtom);
 	const setSelectedWordId = useSetAtom(selectedWordIdAtom);
 
@@ -28,6 +33,7 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 	}
 
 	const { startTime, endTime, segments } = displayLine;
+	const segmentsLength = segments.length;
 
 	const handleBackgroundClick = () => {
 		setSelectedWordId(null);
@@ -43,6 +49,13 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 	if (width < 1) {
 		return null;
 	}
+
+	const isTouchingStart = allLines.some(
+		(l) => l.id !== line.id && l.endTime === startTime,
+	);
+	const isTouchingEnd = allLines.some(
+		(l) => l.id !== line.id && l.startTime === endTime,
+	);
 
 	const dynamicStyles = {
 		left: `${left}px`,
@@ -64,6 +77,8 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 				timeMs={startTime}
 				lineStartTime={startTime}
 				zoom={zoom}
+				segmentsLength={segmentsLength}
+				isTouching={isTouchingStart}
 			/>
 
 			{segments.map((segment, index) => (
@@ -88,6 +103,8 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({ line, zoom }) => {
 						timeMs={segment.endTime}
 						lineStartTime={startTime}
 						zoom={zoom}
+						segmentsLength={segmentsLength}
+						isTouching={index === segmentsLength - 1 ? isTouchingEnd : false}
 					/>
 				</React.Fragment>
 			))}

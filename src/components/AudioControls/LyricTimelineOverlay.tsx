@@ -1,11 +1,13 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import type { FC } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { currentTimeAtom } from "$/states/audio.ts";
 import {
 	dragDetailsAtom,
 	isDraggingAtom,
 	previewLineAtom,
 } from "$/states/dnd.ts";
+import { globalStore } from "$/states/store.ts";
 import { processedLyricLinesAtom } from "$/utils/segment-processing.ts";
 import {
 	commitUpdatedLine,
@@ -20,6 +22,8 @@ interface LyricTimelineOverlayProps {
 	clientWidth: number;
 }
 
+const SNAP_THRESHOLD_PX = 7;
+
 export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	zoom,
 	scrollLeft,
@@ -29,6 +33,8 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	const isDragging = useAtomValue(isDraggingAtom);
 	const [dragDetails, setDragDetails] = useAtom(dragDetailsAtom);
 	const setPreviewLine = useSetAtom(previewLineAtom);
+	const currentTime = useAtomValue(currentTimeAtom);
+	const snapTargetsMs = useRef<number[]>([]);
 
 	useEffect(() => {
 		if (!isDragging || !dragDetails) {
@@ -56,11 +62,49 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 			originalTime = leftSegment.endTime;
 		}
 
+		const isLineBoundaryDrag =
+			segmentIndex === -1 ||
+			segmentIndex === lineBeingDragged.segments.length - 1;
+
+		const targets: number[] = [currentTime];
+
+		if (isLineBoundaryDrag) {
+			const otherLineBoundaries = processedLines
+				.filter((line) => line.id !== lineId)
+				.flatMap((line) => [line.startTime, line.endTime]);
+			targets.push(...otherLineBoundaries);
+		}
+
+		snapTargetsMs.current = targets.filter(
+			(time): time is number => time != null,
+		);
+
 		const handleGlobalMouseMove = (event: MouseEvent) => {
 			event.preventDefault();
 			const deltaX = event.clientX - startX;
 			const deltaTimeMs = Math.round((deltaX / currentZoom) * 1000);
-			const newTime = originalTime + deltaTimeMs;
+			let newTime = originalTime + deltaTimeMs;
+
+			if (!event.shiftKey) {
+				let closestSnapTime: number | null = null;
+				let minDistancePx = SNAP_THRESHOLD_PX;
+
+				const newTimePx = (newTime / 1000) * currentZoom;
+
+				for (const targetTime of snapTargetsMs.current) {
+					const targetTimePx = (targetTime / 1000) * currentZoom;
+					const distancePx = Math.abs(newTimePx - targetTimePx);
+
+					if (distancePx < minDistancePx) {
+						minDistancePx = distancePx;
+						closestSnapTime = targetTime;
+					}
+				}
+
+				if (closestSnapTime !== null) {
+					newTime = closestSnapTime;
+				}
+			}
 
 			const preview = getUpdatedLineForDivider(
 				lineBeingDragged,
@@ -76,19 +120,12 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 		const handleGlobalMouseUp = (event: MouseEvent) => {
 			event.preventDefault();
 
-			const deltaX = event.clientX - startX;
-			const deltaTimeMs = Math.round((deltaX / currentZoom) * 1000);
-			const newTime = originalTime + deltaTimeMs;
+			const lastSnappedLine = globalStore.get(previewLineAtom);
 
-			const updatedLine = getUpdatedLineForDivider(
-				lineBeingDragged,
-				segmentIndex,
-				newTime,
-				isGapCreation,
-				currentZoom,
-			);
+			if (lastSnappedLine) {
+				commitUpdatedLine(lastSnappedLine);
+			}
 
-			commitUpdatedLine(updatedLine);
 			setDragDetails(null);
 			setPreviewLine(null);
 		};
@@ -99,6 +136,7 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 		return () => {
 			window.removeEventListener("mousemove", handleGlobalMouseMove);
 			window.removeEventListener("mouseup", handleGlobalMouseUp);
+			snapTargetsMs.current = [];
 		};
 	}, [
 		isDragging,
@@ -107,6 +145,7 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 		setPreviewLine,
 		zoom,
 		processedLines,
+		currentTime,
 	]);
 
 	const bufferPx = 500;
@@ -121,7 +160,12 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	return (
 		<div className={styles.overlay}>
 			{visibleLines.map((line) => (
-				<LyricLineSegment key={line.id} line={line} zoom={zoom} />
+				<LyricLineSegment
+					key={line.id}
+					line={line}
+					zoom={zoom}
+					allLines={processedLines}
+				/>
 			))}
 		</div>
 	);

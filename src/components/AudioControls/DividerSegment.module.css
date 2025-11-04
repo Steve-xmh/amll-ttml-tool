@@ -2,7 +2,6 @@
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	width: 15px;
 	cursor: ew-resize;
 	pointer-events: auto;
 	z-index: 2;

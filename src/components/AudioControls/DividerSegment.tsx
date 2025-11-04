@@ -14,9 +14,12 @@ interface DividerSegmentProps {
 	timeMs: number;
 	lineStartTime: number;
 	zoom: number;
+	segmentsLength: number;
+	isTouching: boolean;
 }
 
 const DIVIDER_WIDTH_PX = 15;
+const HALF_DIVIDER_WIDTH_PX = DIVIDER_WIDTH_PX / 2;
 const NUDGE_MS = 10;
 const SHIFT_NUDGE_MS = 50;
 
@@ -26,6 +29,8 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 	timeMs,
 	lineStartTime,
 	zoom,
+	segmentsLength,
+	isTouching,
 }) => {
 	const setDragDetails = useSetAtom(dragDetailsAtom);
 	const processedLines = useAtomValue(processedLyricLinesAtom);
@@ -80,10 +85,26 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 
 	if (timeMs == null || timeMs < 0 || lineStartTime == null) return null;
 
-	const left = ((timeMs - lineStartTime) / 1000) * zoom - DIVIDER_WIDTH_PX / 2;
+	const timePx = ((timeMs - lineStartTime) / 1000) * zoom;
+	const isLineStartHandle = segmentIndex === -1;
+	const isLineEndHandle = segmentIndex === segmentsLength - 1;
+
+	const handleWidthPx = DIVIDER_WIDTH_PX;
+	let handleOffsetPx: number;
+
+	if (isLineStartHandle && isTouching) {
+		handleOffsetPx = 0;
+	} else if (isLineEndHandle && isTouching) {
+		handleOffsetPx = -DIVIDER_WIDTH_PX;
+	} else {
+		handleOffsetPx = -HALF_DIVIDER_WIDTH_PX;
+	}
+
+	const left = timePx + handleOffsetPx;
 
 	const dynamicStyles = {
 		left: `${left}px`,
+		width: `${handleWidthPx}px`,
 	};
 
 	return (
@@ -94,7 +115,7 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 			onMouseDown={startDrag}
 			role="separator"
 			tabIndex={0}
-			aria-orientation="horizontal"
+			aria-orientation="vertical"
 			aria-valuenow={timeMs}
 			onKeyDown={handleKeyDown}
 		/>
