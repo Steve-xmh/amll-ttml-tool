@@ -143,6 +143,7 @@ export const AudioSpectrogram: FC = () => {
 				}
 				setRenderTrigger((c) => c + 1);
 			} else if (type === "INIT_COMPLETE") {
+				requestedTiles.current.clear();
 				setRenderTrigger((c) => c + 1);
 			}
 		};

@@ -4,16 +4,18 @@ import init, {
 	initThreadPool,
 } from "../pkg/spectrogram/wasm_spectrogram";
 
-let wasmInitialized = false;
-let threadPoolInitialized = false;
 let fullAudioData: Float32Array | null = null;
 let audioSampleRate: number = 0;
+let wasmInitialized: Promise<void> | null = null;
 
 async function initializeWasm() {
 	if (!wasmInitialized) {
-		await init();
-		wasmInitialized = true;
+		wasmInitialized = (async () => {
+			await init();
+			await initThreadPool(navigator.hardwareConcurrency);
+		})();
 	}
+	await wasmInitialized;
 }
 
 self.onmessage = async (event: MessageEvent) => {
@@ -23,10 +25,6 @@ self.onmessage = async (event: MessageEvent) => {
 	if (type === "INIT") {
 		fullAudioData = event.data.audioData;
 		audioSampleRate = event.data.sampleRate;
-		if (!threadPoolInitialized) {
-			await initThreadPool(navigator.hardwareConcurrency);
-			threadPoolInitialized = true;
-		}
 		self.postMessage({ type: "INIT_COMPLETE" });
 	} else if (type === "GET_TILE") {
 		if (!fullAudioData || !audioSampleRate) {
