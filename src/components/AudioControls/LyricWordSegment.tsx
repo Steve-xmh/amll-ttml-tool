@@ -48,12 +48,6 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 			e.preventDefault();
 			e.stopPropagation();
 			setSelectedWordId(segment.id);
-		}
-
-		if (e.key === " ") {
-			e.preventDefault();
-			e.stopPropagation();
-			setSelectedWordId(segment.id);
 			if (startTime != null && endTime != null) {
 				audioEngine.auditionRange(startTime / 1000, endTime / 1000);
 			}
