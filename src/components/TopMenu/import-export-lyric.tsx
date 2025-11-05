@@ -76,11 +76,23 @@ export const ImportExportLyric = () => {
 		(stringifier: (lines: LyricLine[]) => string, extension: string) =>
 		async () => {
 			const lyric = store.get(lyricLinesAtom).lyricLines;
+			const lyricForExport = lyric.map((line) => ({
+				...line,
+				startTime: Math.round(line.startTime),
+				endTime: Math.round(line.endTime),
+				words: line.words.map((word) => ({
+					...word,
+					startTime: Math.round(word.startTime),
+					endTime: Math.round(word.endTime),
+					// FIXME: 添加逐字音译支持
+					romanWord: "",
+				})),
+			}));
 			const saveFileName = store.get(saveFileNameAtom);
 			const baseName = saveFileName.replace(/\.[^.]*$/, "");
 			const fileName = `${baseName}.${extension}`;
 			try {
-				const data = stringifier(lyric);
+				const data = stringifier(lyricForExport);
 				const b = new Blob([data], { type: "text/plain" });
 				await saveFile(b, fileName);
 			} catch (e) {
