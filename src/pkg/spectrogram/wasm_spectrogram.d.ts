@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
-export function generate_spectrogram_image(audio_data: Float32Array, sample_rate: number, fft_size: number, hop_length: number, img_width: number, img_height: number, gain: number): Uint8Array;
 export function init_thread_pool(num_threads: number): Promise<any>;
+export function generate_spectrogram_image(audio_data: Float32Array, sample_rate: number, fft_size: number, hop_length: number, img_width: number, img_height: number, gain: number): Uint8Array;
 export function initThreadPool(num_threads: number): Promise<any>;
 export function wbg_rayon_start_worker(receiver: number): void;
 export class wbg_rayon_PoolBuilder {

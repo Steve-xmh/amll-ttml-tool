@@ -211,10 +211,10 @@ export const AudioControls: FC = memo(() => {
 											{t("audioPanel.gain", "频谱增益")}
 										</Text>
 										<Slider
-											min={1}
-											max={20}
+											min={0.5}
+											max={8}
 											defaultValue={[gain]}
-											step={1}
+											step={0.5}
 											onValueChange={(v) => setGain(v[0])}
 										/>
 										<Text wrap="nowrap" color="gray" size="1">

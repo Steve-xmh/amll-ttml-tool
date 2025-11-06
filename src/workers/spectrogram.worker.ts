@@ -52,7 +52,7 @@ self.onmessage = async (event: MessageEvent) => {
 			audioSlice,
 			audioSampleRate,
 			1024,
-			128,
+			64,
 			tileWidthPx,
 			TILE_HEIGHT,
 			gain,

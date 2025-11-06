@@ -24,7 +24,7 @@ import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 
 const TILE_DURATION_S = 5;
 const SPECTROGRAM_HEIGHT = 256;
-const LOD_WIDTHS = [512, 1024, 2048, 4096];
+const LOD_WIDTHS = [512, 1024, 2048, 4096, 8192];
 
 interface TileComponentProps {
 	tileId: string;

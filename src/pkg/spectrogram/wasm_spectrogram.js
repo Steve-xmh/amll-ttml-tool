@@ -50,6 +50,14 @@ function handleError(f, args) {
 function isLikeNone(x) {
     return x === undefined || x === null;
 }
+/**
+ * @param {number} num_threads
+ * @returns {Promise<any>}
+ */
+export function init_thread_pool(num_threads) {
+    const ret = wasm.init_thread_pool(num_threads);
+    return ret;
+}
 
 let cachedFloat32ArrayMemory0 = null;
 
@@ -99,15 +107,6 @@ export function generate_spectrogram_image(audio_data, sample_rate, fft_size, ho
     var v2 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
     wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
     return v2;
-}
-
-/**
- * @param {number} num_threads
- * @returns {Promise<any>}
- */
-export function init_thread_pool(num_threads) {
-    const ret = wasm.init_thread_pool(num_threads);
-    return ret;
 }
 
 /**
