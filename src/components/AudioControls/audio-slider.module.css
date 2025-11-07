@@ -1,5 +1,7 @@
 .waveformContainer {
 	cursor: text;
+	position: relative;
+	z-index: 1;
 }
 .waveformContainer ::part(progress) {
 	background-color: var(--accent-a4);
@@ -14,4 +16,48 @@
 .waveformContainer ::part(hover-label) {
 	padding: 0 0.5rem;
 	transition: none;
+}
+
+.spectrogramRegion {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	z-index: 2;
+	display: flex;
+	justify-content: space-between;
+	pointer-events: none;
+}
+
+.regionBody {
+	width: 100%;
+	height: 100%;
+	background-color: var(--accent-a5);
+	cursor: grab;
+	border-left: 1px solid var(--accent-a9);
+	border-right: 1px solid var(--accent-a9);
+	pointer-events: auto;
+}
+
+.regionBody:active {
+	cursor: grabbing;
+}
+
+.regionHandle {
+	width: 8px;
+	height: 100%;
+	cursor: ew-resize;
+	position: absolute;
+	top: 0;
+	z-index: 3;
+	pointer-events: auto;
+}
+
+.regionHandleLeft {
+	left: 0;
+	transform: translateX(-50%);
+}
+
+.regionHandleRight {
+	right: 0;
+	transform: translateX(50%);
 }

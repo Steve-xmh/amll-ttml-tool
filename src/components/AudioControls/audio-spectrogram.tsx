@@ -1,5 +1,5 @@
 import { Theme } from "@radix-ui/themes";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
 	type FC,
 	memo,
@@ -13,7 +13,10 @@ import {
 	audioBufferAtom,
 	auditionTimeAtom,
 	currentTimeAtom,
+	spectrogramContainerWidthAtom,
 	spectrogramGainAtom,
+	spectrogramScrollLeftAtom,
+	spectrogramZoomAtom,
 } from "$/states/audio.ts";
 import { isDraggingAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
@@ -25,6 +28,8 @@ import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 const TILE_DURATION_S = 5;
 const SPECTROGRAM_HEIGHT = 256;
 const LOD_WIDTHS = [512, 1024, 2048, 4096, 8192];
+
+const clampZoom = (z: number) => Math.max(50, Math.min(z, 10000));
 
 interface TileComponentProps {
 	tileId: string;
@@ -75,16 +80,17 @@ export const AudioSpectrogram: FC = () => {
 	const currentTime = currentTimeInMs / 1000;
 	const auditionTime = useAtomValue(auditionTimeAtom);
 
-	const [zoom, setZoom] = useState(200);
+	const [zoom, setZoom] = useAtom(spectrogramZoomAtom);
 	const gain = useAtomValue(spectrogramGainAtom);
 	const [visibleTiles, setVisibleTiles] = useState<TileComponentProps[]>([]);
 	const [renderTrigger, setRenderTrigger] = useState(0);
 
 	const workerRef = useRef<Worker | null>(null);
 	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-	const [targetScrollLeft, setTargetScrollLeft] = useState<number | null>(null);
-	const [containerWidth, setContainerWidth] = useState(0);
-	const [scrollLeft, setScrollLeft] = useState(0);
+	const [containerWidth, setContainerWidth] = useAtom(
+		spectrogramContainerWidthAtom,
+	);
+	const [scrollLeft, setScrollLeft] = useAtom(spectrogramScrollLeftAtom);
 	const [isHovering, setIsHovering] = useState(false);
 	const [hoverPositionPx, setHoverPositionPx] = useState(0);
 	const isDragging = useAtomValue(isDraggingAtom);
@@ -240,50 +246,52 @@ export const AudioSpectrogram: FC = () => {
 		setCurrentTime(Math.round(timeInSeconds * 1000));
 	};
 
-	const handleWheelScroll = useCallback((event: WheelEvent) => {
-		if (!scrollContainerRef.current) {
-			return;
-		}
+	const handleWheelScroll = useCallback(
+		(event: WheelEvent) => {
+			if (!scrollContainerRef.current) {
+				return;
+			}
 
-		const container = scrollContainerRef.current;
+			const container = scrollContainerRef.current;
 
-		if (event.ctrlKey) {
-			event.preventDefault();
+			if (event.ctrlKey) {
+				event.preventDefault();
 
-			setZoom((currentZoom) => {
 				const rect = container.getBoundingClientRect();
 				const mouseX = event.clientX - rect.left;
-				const timeAtCursor = (container.scrollLeft + mouseX) / currentZoom;
+
+				const currentZoom = zoom;
+				const timeAtCursor = (scrollLeft + mouseX) / currentZoom;
 
 				const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
-				const newZoom = Math.max(50, Math.min(currentZoom * zoomFactor, 10000));
+				const newZoom = clampZoom(currentZoom * zoomFactor);
 
-				if (newZoom === currentZoom) return currentZoom;
+				if (newZoom === currentZoom) return;
 
 				const newScrollLeft = timeAtCursor * newZoom - mouseX;
 
-				setTargetScrollLeft(newScrollLeft);
+				setZoom(newZoom);
 				setScrollLeft(newScrollLeft);
 				setHoverPositionPx(timeAtCursor * newZoom);
-
-				return newZoom;
-			});
-		} else {
-			const scrollAmount = event.deltaY + event.deltaX;
-			if (scrollAmount !== 0) {
-				event.preventDefault();
-				container.scrollLeft += scrollAmount;
-				setScrollLeft(container.scrollLeft);
+			} else {
+				const scrollAmount = event.deltaY + event.deltaX;
+				if (scrollAmount !== 0) {
+					event.preventDefault();
+					const newScrollLeft = container.scrollLeft + scrollAmount;
+					setScrollLeft(newScrollLeft);
+				}
 			}
-		}
-	}, []);
+		},
+		[scrollLeft, setScrollLeft, setZoom, zoom],
+	);
 
 	useLayoutEffect(() => {
-		if (targetScrollLeft !== null && scrollContainerRef.current) {
-			scrollContainerRef.current.scrollLeft = targetScrollLeft;
-			setTargetScrollLeft(null);
+		const container = scrollContainerRef.current;
+		if (container && container.scrollLeft !== scrollLeft) {
+			container.scrollLeft = scrollLeft;
 		}
-	}, [targetScrollLeft]);
+		updateVisibleTiles();
+	}, [scrollLeft, updateVisibleTiles]);
 
 	useEffect(() => {
 		const container = scrollContainerRef.current;
@@ -310,14 +318,17 @@ export const AudioSpectrogram: FC = () => {
 		setContainerWidth(container.clientWidth);
 
 		return () => observer.disconnect();
-	}, []);
+	}, [setContainerWidth]);
 
 	const handleContainerScroll = () => {
 		if (!scrollContainerRef.current) return;
 		const newScrollLeft = scrollContainerRef.current.scrollLeft;
-		setScrollLeft(newScrollLeft);
+
+		if (Math.abs(newScrollLeft - scrollLeft) > 5) {
+			setScrollLeft(newScrollLeft);
+		}
+
 		rulerRef.current?.draw(newScrollLeft);
-		updateVisibleTiles();
 	};
 
 	const handleMouseEnter = () => setIsHovering(true);
@@ -343,8 +354,7 @@ export const AudioSpectrogram: FC = () => {
 
 			const clampedMouseX = Math.max(0, Math.min(mouseX, rect.width));
 
-			const timeAtCursor =
-				(scrollContainerRef.current.scrollLeft + clampedMouseX) / zoom;
+			const timeAtCursor = (scrollLeft + clampedMouseX) / zoom;
 
 			const clampedTime = Math.max(
 				0,
@@ -354,7 +364,7 @@ export const AudioSpectrogram: FC = () => {
 			audioEngine.seekMusic(clampedTime);
 			setCurrentTime(clampedTime * 1000);
 		},
-		[audioBuffer, zoom, setCurrentTime],
+		[audioBuffer, zoom, setCurrentTime, scrollLeft],
 	);
 
 	const handleScrubEnd = useCallback(() => {
