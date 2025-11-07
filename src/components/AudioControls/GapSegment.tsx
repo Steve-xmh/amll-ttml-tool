@@ -1,18 +1,15 @@
-import type { FC } from "react";
+import { type FC, useContext } from "react";
 import type { GapSegment as GapSegmentType } from "$/utils/segment-processing.ts";
 import styles from "./GapSegment.module.css";
+import { SpectrogramContext } from "./SpectrogramContext.ts";
 
 interface GapSegmentProps {
 	segment: GapSegmentType;
 	lineStartTime: number;
-	zoom: number;
 }
 
-export const GapSegment: FC<GapSegmentProps> = ({
-	segment,
-	lineStartTime,
-	zoom,
-}) => {
+export const GapSegment: FC<GapSegmentProps> = ({ segment, lineStartTime }) => {
+	const { zoom } = useContext(SpectrogramContext);
 	const { startTime, endTime } = segment;
 
 	if (startTime == null || endTime == null || endTime <= startTime) {

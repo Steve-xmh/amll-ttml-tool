@@ -1,19 +1,19 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { type FC, useCallback } from "react";
-import { dragDetailsAtom } from "$/states/dnd.ts";
+import { type FC, useCallback, useContext } from "react";
+import { timelineDragAtom } from "$/states/dnd.ts";
 import { processedLyricLinesAtom } from "$/utils/segment-processing.ts";
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
 } from "$/utils/timeline-mutations.ts";
 import styles from "./DividerSegment.module.css";
+import { SpectrogramContext } from "./SpectrogramContext";
 
 interface DividerSegmentProps {
 	lineId: string;
 	segmentIndex: number;
 	timeMs: number;
 	lineStartTime: number;
-	zoom: number;
 	segmentsLength: number;
 	isTouching: boolean;
 }
@@ -28,18 +28,19 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 	segmentIndex,
 	timeMs,
 	lineStartTime,
-	zoom,
 	segmentsLength,
 	isTouching,
 }) => {
-	const setDragDetails = useSetAtom(dragDetailsAtom);
+	const setTimelineDrag = useSetAtom(timelineDragAtom);
 	const processedLines = useAtomValue(processedLyricLinesAtom);
+	const { zoom } = useContext(SpectrogramContext);
 
 	const startDrag = useCallback(
 		(e: React.MouseEvent) => {
 			e.preventDefault();
 			e.stopPropagation();
-			setDragDetails({
+			setTimelineDrag({
+				type: "divider",
 				lineId: lineId,
 				segmentIndex: segmentIndex,
 				zoom: zoom,
@@ -47,7 +48,7 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 				isGapCreation: e.altKey,
 			});
 		},
-		[lineId, segmentIndex, setDragDetails, zoom],
+		[lineId, segmentIndex, setTimelineDrag, zoom],
 	);
 
 	const handleKeyDown = useCallback(

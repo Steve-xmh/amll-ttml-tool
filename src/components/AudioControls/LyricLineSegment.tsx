@@ -1,25 +1,25 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import React, { type FC } from "react";
+import React, { type FC, useContext } from "react";
 import { previewLineAtom, selectedWordIdAtom } from "$/states/dnd.ts";
 import type { ProcessedLyricLine } from "$/utils/segment-processing.ts";
 import { DividerSegment } from "./DividerSegment.tsx";
 import { GapSegment } from "./GapSegment.tsx";
 import styles from "./LyricLineSegment.module.css";
 import { LyricWordSegment } from "./LyricWordSegment.tsx";
+import { SpectrogramContext } from "./SpectrogramContext.ts";
 
 interface LyricLineSegmentProps {
 	line: ProcessedLyricLine;
-	zoom: number;
 	allLines: ProcessedLyricLine[];
 }
 
 export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 	line,
-	zoom,
 	allLines,
 }) => {
 	const previewLine = useAtomValue(previewLineAtom);
 	const setSelectedWordId = useSetAtom(selectedWordIdAtom);
+	const { zoom } = useContext(SpectrogramContext);
 
 	let displayLine: ProcessedLyricLine;
 	if (previewLine && previewLine.id === line.id) {
@@ -76,7 +76,6 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 				segmentIndex={-1}
 				timeMs={startTime}
 				lineStartTime={startTime}
-				zoom={zoom}
 				segmentsLength={segmentsLength}
 				isTouching={isTouchingStart}
 			/>
@@ -88,14 +87,9 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 							lineId={displayLine.id}
 							segment={segment}
 							lineStartTime={startTime}
-							zoom={zoom}
 						/>
 					) : (
-						<GapSegment
-							segment={segment}
-							lineStartTime={startTime}
-							zoom={zoom}
-						/>
+						<GapSegment segment={segment} lineStartTime={startTime} />
 					)}
 					<DividerSegment
 						key={`divider-${segment.id}`}
@@ -103,7 +97,6 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 						segmentIndex={index}
 						timeMs={segment.endTime}
 						lineStartTime={startTime}
-						zoom={zoom}
 						segmentsLength={segmentsLength}
 						isTouching={index === segmentsLength - 1 ? isTouchingEnd : false}
 					/>

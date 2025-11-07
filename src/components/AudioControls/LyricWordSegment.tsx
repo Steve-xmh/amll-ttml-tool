@@ -1,34 +1,31 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
 	type FC,
 	type KeyboardEvent,
 	type MouseEvent,
 	useContext,
 } from "react";
-import { spectrogramScrollLeftAtom } from "$/states/audio.ts";
-import { selectedWordIdAtom, wordPanOperationAtom } from "$/states/dnd.ts";
+import { selectedWordIdAtom, timelineDragAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import type { WordSegment } from "$/utils/segment-processing.ts";
 import styles from "./LyricWordSegment.module.css";
-import { SpectrogramContext } from "./SpectrogramContext";
+import { SpectrogramContext } from "./SpectrogramContext.ts";
 
 interface LyricWordSegmentProps {
 	lineId: string;
 	segment: WordSegment;
 	lineStartTime: number;
-	zoom: number;
 }
 
 export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	lineId,
 	segment,
 	lineStartTime,
-	zoom,
 }) => {
 	const [selectedWordId, setSelectedWordId] = useAtom(selectedWordIdAtom);
-	const setWordPanOperation = useSetAtom(wordPanOperationAtom);
-	const scrollLeft = useAtomValue(spectrogramScrollLeftAtom);
-	const scrollContainerRef = useContext(SpectrogramContext);
+	const setTimelineDrag = useSetAtom(timelineDragAtom);
+	const { zoom, scrollLeft, scrollContainerRef } =
+		useContext(SpectrogramContext);
 
 	const { startTime, endTime, word } = segment;
 
@@ -59,7 +56,7 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 		const mouseXPx = e.clientX - rect.left;
 		const initialMouseTimeMS = ((scrollLeft + mouseXPx) / zoom) * 1000;
 
-		setWordPanOperation({
+		setTimelineDrag({
 			type: "word-pan",
 			lineId: lineId,
 			wordId: segment.id,

@@ -30,7 +30,7 @@ import {
 import { useAtom, useAtomValue, useStore } from "jotai";
 import { type FC, memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AudioSlider } from "$/components/AudioControls/audio-slider.tsx";
+import { AudioSlider } from "$/components/AudioControls/AudioSlider";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
@@ -53,7 +53,7 @@ import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import { AuditionKeyBinding } from "../KeyBinding/AuditionKeyBinding";
-import { AudioSpectrogram } from "./audio-spectrogram";
+import { AudioSpectrogram } from "./AudioSpectrogram";
 
 const AudioPlaybackKeyBinding = memo(() => {
 	const store = useStore();

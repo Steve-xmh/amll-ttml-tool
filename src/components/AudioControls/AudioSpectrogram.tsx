@@ -6,6 +6,7 @@ import {
 	useCallback,
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -21,9 +22,12 @@ import {
 import { isDraggingAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
-import styles from "./audio-spectrogram.module.css";
-import { LyricTimelineOverlay } from "./LyricTimelineOverlay";
-import { SpectrogramContext } from "./SpectrogramContext.ts";
+import styles from "./AudioSpectrogram.module.css";
+import { LyricTimelineOverlay } from "./LyricTimelineOverlay.tsx";
+import {
+	type ISpectrogramContext,
+	SpectrogramContext,
+} from "./SpectrogramContext.ts";
 import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 
 const TILE_DURATION_S = 5;
@@ -101,6 +105,15 @@ export const AudioSpectrogram: FC = () => {
 		Map<string, { bitmap: ImageBitmap; width: number; gain: number }>
 	>(new Map());
 	const requestedTiles = useRef<Set<string>>(new Set());
+
+	const contextValue = useMemo<ISpectrogramContext>(
+		() => ({
+			scrollContainerRef,
+			zoom,
+			scrollLeft,
+		}),
+		[zoom, scrollLeft],
+	);
 
 	useEffect(() => {
 		const worker = new Worker(
@@ -466,13 +479,9 @@ export const AudioSpectrogram: FC = () => {
 							}}
 						/>
 					)}
-					<SpectrogramContext.Provider value={scrollContainerRef}>
+					<SpectrogramContext.Provider value={contextValue}>
 						<Theme appearance="dark">
-							<LyricTimelineOverlay
-								zoom={zoom}
-								scrollLeft={scrollLeft}
-								clientWidth={containerWidth}
-							/>
+							<LyricTimelineOverlay clientWidth={containerWidth} />
 							{isHovering && audioBuffer && !isDragging && (
 								<div
 									style={{

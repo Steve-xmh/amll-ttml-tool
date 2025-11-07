@@ -14,7 +14,7 @@ import {
 } from "$/states/audio.ts";
 import { audioEngine } from "$/utils/audio";
 import { msToTimestamp } from "$/utils/timestamp";
-import styles from "./audio-slider.module.css";
+import styles from "./AudioSlider.module.css";
 
 const clampZoom = (z: number) => Math.max(50, Math.min(z, 1000));
 const clampScroll = (
