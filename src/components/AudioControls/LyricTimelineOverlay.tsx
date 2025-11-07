@@ -1,20 +1,23 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import type { FC } from "react";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { currentTimeAtom } from "$/states/audio.ts";
 import {
 	dragDetailsAtom,
 	isDraggingAtom,
 	previewLineAtom,
+	wordPanOperationAtom,
 } from "$/states/dnd.ts";
 import { globalStore } from "$/states/store.ts";
 import { processedLyricLinesAtom } from "$/utils/segment-processing.ts";
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
+	getUpdatedLineForWordPan,
 } from "$/utils/timeline-mutations";
 import { LyricLineSegment } from "./LyricLineSegment";
 import styles from "./LyricTimelineOverlay.module.css";
+import { SpectrogramContext } from "./SpectrogramContext";
 
 interface LyricTimelineOverlayProps {
 	zoom: number;
@@ -32,9 +35,11 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	const processedLines = useAtomValue(processedLyricLinesAtom);
 	const isDragging = useAtomValue(isDraggingAtom);
 	const [dragDetails, setDragDetails] = useAtom(dragDetailsAtom);
+	const [wordPanOperation, setWordPanOperation] = useAtom(wordPanOperationAtom);
 	const setPreviewLine = useSetAtom(previewLineAtom);
 	const currentTime = useAtomValue(currentTimeAtom);
 	const snapTargetsMs = useRef<number[]>([]);
+	const scrollContainerRef = useContext(SpectrogramContext);
 
 	useEffect(() => {
 		if (!isDragging || !dragDetails) {
@@ -146,6 +151,73 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 		zoom,
 		processedLines,
 		currentTime,
+	]);
+
+	useEffect(() => {
+		if (!wordPanOperation) {
+			return;
+		}
+
+		const { lineId, wordId, initialMouseTimeMS, initialWordStartMS } =
+			wordPanOperation;
+
+		const processedLine = processedLines.find((l) => l.id === lineId);
+		if (!processedLine) {
+			return;
+		}
+
+		const handleGlobalMouseMove = (event: MouseEvent) => {
+			event.preventDefault();
+
+			const scrollContainer = scrollContainerRef.current;
+			if (!scrollContainer) return;
+			const rect = scrollContainer.getBoundingClientRect();
+
+			const mouseXPx = event.clientX - rect.left;
+			const currentMouseTimeMS = ((scrollLeft + mouseXPx) / zoom) * 1000;
+
+			const timeDeltaMS = currentMouseTimeMS - initialMouseTimeMS;
+			const desiredNewStartMS = initialWordStartMS + timeDeltaMS;
+
+			const preview = getUpdatedLineForWordPan(
+				processedLine,
+				wordId,
+				desiredNewStartMS,
+				zoom,
+			);
+
+			setPreviewLine(preview);
+		};
+
+		const handleGlobalMouseUp = (event: MouseEvent) => {
+			event.preventDefault();
+
+			const lastSnappedLine = globalStore.get(previewLineAtom);
+
+			if (lastSnappedLine) {
+				commitUpdatedLine(lastSnappedLine);
+			}
+
+			setWordPanOperation(null);
+			setPreviewLine(null);
+		};
+
+		window.addEventListener("mousemove", handleGlobalMouseMove);
+		window.addEventListener("mouseup", handleGlobalMouseUp, { once: true });
+
+		return () => {
+			window.removeEventListener("mousemove", handleGlobalMouseMove);
+			window.removeEventListener("mouseup", handleGlobalMouseUp);
+			setPreviewLine(null);
+		};
+	}, [
+		wordPanOperation,
+		setWordPanOperation,
+		zoom,
+		scrollLeft,
+		scrollContainerRef,
+		processedLines,
+		setPreviewLine,
 	]);
 
 	const bufferPx = 500;

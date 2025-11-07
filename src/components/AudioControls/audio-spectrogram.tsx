@@ -23,6 +23,7 @@ import { audioEngine } from "$/utils/audio.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import styles from "./audio-spectrogram.module.css";
 import { LyricTimelineOverlay } from "./LyricTimelineOverlay";
+import { SpectrogramContext } from "./SpectrogramContext.ts";
 import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 
 const TILE_DURATION_S = 5;
@@ -465,48 +466,50 @@ export const AudioSpectrogram: FC = () => {
 							}}
 						/>
 					)}
-					<Theme appearance="dark">
-						<LyricTimelineOverlay
-							zoom={zoom}
-							scrollLeft={scrollLeft}
-							clientWidth={containerWidth}
-						/>
-						{isHovering && audioBuffer && !isDragging && (
-							<div
-								style={{
-									position: "absolute",
-									left: `${clampedHoverPositionPx}px`,
-									top: 0,
-									height: "100%",
-									zIndex: 11,
-									pointerEvents: "none",
-								}}
-							>
-								<div
-									style={{
-										width: "1px",
-										height: "100%",
-										backgroundColor: "var(--gray-a9)",
-									}}
-								/>
+					<SpectrogramContext.Provider value={scrollContainerRef}>
+						<Theme appearance="dark">
+							<LyricTimelineOverlay
+								zoom={zoom}
+								scrollLeft={scrollLeft}
+								clientWidth={containerWidth}
+							/>
+							{isHovering && audioBuffer && !isDragging && (
 								<div
 									style={{
 										position: "absolute",
+										left: `${clampedHoverPositionPx}px`,
 										top: 0,
-										left: "5px",
-										backgroundColor: "var(--gray-a12)",
-										color: "var(--gray-1)",
-										padding: "2px 4px",
-										borderRadius: "var(--radius-1)",
-										fontSize: "10px",
-										whiteSpace: "nowrap",
+										height: "100%",
+										zIndex: 11,
+										pointerEvents: "none",
 									}}
 								>
-									{hoverTimeFormatted}
+									<div
+										style={{
+											width: "1px",
+											height: "100%",
+											backgroundColor: "var(--gray-a9)",
+										}}
+									/>
+									<div
+										style={{
+											position: "absolute",
+											top: 0,
+											left: "5px",
+											backgroundColor: "var(--gray-a12)",
+											color: "var(--gray-1)",
+											padding: "2px 4px",
+											borderRadius: "var(--radius-1)",
+											fontSize: "10px",
+											whiteSpace: "nowrap",
+										}}
+									>
+										{hoverTimeFormatted}
+									</div>
 								</div>
-							</div>
-						)}
-					</Theme>
+							)}
+						</Theme>
+					</SpectrogramContext.Provider>
 				</div>
 			</div>
 		</div>

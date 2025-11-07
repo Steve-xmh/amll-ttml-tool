@@ -5,8 +5,8 @@ import type {
 	WordSegment,
 } from "$/utils/segment-processing.ts";
 
-const MIN_DURATION_MS = 1;
 const MIN_DIVIDER_WIDTH_PX = 15;
+const MIN_WORD_DURATION_MS = 10;
 
 export function getUpdatedLineForDivider(
 	originalLine: ProcessedLyricLine,
@@ -28,7 +28,10 @@ export function getUpdatedLineForDivider(
 	let newEndTime = originalLine.endTime;
 
 	const minVisualDurationMs = (MIN_DIVIDER_WIDTH_PX / zoom) * 1000;
-	const dynamicMinDurationMs = Math.max(MIN_DURATION_MS, minVisualDurationMs);
+	const dynamicMinDurationMs = Math.max(
+		MIN_WORD_DURATION_MS,
+		minVisualDurationMs,
+	);
 
 	const leftSegment = segments[segmentIndex] || null;
 	const rightSegment = segments[segmentIndex + 1] || null;
@@ -146,4 +149,81 @@ export function commitUpdatedLine(updatedLine: ProcessedLyricLine) {
 			lyricLines: newLines,
 		};
 	});
+}
+
+export function getUpdatedLineForWordPan(
+	processedLine: ProcessedLyricLine,
+	wordId: string,
+	desiredNewStartMS: number,
+	zoom: number,
+): ProcessedLyricLine {
+	const segmentIndex = processedLine.segments.findIndex((s) => s.id === wordId);
+	if (segmentIndex === -1) return processedLine;
+
+	const segment = processedLine.segments[segmentIndex];
+	if (segment.type !== "word") return processedLine;
+
+	const leftSegment = processedLine.segments[segmentIndex - 1] || null;
+	const rightSegment = processedLine.segments[segmentIndex + 1] || null;
+
+	const wordDurationMS = segment.endTime - segment.startTime;
+
+	const minVisualDurationMs = (MIN_DIVIDER_WIDTH_PX / zoom) * 1000;
+	const dynamicMinDurationMs = Math.max(
+		MIN_WORD_DURATION_MS,
+		minVisualDurationMs,
+	);
+
+	let minStartMS: number;
+	if (!leftSegment) {
+		minStartMS = processedLine.startTime;
+	} else if (leftSegment.type === "gap") {
+		minStartMS = leftSegment.startTime;
+	} else {
+		minStartMS = leftSegment.startTime + dynamicMinDurationMs;
+	}
+
+	let maxStartMS: number;
+	if (!rightSegment) {
+		maxStartMS = processedLine.endTime - wordDurationMS;
+	} else if (rightSegment.type === "gap") {
+		maxStartMS = rightSegment.endTime - wordDurationMS;
+	} else {
+		maxStartMS = rightSegment.endTime - dynamicMinDurationMs - wordDurationMS;
+	}
+
+	let newStartMS = Math.max(minStartMS, desiredNewStartMS);
+	newStartMS = Math.min(maxStartMS, newStartMS);
+	const newEndMS = newStartMS + wordDurationMS;
+
+	if (Math.round(newStartMS) === Math.round(segment.startTime)) {
+		return processedLine;
+	}
+
+	const newSegments = [...processedLine.segments];
+
+	newSegments[segmentIndex] = {
+		...segment,
+		startTime: newStartMS,
+		endTime: newEndMS,
+	};
+
+	if (leftSegment) {
+		newSegments[segmentIndex - 1] = {
+			...leftSegment,
+			endTime: newStartMS,
+		};
+	}
+
+	if (rightSegment) {
+		newSegments[segmentIndex + 1] = {
+			...rightSegment,
+			startTime: newEndMS,
+		};
+	}
+
+	return {
+		...processedLine,
+		segments: newSegments,
+	};
 }

@@ -1,22 +1,34 @@
-import { useAtom } from "jotai";
-import type { FC, KeyboardEvent, MouseEvent } from "react";
-import { selectedWordIdAtom } from "$/states/dnd.ts";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+	type FC,
+	type KeyboardEvent,
+	type MouseEvent,
+	useContext,
+} from "react";
+import { spectrogramScrollLeftAtom } from "$/states/audio.ts";
+import { selectedWordIdAtom, wordPanOperationAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import type { WordSegment } from "$/utils/segment-processing.ts";
 import styles from "./LyricWordSegment.module.css";
+import { SpectrogramContext } from "./SpectrogramContext";
 
 interface LyricWordSegmentProps {
+	lineId: string;
 	segment: WordSegment;
 	lineStartTime: number;
 	zoom: number;
 }
 
 export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
+	lineId,
 	segment,
 	lineStartTime,
 	zoom,
 }) => {
 	const [selectedWordId, setSelectedWordId] = useAtom(selectedWordIdAtom);
+	const setWordPanOperation = useSetAtom(wordPanOperationAtom);
+	const scrollLeft = useAtomValue(spectrogramScrollLeftAtom);
+	const scrollContainerRef = useContext(SpectrogramContext);
 
 	const { startTime, endTime, word } = segment;
 
@@ -31,6 +43,30 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 
 	const handleClick = (e: MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation();
+		setSelectedWordId(segment.id);
+	};
+
+	const handlePanStart = (e: MouseEvent<HTMLDivElement>) => {
+		if (e.button !== 0) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		const scrollContainer = scrollContainerRef.current;
+		if (!scrollContainer) return;
+		const rect = scrollContainer.getBoundingClientRect();
+
+		const mouseXPx = e.clientX - rect.left;
+		const initialMouseTimeMS = ((scrollLeft + mouseXPx) / zoom) * 1000;
+
+		setWordPanOperation({
+			type: "word-pan",
+			lineId: lineId,
+			wordId: segment.id,
+			initialMouseTimeMS,
+			initialWordStartMS: segment.startTime,
+		});
+
 		setSelectedWordId(segment.id);
 	};
 
@@ -66,6 +102,7 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 			className={styles.wordSegment}
 			style={dynamicStyles}
 			onClick={handleClick}
+			onMouseDown={handlePanStart}
 			onContextMenu={handleContextMenu}
 			role="button"
 			tabIndex={0}

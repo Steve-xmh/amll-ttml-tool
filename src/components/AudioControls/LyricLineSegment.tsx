@@ -85,6 +85,7 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 				<React.Fragment key={segment.id}>
 					{segment.type === "word" ? (
 						<LyricWordSegment
+							lineId={displayLine.id}
 							segment={segment}
 							lineStartTime={startTime}
 							zoom={zoom}
