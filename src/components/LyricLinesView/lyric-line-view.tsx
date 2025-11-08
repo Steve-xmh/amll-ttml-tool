@@ -421,7 +421,7 @@ export const LyricLineView: FC<{
 									align="center"
 									color="gray"
 								>
-									{lineIndex}
+									{lineIndex + 1}
 								</Text>
 								{line.isBG && <VideoBackgroundEffectFilled color="#4466FF" />}
 								{line.isDuet && <TextAlignRightFilled color="#44AA33" />}
