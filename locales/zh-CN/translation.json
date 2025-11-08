@@ -96,6 +96,7 @@
 	},
 	"audioPanel": {
 		"volume": "音量",
+		"gain": "频谱增益",
 		"playbackRate": "播放速度",
 		"clickToLoadMusic": "点击图标按钮以加载音乐",
 		"playPause": "播放 / 暂停音乐",
@@ -149,6 +150,7 @@
 		"actionButton": "导入歌词",
 		"contentMode": {
 			"caption": "导入模式",
+			"lyric": "仅歌词",
 			"withTranslation": "歌词和翻译歌词",
 			"withRoman": "歌词和音译歌词",
 			"withBoth": "歌词和翻译、音译歌词"
@@ -246,6 +248,10 @@
 			"translatedLyric": "翻译歌词",
 			"romanLyric": "音译歌词",
 			"layoutMode": "布局模式",
+			"syllableDisplayMode": "音节显示模式",
+			"lineMode": "逐行模式",
+			"syllableMode": "逐字模式",
+			"showAllSyllables": "显示所有音节",
 			"layoutModeOptions": {
 				"simple": "简单模式",
 				"advance": "高级模式"

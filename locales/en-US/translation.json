@@ -168,6 +168,7 @@
 		"actionButton": "Import",
 		"contentMode": {
 			"caption": "Text content",
+			"lyric": "Lyrics Only",
 			"withTranslation": "Lyrics with translation",
 			"withRoman": "Lyrics with romanization",
 			"withBoth": "Lyrics with both"
@@ -253,6 +254,10 @@
 			"wordContent": "Word Content",
 			"obscene": "Obscene",
 			"layoutMode": "Layout",
+			"syllableDisplayMode": "Syllable Display Mode",
+			"lineMode": "Line Mode",
+			"syllableMode": "Syllable Mode",
+			"showAllSyllables": "Show All Syllables",
 			"layoutModeOptions": {
 				"simple": "Simple Mode",
 				"advance": "Advanced Mode"
@@ -311,6 +316,7 @@
 	},
 	"audioPanel": {
 		"volume": "Volume",
+		"gain": "Spectrum Gain",
 		"playbackRate": "Playback rate",
 		"clickToLoadMusic": "Click the icon button to load music",
 		"playPause": "Play / pause music",
