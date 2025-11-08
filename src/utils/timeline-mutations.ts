@@ -227,3 +227,31 @@ export function getUpdatedLineForWordPan(
 		segments: newSegments,
 	};
 }
+
+export function getUpdatedLineForLinePan(
+	processedLine: ProcessedLyricLine,
+	newStartMS: number,
+): ProcessedLyricLine {
+	newStartMS = Math.max(0, newStartMS);
+
+	const deltaMS = newStartMS - processedLine.startTime;
+
+	if (Math.round(deltaMS) === 0) {
+		return processedLine;
+	}
+
+	const newEndMS = processedLine.endTime + deltaMS;
+
+	const newSegments = processedLine.segments.map((segment) => ({
+		...segment,
+		startTime: segment.startTime + deltaMS,
+		endTime: segment.endTime + deltaMS,
+	}));
+
+	return {
+		...processedLine,
+		startTime: newStartMS,
+		endTime: newEndMS,
+		segments: newSegments,
+	};
+}

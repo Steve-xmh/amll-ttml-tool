@@ -2,7 +2,11 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import type { FC } from "react";
 import { useContext, useEffect, useRef } from "react";
 import { currentTimeAtom } from "$/states/audio.ts";
-import { previewLineAtom, timelineDragAtom } from "$/states/dnd.ts";
+import {
+	previewLineAtom,
+	type TimelineDragOperation,
+	timelineDragAtom,
+} from "$/states/dnd.ts";
 import {
 	SyllableDisplayMode,
 	selectedLinesAtom,
@@ -17,6 +21,7 @@ import {
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
+	getUpdatedLineForLinePan,
 	getUpdatedLineForWordPan,
 } from "$/utils/timeline-mutations";
 import { LyricLineSegment } from "./LyricLineSegment";
@@ -117,6 +122,50 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 					setPreviewLine(preview);
 					break;
 				}
+
+				case "line-pan": {
+					const { lineId, initialMouseTimeMS, initialLineStartMS } =
+						timelineDrag;
+					const processedLine = processedLines.find((l) => l.id === lineId);
+					if (!processedLine) return;
+
+					const scrollContainer = scrollContainerRef.current;
+					if (!scrollContainer) return;
+					const rect = scrollContainer.getBoundingClientRect();
+
+					const mouseXPx = event.clientX - rect.left;
+					const currentMouseTimeMS = ((scrollLeft + mouseXPx) / zoom) * 1000;
+					const timeDeltaMS = currentMouseTimeMS - initialMouseTimeMS;
+					let desiredNewStartMS = initialLineStartMS + timeDeltaMS;
+
+					if (!event.shiftKey) {
+						let closestSnapTime: number | null = null;
+						let minDistancePx = SNAP_THRESHOLD_PX;
+
+						const newTimePx = (desiredNewStartMS / 1000) * zoom;
+
+						for (const targetTime of snapTargetsMs.current) {
+							const targetTimePx = (targetTime / 1000) * zoom;
+							const distancePx = Math.abs(newTimePx - targetTimePx);
+
+							if (distancePx < minDistancePx) {
+								minDistancePx = distancePx;
+								closestSnapTime = targetTime;
+							}
+						}
+
+						if (closestSnapTime !== null) {
+							desiredNewStartMS = closestSnapTime;
+						}
+					}
+
+					const preview = getUpdatedLineForLinePan(
+						processedLine,
+						desiredNewStartMS,
+					);
+					setPreviewLine(preview);
+					break;
+				}
 			}
 		};
 
@@ -132,24 +181,29 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 			setPreviewLine(null);
 		};
 
-		if (timelineDrag.type === "divider") {
-			const { lineId, segmentIndex } = timelineDrag;
-			const lineBeingDragged = processedLines.find((l) => l.id === lineId);
-			if (!lineBeingDragged) {
-				setTimelineDrag(null);
-				return;
-			}
-			const isLineBoundaryDrag =
-				segmentIndex === -1 ||
-				segmentIndex === lineBeingDragged.segments.length - 1;
+		let needsBoundarySnapping = false;
 
-			const targets: number[] = [currentTime];
-			if (isLineBoundaryDrag) {
-				const otherLineBoundaries = processedLines
-					.filter((line) => line.id !== lineId)
-					.flatMap((line) => [line.startTime, line.endTime]);
-				targets.push(...otherLineBoundaries);
+		if (timelineDrag.type === "divider") {
+			const { segmentIndex } = timelineDrag;
+			const lineBeingDragged = processedLines.find(
+				(l) => l.id === timelineDrag.lineId,
+			);
+			if (lineBeingDragged) {
+				needsBoundarySnapping =
+					segmentIndex === -1 ||
+					segmentIndex === lineBeingDragged.segments.length - 1;
 			}
+		} else if (timelineDrag.type === "line-pan") {
+			needsBoundarySnapping = true;
+		}
+
+		if (needsBoundarySnapping) {
+			const lineId = (timelineDrag as TimelineDragOperation).lineId;
+			const targets: number[] = [currentTime];
+			const otherLineBoundaries = processedLines
+				.filter((line) => line.id !== lineId)
+				.flatMap((line) => [line.startTime, line.endTime]);
+			targets.push(...otherLineBoundaries);
 			snapTargetsMs.current = targets.filter(
 				(time): time is number => time != null,
 			);
@@ -179,10 +233,36 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	const viewStartMs = ((scrollLeft - bufferPx) / zoom) * 1000;
 	const viewEndMs = ((scrollLeft + clientWidth + bufferPx) / zoom) * 1000;
 
-	const visibleLines = processedLines.filter((line) => {
-		if (!line.startTime || !line.endTime) return false;
-		return line.endTime > viewStartMs && line.startTime < viewEndMs;
-	});
+	const linesToRenderSet = new Set<ProcessedLyricLine>();
+	let closestLeft: ProcessedLyricLine | null = null;
+	let foundClosestRight = false;
+
+	for (const line of processedLines) {
+		if (!line.startTime || !line.endTime) continue;
+
+		const inBufferedView =
+			line.endTime > viewStartMs && line.startTime < viewEndMs;
+
+		if (inBufferedView) {
+			linesToRenderSet.add(line);
+			continue;
+		}
+
+		if (line.endTime <= viewStartMs) {
+			closestLeft = line;
+		}
+
+		if (line.startTime >= viewEndMs && !foundClosestRight) {
+			linesToRenderSet.add(line);
+			foundClosestRight = true;
+		}
+	}
+
+	if (closestLeft) {
+		linesToRenderSet.add(closestLeft);
+	}
+
+	const visibleLines = Array.from(linesToRenderSet);
 
 	let linesToRender: ProcessedLyricLine[] = visibleLines;
 
