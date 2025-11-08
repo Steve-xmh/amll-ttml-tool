@@ -10,6 +10,7 @@
  */
 
 import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import { REDO, UNDO, withHistory } from "jotai-history";
 import type { TTMLLyric } from "../utils/ttml-types";
 
@@ -71,3 +72,13 @@ export const selectedLinesAtom = atom(new Set<string>());
 export const selectedWordsAtom = atom(new Set<string>());
 
 export const saveFileNameAtom = atom("lyric.ttml");
+
+export enum SyllableDisplayMode {
+	LineMode,
+	SyllableMode,
+}
+export const syllableDisplayModeAtom = atomWithStorage(
+	"syllableDisplayMode",
+	SyllableDisplayMode.SyllableMode,
+);
+export const showAllSyllablesAtom = atomWithStorage("showAllSyllables", false);

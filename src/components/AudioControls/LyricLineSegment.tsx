@@ -1,6 +1,7 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import React, { type FC, useContext } from "react";
-import { previewLineAtom, selectedWordIdAtom } from "$/states/dnd.ts";
+import { previewLineAtom } from "$/states/dnd.ts";
+import { SyllableDisplayMode, syllableDisplayModeAtom } from "$/states/main.ts";
 import type { ProcessedLyricLine } from "$/utils/segment-processing.ts";
 import { DividerSegment } from "./DividerSegment.tsx";
 import { GapSegment } from "./GapSegment.tsx";
@@ -18,8 +19,8 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 	allLines,
 }) => {
 	const previewLine = useAtomValue(previewLineAtom);
-	const setSelectedWordId = useSetAtom(selectedWordIdAtom);
 	const { zoom } = useContext(SpectrogramContext);
+	const displayMode = useAtomValue(syllableDisplayModeAtom);
 
 	let displayLine: ProcessedLyricLine;
 	if (previewLine && previewLine.id === line.id) {
@@ -34,10 +35,6 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 
 	const { startTime, endTime, segments } = displayLine;
 	const segmentsLength = segments.length;
-
-	const handleBackgroundClick = () => {
-		setSelectedWordId(null);
-	};
 
 	if (startTime == null || endTime == null || endTime <= startTime) {
 		return null;
@@ -57,51 +54,53 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 		(l) => l.id !== line.id && l.startTime === endTime,
 	);
 
+	const showSyllables = displayMode === SyllableDisplayMode.SyllableMode;
+
 	const dynamicStyles = {
 		left: `${left}px`,
 		width: `${width}px`,
 	};
 
 	return (
-		// biome-ignore lint/a11y/useKeyWithClickEvents: 此功能仅限鼠标
-		// biome-ignore lint/a11y/noStaticElementInteractions: 此功能仅限鼠标
-		<div
-			className={styles.lineSegment}
-			style={dynamicStyles}
-			onClick={handleBackgroundClick}
-		>
-			<DividerSegment
-				key="divider-start"
-				lineId={displayLine.id}
-				segmentIndex={-1}
-				timeMs={startTime}
-				lineStartTime={startTime}
-				segmentsLength={segmentsLength}
-				isTouching={isTouchingStart}
-			/>
-
-			{segments.map((segment, index) => (
-				<React.Fragment key={segment.id}>
-					{segment.type === "word" ? (
-						<LyricWordSegment
-							lineId={displayLine.id}
-							segment={segment}
-							lineStartTime={startTime}
-						/>
-					) : (
-						<GapSegment segment={segment} lineStartTime={startTime} />
-					)}
+		<div className={styles.lineSegment} style={dynamicStyles}>
+			{showSyllables && (
+				<React.Fragment>
 					<DividerSegment
-						key={`divider-${segment.id}`}
+						key="divider-start"
 						lineId={displayLine.id}
-						segmentIndex={index}
-						timeMs={segment.endTime}
+						segmentIndex={-1}
+						timeMs={startTime}
 						lineStartTime={startTime}
 						segmentsLength={segmentsLength}
-						isTouching={index === segmentsLength - 1 ? isTouchingEnd : false}
+						isTouching={isTouchingStart}
 					/>
+
+					{segments.map((segment, index) => (
+						<React.Fragment key={segment.id}>
+							{segment.type === "word" ? (
+								<LyricWordSegment
+									lineId={displayLine.id}
+									segment={segment}
+									lineStartTime={startTime}
+								/>
+							) : (
+								<GapSegment segment={segment} lineStartTime={startTime} />
+							)}
+							<DividerSegment
+								key={`divider-${segment.id}`}
+								lineId={displayLine.id}
+								segmentIndex={index}
+								timeMs={segment.endTime}
+								lineStartTime={startTime}
+								segmentsLength={segmentsLength}
+								isTouching={
+									index === segmentsLength - 1 ? isTouchingEnd : false
+								}
+							/>
+						</React.Fragment>
+					))}
 				</React.Fragment>
-			))}
+			)}
 		</div>
 	);
 };

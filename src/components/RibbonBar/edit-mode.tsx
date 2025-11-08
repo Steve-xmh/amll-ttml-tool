@@ -33,8 +33,11 @@ import { useTranslation } from "react-i18next";
 import { LayoutMode, layoutModeAtom } from "$/states/config";
 import {
 	lyricLinesAtom,
+	SyllableDisplayMode,
 	selectedLinesAtom,
 	selectedWordsAtom,
+	showAllSyllablesAtom,
+	syllableDisplayModeAtom,
 } from "$/states/main.ts";
 import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
 import {
@@ -294,28 +297,70 @@ function EditModeField({
 }) {
 	const [layoutMode, setLayoutMode] = useAtom(layoutModeAtom);
 	return (
-		<>
-			<RadioGroup.Root
-				value={layoutMode}
-				onValueChange={(v) => setLayoutMode(v as LayoutMode)}
-				size="1"
-			>
-				<Flex gapY="3" direction="column">
-					<Text wrap="nowrap" size="1">
-						<RadioGroup.Item value={LayoutMode.Simple}>
-							{simpleModeLabel}
-						</RadioGroup.Item>
-					</Text>
-					<Text wrap="nowrap" size="1">
-						<RadioGroup.Item value={LayoutMode.Advance}>
-							{advanceModeLabel}
-						</RadioGroup.Item>
-					</Text>
-				</Flex>
-			</RadioGroup.Root>
-		</>
+		<RadioGroup.Root
+			value={layoutMode}
+			onValueChange={(v) => setLayoutMode(v as LayoutMode)}
+			size="1"
+		>
+			<Flex gapY="3" direction="column">
+				<Text wrap="nowrap" size="1">
+					<RadioGroup.Item value={LayoutMode.Simple}>
+						{simpleModeLabel}
+					</RadioGroup.Item>
+				</Text>
+				<Text wrap="nowrap" size="1">
+					<RadioGroup.Item value={LayoutMode.Advance}>
+						{advanceModeLabel}
+					</RadioGroup.Item>
+				</Text>
+			</Flex>
+		</RadioGroup.Root>
 	);
 }
+
+const SyllableDisplayModeField: FC = () => {
+	const [displayMode, setDisplayMode] = useAtom(syllableDisplayModeAtom);
+	const [showAll, setShowAll] = useAtom(showAllSyllablesAtom);
+	const { t } = useTranslation();
+
+	const isSyllableMode = displayMode === SyllableDisplayMode.SyllableMode;
+
+	const handleSyllableModeToggle = (isChecked: boolean) => {
+		if (isChecked) {
+			setDisplayMode(SyllableDisplayMode.SyllableMode);
+		} else {
+			setDisplayMode(SyllableDisplayMode.LineMode);
+		}
+	};
+
+	const syllableModeCheckboxId = useId();
+	const showAllCheckboxId = useId();
+
+	return (
+		<Grid columns="0fr 0fr" gap="4" gapY="1" flexGrow="1" align="center">
+			<Text wrap="nowrap" size="1">
+				<label htmlFor={syllableModeCheckboxId}>
+					{t("ribbonBar.editMode.syllableMode", "逐字模式")}
+				</label>
+			</Text>
+			<Checkbox
+				id={syllableModeCheckboxId}
+				checked={isSyllableMode}
+				onCheckedChange={handleSyllableModeToggle}
+			/>
+			<Text wrap="nowrap" size="1">
+				<label htmlFor={showAllCheckboxId}>
+					{t("ribbonBar.editMode.showAllSyllables", "显示所有音节")}
+				</label>
+			</Text>
+			<Checkbox
+				id={showAllCheckboxId}
+				checked={showAll}
+				onCheckedChange={(checked) => setShowAll(Boolean(checked))}
+			/>
+		</Grid>
+	);
+};
 
 // function DropdownField<
 // 	L extends Word extends true ? LyricWord : LyricLine,
@@ -560,6 +605,11 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							"高级模式",
 						)}
 					/>
+				</RibbonSection>
+				<RibbonSection
+					label={t("ribbonBar.editMode.syllableDisplayMode", "音节显示模式")}
+				>
+					<SyllableDisplayModeField />
 				</RibbonSection>
 			</RibbonFrame>
 		);

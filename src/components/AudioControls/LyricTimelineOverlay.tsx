@@ -3,8 +3,17 @@ import type { FC } from "react";
 import { useContext, useEffect, useRef } from "react";
 import { currentTimeAtom } from "$/states/audio.ts";
 import { previewLineAtom, timelineDragAtom } from "$/states/dnd.ts";
+import {
+	SyllableDisplayMode,
+	selectedLinesAtom,
+	showAllSyllablesAtom,
+	syllableDisplayModeAtom,
+} from "$/states/main.ts";
 import { globalStore } from "$/states/store.ts";
-import { processedLyricLinesAtom } from "$/utils/segment-processing.ts";
+import {
+	type ProcessedLyricLine,
+	processedLyricLinesAtom,
+} from "$/utils/segment-processing.ts";
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
@@ -30,6 +39,10 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	const snapTargetsMs = useRef<number[]>([]);
 	const { scrollContainerRef, zoom, scrollLeft } =
 		useContext(SpectrogramContext);
+
+	const displayMode = useAtomValue(syllableDisplayModeAtom);
+	const showAllSyllables = useAtomValue(showAllSyllablesAtom);
+	const selectedLines = useAtomValue(selectedLinesAtom);
 
 	useEffect(() => {
 		if (!timelineDrag) {
@@ -171,9 +184,15 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 		return line.endTime > viewStartMs && line.startTime < viewEndMs;
 	});
 
+	let linesToRender: ProcessedLyricLine[] = visibleLines;
+
+	if (displayMode === SyllableDisplayMode.SyllableMode && !showAllSyllables) {
+		linesToRender = visibleLines.filter((line) => selectedLines.has(line.id));
+	}
+
 	return (
 		<div className={styles.overlay}>
-			{visibleLines.map((line) => (
+			{linesToRender.map((line) => (
 				<LyricLineSegment key={line.id} line={line} allLines={processedLines} />
 			))}
 		</div>
