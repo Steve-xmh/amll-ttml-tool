@@ -34,7 +34,12 @@ export const HistoryRestoreDialog = () => {
 			listSnapshots()
 				.then((snaps) =>
 					setSnapshots(
-						snaps.map((s) => ({ id: s.id!, timestamp: s.timestamp })),
+						snaps
+							.filter((s) => s.id != null)
+							.map((s) => ({
+								id: s.id as number,
+								timestamp: s.timestamp,
+							})),
 					),
 				)
 				.catch(console.error);
