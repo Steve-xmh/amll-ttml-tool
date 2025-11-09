@@ -284,7 +284,7 @@ function App() {
 		>
 			<ErrorBoundary
 				FallbackComponent={AppErrorPage}
-				onReset={(details) => {
+				onReset={(_details) => {
 					// TODO
 				}}
 			>

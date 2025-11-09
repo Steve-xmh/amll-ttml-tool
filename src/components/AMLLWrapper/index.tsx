@@ -44,7 +44,7 @@ export const AMLLWrapper = memo(() => {
 
 	useEffect(() => {
 		setTimeout(() => {
-			playerRef.current?.lyricPlayer?.calcLayout(true, true);
+			playerRef.current?.lyricPlayer?.calcLayout(true);
 		}, 1500);
 	}, []);
 

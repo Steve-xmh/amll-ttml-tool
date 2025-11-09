@@ -17,7 +17,7 @@ import {
 	SplitVerticalRegular,
 	TaskListLtrRegular,
 } from "@fluentui/react-icons";
-import { ContextMenu, IconButton, TextField, Tooltip } from "@radix-ui/themes";
+import { ContextMenu, IconButton, TextField } from "@radix-ui/themes";
 import classNames from "classnames";
 import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";

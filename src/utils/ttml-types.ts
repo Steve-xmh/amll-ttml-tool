@@ -40,6 +40,7 @@ export const newLyricWord = (): LyricWord => ({
 	word: "",
 	obscene: false,
 	emptyBeat: 0,
+	romanWord: "",
 });
 
 export interface LyricLine extends AMLLLyricLine {

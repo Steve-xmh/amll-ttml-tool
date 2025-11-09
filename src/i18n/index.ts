@@ -3,11 +3,6 @@ import i18n from "i18next";
 import ICU from "i18next-icu";
 import { initReactI18next } from "react-i18next";
 
-// Define the structure of our translation resources
-type DeepPartial<T> = {
-	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-};
-
 type TranslationResource = typeof resources;
 
 console.log("Locale Resources", resources);

@@ -175,6 +175,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					endTime: word.trim().length > 0 ? line.endTime : 0,
 					obscene: false,
 					emptyBeat: 0,
+					romanWord: "",
 				});
 			} else if (wordNode.nodeType === Node.ELEMENT_NODE) {
 				const wordEl = wordNode as Element;
@@ -200,6 +201,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 						endTime: parseTimespan(wordEl.getAttribute("end") ?? ""),
 						obscene: false,
 						emptyBeat: 0,
+						romanWord: "",
 					};
 					const emptyBeat = wordEl.getAttribute("amll:empty-beat");
 					if (emptyBeat) word.emptyBeat = Number(emptyBeat);
