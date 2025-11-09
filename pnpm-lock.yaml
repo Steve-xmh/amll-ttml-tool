@@ -59,18 +59,15 @@ importers:
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
-      compromise:
-        specifier: ^14.14.4
-        version: 14.14.4
-      compromise-speech:
-        specifier: ^0.1.1
-        version: 0.1.1(compromise@14.14.4)
       compromise-syllables:
         specifier: ^0.0.6
         version: 0.0.6(compromise@14.14.4)
       framer-motion:
         specifier: ^12.23.24
         version: 12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      hyphen:
+        specifier: ^1.10.6
+        version: 1.10.6
       i18next:
         specifier: ^25.6.0
         version: 25.6.0(typescript@5.9.3)
@@ -159,6 +156,9 @@ importers:
       '@tauri-apps/cli':
         specifier: ^2.9.3
         version: 2.9.3
+      '@types/hyphen':
+        specifier: ^1.6.7
+        version: 1.6.7
       '@types/node':
         specifier: ^24.10.0
         version: 24.10.0
@@ -2641,6 +2641,9 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/hyphen@1.6.7':
+    resolution: {integrity: sha512-LsWduhqP4CG6myv2V5fXMvdQjESNbYQKCA74VoKlwvlqAWvJV6sREqUgTRpqYOe98vcNRSfvyi/zMzD7OGQ5KA==}
+
   '@types/lodash@4.17.20':
     resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
 
@@ -3101,11 +3104,6 @@ packages:
   common-tags@1.8.2:
     resolution: {integrity: sha512-gk/Z852D2Wtb//0I+kRFNKKE9dIIVirjoqPoA1wJU+XePVXZfGeBpk45+A1rKO4Q43prqWBNY/MiIeRLbPWUaA==}
     engines: {node: '>=4.0.0'}
-
-  compromise-speech@0.1.1:
-    resolution: {integrity: sha512-nTT/zi0cNQXoiwnvJVl6Sm9TLE+esHmjRHISmyPw3DtiLPagpaONFKa/rY/gCgvOGemOkr3i4jOj+gG5YtdsOw==}
-    peerDependencies:
-      compromise: '>=14.0.0'
 
   compromise-syllables@0.0.6:
     resolution: {integrity: sha512-27UnmoL2PqmBE9+LnB1VmiZa+Y1MoZvAtYIn6WvqDX9h2X3wPtlUqPoatqA2p4Jq36f6hahzrPgaTVaE8qlC2Q==}
@@ -3664,6 +3662,9 @@ packages:
   htmlparser2@10.0.0:
     resolution: {integrity: sha512-TwAZM+zE5Tq3lrEHvOlvwgj1XLWQCtaaibSN11Q+gGBAS7Y1uZSWwXXRe4iF6OXnaq1riyQAPFOBtYc77Mxq0g==}
 
+  hyphen@1.10.6:
+    resolution: {integrity: sha512-fXHXcGFTXOvZTSkPJuGOQf5Lv5T/R2itiiCVPg9LxAje5D00O0pP83yJShFq5V89Ly//Gt6acj7z8pbBr34stw==}
+
   i18next-icu@2.4.1:
     resolution: {integrity: sha512-fh01aSjGlnsR377J7mu/CM3wcdZTpvNZejapPfHI+YnVyiWwvGFT2gZOgecm9B19ttyAJ3ijmHG6r/2jiQqXCA==}
     peerDependencies:
@@ -4009,6 +4010,7 @@ packages:
     resolution: {integrity: sha512-Quz3MvAwHxVYNXsOByL7xI5EB2WYOeFswqaHIA3qOK3isRWTxiplBEocmmru6XmxDB2L7jDNYtYA4FyimoAFEw==}
     engines: {node: '>=8.17.0'}
     hasBin: true
+    bundledDependencies: []
 
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
@@ -7937,6 +7939,8 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/hyphen@1.6.7': {}
+
   '@types/lodash@4.17.20': {}
 
   '@types/minimatch@3.0.5': {}
@@ -8419,10 +8423,6 @@ snapshots:
   commander@7.2.0: {}
 
   common-tags@1.8.2: {}
-
-  compromise-speech@0.1.1(compromise@14.14.4):
-    dependencies:
-      compromise: 14.14.4
 
   compromise-syllables@0.0.6(compromise@14.14.4):
     dependencies:
@@ -9096,6 +9096,8 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.2.2
       entities: 6.0.1
+
+  hyphen@1.10.6: {}
 
   i18next-icu@2.4.1(intl-messageformat@10.7.0):
     dependencies:

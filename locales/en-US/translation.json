@@ -65,6 +65,9 @@
 			"splitWordByCompromise": "Split words (using Compromise)",
 			"view": "View",
 			"tool": "Tools",
+			"autoSegment": "Auto Segment",
+			"advancedSegment": "Advanced Segment...",
+			"segmentationTools": "Segmentation Tools",
 			"restoreFromHistory": "Restore from history…",
 			"openFromClipboard": "Open TTML from clipboard",
 			"saveLyricToClipboard": "Save TTML to clipboard",
@@ -199,7 +202,8 @@
 		"previewTitle": "Split Preview",
 		"spaceCount": "Space x{count}",
 		"empty": "Empty",
-		"actionButton": "Confirm"
+		"actionButton": "Confirm",
+		"applyToAll": "Apply this splitting to all identical words"
 	},
 	"lyricLineView": {
 		"translatedLabel": "Translation:",
@@ -374,6 +378,50 @@
 		},
 		"confirm": "Confirm",
 		"cancel": "Cancel"
+	},
+	"advancedSegmentDialog": {
+		"title": "Advanced Segmentation",
+		"scope": {
+			"title": "Application Scope",
+			"all": "All lyric lines",
+			"range": {
+				"from": "From line",
+				"to": "to line",
+				"end": ""
+			}
+		},
+		"rules": {
+			"title": "Auto Segmentation Rules",
+			"cjk": "Split CJK characters",
+			"english": "Split English words by syllable"
+		},
+		"tip": "After splitting, the original word's total duration will be redistributed based on the number of characters and their weights.",
+		"postProcess": {
+			"title": "Post-processing",
+			"punct": {
+				"caption": "Punctuation handling:",
+				"merge": "Merge to previous segment",
+				"standalone": "Set as standalone segment",
+				"weight": "Punctuation time weight:"
+			},
+			"empty": "Remove empty segments"
+		},
+		"custom": {
+			"title": "Custom Segmentation Rules",
+			"input": "Enter word for manual splitting...",
+			"add": "Add to custom rules",
+			"list": "Custom rules list:"
+		},
+		"ignore": {
+			"title": "Ignore List",
+			"placeholder": "One word per line, words in this list will not be auto-segmented"
+		},
+		"test": {
+			"title": "Splitting Test",
+			"input": "Enter a lyric line or word to test...",
+			"output": "Preview result:",
+			"outputError": "Splitting preview error"
+		}
 	},
 	"historyRestoreDialog": {
 		"title": "Restore from History",

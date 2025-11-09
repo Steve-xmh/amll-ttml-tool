@@ -1,32 +1,50 @@
 import { Info16Regular } from "@fluentui/react-icons";
 import {
+	Box,
 	Button,
 	Callout,
+	Checkbox,
 	Dialog,
 	Flex,
-	Separator,
 	Text,
 	TextField,
 } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
-import { memo, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
-import { newLyricWord } from "$/utils/ttml-types";
-import styles from "./split-word.module.css";
+import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
+import { ManualWordSplitter } from "./ManualWordSplitter";
 
 export const SplitWordDialog = memo(() => {
 	const [splitWordDialog, splitWordDialogOpen] = useAtom(splitWordDialogAtom);
 	const [splitState, setSplitState] = useImmerAtom(splitWordStateAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
-	const [sparator, setSeparator] = useState("\\");
-	const splittedWords = useMemo(
-		() => splitState.word.split(sparator),
-		[sparator, splitState.word],
-	);
 	const { t } = useTranslation();
+
+	const [splitIndices, setSplitIndices] = useState(new Set<number>());
+
+	const [applyToAll, setApplyToAll] = useState(false);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: 用来在外部单词发生变化时重置分割点
+	useEffect(() => {
+		setSplitIndices(new Set());
+		setApplyToAll(false);
+	}, [splitState.word]);
+
+	const toggleSplitPoint = useCallback((index: number) => {
+		setSplitIndices((prev) => {
+			const next = new Set(prev);
+			if (next.has(index)) {
+				next.delete(index);
+			} else {
+				next.add(index);
+			}
+			return next;
+		});
+	}, []);
 
 	return (
 		<Dialog.Root open={splitWordDialog} onOpenChange={splitWordDialogOpen}>
@@ -46,7 +64,6 @@ export const SplitWordDialog = memo(() => {
 							)}
 						</Callout.Text>
 					</Callout.Root>
-					<Text>{t("splitWordDialog.originalWord", "拆分/替换模板")}</Text>
 					<TextField.Root
 						value={splitState.word}
 						onChange={(evt) =>
@@ -55,58 +72,107 @@ export const SplitWordDialog = memo(() => {
 							})
 						}
 					/>
-					<Text mt="4">{t("splitWordDialog.delimiter", "分隔符")}</Text>
-					<TextField.Root
-						value={sparator}
-						onChange={(evt) => setSeparator(evt.target.value)}
-					/>
-					<Separator size="4" my="2" />
-					<Text>{t("splitWordDialog.previewTitle", "拆分预览")}</Text>
-					<Flex gap="1" wrap="wrap" mb="4">
-						{splittedWords.map((w, i) => (
-							<span className={styles.word} key={`preview-word-${i}-${w}`}>
-								{w.trim() === "" ? (
-									<Text color="gray">
-										{w.length > 0
-											? t("splitWordDialog.spaceCount", "空格x{count}", {
-													count: w.length,
-												})
-											: t("splitWordDialog.empty", "空白")}
-									</Text>
-								) : (
-									w
-								)}
-							</span>
-						))}
-					</Flex>
+					<Box my="3">
+						<ManualWordSplitter
+							word={splitState.word}
+							splitIndices={splitIndices}
+							onSplitIndexToggle={toggleSplitPoint}
+						/>
+					</Box>
+					<Text as="label" size="2">
+						<Flex gap="2" align="center">
+							<Checkbox
+								checked={applyToAll}
+								onCheckedChange={(c) => setApplyToAll(c as boolean)}
+							/>
+							{t(
+								"splitWordDialog.applyToAll",
+								"将此拆分规则应用于所有相同的单词",
+								{
+									word: splitState.word,
+								},
+							)}
+						</Flex>
+					</Text>
 				</Flex>
-				<Dialog.Close>
-					<Button
-						onClick={() => {
-							editLyricLines((state) => {
-								const line = state.lyricLines[splitState.lineIndex];
-								if (line) {
-									const word = line.words[splitState.wordIndex];
-									if (word) {
-										const startTime = word.startTime;
-										const endTime = word.endTime;
-										const duration = endTime - startTime;
-										const splittedDuration = duration / splittedWords.length;
-										const newWords = splittedWords.map((w, i) => ({
+				<Flex justify="end" mt="4">
+					<Dialog.Close>
+						<Button
+							onClick={() => {
+								const originalWord = splitState.word;
+
+								const parts: string[] = [];
+								let lastIndex = 0;
+								const sortedIndices = Array.from(splitIndices).sort(
+									(a, b) => a - b,
+								);
+
+								for (const index of sortedIndices) {
+									parts.push(originalWord.slice(lastIndex, index));
+									lastIndex = index;
+								}
+								parts.push(originalWord.slice(lastIndex));
+
+								const splittedWords = parts.filter((p) => p !== "");
+
+								if (splittedWords.length === 0 && originalWord) {
+									splittedWords.push(originalWord);
+								}
+
+								const createNewWords = (targetWord: LyricWord): LyricWord[] => {
+									const { startTime, endTime } = targetWord;
+									const duration = endTime - startTime;
+
+									if (duration <= 0 || splittedWords.length === 0) {
+										return splittedWords.map((w) => ({
 											...newLyricWord(),
-											startTime: (startTime + splittedDuration * i) | 0,
-											endTime: (startTime + splittedDuration * (i + 1)) | 0,
+											startTime,
+											endTime,
 											word: w,
 										}));
-										line.words.splice(splitState.wordIndex, 1, ...newWords);
 									}
-								}
-							});
-						}}
-					>
-						{t("splitWordDialog.actionButton", "执行")}
-					</Button>
-				</Dialog.Close>
+
+									const splittedDuration = duration / splittedWords.length;
+
+									return splittedWords.map((w, i) => ({
+										...newLyricWord(),
+										startTime: (startTime + splittedDuration * i) | 0,
+										endTime: (startTime + splittedDuration * (i + 1)) | 0,
+										word: w,
+									}));
+								};
+
+								editLyricLines((state) => {
+									if (applyToAll) {
+										const originalWordLower = originalWord.toLowerCase();
+										for (const line of state.lyricLines) {
+											line.words = line.words.flatMap((word) => {
+												if (word.word.toLowerCase() === originalWordLower) {
+													return createNewWords(word);
+												}
+												return word;
+											});
+										}
+									} else {
+										const line = state.lyricLines[splitState.lineIndex];
+										if (line) {
+											const word = line.words[splitState.wordIndex];
+											if (word && word.word === originalWord) {
+												line.words.splice(
+													splitState.wordIndex,
+													1,
+													...createNewWords(word),
+												);
+											}
+										}
+									}
+								});
+							}}
+						>
+							{t("splitWordDialog.actionButton", "执行")}
+						</Button>
+					</Dialog.Close>
+				</Flex>
 			</Dialog.Content>
 		</Dialog.Root>
 	);

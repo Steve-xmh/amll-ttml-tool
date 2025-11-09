@@ -7,17 +7,15 @@ import {
 	TextField,
 } from "@radix-ui/themes";
 import { open } from "@tauri-apps/plugin-shell";
-import nlp from "compromise";
-import nlpSpeech from "compromise-speech";
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom, withImmer } from "jotai-immer";
 import { Toolbar } from "radix-ui";
 import { type FC, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { toast } from "react-toastify";
 import saveFile from "save-file";
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
 import {
+	advancedSegmentationDialogAtom,
 	confirmDialogAtom,
 	historyRestoreDialogAtom,
 	latencyTestDialogAtom,
@@ -49,8 +47,9 @@ import {
 } from "$/states/main.ts";
 import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { error, log } from "$/utils/logging.ts";
+import { segmentWord } from "$/utils/segmentation";
+import type { SegmentationConfig } from "$/utils/segmentation-types";
 import { parseLyric } from "$/utils/ttml-parser.ts";
-import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import exportTTMLText from "$/utils/ttml-writer.ts";
 
 const useWindowSize = () => {
@@ -89,6 +88,9 @@ export const TopMenu: FC = () => {
 	const isDirty = useAtomValue(isDirtyAtom);
 	const setConfirmDialog = useSetAtom(confirmDialogAtom);
 	const setHistoryRestoreDialog = useSetAtom(historyRestoreDialogAtom);
+	const setAdvancedSegmentationDialog = useSetAtom(
+		advancedSegmentationDialogAtom,
+	);
 
 	const onNewFile = useCallback(() => {
 		const action = () => newLyricLine();
@@ -348,149 +350,23 @@ export const TopMenu: FC = () => {
 		[onDeleteSelection],
 	);
 
-	const onSimpleSegmentation = useCallback(() => {
-		editLyricLines((state) => {
-			const latinReg = /^[0-9A-z\u00C0-\u00ff'.,-/#!$%^&*;:{}=\-_`~()]+$/;
+	const onAutoSegment = useCallback(() => {
+		const config: SegmentationConfig = {
+			splitCJK: true,
+			splitEnglish: true,
+			punctuationMode: "merge",
+			punctuationWeight: 0.2,
+			removeEmptySegments: true,
+			ignoreList: new Set(),
+			customRules: new Map(),
+		};
 
-			for (const line of state.lyricLines) {
-				const chars = line.words.flatMap((w) => w.word.split(""));
-				const wordsResult: LyricWord[] = [];
-				let tmpWord = newLyricWord();
-				for (const c of chars) {
-					if (/^\s+$/.test(c)) {
-						if (tmpWord.word.trim().length > 0) {
-							wordsResult.push(tmpWord);
-						}
-						tmpWord = {
-							...newLyricWord(),
-							word: " ",
-						};
-					} else if (latinReg.test(c)) {
-						if (latinReg.test(tmpWord.word)) {
-							tmpWord.word += c;
-						} else {
-							if (tmpWord.word.length > 0) {
-								wordsResult.push(tmpWord);
-							}
-							tmpWord = {
-								...newLyricWord(),
-								word: c,
-							};
-						}
-					} else {
-						if (tmpWord.word.length > 0) {
-							wordsResult.push(tmpWord);
-						}
-						tmpWord = {
-							...newLyricWord(),
-							word: c,
-						};
-					}
-				}
-				if (tmpWord.word.length > 0) {
-					wordsResult.push(tmpWord);
-				}
-				line.words = wordsResult;
+		editLyricLines((draft) => {
+			for (const line of draft.lyricLines) {
+				line.words = line.words.flatMap((word) => segmentWord(word, config));
 			}
 		});
 	}, [editLyricLines]);
-
-	const onCompromiseSegmentation = useCallback(() => {
-		const latin = `0-9A-Za-z\\u00C0-\\u00ff'.,\\-/#!$%^&*;:{}=\\-_\`~()`;
-		const tokenReg = new RegExp(`[${latin}]+|\\s+|[^${latin}]`, "gu");
-		const fullLatinReg = new RegExp(`^[${latin}]+$`);
-		const nlpWithPlg = nlp.extend(nlpSpeech);
-		editLyricLines((state) => {
-			for (const line of state.lyricLines) {
-				const wholeLine = line.words.map((w) => w.word).join("");
-				const tokens = (wholeLine.match(tokenReg) || []).flatMap((token) => {
-					if (!fullLatinReg.test(token)) return token;
-					const doc = nlpWithPlg(token);
-					const syllables = (doc.syllables() as string[][]).flat();
-					if (syllables.length <= 1) return token;
-					let index = 0;
-					const intervals = syllables.map((syl) => {
-						const left = token.substring(index);
-						const match = left.toLowerCase().indexOf(syl.toLowerCase());
-						const end = index + (match < 0 ? 0 : match) + syl.length;
-						const nextBegin = index;
-						index = end;
-						return { begin: nextBegin, end };
-					});
-					intervals.forEach((itv, index) => {
-						if (index === intervals.length - 1) itv.end = token.length;
-						else {
-							const nextItv = intervals[index + 1];
-							itv.end = nextItv.begin;
-							if (/['’]/.test(token.charAt(itv.end - 1))) {
-								// move the apostrophe to next syllable
-								itv.end -= 1;
-								nextItv.begin -= 1;
-							}
-						}
-						if (index === 0) itv.begin = 0;
-					});
-					return intervals.map((itv) => token.substring(itv.begin, itv.end));
-				});
-				line.words = tokens.map((t) => ({
-					...newLyricWord(),
-					word: t,
-				}));
-			}
-		});
-	}, [editLyricLines]);
-
-	const onJiebaSegmentation = useCallback(async () => {
-		const id = toast(
-			t("topBar.menu.tools.loadingJieba", "正在加载 Jieba 分词算法模块"),
-			{
-				autoClose: false,
-				isLoading: true,
-			},
-		);
-		try {
-			const { default: wasmMoudle } = await import(
-				"$/assets/jieba_rs_wasm_bg.wasm?url"
-			);
-			const { default: init, cut } = await import("jieba-wasm");
-			await init({
-				module_or_path: wasmMoudle,
-			});
-			toast.update(id, {
-				render: t("topBar.menu.tools.processing", "正在分词中，请稍等..."),
-			});
-			editLyricLines((state) => {
-				for (const line of state.lyricLines) {
-					const mergedWords = line.words.map((w) => w.word).join("");
-					const splited = cut(mergedWords, true);
-					line.words = [];
-					for (const word of splited) {
-						line.words.push({
-							...newLyricWord(),
-							word: word,
-						});
-					}
-				}
-			});
-			toast.update(id, {
-				render: t("topBar.menu.tools.completed", "分词完成！"),
-				type: "success",
-				isLoading: false,
-				autoClose: 5000,
-			});
-		} catch (err) {
-			toast.update(id, {
-				render: t(
-					"topBar.menu.tools.error",
-					"分词失败，请检查控制台错误输出！",
-				),
-				type: "error",
-				isLoading: false,
-				autoClose: 5000,
-			});
-			error(err);
-		}
-	}, [t, editLyricLines]);
 
 	return (
 		<Flex
@@ -637,40 +513,21 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.SubTrigger>
 								<Trans i18nKey="topBar.menu.tool">工具</Trans>
 							</DropdownMenu.SubTrigger>
-							<DropdownMenu.SubContent>
-								<DropdownMenu.Sub>
-									<DropdownMenu.SubTrigger>
-										<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">
-											使用简单方式对歌词行分词
-										</Trans>
-									</DropdownMenu.SubTrigger>
-									<DropdownMenu.SubContent>
-										<DropdownMenu.Item onSelect={onJiebaSegmentation}>
-											<Trans i18nKey="topBar.menu.splitWordByJieba">
-												使用 JieBa 对歌词行分词
-											</Trans>
-										</DropdownMenu.Item>
-										<DropdownMenu.Item onSelect={onCompromiseSegmentation}>
-											<Trans i18nKey="topBar.menu.splitWordByCompromise">
-												使用 Compromise 对歌词行分词
-											</Trans>
-										</DropdownMenu.Item>
-										<DropdownMenu.Item onSelect={onSimpleSegmentation}>
-											<Trans i18nKey="topBar.menu.splitWordBySimpleMethod">
-												使用简单方式对歌词行分词
-											</Trans>
-										</DropdownMenu.Item>
-									</DropdownMenu.SubContent>
-								</DropdownMenu.Sub>
-								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
-									<Trans
-										i18nKey="settingsDialog.common.latencyTest"
-										defaults="音频/输入延迟测试"
+							<DropdownMenu.Sub>
+								<DropdownMenu.SubTrigger>
+									{t("topBar.menu.segmentationTools", "分词")}
+								</DropdownMenu.SubTrigger>
+								<DropdownMenu.SubContent>
+									<DropdownMenu.Item onSelect={onAutoSegment}>
+										{t("topBar.menu.autoSegment", "自动分词")}
+									</DropdownMenu.Item>
+									<DropdownMenu.Item
+										onSelect={() => setAdvancedSegmentationDialog(true)}
 									>
-										音频/输入延迟测试
-									</Trans>
-								</DropdownMenu.Item>
-							</DropdownMenu.SubContent>
+										{t("topBar.menu.advancedSegment", "高级分词...")}
+									</DropdownMenu.Item>
+								</DropdownMenu.SubContent>
+							</DropdownMenu.Sub>
 						</DropdownMenu.Sub>
 
 						<DropdownMenu.Sub>
@@ -843,29 +700,16 @@ export const TopMenu: FC = () => {
 						<DropdownMenu.Content>
 							<DropdownMenu.Sub>
 								<DropdownMenu.SubTrigger>
-									{t(
-										"topBar.menu.splitWordBySimpleMethod",
-										"使用简单方式对歌词行分词",
-									)}
+									{t("topBar.menu.segmentationTools", "分词")}
 								</DropdownMenu.SubTrigger>
 								<DropdownMenu.SubContent>
-									<DropdownMenu.Item onSelect={onJiebaSegmentation}>
-										{t(
-											"topBar.menu.splitWordByJieba",
-											"使用 JieBa 对歌词行分词",
-										)}
+									<DropdownMenu.Item onSelect={onAutoSegment}>
+										{t("topBar.menu.autoSegment", "自动分词")}
 									</DropdownMenu.Item>
-									<DropdownMenu.Item onSelect={onCompromiseSegmentation}>
-										{t(
-											"topBar.menu.splitWordByCompromise",
-											"使用 Compromise 对歌词行分词",
-										)}
-									</DropdownMenu.Item>
-									<DropdownMenu.Item onSelect={onSimpleSegmentation}>
-										{t(
-											"topBar.menu.splitWordBySimpleMethod",
-											"使用简单方式对歌词行分词",
-										)}
+									<DropdownMenu.Item
+										onSelect={() => setAdvancedSegmentationDialog(true)}
+									>
+										{t("topBar.menu.advancedSegment", "高级分词...")}
 									</DropdownMenu.Item>
 								</DropdownMenu.SubContent>
 							</DropdownMenu.Sub>

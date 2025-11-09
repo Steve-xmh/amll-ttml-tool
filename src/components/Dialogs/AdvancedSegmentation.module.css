@@ -1,17 +1,16 @@
-.word {
+.ruleList {
+	max-height: 150px;
+	overflow-y: auto;
+	border: 1px solid var(--gray-5);
+	border-radius: var(--radius-2);
+	padding: var(--space-2);
+}
+
+.previewWord {
 	display: inline-block;
 	padding: 0.25em 0.5em;
 	border-radius: var(--radius-4);
 
 	background-color: var(--color-panel);
 	box-shadow: var(--base-card-surface-box-shadow);
-}
-
-.word,
-.word * {
-	white-space: nowrap;
-	word-wrap: none;
-	word-break: keep-all;
-	text-wrap: nowrap;
-	max-lines: 1;
 }

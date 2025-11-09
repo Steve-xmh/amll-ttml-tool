@@ -181,7 +181,8 @@
 		"previewTitle": "拆分预览",
 		"spaceCount": "空格x{count}",
 		"empty": "空白",
-		"actionButton": "确认"
+		"actionButton": "确认",
+		"applyToAll": "将此拆分规则应用于所有相同的单词"
 	},
 	"submitToAMLLDB": {
 		"validation": {
@@ -330,6 +331,9 @@
 			"splitWordBySimpleMethod": "使用简单方式对歌词行分词",
 			"splitWordByJieba": "使用 JieBa 对歌词行分词",
 			"splitWordByCompromise": "使用 Compromise 对歌词行分词",
+			"autoSegment": "一键分词",
+			"advancedSegment": "高级分词...",
+			"segmentationTools": "分词",
 			"help": "帮助",
 			"helpDoc": "使用说明"
 		}
@@ -353,6 +357,50 @@
 		},
 		"confirm": "确定",
 		"cancel": "取消"
+	},
+	"advancedSegmentDialog": {
+		"title": "高级分词",
+		"scope": {
+			"title": "应用范围",
+			"all": "所有歌词行",
+			"range": {
+				"from": "从第",
+				"to": "行到第",
+				"end": "行"
+			}
+		},
+		"rules": {
+			"title": "自动分词规则",
+			"cjk": "CJK 按字符分词",
+			"english": "英文单词按音节分词"
+		},
+		"tip": "分词后，原音节的时长会按照字符数和权重重新分配给新的音节",
+		"postProcess": {
+			"title": "后处理",
+			"punct": {
+				"caption": "标点符号处理:",
+				"merge": "合并到前一个音节",
+				"standalone": "设为新音节",
+				"weight": "标点时长权重:"
+			},
+			"empty": "移除空白音节"
+		},
+		"custom": {
+			"title": "自定义分词规则",
+			"input": "输入单词进行手动分割...",
+			"add": "添加到自定义规则",
+			"list": "自定义规则列表:"
+		},
+		"ignore": {
+			"title": "忽略列表",
+			"placeholder": "每行一个单词，在此列表中的单词将不会被自动分词"
+		},
+		"test": {
+			"title": "分词测试",
+			"input": "输入一行歌词或单词进行测试...",
+			"output": "预览结果:",
+			"outputError": "分词预览出错"
+		}
 	},
 	"contextMenu": {
 		"splitReplaceWord": "拆分或替换单词…",
