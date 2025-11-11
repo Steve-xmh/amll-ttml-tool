@@ -20,6 +20,11 @@
 			"unsafeParameterDecoratorsEnabled": true
 		}
 	},
+	"css": {
+		"parser": {
+			"cssModules": true
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {

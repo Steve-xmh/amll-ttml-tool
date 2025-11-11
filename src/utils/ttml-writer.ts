@@ -53,6 +53,14 @@ export default function exportTTMLText(
 		return span;
 	}
 
+	function createRomanizationSpan(word: LyricWord): Element {
+		const span = doc.createElement("span");
+		span.setAttribute("begin", msToTimestamp(word.startTime));
+		span.setAttribute("end", msToTimestamp(word.endTime));
+		span.appendChild(doc.createTextNode(word.romanWord));
+		return span;
+	}
+
 	const ttRoot = doc.createElement("tt");
 
 	ttRoot.setAttribute("xmlns", "http://www.w3.org/ns/ttml");
@@ -100,6 +108,11 @@ export default function exportTTMLText(
 
 	let i = 0;
 
+	const romanizationMap = new Map<
+		string,
+		{ main: LyricWord[]; bg: LyricWord[] }
+	>();
+
 	const guessDuration = lyric[lyric.length - 1]?.endTime ?? 0;
 	body.setAttribute("dur", msToTimestamp(guessDuration));
 	const isDynamicLyric = lyric.some(
@@ -124,7 +137,12 @@ export default function exportTTMLText(
 			lineP.setAttribute("end", msToTimestamp(endTime));
 
 			lineP.setAttribute("ttm:agent", line.isDuet ? "v2" : "v1");
-			lineP.setAttribute("itunes:key", `L${++i}`);
+
+			const itunesKey = `L${++i}`;
+			lineP.setAttribute("itunes:key", itunesKey);
+
+			const mainWords = line.words;
+			let bgWords: LyricWord[] = [];
 
 			if (isDynamicLyric) {
 				let beginTime = Number.POSITIVE_INFINITY;
@@ -152,12 +170,22 @@ export default function exportTTMLText(
 			if (nextLine?.isBG) {
 				lineIndex++;
 				const bgLine = nextLine;
+				bgWords = bgLine.words;
+
 				const bgLineSpan = doc.createElement("span");
 				bgLineSpan.setAttribute("ttm:role", "x-bg");
 
 				if (isDynamicLyric) {
 					let beginTime = Number.POSITIVE_INFINITY;
 					let endTime = 0;
+
+					const firstWordIndex = bgLine.words.findIndex(
+						(w) => w.word.trim().length > 0,
+					);
+					const lastWordIndex = bgLine.words
+						.map((w) => w.word.trim().length > 0)
+						.lastIndexOf(true);
+
 					for (
 						let wordIndex = 0;
 						wordIndex < bgLine.words.length;
@@ -168,12 +196,14 @@ export default function exportTTMLText(
 							bgLineSpan.appendChild(doc.createTextNode(word.word));
 						} else {
 							const span = createWordElement(word);
-							if (wordIndex === 0) {
-								span.prepend(doc.createTextNode("("));
+
+							if (wordIndex === firstWordIndex && span.firstChild) {
+								span.firstChild.nodeValue = `(${span.firstChild.nodeValue}`;
 							}
-							if (wordIndex === bgLine.words.length - 1) {
-								span.appendChild(doc.createTextNode(")"));
+							if (wordIndex === lastWordIndex && span.firstChild) {
+								span.firstChild.nodeValue = `${span.firstChild.nodeValue})`;
 							}
+
 							bgLineSpan.appendChild(span);
 							beginTime = Math.min(beginTime, word.startTime);
 							endTime = Math.max(endTime, word.endTime);
@@ -199,7 +229,7 @@ export default function exportTTMLText(
 				if (bgLine.romanLyric) {
 					const span = doc.createElement("span");
 					span.setAttribute("ttm:role", "x-roman");
-					span.appendChild(doc.createTextNode(bgLine.romanLyric));
+					span.appendChild(doc.createTextNode(`(${bgLine.romanLyric})`));
 					bgLineSpan.appendChild(span);
 				}
 
@@ -221,10 +251,84 @@ export default function exportTTMLText(
 				lineP.appendChild(span);
 			}
 
+			const hasRoman =
+				mainWords.some((w) => w.romanWord && w.romanWord.trim().length > 0) ||
+				bgWords.some((w) => w.romanWord && w.romanWord.trim().length > 0);
+
+			if (hasRoman) {
+				romanizationMap.set(itunesKey, { main: mainWords, bg: bgWords });
+			}
+
 			paramDiv.appendChild(lineP);
 		}
 
 		body.appendChild(paramDiv);
+	}
+
+	if (romanizationMap.size > 0) {
+		const itunesMeta = doc.createElement("iTunesMetadata");
+		itunesMeta.setAttribute(
+			"xmlns",
+			"http://music.apple.com/lyric-ttml-internal",
+		);
+
+		const transliterations = doc.createElement("transliterations");
+		const transliteration = doc.createElement("transliteration");
+
+		for (const [key, { main, bg }] of romanizationMap.entries()) {
+			const textEl = doc.createElement("text");
+			textEl.setAttribute("for", key);
+
+			for (const word of main) {
+				if (word.romanWord && word.romanWord.trim().length > 0) {
+					textEl.appendChild(createRomanizationSpan(word));
+				} else if (word.word.trim().length === 0 && textEl.hasChildNodes()) {
+					textEl.appendChild(doc.createTextNode(word.word));
+				}
+			}
+
+			const hasBgRoman = bg.some(
+				(w) => w.romanWord && w.romanWord.trim().length > 0,
+			);
+			if (hasBgRoman) {
+				const bgSpan = doc.createElement("span");
+				bgSpan.setAttribute("ttm:role", "x-bg");
+
+				const romanBgWords = bg.filter(
+					(w) => w.romanWord && w.romanWord.trim().length > 0,
+				);
+
+				for (let wordIndex = 0; wordIndex < romanBgWords.length; wordIndex++) {
+					const word = romanBgWords[wordIndex];
+					const span = createRomanizationSpan(word);
+
+					if (wordIndex === 0 && span.firstChild) {
+						span.firstChild.nodeValue = `(${span.firstChild.nodeValue}`;
+					}
+					if (wordIndex === romanBgWords.length - 1 && span.firstChild) {
+						span.firstChild.nodeValue = `${span.firstChild.nodeValue})`;
+					}
+
+					bgSpan.appendChild(span);
+
+					const originalIndex = bg.indexOf(word);
+					if (originalIndex > -1 && originalIndex < bg.length - 1) {
+						const nextWord = bg[originalIndex + 1];
+						if (nextWord && nextWord.word.trim().length === 0) {
+							bgSpan.appendChild(doc.createTextNode(nextWord.word));
+						}
+					}
+				}
+				textEl.appendChild(bgSpan);
+			}
+
+			transliteration.appendChild(textEl);
+		}
+
+		transliterations.appendChild(transliteration);
+		itunesMeta.appendChild(transliterations);
+
+		metadataEl.appendChild(itunesMeta);
 	}
 
 	ttRoot.appendChild(body);

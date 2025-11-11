@@ -128,7 +128,8 @@
 		"title": "Preferences",
 		"tab": {
 			"common": "General",
-			"keybindings": "Keybindings"
+			"keybindings": "Keybindings",
+			"experimental": "Experimental"
 		},
 		"keybindings": {
 			"newFile": "New File",
@@ -315,6 +316,11 @@
 				"enable": "Enable Autosave",
 				"interval": "Save Interval (minutes)",
 				"limit": "Snapshots to keep"
+			}
+		},
+		"settings": {
+			"experimental": {
+				"perWordRomanization": "Enable Per-Word Romanization"
 			}
 		}
 	},

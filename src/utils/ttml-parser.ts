@@ -26,6 +26,22 @@ import type {
 	TTMLMetadata,
 } from "./ttml-types";
 
+interface RomanWord {
+	startTime: number;
+	endTime: number;
+	text: string;
+}
+
+interface LineMetadata {
+	main: string;
+	bg: string;
+}
+
+interface WordRomanMetadata {
+	main: RomanWord[];
+	bg: RomanWord[];
+}
+
 export function parseLyric(ttmlText: string): TTMLLyric {
 	const domParser = new DOMParser();
 	const ttmlDoc: XMLDocument = domParser.parseFromString(
@@ -35,22 +51,43 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 	log("ttml document parsed", ttmlDoc);
 
-	// 处理 Apple Music 样式的翻译
-	const itunesTranslations = new Map<string, string>();
+	const itunesTranslations = new Map<string, LineMetadata>();
 	const translationTextElements = ttmlDoc.querySelectorAll(
 		"iTunesMetadata > translations > translation > text[for]",
 	);
 
 	translationTextElements.forEach((textEl) => {
 		const key = textEl.getAttribute("for");
-		const translation = textEl.textContent ?? "";
-		if (key && translation) {
-			itunesTranslations.set(key, translation);
+		if (!key) return;
+
+		let main = "";
+		let bg = "";
+
+		for (const node of Array.from(textEl.childNodes)) {
+			if (node.nodeType === Node.TEXT_NODE) {
+				main += node.textContent ?? "";
+			} else if (node.nodeType === Node.ELEMENT_NODE) {
+				if ((node as Element).getAttribute("ttm:role") === "x-bg") {
+					bg += node.textContent ?? "";
+				}
+			}
+		}
+
+		main = main.trim();
+		bg = bg
+			.trim()
+			.replace(/^[（(]/, "")
+			.replace(/[)）]$/, "")
+			.trim();
+
+		if (main.length > 0 || bg.length > 0) {
+			itunesTranslations.set(key, { main, bg });
 		}
 	});
 
-	// 处理 Apple Music 样式的逐字翻译和音译，并转换为逐行字符串
-	const itunesTimedRomanizations = new Map<string, string>();
+	const itunesLineRomanizations = new Map<string, LineMetadata>();
+	const itunesWordRomanizations = new Map<string, WordRomanMetadata>();
+
 	const romanizationTextElements = ttmlDoc.querySelectorAll(
 		"iTunesMetadata > transliterations > transliteration > text[for]",
 	);
@@ -59,18 +96,69 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		const key = textEl.getAttribute("for");
 		if (!key) return;
 
-		let fullText = "";
+		const mainWords: RomanWord[] = [];
+		const bgWords: RomanWord[] = [];
+		let lineRomanMain = "";
+		let lineRomanBg = "";
+		let isWordByWord = false;
+
 		for (const node of Array.from(textEl.childNodes)) {
-			fullText += node.textContent ?? "";
+			if (node.nodeType === Node.TEXT_NODE) {
+				lineRomanMain += node.textContent ?? "";
+			} else if (node.nodeType === Node.ELEMENT_NODE) {
+				const el = node as Element;
+				if (el.getAttribute("ttm:role") === "x-bg") {
+					const nestedSpans = el.querySelectorAll("span[begin][end]");
+					if (nestedSpans.length > 0) {
+						isWordByWord = true;
+						nestedSpans.forEach((span) => {
+							let bgWordText = span.textContent ?? "";
+							bgWordText = bgWordText
+								.trim()
+								.replace(/^[（(]/, "")
+								.replace(/[)）]$/, "")
+								.trim();
+
+							bgWords.push({
+								startTime: parseTimespan(span.getAttribute("begin") ?? ""),
+								endTime: parseTimespan(span.getAttribute("end") ?? ""),
+								text: bgWordText,
+							});
+						});
+					} else {
+						lineRomanBg += el.textContent ?? "";
+					}
+				} else if (el.hasAttribute("begin") && el.hasAttribute("end")) {
+					isWordByWord = true;
+					mainWords.push({
+						startTime: parseTimespan(el.getAttribute("begin") ?? ""),
+						endTime: parseTimespan(el.getAttribute("end") ?? ""),
+						text: el.textContent ?? "",
+					});
+				}
+			}
 		}
 
-		const joinedText = fullText.trim();
-		if (joinedText.length > 0) {
-			itunesTimedRomanizations.set(key, joinedText);
+		if (isWordByWord) {
+			itunesWordRomanizations.set(key, { main: mainWords, bg: bgWords });
+		}
+
+		lineRomanMain = lineRomanMain.trim();
+		lineRomanBg = lineRomanBg
+			.trim()
+			.replace(/^[（(]/, "")
+			.replace(/[)）]$/, "")
+			.trim();
+
+		if (lineRomanMain.length > 0 || lineRomanBg.length > 0) {
+			itunesLineRomanizations.set(key, {
+				main: lineRomanMain,
+				bg: lineRomanBg,
+			});
 		}
 	});
 
-	const itunesTimedTranslations = new Map<string, string>();
+	const itunesTimedTranslations = new Map<string, LineMetadata>();
 	const timedTranslationTextElements = ttmlDoc.querySelectorAll(
 		"iTunesMetadata > translations > translation > text[for]",
 	);
@@ -79,17 +167,29 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		const key = textEl.getAttribute("for");
 		if (!key) return;
 
-		if (textEl.querySelector("span")) {
-			let fullText = "";
-			for (const node of Array.from(textEl.childNodes)) {
-				fullText += node.textContent ?? "";
-			}
+		let main = "";
+		let bg = "";
 
-			const joinedText = fullText.trim();
-			if (joinedText.length > 0) {
-				itunesTimedTranslations.set(key, joinedText);
-				itunesTranslations.delete(key);
+		for (const node of Array.from(textEl.childNodes)) {
+			if (node.nodeType === Node.TEXT_NODE) {
+				main += node.textContent ?? "";
+			} else if (node.nodeType === Node.ELEMENT_NODE) {
+				if ((node as Element).getAttribute("ttm:role") === "x-bg") {
+					bg += node.textContent ?? "";
+				}
 			}
+		}
+
+		main = main.trim();
+		bg = bg
+			.trim()
+			.replace(/^[（(]/, "")
+			.replace(/[)）]$/, "")
+			.trim();
+
+		if ((main.length > 0 || bg.length > 0) && textEl.querySelector("span")) {
+			itunesTimedTranslations.set(key, { main, bg });
+			itunesTranslations.delete(key);
 		}
 	});
 
@@ -128,7 +228,12 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 	const lyricLines: LyricLine[] = [];
 
-	function parseLineElement(lineEl: Element, isBG = false, isDuet = false) {
+	function parseLineElement(
+		lineEl: Element,
+		isBG = false,
+		isDuet = false,
+		parentItunesKey: string | null = null,
+	) {
 		const line: LyricLine = {
 			id: uid(),
 			words: [],
@@ -148,20 +253,30 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		const startTime = lineEl.getAttribute("begin");
 		const endTime = lineEl.getAttribute("end");
 
-		// 获取 itunes:key 并应用 <head> 中的翻译和音译
-		const itunesKey = lineEl.getAttribute("itunes:key");
+		const itunesKey = isBG
+			? parentItunesKey
+			: lineEl.getAttribute("itunes:key");
+
+		const romanWordData = itunesKey
+			? itunesWordRomanizations.get(itunesKey)
+			: undefined;
+		const romanWords = isBG ? romanWordData?.bg : romanWordData?.main;
+
 		if (itunesKey) {
-			// 优先使用逐字翻译
-			if (itunesTimedTranslations.has(itunesKey)) {
-				line.translatedLyric = itunesTimedTranslations.get(itunesKey) ?? "";
-				// 否则回退到逐行翻译
-			} else if (itunesTranslations.has(itunesKey)) {
-				line.translatedLyric = itunesTranslations.get(itunesKey) ?? "";
+			const timedTrans = itunesTimedTranslations.get(itunesKey);
+			const lineTrans = itunesTranslations.get(itunesKey);
+
+			if (isBG) {
+				line.translatedLyric = timedTrans?.bg ?? lineTrans?.bg ?? "";
+			} else {
+				line.translatedLyric = timedTrans?.main ?? lineTrans?.main ?? "";
 			}
 
-			// 应用逐字音译
-			if (itunesTimedRomanizations.has(itunesKey)) {
-				line.romanLyric = itunesTimedRomanizations.get(itunesKey) ?? "";
+			const lineRoman = itunesLineRomanizations.get(itunesKey);
+			if (isBG) {
+				line.romanLyric = lineRoman?.bg ?? "";
+			} else {
+				line.romanLyric = lineRoman?.main ?? "";
 			}
 		}
 
@@ -183,7 +298,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 				if (wordEl.nodeName === "span" && role) {
 					if (role === "x-bg") {
-						parseLineElement(wordEl, true, line.isDuet);
+						parseLineElement(wordEl, true, line.isDuet, itunesKey);
 						haveBg = true;
 					} else if (role === "x-translation") {
 						// 没有 Apple Music 样式翻译时才使用内嵌翻译
@@ -191,14 +306,21 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 							line.translatedLyric = wordEl.innerHTML;
 						}
 					} else if (role === "x-roman") {
-						line.romanLyric = wordEl.innerHTML;
+						if (!line.romanLyric) {
+							line.romanLyric = wordEl.innerHTML;
+						}
 					}
 				} else if (wordEl.hasAttribute("begin") && wordEl.hasAttribute("end")) {
+					const wordStartTime = parseTimespan(
+						wordEl.getAttribute("begin") ?? "",
+					);
+					const wordEndTime = parseTimespan(wordEl.getAttribute("end") ?? "");
+
 					const word: LyricWord = {
 						id: uid(),
 						word: wordNode.textContent ?? "",
-						startTime: parseTimespan(wordEl.getAttribute("begin") ?? ""),
-						endTime: parseTimespan(wordEl.getAttribute("end") ?? ""),
+						startTime: wordStartTime,
+						endTime: wordEndTime,
 						obscene: false,
 						emptyBeat: 0,
 						romanWord: "",
@@ -207,6 +329,15 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					if (emptyBeat) word.emptyBeat = Number(emptyBeat);
 					const obscene = wordEl.getAttribute("amll:obscene");
 					if (obscene === "true") word.obscene = true;
+
+					if (romanWords) {
+						const matchingRoman = romanWords.find(
+							(r) => r.startTime === wordStartTime && r.endTime === wordEndTime,
+						);
+						if (matchingRoman) {
+							word.romanWord = matchingRoman.text;
+						}
+					}
 
 					line.words.push(word);
 				}
@@ -230,7 +361,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 
 		if (line.isBG) {
 			const firstWord = line.words[0];
-			if (firstWord?.word?.startsWith("(")) {
+			if (firstWord && /^[（(]/.test(firstWord.word)) {
 				firstWord.word = firstWord.word.substring(1);
 				if (firstWord.word.length === 0) {
 					line.words.shift();
@@ -238,7 +369,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			}
 
 			const lastWord = line.words[line.words.length - 1];
-			if (lastWord?.word?.endsWith(")")) {
+			if (lastWord && /[)）]$/.test(lastWord.word)) {
 				lastWord.word = lastWord.word.substring(0, lastWord.word.length - 1);
 				if (lastWord.word.length === 0) {
 					line.words.pop();
@@ -256,7 +387,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 	}
 
 	for (const lineEl of ttmlDoc.querySelectorAll("body p[begin][end]")) {
-		parseLineElement(lineEl);
+		parseLineElement(lineEl, false, false, null);
 	}
 
 	log("finished ttml load", lyricLines, metadata);

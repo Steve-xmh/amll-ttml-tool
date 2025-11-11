@@ -11,7 +11,7 @@
 
 .lyricWord {
 	&.edit {
-		display: inline-block;
+		display: block;
 		padding: 0.25em 0.5em;
 		border-radius: var(--radius-4);
 
@@ -35,20 +35,30 @@
 	&.dropRight {
 		border-right: solid 3px var(--accent-a11);
 	}
-	
+
 	&.advance {
 		display: flex;
 		flex-direction: column;
 		padding: 0.25em;
 		gap: 0.25em;
-		max-width: 9em;
+		width: 100%;
+		box-sizing: border-box;
 	}
+}
+
+.wordGroup {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	flex-grow: 0;
+	flex-shrink: 0;
+	text-align: left;
 }
 
 .advanceBar {
 	display: flex;
 	gap: 0.25em;
-	
+
 	& :global(.rt-TextFieldRoot) {
 		min-width: 10em;
 	}
@@ -204,7 +214,7 @@
 
 .lyricWord.sync.active {
 	background-color: var(--blue-a5);
-	
+
 	&.selected {
 		background-color: var(--blue-a7);
 	}

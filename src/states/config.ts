@@ -21,6 +21,11 @@ export const syncJudgeModeAtom = atomWithStorage(
 
 export const layoutModeAtom = atomWithStorage("layoutMode", LayoutMode.Simple);
 
+export const enablePerWordRomanizationAtom = atomWithStorage(
+	"enablePerWordRomanization",
+	false,
+);
+
 export const hideSubmitAMLLDBWarningAtom = atomWithStorage(
 	"hideSubmitAMLLDBWarning",
 	false,

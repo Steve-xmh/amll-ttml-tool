@@ -40,6 +40,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
+import { enablePerWordRomanizationAtom } from "$/states/config.ts";
 import {
 	lyricLinesAtom,
 	selectedLinesAtom,
@@ -57,6 +58,7 @@ import {
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordView } from "./lyric-word-view";
+import { RomanWordView } from "./roman-word-view.tsx";
 
 const isDraggingAtom = atom(false);
 
@@ -199,6 +201,12 @@ export const LyricLineView: FC<{
 	const toolMode = useAtomValue(toolModeAtom);
 	const store = useStore();
 	const wordsContainerRef = useRef<HTMLDivElement>(null);
+
+	const enablePerWordRomanization = useAtomValue(enablePerWordRomanizationAtom);
+	const editingRomanWordIndexAtom = useMemo(
+		() => atom<number | null>(null),
+		[],
+	);
 
 	const startTimeRef = useRef<HTMLDivElement>(null);
 	const endTimeRef = useRef<HTMLDivElement>(null);
@@ -464,12 +472,27 @@ export const LyricLineView: FC<{
 														<AddFilled />
 													</IconButton>
 												)}
-												<LyricWordView
-													wordAtom={wordAtom}
-													wordIndex={wi}
-													line={line}
-													lineIndex={lineIndex}
-												/>
+												<Flex
+													direction="column"
+													align="stretch"
+													gap="3"
+													className={styles.wordGroup}
+												>
+													<LyricWordView
+														wordAtom={wordAtom}
+														wordIndex={wi}
+														line={line}
+														lineIndex={lineIndex}
+													/>
+													{toolMode === ToolMode.Edit &&
+														enablePerWordRomanization && (
+															<RomanWordView
+																wordAtom={wordAtom}
+																wordIndex={wi}
+																editingIndexAtom={editingRomanWordIndexAtom}
+															/>
+														)}
+												</Flex>
 											</Fragment>
 										);
 									})}

@@ -92,6 +92,9 @@
 				"interval": "保存间隔 (分钟)",
 				"limit": "保留快照数量"
 			}
+		},
+		"experimental": {
+			"perWordRomanization": "启用逐字音译"
 		}
 	},
 	"audioPanel": {
@@ -107,7 +110,8 @@
 		"title": "首选项",
 		"tab": {
 			"common": "常规",
-			"keybindings": "按键绑定"
+			"keybindings": "按键绑定",
+			"experimental": "实验性"
 		},
 		"keybindings": {
 			"newFile": "新建文件",

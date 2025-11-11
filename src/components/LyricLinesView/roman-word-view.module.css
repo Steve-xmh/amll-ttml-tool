@@ -1,0 +1,23 @@
+.romanWordView {
+	display: inline-block;
+	padding: 0.25em 0.5em;
+	border-radius: var(--radius-4);
+	text-align: left;
+
+	background-color: var(--color-panel);
+	box-shadow: var(--base-card-surface-box-shadow);
+}
+
+.romanWordView.placeholder {
+	color: var(--gray-a6);
+	font-style: italic;
+}
+
+.romanWordView:has(input) {
+	background-color: var(--color-component-background);
+}
+
+.romanWordView :global(input) {
+	text-align: left;
+	font-size: var(--font-size-1);
+}
