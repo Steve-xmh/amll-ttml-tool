@@ -47,8 +47,16 @@ interface TileComponentProps {
 const TileComponent = memo(
 	({ tileId, left, width, canvasWidth, bitmap }: TileComponentProps) => {
 		const canvasRef = useRef<HTMLCanvasElement>(null);
+		const currentBitmapRef = useRef<ImageBitmap | undefined>(undefined);
 
 		useEffect(() => {
+			if (bitmap !== currentBitmapRef.current) {
+				if (currentBitmapRef.current) {
+					currentBitmapRef.current.close();
+				}
+				currentBitmapRef.current = bitmap;
+			}
+
 			if (bitmap && canvasRef.current) {
 				const canvas = canvasRef.current;
 				if (canvas.width !== bitmap.width) canvas.width = bitmap.width;
@@ -148,9 +156,6 @@ export const AudioSpectrogram: FC = () => {
 						renderedWidth >= existingEntry.width ||
 						renderedGain !== existingEntry.gain
 					) {
-						if (existingEntry?.bitmap) {
-							existingEntry.bitmap.close();
-						}
 						tileCache.current.set(cacheId, {
 							bitmap: imageBitmap,
 							width: renderedWidth,
@@ -173,6 +178,9 @@ export const AudioSpectrogram: FC = () => {
 
 	useEffect(() => {
 		if (audioBuffer && workerRef.current) {
+			for (const entry of tileCache.current.values()) {
+				entry.bitmap.close();
+			}
 			tileCache.current.clear();
 			requestedTiles.current.clear();
 			setVisibleTiles([]);
