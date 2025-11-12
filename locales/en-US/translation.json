@@ -204,7 +204,7 @@
 		"spaceCount": "Space x{count}",
 		"empty": "Empty",
 		"actionButton": "Confirm",
-		"applyToAll": "Apply this splitting to all identical words"
+		"applyToAll": "Apply this splitting/replacing to all identical words"
 	},
 	"lyricLineView": {
 		"translatedLabel": "Translation:",

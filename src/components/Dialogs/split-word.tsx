@@ -9,7 +9,7 @@ import {
 	Text,
 	TextField,
 } from "@radix-ui/themes";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,17 +21,37 @@ import { ManualWordSplitter } from "./ManualWordSplitter";
 export const SplitWordDialog = memo(() => {
 	const [splitWordDialog, splitWordDialogOpen] = useAtom(splitWordDialogAtom);
 	const [splitState, setSplitState] = useImmerAtom(splitWordStateAtom);
+	const lyricLines = useAtomValue(lyricLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const { t } = useTranslation();
 
 	const [splitIndices, setSplitIndices] = useState(new Set<number>());
-
+	const [originalWord, setOriginalWord] = useState("");
 	const [applyToAll, setApplyToAll] = useState(false);
+
+	useEffect(() => {
+		const line = lyricLines.lyricLines[splitState.lineIndex];
+		const word = line?.words[splitState.wordIndex];
+
+		if (word) {
+			setOriginalWord(word.word);
+			setSplitState((state) => {
+				state.word = word.word;
+			});
+		} else {
+			setOriginalWord("");
+			setSplitState((state) => {
+				state.word = "";
+			});
+		}
+
+		setSplitIndices(new Set());
+		setApplyToAll(false);
+	}, [splitState.lineIndex, splitState.wordIndex, lyricLines, setSplitState]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: 用来在外部单词发生变化时重置分割点
 	useEffect(() => {
 		setSplitIndices(new Set());
-		setApplyToAll(false);
 	}, [splitState.word]);
 
 	const toggleSplitPoint = useCallback((index: number) => {
@@ -87,9 +107,9 @@ export const SplitWordDialog = memo(() => {
 							/>
 							{t(
 								"splitWordDialog.applyToAll",
-								"将此拆分规则应用于所有相同的单词",
+								"将此拆分/替换规则应用于所有相同的单词",
 								{
-									word: splitState.word,
+									word: originalWord,
 								},
 							)}
 						</Flex>
@@ -99,7 +119,7 @@ export const SplitWordDialog = memo(() => {
 					<Dialog.Close>
 						<Button
 							onClick={() => {
-								const originalWord = splitState.word;
+								const editedWord = splitState.word;
 
 								const parts: string[] = [];
 								let lastIndex = 0;
@@ -108,15 +128,15 @@ export const SplitWordDialog = memo(() => {
 								);
 
 								for (const index of sortedIndices) {
-									parts.push(originalWord.slice(lastIndex, index));
+									parts.push(editedWord.slice(lastIndex, index));
 									lastIndex = index;
 								}
-								parts.push(originalWord.slice(lastIndex));
+								parts.push(editedWord.slice(lastIndex));
 
 								const splittedWords = parts.filter((p) => p !== "");
 
-								if (splittedWords.length === 0 && originalWord) {
-									splittedWords.push(originalWord);
+								if (splittedWords.length === 0 && editedWord) {
+									splittedWords.push(editedWord);
 								}
 
 								const createNewWords = (targetWord: LyricWord): LyricWord[] => {

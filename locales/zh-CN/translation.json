@@ -186,7 +186,7 @@
 		"spaceCount": "空格x{count}",
 		"empty": "空白",
 		"actionButton": "确认",
-		"applyToAll": "将此拆分规则应用于所有相同的单词"
+		"applyToAll": "将此拆分/替换规则应用于所有相同的单词"
 	},
 	"submitToAMLLDB": {
 		"validation": {
