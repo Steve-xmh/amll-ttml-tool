@@ -156,6 +156,10 @@ export const AudioSlider = () => {
 		audioEngine.addEventListener("music-pause", handlePause);
 		audioEngine.addEventListener("music-seeked", handleSeek);
 
+		if (audioEngine.audioEl && audioEngine.musicDuration > 0) {
+			handleMusicLoad();
+		}
+
 		return () => {
 			destroyWaveSurfer();
 			audioEngine.removeEventListener("music-load", handleMusicLoad);
