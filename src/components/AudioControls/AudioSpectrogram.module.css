@@ -37,3 +37,82 @@
 	z-index: 10;
 	pointer-events: none;
 }
+
+.tileCanvas {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	image-rendering: pixelated;
+}
+
+.hoverTimeTooltip {
+	position: absolute;
+	top: 1px;
+	transform: translateX(-50%);
+	z-index: 12;
+	pointer-events: none;
+	background-color: var(--accent-a10);
+	color: var(--gray-1);
+	padding: 2px 6px;
+	border-radius: var(--radius-1);
+	font-size: 11px;
+	white-space: nowrap;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+	transition: opacity 100ms ease-out;
+}
+
+.rulerHoverFade {
+	position: absolute;
+	top: 0;
+	z-index: 11;
+	pointer-events: none;
+	transition: opacity 100ms ease-out;
+}
+
+.rulerHoverFadeLeft {
+	left: 0;
+	background: linear-gradient(to left, var(--gray-4) 0%, transparent 100px);
+}
+
+.rulerHoverFadeRight {
+	right: 0;
+	background: linear-gradient(to right, var(--gray-4) 0%, transparent 100px);
+}
+
+.virtualScrollContainer {
+	flex-grow: 1;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	position: relative;
+}
+
+.virtualScrollContent {
+	height: 100%;
+	position: relative;
+	will-change: transform;
+}
+
+.auditionCursor {
+	position: absolute;
+	top: 0;
+	width: 2px;
+	height: 100%;
+	background-color: var(--blue-a9);
+	z-index: 9;
+	pointer-events: none;
+}
+
+.hoverCursorContainer {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	z-index: 10;
+	pointer-events: none;
+	transition: opacity 100ms ease-out;
+}
+
+.hoverCursorLine {
+	width: 2px;
+	height: 100%;
+	background-color: var(--accent-a9);
+}

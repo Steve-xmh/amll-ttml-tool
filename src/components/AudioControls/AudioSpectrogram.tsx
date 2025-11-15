@@ -29,7 +29,11 @@ import {
 	type ISpectrogramContext,
 	SpectrogramContext,
 } from "./SpectrogramContext.ts";
-import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
+import {
+	RULER_HEIGHT,
+	TimelineRuler,
+	type TimelineRulerHandle,
+} from "./TimelineRuler.tsx";
 
 const TILE_DURATION_S = 5;
 const SPECTROGRAM_HEIGHT = 256;
@@ -73,14 +77,11 @@ const TileComponent = memo(
 				id={tileId}
 				width={canvasWidth > 0 ? canvasWidth : 1}
 				height={SPECTROGRAM_HEIGHT}
+				className={styles.tileCanvas}
 				style={{
-					position: "absolute",
 					left: `${left}px`,
-					top: 0,
 					width: `${width}px`,
-					height: `${SPECTROGRAM_HEIGHT}px`,
 					backgroundColor: bitmap ? "transparent" : "var(--gray-3)",
-					imageRendering: "pixelated",
 				}}
 			/>
 		);
@@ -388,6 +389,39 @@ export const AudioSpectrogram: FC = () => {
 				containerWidth={containerWidth}
 				onSeek={handleRulerSeek}
 			/>
+
+			{audioBuffer && !isDragging && (
+				<>
+					<div
+						className={styles.hoverTimeTooltip}
+						style={{
+							left: `${hoverPositionPx}px`,
+							opacity: isHovering ? 1 : 0,
+						}}
+					>
+						{hoverTimeFormatted}
+					</div>
+
+					<div
+						className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeLeft}`}
+						style={{
+							width: `${hoverPositionPx}px`,
+							height: `${RULER_HEIGHT}px`,
+							opacity: isHovering ? 1 : 0,
+						}}
+					/>
+
+					<div
+						className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeRight}`}
+						style={{
+							left: `${hoverPositionPx}px`,
+							height: `${RULER_HEIGHT}px`,
+							opacity: isHovering ? 1 : 0,
+						}}
+					/>
+				</>
+			)}
+
 			{audioBuffer && (
 				// biome-ignore lint/a11y/noStaticElementInteractions: 全局快捷键已经可以处理播放控制了，不应该再在这里额外添加处理
 				<div
@@ -409,21 +443,13 @@ export const AudioSpectrogram: FC = () => {
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
 				onMouseMove={handleMouseMove}
-				style={{
-					flexGrow: 1,
-					overflowX: "hidden",
-					overflowY: "hidden",
-					position: "relative",
-				}}
 				role="group"
 			>
 				<div
+					className={styles.virtualScrollContent}
 					style={{
 						width: `${totalWidth}px`,
-						height: "100%",
-						position: "relative",
 						transform: `translateX(${-scrollLeft}px)`,
-						willChange: "transform",
 					}}
 				>
 					{visibleTiles.map((tile) => (
@@ -437,54 +463,24 @@ export const AudioSpectrogram: FC = () => {
 					/>
 					{auditionCursorPosition !== null && (
 						<div
+							className={styles.auditionCursor}
 							style={{
-								position: "absolute",
 								left: `${auditionCursorPosition}px`,
-								top: 0,
-								width: "2px",
-								height: "100%",
-								backgroundColor: "var(--blue-a9)",
-								zIndex: 9,
-								pointerEvents: "none",
 							}}
 						/>
 					)}
 					<SpectrogramContext.Provider value={contextValue}>
 						<Theme appearance="dark">
 							<LyricTimelineOverlay clientWidth={containerWidth} />
-							{isHovering && audioBuffer && !isDragging && (
+							{audioBuffer && !isDragging && (
 								<div
+									className={styles.hoverCursorContainer}
 									style={{
-										position: "absolute",
 										left: `${hoverX}px`,
-										top: 0,
-										height: "100%",
-										zIndex: 11,
-										pointerEvents: "none",
+										opacity: isHovering ? 1 : 0,
 									}}
 								>
-									<div
-										style={{
-											width: "1px",
-											height: "100%",
-											backgroundColor: "var(--gray-a9)",
-										}}
-									/>
-									<div
-										style={{
-											position: "absolute",
-											top: 0,
-											left: "5px",
-											backgroundColor: "var(--gray-a12)",
-											color: "var(--gray-1)",
-											padding: "2px 4px",
-											borderRadius: "var(--radius-1)",
-											fontSize: "10px",
-											whiteSpace: "nowrap",
-										}}
-									>
-										{hoverTimeFormatted}
-									</div>
+									<div className={styles.hoverCursorLine} />
 								</div>
 							)}
 						</Theme>

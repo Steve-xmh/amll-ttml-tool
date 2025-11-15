@@ -7,7 +7,7 @@ import {
 } from "react";
 import { msToTimestamp } from "$/utils/timestamp";
 
-const RULER_HEIGHT = 24;
+export const RULER_HEIGHT = 24;
 
 export interface TimelineRulerHandle {
 	draw: (scrollLeft: number) => void;
