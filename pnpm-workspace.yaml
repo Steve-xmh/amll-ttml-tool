@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - '@applemusic-like-lyrics/core'
+  - '@applemusic-like-lyrics/react'
+  - '@vercel/speed-insights'
