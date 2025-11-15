@@ -115,7 +115,8 @@ export const AudioSpectrogram: FC = () => {
 	const currentScrollLeftRef = useRef(scrollLeft);
 	const currentZoomRef = useRef(zoom);
 
-	const { tileCache, requestTileIfNeeded } = useSpectrogramWorker(audioBuffer);
+	const { tileCache, requestTileIfNeeded, lastTileTimestamp } =
+		useSpectrogramWorker(audioBuffer);
 
 	const contextValue = useMemo<ISpectrogramContext>(
 		() => ({
@@ -179,9 +180,10 @@ export const AudioSpectrogram: FC = () => {
 		updateVisibleTilesRef.current = updateVisibleTiles;
 	}, [updateVisibleTiles]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: lastTileTimestamp 用来重运行这个 effect
 	useEffect(() => {
 		updateVisibleTiles();
-	}, [updateVisibleTiles]);
+	}, [updateVisibleTiles, lastTileTimestamp]);
 
 	const handleRulerSeek = (timeInSeconds: number) => {
 		audioEngine.seekMusic(timeInSeconds);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LRUCache } from "$/utils/lru-cache.ts";
 
 const MAX_CACHED_TILES = 70;
@@ -26,6 +26,8 @@ export const useSpectrogramWorker = (audioBuffer: AudioBuffer | null) => {
 		}),
 	);
 	const requestedTiles = useRef<Set<string>>(new Set());
+
+	const [lastTileTimestamp, setLastTileTimestamp] = useState(0);
 
 	useEffect(() => {
 		const worker = new Worker(
@@ -70,8 +72,10 @@ export const useSpectrogramWorker = (audioBuffer: AudioBuffer | null) => {
 					}
 					requestedTiles.current.delete(tileId);
 				}
+				setLastTileTimestamp(Date.now());
 			} else if (type === "INIT_COMPLETE") {
 				requestedTiles.current.clear();
+				setLastTileTimestamp(Date.now());
 			}
 		};
 
@@ -82,6 +86,7 @@ export const useSpectrogramWorker = (audioBuffer: AudioBuffer | null) => {
 		if (audioBuffer && workerRef.current) {
 			tileCache.current.clear();
 			requestedTiles.current.clear();
+			setLastTileTimestamp(Date.now());
 
 			const channelData = audioBuffer.getChannelData(0);
 			const channelDataCopy = channelData.slice();
@@ -128,5 +133,5 @@ export const useSpectrogramWorker = (audioBuffer: AudioBuffer | null) => {
 		[],
 	);
 
-	return { tileCache, requestTileIfNeeded };
+	return { tileCache, requestTileIfNeeded, lastTileTimestamp };
 };
