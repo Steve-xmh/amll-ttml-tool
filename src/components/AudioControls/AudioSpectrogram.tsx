@@ -10,6 +10,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useSpectrogramWorker } from "$/hooks/useSpectrogramWorker.ts";
 import {
 	audioBufferAtom,
 	auditionTimeAtom,
@@ -21,7 +22,6 @@ import {
 } from "$/states/audio.ts";
 import { isDraggingAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
-import { LRUCache } from "$/utils/lru-cache.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import styles from "./AudioSpectrogram.module.css";
 import { LyricTimelineOverlay } from "./LyricTimelineOverlay.tsx";
@@ -34,13 +34,6 @@ import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 const TILE_DURATION_S = 5;
 const SPECTROGRAM_HEIGHT = 256;
 const LOD_WIDTHS = [512, 1024, 2048, 4096, 8192];
-const MAX_CACHED_TILES = 70;
-
-type TileEntry = {
-	bitmap: ImageBitmap;
-	width: number;
-	gain: number;
-};
 
 const clampZoom = (z: number) => Math.max(50, Math.min(z, 10000));
 
@@ -105,7 +98,6 @@ export const AudioSpectrogram: FC = () => {
 	const gain = useAtomValue(spectrogramGainAtom);
 	const [visibleTiles, setVisibleTiles] = useState<TileComponentProps[]>([]);
 
-	const workerRef = useRef<Worker | null>(null);
 	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 	const [containerWidth, setContainerWidth] = useAtom(
 		spectrogramContainerWidthAtom,
@@ -116,18 +108,14 @@ export const AudioSpectrogram: FC = () => {
 	const isDragging = useAtomValue(isDraggingAtom);
 
 	const rulerRef = useRef<TimelineRulerHandle>(null);
-	const tileCache = useRef<LRUCache<string, TileEntry>>(
-		new LRUCache(MAX_CACHED_TILES, (_key, entry) => {
-			entry.bitmap.close();
-		}),
-	);
-	const requestedTiles = useRef<Set<string>>(new Set());
 
 	const targetScrollLeftRef = useRef(scrollLeft);
 	const targetZoomRef = useRef(zoom);
 	const animationFrameRef = useRef<number | null>(null);
 	const currentScrollLeftRef = useRef(scrollLeft);
 	const currentZoomRef = useRef(zoom);
+
+	const { tileCache, requestTileIfNeeded } = useSpectrogramWorker(audioBuffer);
 
 	const contextValue = useMemo<ISpectrogramContext>(
 		() => ({
@@ -137,80 +125,6 @@ export const AudioSpectrogram: FC = () => {
 		}),
 		[zoom, scrollLeft],
 	);
-
-	useEffect(() => {
-		const worker = new Worker(
-			new URL("../../workers/spectrogram.worker.ts", import.meta.url),
-			{ type: "module" },
-		);
-		workerRef.current = worker;
-
-		worker.onmessage = (event: MessageEvent) => {
-			const {
-				type,
-				tileId,
-				imageBitmap,
-				renderedWidth,
-				gain: renderedGain,
-			} = event.data;
-
-			if (type === "TILE_READY") {
-				if (tileId && imageBitmap && renderedWidth && renderedGain != null) {
-					const tileIndex = tileId.split("-")[1];
-					if (tileIndex == null) {
-						imageBitmap.close();
-						requestedTiles.current.delete(tileId);
-						return;
-					}
-					const cacheId = `tile-${tileIndex}`;
-
-					const existingEntry = tileCache.current.get(cacheId);
-
-					if (
-						!existingEntry ||
-						renderedWidth >= existingEntry.width ||
-						renderedGain !== existingEntry.gain
-					) {
-						tileCache.current.set(cacheId, {
-							bitmap: imageBitmap,
-							width: renderedWidth,
-							gain: renderedGain,
-						});
-					} else {
-						imageBitmap.close();
-					}
-					requestedTiles.current.delete(tileId);
-				}
-				updateVisibleTilesRef.current();
-			} else if (type === "INIT_COMPLETE") {
-				requestedTiles.current.clear();
-				updateVisibleTilesRef.current();
-			}
-		};
-
-		return () => worker.terminate();
-	}, []);
-
-	useEffect(() => {
-		if (audioBuffer && workerRef.current) {
-			tileCache.current.clear();
-			requestedTiles.current.clear();
-			setVisibleTiles([]);
-
-			const channelData = audioBuffer.getChannelData(0);
-
-			const channelDataCopy = channelData.slice();
-
-			workerRef.current.postMessage(
-				{
-					type: "INIT",
-					audioData: channelDataCopy,
-					sampleRate: audioBuffer.sampleRate,
-				},
-				[channelDataCopy.buffer],
-			);
-		}
-	}, [audioBuffer]);
 
 	const updateVisibleTiles = useCallback(() => {
 		if (!audioBuffer || !scrollContainerRef.current) return;
@@ -235,28 +149,19 @@ export const AudioSpectrogram: FC = () => {
 				LOD_WIDTHS.find((w) => w >= tileDisplayWidthPx) ||
 				LOD_WIDTHS[LOD_WIDTHS.length - 1];
 
-			const cacheEntry = tileCache.current.get(cacheId);
-			const currentBitmap = cacheEntry?.bitmap;
-			const currentWidth = cacheEntry?.width || 0;
-			const currentGain = cacheEntry?.gain;
-
-			const needsRequest =
-				(targetLodWidth > currentWidth || currentGain !== gain) &&
-				targetLodWidth > 0;
-
 			const reqId = `req-${i}-w${targetLodWidth}-g${gain}`;
 
-			if (needsRequest && !requestedTiles.current.has(reqId)) {
-				requestedTiles.current.add(reqId);
-				workerRef.current?.postMessage({
-					type: "GET_TILE",
-					tileId: reqId,
-					startTime: i * TILE_DURATION_S,
-					endTime: i * TILE_DURATION_S + TILE_DURATION_S,
-					gain: gain,
-					tileWidthPx: targetLodWidth,
-				});
-			}
+			requestTileIfNeeded({
+				cacheId,
+				reqId,
+				startTime: i * TILE_DURATION_S,
+				endTime: i * TILE_DURATION_S + TILE_DURATION_S,
+				gain: gain,
+				tileWidthPx: targetLodWidth,
+			});
+
+			const cacheEntry = tileCache.current.get(cacheId);
+			const currentBitmap = cacheEntry?.bitmap;
 
 			newVisibleTiles.push({
 				tileId: cacheId,
@@ -267,7 +172,7 @@ export const AudioSpectrogram: FC = () => {
 			});
 		}
 		setVisibleTiles(newVisibleTiles);
-	}, [audioBuffer, containerWidth, gain]);
+	}, [audioBuffer, containerWidth, gain, requestTileIfNeeded, tileCache]);
 
 	const updateVisibleTilesRef = useRef(updateVisibleTiles);
 	useLayoutEffect(() => {
