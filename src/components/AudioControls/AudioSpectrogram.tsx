@@ -115,6 +115,9 @@ export const AudioSpectrogram: FC = () => {
 	const animationFrameRef = useRef<number | null>(null);
 	const currentScrollLeftRef = useRef(scrollLeft);
 	const currentZoomRef = useRef(zoom);
+	const scrollLeftForScrubRef = useRef(scrollLeft);
+	const isScrubbingRef = useRef(false);
+	const currentMouseXRef = useRef(0);
 
 	const { tileCache, requestTileIfNeeded, lastTileTimestamp } =
 		useSpectrogramWorker(audioBuffer);
@@ -205,6 +208,26 @@ export const AudioSpectrogram: FC = () => {
 		const scrollDiff = Math.abs(nextScroll - targetScroll);
 		const zoomDiff = Math.abs(nextZoom - targetZoom);
 
+		if (isScrubbingRef.current && audioBuffer) {
+			const rect = scrollContainerRef.current?.getBoundingClientRect();
+			if (rect) {
+				const clampedMouseX = Math.max(
+					0,
+					Math.min(currentMouseXRef.current, rect.width),
+				);
+
+				const timeAtCursor = (nextScroll + clampedMouseX) / nextZoom;
+
+				const clampedTime = Math.max(
+					0,
+					Math.min(timeAtCursor, audioBuffer.duration),
+				);
+
+				audioEngine.seekMusic(clampedTime);
+				setCurrentTime(clampedTime * 1000);
+			}
+		}
+
 		if (scrollDiff < 1 && zoomDiff < 2) {
 			setScrollLeft(targetScroll);
 			setZoom(targetZoom);
@@ -214,7 +237,7 @@ export const AudioSpectrogram: FC = () => {
 			setZoom(nextZoom);
 			animationFrameRef.current = requestAnimationFrame(animationLoop);
 		}
-	}, [setScrollLeft, setZoom]);
+	}, [setScrollLeft, setZoom, audioBuffer, setCurrentTime]);
 
 	const startAnimation = useCallback(() => {
 		if (animationFrameRef.current === null) {
@@ -276,6 +299,7 @@ export const AudioSpectrogram: FC = () => {
 
 	useLayoutEffect(() => {
 		currentScrollLeftRef.current = scrollLeft;
+		scrollLeftForScrubRef.current = scrollLeft;
 		if (animationFrameRef.current === null) {
 			targetScrollLeftRef.current = scrollLeft;
 		}
@@ -325,6 +349,7 @@ export const AudioSpectrogram: FC = () => {
 		const rect = event.currentTarget.getBoundingClientRect();
 		const x = event.clientX - rect.left;
 		setHoverPositionPx(x);
+		currentMouseXRef.current = x;
 
 		if (!isHovering) {
 			setIsHovering(true);
@@ -337,10 +362,12 @@ export const AudioSpectrogram: FC = () => {
 
 			const rect = scrollContainerRef.current.getBoundingClientRect();
 			const mouseX = event.clientX - rect.left;
+			currentMouseXRef.current = mouseX;
 
 			const clampedMouseX = Math.max(0, Math.min(mouseX, rect.width));
 
-			const timeAtCursor = (scrollLeft + clampedMouseX) / zoom;
+			const timeAtCursor =
+				(scrollLeftForScrubRef.current + clampedMouseX) / zoom;
 
 			const clampedTime = Math.max(
 				0,
@@ -350,10 +377,11 @@ export const AudioSpectrogram: FC = () => {
 			audioEngine.seekMusic(clampedTime);
 			setCurrentTime(clampedTime * 1000);
 		},
-		[audioBuffer, zoom, setCurrentTime, scrollLeft],
+		[audioBuffer, zoom, setCurrentTime],
 	);
 
 	const handleScrubEnd = useCallback(() => {
+		isScrubbingRef.current = false;
 		window.removeEventListener("mousemove", handleScrubMove);
 		window.removeEventListener("mouseup", handleScrubEnd);
 	}, [handleScrubMove]);
@@ -361,6 +389,7 @@ export const AudioSpectrogram: FC = () => {
 	const handleScrubStart = useCallback(
 		(event: React.MouseEvent) => {
 			event.preventDefault();
+			isScrubbingRef.current = true;
 
 			handleScrubMove(event.nativeEvent);
 
