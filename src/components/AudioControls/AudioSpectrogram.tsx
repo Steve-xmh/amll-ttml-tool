@@ -21,6 +21,7 @@ import {
 } from "$/states/audio.ts";
 import { isDraggingAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
+import { LRUCache } from "$/utils/lru-cache.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import styles from "./AudioSpectrogram.module.css";
 import { LyricTimelineOverlay } from "./LyricTimelineOverlay.tsx";
@@ -33,6 +34,13 @@ import { TimelineRuler, type TimelineRulerHandle } from "./TimelineRuler.tsx";
 const TILE_DURATION_S = 5;
 const SPECTROGRAM_HEIGHT = 256;
 const LOD_WIDTHS = [512, 1024, 2048, 4096, 8192];
+const MAX_CACHED_TILES = 70;
+
+type TileEntry = {
+	bitmap: ImageBitmap;
+	width: number;
+	gain: number;
+};
 
 const clampZoom = (z: number) => Math.max(50, Math.min(z, 10000));
 
@@ -108,9 +116,11 @@ export const AudioSpectrogram: FC = () => {
 	const isDragging = useAtomValue(isDraggingAtom);
 
 	const rulerRef = useRef<TimelineRulerHandle>(null);
-	const tileCache = useRef<
-		Map<string, { bitmap: ImageBitmap; width: number; gain: number }>
-	>(new Map());
+	const tileCache = useRef<LRUCache<string, TileEntry>>(
+		new LRUCache(MAX_CACHED_TILES, (_key, entry) => {
+			entry.bitmap.close();
+		}),
+	);
 	const requestedTiles = useRef<Set<string>>(new Set());
 
 	const targetScrollLeftRef = useRef(scrollLeft);
@@ -183,9 +193,6 @@ export const AudioSpectrogram: FC = () => {
 
 	useEffect(() => {
 		if (audioBuffer && workerRef.current) {
-			for (const entry of tileCache.current.values()) {
-				entry.bitmap.close();
-			}
 			tileCache.current.clear();
 			requestedTiles.current.clear();
 			setVisibleTiles([]);
