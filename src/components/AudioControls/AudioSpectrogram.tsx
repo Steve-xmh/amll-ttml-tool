@@ -96,7 +96,6 @@ export const AudioSpectrogram: FC = () => {
 	const [zoom, setZoom] = useAtom(spectrogramZoomAtom);
 	const gain = useAtomValue(spectrogramGainAtom);
 	const [visibleTiles, setVisibleTiles] = useState<TileComponentProps[]>([]);
-	const [renderTrigger, setRenderTrigger] = useState(0);
 
 	const workerRef = useRef<Worker | null>(null);
 	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -113,6 +112,12 @@ export const AudioSpectrogram: FC = () => {
 		Map<string, { bitmap: ImageBitmap; width: number; gain: number }>
 	>(new Map());
 	const requestedTiles = useRef<Set<string>>(new Set());
+
+	const targetScrollLeftRef = useRef(scrollLeft);
+	const targetZoomRef = useRef(zoom);
+	const animationFrameRef = useRef<number | null>(null);
+	const currentScrollLeftRef = useRef(scrollLeft);
+	const currentZoomRef = useRef(zoom);
 
 	const contextValue = useMemo<ISpectrogramContext>(
 		() => ({
@@ -166,10 +171,10 @@ export const AudioSpectrogram: FC = () => {
 					}
 					requestedTiles.current.delete(tileId);
 				}
-				setRenderTrigger((c) => c + 1);
+				updateVisibleTilesRef.current();
 			} else if (type === "INIT_COMPLETE") {
 				requestedTiles.current.clear();
-				setRenderTrigger((c) => c + 1);
+				updateVisibleTilesRef.current();
 			}
 		};
 
@@ -203,13 +208,12 @@ export const AudioSpectrogram: FC = () => {
 	const updateVisibleTiles = useCallback(() => {
 		if (!audioBuffer || !scrollContainerRef.current) return;
 
-		const container = scrollContainerRef.current;
-		const pixelsPerSecond = zoom;
+		const pixelsPerSecond = currentZoomRef.current;
 		const tileDisplayWidthPx = TILE_DURATION_S * pixelsPerSecond;
 		const totalTiles = Math.ceil(audioBuffer.duration / TILE_DURATION_S);
 
-		const viewStart = container.scrollLeft;
-		const viewEnd = viewStart + container.clientWidth;
+		const viewStart = currentScrollLeftRef.current;
+		const viewEnd = viewStart + containerWidth;
 
 		const firstVisibleIndex = Math.floor(viewStart / tileDisplayWidthPx);
 		const lastVisibleIndex = Math.ceil(viewEnd / tileDisplayWidthPx);
@@ -256,64 +260,122 @@ export const AudioSpectrogram: FC = () => {
 			});
 		}
 		setVisibleTiles(newVisibleTiles);
-	}, [audioBuffer, zoom, gain]);
+	}, [audioBuffer, containerWidth, gain]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: renderTrigger 用来重运行这个 effect
+	const updateVisibleTilesRef = useRef(updateVisibleTiles);
+	useLayoutEffect(() => {
+		updateVisibleTilesRef.current = updateVisibleTiles;
+	}, [updateVisibleTiles]);
+
 	useEffect(() => {
 		updateVisibleTiles();
-	}, [updateVisibleTiles, renderTrigger]);
+	}, [updateVisibleTiles]);
 
 	const handleRulerSeek = (timeInSeconds: number) => {
 		audioEngine.seekMusic(timeInSeconds);
 		setCurrentTime(Math.round(timeInSeconds * 1000));
 	};
 
+	const animationLoop = useCallback(() => {
+		const targetScroll = targetScrollLeftRef.current;
+		const targetZoom = targetZoomRef.current;
+		const currentScroll = currentScrollLeftRef.current;
+		const currentZoom = currentZoomRef.current;
+
+		const lerpFactor = 0.35;
+		const nextScroll =
+			(1 - lerpFactor) * currentScroll + lerpFactor * targetScroll;
+		const nextZoom = (1 - lerpFactor) * currentZoom + lerpFactor * targetZoom;
+
+		const scrollDiff = Math.abs(nextScroll - targetScroll);
+		const zoomDiff = Math.abs(nextZoom - targetZoom);
+
+		if (scrollDiff < 1 && zoomDiff < 2) {
+			setScrollLeft(targetScroll);
+			setZoom(targetZoom);
+			animationFrameRef.current = null;
+		} else {
+			setScrollLeft(nextScroll);
+			setZoom(nextZoom);
+			animationFrameRef.current = requestAnimationFrame(animationLoop);
+		}
+	}, [setScrollLeft, setZoom]);
+
+	const startAnimation = useCallback(() => {
+		if (animationFrameRef.current === null) {
+			animationFrameRef.current = requestAnimationFrame(animationLoop);
+		}
+	}, [animationLoop]);
+
 	const handleWheelScroll = useCallback(
 		(event: WheelEvent) => {
-			if (!scrollContainerRef.current) {
+			if (!scrollContainerRef.current || !audioBuffer) {
 				return;
 			}
+			event.preventDefault();
 
 			const container = scrollContainerRef.current;
+			const rect = container.getBoundingClientRect();
+			const mouseX = event.clientX - rect.left;
 
 			if (event.ctrlKey) {
-				event.preventDefault();
+				const currentZoom = targetZoomRef.current;
+				const currentScroll = targetScrollLeftRef.current;
 
-				const rect = container.getBoundingClientRect();
-				const mouseX = event.clientX - rect.left;
-
-				const currentZoom = zoom;
-				const timeAtCursor = (scrollLeft + mouseX) / currentZoom;
-
-				const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
+				const timeAtCursor = (currentScroll + mouseX) / currentZoom;
+				const zoomFactor = event.deltaY < 0 ? 1.15 : 0.85;
 				const newZoom = clampZoom(currentZoom * zoomFactor);
-
 				if (newZoom === currentZoom) return;
 
 				const newScrollLeft = timeAtCursor * newZoom - mouseX;
 
-				setZoom(newZoom);
-				setScrollLeft(newScrollLeft);
-				setHoverPositionPx(timeAtCursor * newZoom);
+				const totalWidth = audioBuffer.duration * newZoom;
+				const maxScrollLeft = Math.max(0, totalWidth - containerWidth);
+				const clampedScrollLeft = Math.max(
+					0,
+					Math.min(newScrollLeft, maxScrollLeft),
+				);
+
+				targetZoomRef.current = newZoom;
+				targetScrollLeftRef.current = clampedScrollLeft;
 			} else {
 				const scrollAmount = event.deltaY + event.deltaX;
 				if (scrollAmount !== 0) {
-					event.preventDefault();
-					const newScrollLeft = container.scrollLeft + scrollAmount;
-					setScrollLeft(newScrollLeft);
+					const newScrollLeft = targetScrollLeftRef.current + scrollAmount;
+
+					const totalWidth = audioBuffer.duration * targetZoomRef.current;
+					const maxScrollLeft = Math.max(0, totalWidth - containerWidth);
+					const clampedScrollLeft = Math.max(
+						0,
+						Math.min(newScrollLeft, maxScrollLeft),
+					);
+
+					targetScrollLeftRef.current = clampedScrollLeft;
 				}
 			}
+
+			startAnimation();
 		},
-		[scrollLeft, setScrollLeft, setZoom, zoom],
+		[startAnimation, audioBuffer, containerWidth],
 	);
 
 	useLayoutEffect(() => {
-		const container = scrollContainerRef.current;
-		if (container && container.scrollLeft !== scrollLeft) {
-			container.scrollLeft = scrollLeft;
+		currentScrollLeftRef.current = scrollLeft;
+		if (animationFrameRef.current === null) {
+			targetScrollLeftRef.current = scrollLeft;
 		}
+		rulerRef.current?.draw(scrollLeft);
 		updateVisibleTiles();
 	}, [scrollLeft, updateVisibleTiles]);
+
+	useLayoutEffect(() => {
+		currentZoomRef.current = zoom;
+
+		if (animationFrameRef.current === null) {
+			targetZoomRef.current = zoom;
+		}
+		updateVisibleTiles();
+	}, [zoom, updateVisibleTiles]);
 
 	useEffect(() => {
 		const container = scrollContainerRef.current;
@@ -342,26 +404,13 @@ export const AudioSpectrogram: FC = () => {
 		return () => observer.disconnect();
 	}, [setContainerWidth]);
 
-	const handleContainerScroll = () => {
-		if (!scrollContainerRef.current) return;
-		const newScrollLeft = scrollContainerRef.current.scrollLeft;
-
-		if (Math.abs(newScrollLeft - scrollLeft) > 5) {
-			setScrollLeft(newScrollLeft);
-		}
-
-		rulerRef.current?.draw(newScrollLeft);
-	};
-
 	const handleMouseEnter = () => setIsHovering(true);
 	const handleMouseLeave = () => setIsHovering(false);
 	const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
 		const rect = event.currentTarget.getBoundingClientRect();
 		const x = event.clientX - rect.left;
+		setHoverPositionPx(x);
 
-		if (x >= 0 && x <= totalWidth) {
-			setHoverPositionPx(x);
-		}
 		if (!isHovering) {
 			setIsHovering(true);
 		}
@@ -411,12 +460,9 @@ export const AudioSpectrogram: FC = () => {
 	const auditionCursorPosition = auditionTime ? auditionTime * zoom : null;
 	const handleLeftPosition = cursorPosition - scrollLeft;
 
-	const clampedHoverPositionPx = Math.max(
-		0,
-		Math.min(hoverPositionPx, totalWidth),
-	);
-	const hoverTimeS =
-		audioBuffer && zoom > 0 ? clampedHoverPositionPx / zoom : 0;
+	const clampedMouseX = Math.max(0, Math.min(hoverPositionPx, containerWidth));
+	const hoverX = scrollLeft + clampedMouseX;
+	const hoverTimeS = audioBuffer && zoom > 0 ? hoverX / zoom : 0;
 	const hoverTimeFormatted = msToTimestamp(hoverTimeS * 1000);
 
 	return (
@@ -442,27 +488,29 @@ export const AudioSpectrogram: FC = () => {
 					onMouseDown={handleScrubStart}
 				/>
 			)}
+			{/** biome-ignore lint/a11y/useSemanticElements: <fieldset> 在这里不适用 */}
 			<div
 				ref={scrollContainerRef}
-				onScroll={handleContainerScroll}
+				className={styles.virtualScrollContainer}
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
+				onMouseMove={handleMouseMove}
 				style={{
 					flexGrow: 1,
-					overflowX: "auto",
+					overflowX: "hidden",
 					overflowY: "hidden",
 					position: "relative",
 				}}
+				role="group"
 			>
-				{/** biome-ignore lint/a11y/useSemanticElements: <fieldset> 在这里不适用 */}
 				<div
 					style={{
 						width: `${totalWidth}px`,
 						height: "100%",
 						position: "relative",
+						transform: `translateX(${-scrollLeft}px)`,
+						willChange: "transform",
 					}}
-					onMouseEnter={handleMouseEnter}
-					onMouseLeave={handleMouseLeave}
-					onMouseMove={handleMouseMove}
-					role="group"
 				>
 					{visibleTiles.map((tile) => (
 						<TileComponent key={tile.tileId} {...tile} />
@@ -494,7 +542,7 @@ export const AudioSpectrogram: FC = () => {
 								<div
 									style={{
 										position: "absolute",
-										left: `${clampedHoverPositionPx}px`,
+										left: `${hoverX}px`,
 										top: 0,
 										height: "100%",
 										zIndex: 11,
