@@ -36,7 +36,6 @@ import {
 	currentDurationAtom,
 	currentTimeAtom,
 	playbackRateAtom,
-	spectrogramGainAtom,
 	volumeAtom,
 } from "$/states/audio.ts";
 import {
@@ -49,6 +48,7 @@ import {
 	keyVolumeDownAtom,
 	keyVolumeUpAtom,
 } from "$/states/keybindings.ts";
+import { spectrogramGainAtom } from "$/states/spectrogram";
 import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";

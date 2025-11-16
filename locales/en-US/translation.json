@@ -129,7 +129,8 @@
 		"tab": {
 			"common": "General",
 			"keybindings": "Keybindings",
-			"experimental": "Experimental"
+			"experimental": "Experimental",
+			"spectrogram": "Spectrogram"
 		},
 		"keybindings": {
 			"newFile": "New File",
@@ -161,7 +162,10 @@
 			"volumeDown": "Playback - Volume down",
 			"playbackRateUp": "Playback - Increase speed",
 			"playbackRateDown": "Playback - Decrease speed",
-			"playbackRateReset": "Playback - Reset speed"
+			"playbackRateReset": "Playback - Reset speed",
+			"auditionSelectionBefore": "Spectrogram - Audition selection (500ms before)",
+			"auditionSelection": "Spectrogram - Audition selection",
+			"auditionSelectionAfter": "Spectrogram - Audition selection (500ms after)"
 		},
 		"common": {
 			"latencyTest": "Audio/input latency test"
@@ -193,7 +197,10 @@
 	},
 	"common": {
 		"about": "About",
-		"fileNamePlaceholder": "File Name"
+		"fileNamePlaceholder": "File Name",
+		"remove": "Remove",
+		"cancel": "Cancel",
+		"apply": "Apply"
 	},
 	"splitWordDialog": {
 		"title": "Split/Replace Word",
@@ -318,10 +325,14 @@
 				"limit": "Snapshots to keep"
 			}
 		},
-		"settings": {
-			"experimental": {
-				"perWordRomanization": "Enable Per-Word Romanization"
-			}
+		"spectrogram": {
+			"palette": "Color Palette",
+			"paletteCustom": "Custom",
+			"gradientEditorDesc": "A Pos value of 0.0 corresponds to the quietest part, and 1.0 corresponds to the loudest part. It is recommended to use brighter colors for larger Pos values.",
+			"addStop": "Add Color Stop"
+		},
+		"experimental": {
+			"perWordRomanization": "Enable Per-Word Romanization"
 		}
 	},
 	"audioPanel": {

@@ -91,7 +91,15 @@
 				"enable": "启用自动保存",
 				"interval": "保存间隔 (分钟)",
 				"limit": "保留快照数量"
-			}
+			},
+			"volume": "音乐音量",
+			"playbackRate": "播放速度"
+		},
+		"spectrogram": {
+			"palette": "配色方案",
+			"paletteCustom": "自定义",
+			"gradientEditorDesc": "Pos 0.0 对应最安静的部分，1.0 对应最响亮的部分。建议 Pos 越大，使用亮度越高的颜色。",
+			"addStop": "添加色标"
 		},
 		"experimental": {
 			"perWordRomanization": "启用逐字音译"
@@ -111,7 +119,8 @@
 		"tab": {
 			"common": "常规",
 			"keybindings": "按键绑定",
-			"experimental": "实验性"
+			"experimental": "实验性",
+			"spectrogram": "频谱图"
 		},
 		"keybindings": {
 			"newFile": "新建文件",
@@ -143,7 +152,10 @@
 			"volumeDown": "播放 - 调低音量",
 			"playbackRateUp": "播放 - 增加播放速度",
 			"playbackRateDown": "播放 - 降低播放速度",
-			"playbackRateReset": "播放 - 重置播放速度"
+			"playbackRateReset": "播放 - 重置播放速度",
+			"auditionSelectionBefore": "频谱图 - 试听选中音节前 500 毫秒",
+			"auditionSelection": "频谱图 - 试听选中音节",
+			"auditionSelectionAfter": "频谱图 - 试听选中音节后 500 毫秒"
 		},
 		"common": {
 			"latencyTest": "音频/输入延迟测试"
@@ -175,7 +187,10 @@
 	},
 	"common": {
 		"about": "关于",
-		"fileNamePlaceholder": "文件名"
+		"fileNamePlaceholder": "文件名",
+		"remove": "移除",
+		"apply": "应用",
+		"cancel": "取消"
 	},
 	"splitWordDialog": {
 		"title": "拆分/替换单词",
@@ -416,7 +431,7 @@
 		"duetLyric": "对唱歌词",
 		"insertLineBefore": "在前插入新行",
 		"insertLineAfter": "在后插入新行",
-		"copyLine_other": "拷贝行",
+		"copyLine": "复制行",
 		"combineLine": "合并行",
 		"deleteLine": "删除行"
 	},

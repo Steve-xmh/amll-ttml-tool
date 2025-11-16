@@ -1,12 +1,13 @@
-import { log } from "$/utils/logging";
 import init, {
 	generate_spectrogram_image,
 	initThreadPool,
-} from "../pkg/spectrogram/wasm_spectrogram";
+} from "$/pkg/spectrogram/wasm_spectrogram";
+import { log } from "$/utils/logging";
 
 let fullAudioData: Float32Array | null = null;
 let audioSampleRate: number = 0;
 let wasmInitialized: Promise<void> | null = null;
+let currentPalette: Uint8Array | null = null;
 
 async function initializeWasm() {
 	if (!wasmInitialized) {
@@ -25,13 +26,17 @@ self.onmessage = async (event: MessageEvent) => {
 	if (type === "INIT") {
 		fullAudioData = event.data.audioData;
 		audioSampleRate = event.data.sampleRate;
+		currentPalette = null;
 		self.postMessage({ type: "INIT_COMPLETE" });
+	} else if (type === "SET_PALETTE") {
+		currentPalette = event.data.palette;
 	} else if (type === "GET_TILE") {
-		if (!fullAudioData || !audioSampleRate) {
+		if (!fullAudioData || !audioSampleRate || !currentPalette) {
 			return;
 		}
 
-		const { tileId, startTime, endTime, gain, tileWidthPx } = event.data;
+		const { tileId, startTime, endTime, gain, tileWidthPx, paletteId } =
+			event.data;
 
 		const startSample = Math.floor(startTime * audioSampleRate);
 		const endSample = Math.ceil(endTime * audioSampleRate);
@@ -56,6 +61,7 @@ self.onmessage = async (event: MessageEvent) => {
 			tileWidthPx,
 			TILE_HEIGHT,
 			gain,
+			currentPalette,
 		);
 
 		const t1 = performance.now();
@@ -80,6 +86,7 @@ self.onmessage = async (event: MessageEvent) => {
 					imageBitmap,
 					renderedWidth: tileWidthPx,
 					gain: gain,
+					paletteId: paletteId,
 				},
 				{
 					transfer: [imageBitmap],

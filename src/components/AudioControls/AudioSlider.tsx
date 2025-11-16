@@ -8,10 +8,12 @@ import {
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
+} from "$/states/audio.ts";
+import {
 	spectrogramContainerWidthAtom,
 	spectrogramScrollLeftAtom,
 	spectrogramZoomAtom,
-} from "$/states/audio.ts";
+} from "$/states/spectrogram";
 import { audioEngine } from "$/utils/audio";
 import { msToTimestamp } from "$/utils/timestamp";
 import styles from "./AudioSlider.module.css";

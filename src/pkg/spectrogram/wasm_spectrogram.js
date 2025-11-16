@@ -77,6 +77,13 @@ function passArrayF32ToWasm0(arg, malloc) {
     return ptr;
 }
 
+function passArray8ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 1, 1) >>> 0;
+    getUint8ArrayMemory0().set(arg, ptr / 1);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
+
 function takeFromExternrefTable0(idx) {
     const value = wasm.__wbindgen_externrefs.get(idx);
     wasm.__externref_table_dealloc(idx);
@@ -95,18 +102,21 @@ function getArrayU8FromWasm0(ptr, len) {
  * @param {number} img_width
  * @param {number} img_height
  * @param {number} gain
+ * @param {Uint8Array} palette
  * @returns {Uint8Array}
  */
-export function generate_spectrogram_image(audio_data, sample_rate, fft_size, hop_length, img_width, img_height, gain) {
+export function generate_spectrogram_image(audio_data, sample_rate, fft_size, hop_length, img_width, img_height, gain, palette) {
     const ptr0 = passArrayF32ToWasm0(audio_data, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.generate_spectrogram_image(ptr0, len0, sample_rate, fft_size, hop_length, img_width, img_height, gain);
+    const ptr1 = passArray8ToWasm0(palette, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.generate_spectrogram_image(ptr0, len0, sample_rate, fft_size, hop_length, img_width, img_height, gain, ptr1, len1);
     if (ret[3]) {
         throw takeFromExternrefTable0(ret[2]);
     }
-    var v2 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
+    var v3 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
     wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
-    return v2;
+    return v3;
 }
 
 /**

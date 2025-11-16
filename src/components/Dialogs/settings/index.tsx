@@ -7,6 +7,7 @@ import { SettingsAboutTab } from "./about";
 import { SettingsCommonTab } from "./common";
 import { SettingsExperimentalTab } from "./experimental";
 import { SettingsKeyBindingsDialog } from "./keybindings";
+import { SettingsSpectrogramTab } from "./spectrogram";
 
 export const SettingsDialog = memo(() => {
 	const [settingsDialogOpen, setSettingsDialogOpen] =
@@ -25,6 +26,9 @@ export const SettingsDialog = memo(() => {
 						<Tabs.Trigger value="keybinding">
 							{t("settingsDialog.tab.keybindings", "按键绑定")}
 						</Tabs.Trigger>
+						<Tabs.Trigger value="spectrogram">
+							{t("settingsDialog.tab.spectrogram", "频谱图")}
+						</Tabs.Trigger>
 						<Tabs.Trigger value="about">
 							{t("common.about", "关于")}
 						</Tabs.Trigger>
@@ -38,6 +42,9 @@ export const SettingsDialog = memo(() => {
 						</Tabs.Content>
 						<Tabs.Content value="keybinding">
 							<SettingsKeyBindingsDialog />
+						</Tabs.Content>
+						<Tabs.Content value="spectrogram">
+							<SettingsSpectrogramTab />
 						</Tabs.Content>
 						<Tabs.Content value="about">
 							<SettingsAboutTab />

@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export const generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number, number];
+export const generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => [number, number, number, number];
 export const init_thread_pool: (a: number) => any;
 export const __wbg_wbg_rayon_poolbuilder_free: (a: number, b: number) => void;
 export const initThreadPool: (a: number) => any;
