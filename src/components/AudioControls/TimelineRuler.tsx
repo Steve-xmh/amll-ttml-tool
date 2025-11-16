@@ -137,6 +137,7 @@ export const TimelineRuler = forwardRef<
 				backgroundColor: "var(--white-3)",
 			}}
 			onClick={handleClick}
+			onContextMenu={(e) => e.preventDefault()}
 		/>
 	);
 });

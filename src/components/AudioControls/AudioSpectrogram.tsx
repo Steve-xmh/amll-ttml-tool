@@ -490,6 +490,7 @@ export const AudioSpectrogram: FC = () => {
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
 				onMouseMove={handleMouseMove}
+				onContextMenu={(e) => e.preventDefault()}
 				role="group"
 			>
 				<div

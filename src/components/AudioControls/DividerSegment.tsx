@@ -114,6 +114,7 @@ export const DividerSegment: FC<DividerSegmentProps> = ({
 			className={styles.divider}
 			style={dynamicStyles}
 			onMouseDown={startDrag}
+			onContextMenu={(e) => e.preventDefault()}
 			role="separator"
 			tabIndex={0}
 			aria-orientation="vertical"
