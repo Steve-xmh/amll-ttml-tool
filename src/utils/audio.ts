@@ -7,7 +7,7 @@ import { log } from "./logging.ts";
 // Even don't know where should I put this after refactoring
 // const DELAY = 0.05; // 50ms
 
-let auditionProgressInterval: NodeJS.Timeout | null = null;
+let auditionRafId: number | null = null;
 
 class AudioEngine extends EventTarget {
 	//#region Audio context basics
@@ -160,8 +160,6 @@ class AudioEngine extends EventTarget {
 	/**
 	 * 试听一个音频片段
 	 *
-	 * 只应该用来播放较短的音频，不然播放进度可能不准
-	 *
 	 * @param startTimeInSeconds 音频片段的开始时间
 	 * @param endTimeInSeconds 音频片段的结束时间
 	 * @returns
@@ -182,9 +180,9 @@ class AudioEngine extends EventTarget {
 			this.auditionSourceNode = null;
 		}
 
-		if (auditionProgressInterval) {
-			clearInterval(auditionProgressInterval);
-			auditionProgressInterval = null;
+		if (auditionRafId) {
+			cancelAnimationFrame(auditionRafId);
+			auditionRafId = null;
 		}
 
 		globalStore.set(auditionTimeAtom, null);
@@ -205,29 +203,25 @@ class AudioEngine extends EventTarget {
 		source.connect(this.gain);
 		this.auditionSourceNode = source;
 
-		const newIntervalId = setInterval(() => {
+		const progressLoop = () => {
 			const elapsedTime = this.ctx.currentTime - audioCtxStartTime;
 			const currentAuditionTime = mediaStartTime + elapsedTime;
 
 			if (currentAuditionTime >= endTimeInSeconds) {
-				clearInterval(newIntervalId);
-				if (auditionProgressInterval === newIntervalId) {
-					auditionProgressInterval = null;
-					globalStore.set(auditionTimeAtom, null);
-				}
+				globalStore.set(auditionTimeAtom, null);
+				auditionRafId = null;
 			} else {
 				globalStore.set(auditionTimeAtom, currentAuditionTime);
+				auditionRafId = requestAnimationFrame(progressLoop); // 请求下一帧
 			}
-		}, 16);
-
-		auditionProgressInterval = newIntervalId;
+		};
 
 		source.addEventListener("ended", () => {
-			if (auditionProgressInterval === newIntervalId) {
-				clearInterval(auditionProgressInterval);
-				auditionProgressInterval = null;
-				globalStore.set(auditionTimeAtom, null);
+			if (auditionRafId) {
+				cancelAnimationFrame(auditionRafId);
+				auditionRafId = null;
 			}
+			globalStore.set(auditionTimeAtom, null);
 
 			if (this.auditionSourceNode === source) {
 				this.auditionSourceNode = null;
@@ -236,6 +230,7 @@ class AudioEngine extends EventTarget {
 		});
 
 		source.start(audioCtxStartTime, mediaStartTime, durationInSeconds);
+		auditionRafId = requestAnimationFrame(progressLoop);
 	}
 
 	//#endregion
