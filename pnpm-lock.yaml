@@ -90,7 +90,7 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0(react@19.2.0)
       react-i18next:
-        specifier: ^16.3.3
+        specifier: ^16.2.4
         version: 16.3.3(i18next@25.6.2(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       react-toastify:
         specifier: ^11.0.5
@@ -118,7 +118,7 @@ importers:
         specifier: ^2.3.5
         version: 2.3.5
       '@fluentui/react-icons':
-        specifier: ^2.0.314
+        specifier: ^2.0.313
         version: 2.0.314(react@19.2.0)
       '@tauri-apps/cli':
         specifier: ^2.9.4
@@ -130,7 +130,7 @@ importers:
         specifier: ^24.10.1
         version: 24.10.1
       '@types/react':
-        specifier: ^19.2.5
+        specifier: ^19.2.3
         version: 19.2.5
       '@types/react-dom':
         specifier: ^19.2.3
@@ -142,11 +142,11 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@vitejs/plugin-react':
-        specifier: ^5.1.1
+        specifier: ^5.1.0
         version: 5.1.1(vite@7.2.2(@types/node@24.10.1)(terser@5.44.1)(yaml@2.8.1))
       babel-plugin-react-compiler:
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 19.0.0-beta-decd7b8-20250118
+        version: 19.0.0-beta-decd7b8-20250118
       i18next-parser:
         specifier: ^9.3.0
         version: 9.3.0
@@ -2636,8 +2636,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-plugin-react-compiler@1.0.0:
-    resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
+  babel-plugin-react-compiler@19.0.0-beta-decd7b8-20250118:
+    resolution: {integrity: sha512-kymIdd5TmHnq1r2U2n26WI3ukadllV0o19kyrso4kByFE4KPOOXxE3uHibhwW77RPPptPx6ZqNfsZn3L/tm/Ew==}
 
   babel-plugin-syntax-hermes-parser@0.21.1:
     resolution: {integrity: sha512-tUCEa+EykZx3oJXc+PolKz2iwDscCJ2hCONMvEqjAb4jIQH5ZapDd5Brs2Nk4TQpSJ/1Ykz53ksQbevXbF0wxg==}
@@ -5061,7 +5061,7 @@ snapshots:
       '@babel/parser': 7.28.5
       '@babel/template': 7.27.2
       '@babel/traverse': 7.28.5
-      '@babel/types': 7.26.0
+      '@babel/types': 7.28.5
       convert-source-map: 2.0.0
       debug: 4.4.3
       gensync: 1.0.0-beta.2
@@ -7508,7 +7508,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-react-compiler@1.0.0:
+  babel-plugin-react-compiler@19.0.0-beta-decd7b8-20250118:
     dependencies:
       '@babel/types': 7.28.5
 
