@@ -202,6 +202,18 @@ export const LyricLineView: FC<{
 	const store = useStore();
 	const wordsContainerRef = useRef<HTMLDivElement>(null);
 
+	const hasError = useMemo(() => {
+		if (line.startTime > line.endTime) {
+			return true;
+		}
+		for (const word of line.words) {
+			if (word.startTime > word.endTime) {
+				return true;
+			}
+		}
+		return false;
+	}, [line.startTime, line.endTime, line.words]);
+
 	const enablePerWordRomanization = useAtomValue(enablePerWordRomanizationAtom);
 	const editingRomanWordIndexAtom = useMemo(
 		() => atom<number | null>(null),
@@ -308,6 +320,7 @@ export const LyricLineView: FC<{
 							toolMode === ToolMode.Sync && styles.sync,
 							toolMode === ToolMode.Edit && styles.edit,
 							line.ignoreSync && styles.ignoreSync,
+							hasError && toolMode === ToolMode.Edit && styles.error,
 						)}
 						align="center"
 						gapX="4"

@@ -365,6 +365,7 @@ const LyricWordViewEditAdvance = ({
 	const setOpenSplitWordDialog = useSetAtom(splitWordDialogAtom);
 	const setSplitState = useSetAtom(splitWordStateAtom);
 	const currentWord = useAtomValue(wordAtom);
+	const toolMode = useAtomValue(toolModeAtom);
 	const isWordSelectedAtom = useMemo(
 		() => atom((get) => get(selectedWordsAtom).has(get(wordAtom).id)),
 		[wordAtom],
@@ -372,6 +373,11 @@ const LyricWordViewEditAdvance = ({
 	const isWordSelected = useAtomValue(isWordSelectedAtom);
 
 	const isWordBlank = useWordBlank(currentWord.word);
+
+	const hasError = useMemo(
+		() => currentWord.startTime > currentWord.endTime,
+		[currentWord.startTime, currentWord.endTime],
+	);
 
 	const className = useMemo(
 		() =>
@@ -381,8 +387,9 @@ const LyricWordViewEditAdvance = ({
 				styles.advance,
 				isWordSelected && styles.selected,
 				isWordBlank && styles.blank,
+				hasError && toolMode === ToolMode.Edit && styles.error,
 			),
-		[isWordBlank, isWordSelected],
+		[isWordBlank, isWordSelected, hasError, toolMode],
 	);
 
 	return (
@@ -529,9 +536,14 @@ const LyricWorldViewEdit = ({
 	const isWordSelected = useAtomValue(isWordSelectedAtom);
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const [editing, setEditing] = useState(false);
-
+	const toolMode = useAtomValue(toolModeAtom);
 	const isWordBlank = useWordBlank(word.word);
 	const displayWord = useDisplayWord(word.word, isWordBlank);
+
+	const hasError = useMemo(
+		() => word.startTime > word.endTime,
+		[word.startTime, word.endTime],
+	);
 
 	const className = useMemo(
 		() =>
@@ -540,8 +552,9 @@ const LyricWorldViewEdit = ({
 				styles.edit,
 				isWordSelected && styles.selected,
 				isWordBlank && styles.blank,
+				hasError && toolMode === ToolMode.Edit && styles.error,
 			),
-		[isWordBlank, isWordSelected],
+		[isWordBlank, isWordSelected, hasError, toolMode],
 	);
 
 	const onEnter = useCallback(
@@ -632,6 +645,7 @@ const LyricWorldViewSync: FC<{
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
+	const toolMode = useAtomValue(toolModeAtom);
 	const isWordBlank = useWordBlank(word.word);
 	const displayWord = useDisplayWord(word.word, isWordBlank);
 
@@ -682,6 +696,11 @@ const LyricWorldViewSync: FC<{
 		};
 	}, [word.endTime, visualizeTimestampUpdate]);
 
+	const hasError = useMemo(
+		() => word.startTime > word.endTime,
+		[word.startTime, word.endTime],
+	);
+
 	const className = useMemo(
 		() =>
 			classNames(
@@ -690,8 +709,9 @@ const LyricWorldViewSync: FC<{
 				isWordSelected && styles.selected,
 				isWordBlank && styles.blank,
 				isWordActive && styles.active,
+				hasError && toolMode === ToolMode.Edit && styles.error,
 			),
-		[isWordBlank, isWordSelected, isWordActive],
+		[isWordBlank, isWordSelected, isWordActive, hasError, toolMode],
 	);
 
 	return (

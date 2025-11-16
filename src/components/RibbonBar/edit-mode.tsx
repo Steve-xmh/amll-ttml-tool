@@ -78,6 +78,45 @@ function EditField<
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const { t } = useTranslation();
 
+	const hasErrorAtom = useMemo(
+		() =>
+			atom((get) => {
+				if (fieldName !== "startTime" && fieldName !== "endTime") {
+					return false;
+				}
+
+				const selectedItems = get(itemAtom);
+				if (selectedItems.size === 0) return false;
+
+				const lyricLines = get(lyricLinesAtom);
+
+				if (isWordField) {
+					const selectedWords = selectedItems;
+					for (const line of lyricLines.lyricLines) {
+						for (const word of line.words) {
+							if (selectedWords.has(word.id)) {
+								if (word.startTime > word.endTime) {
+									return true;
+								}
+							}
+						}
+					}
+				} else {
+					const selectedLines = selectedItems;
+					for (const line of lyricLines.lyricLines) {
+						if (selectedLines.has(line.id)) {
+							if (line.startTime > line.endTime) {
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}),
+		[fieldName, isWordField, itemAtom],
+	);
+	const hasError = useAtomValue(hasErrorAtom);
+
 	const currentValueAtom = useMemo(
 		() =>
 			atom((get) => {
@@ -168,6 +207,8 @@ function EditField<
 			</Text>
 			<TextField.Root
 				size="1"
+				color={hasError ? "red" : undefined}
+				variant={hasError ? "soft" : undefined}
 				style={{ width: "8em", ...textFieldStyle }}
 				value={fieldInput ?? ""}
 				placeholder={fieldPlaceholder}

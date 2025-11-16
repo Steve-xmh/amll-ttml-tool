@@ -182,20 +182,40 @@
 	color: var(--gray-a7);
 }
 
-.lyricWord:hover,
-.lyricLine:hover {
+.lyricWord:not(.error):hover,
+.lyricLine:not(.error):hover {
 	box-shadow: 0 0 0 2px var(--accent-a5);
 	background-color: var(--accent-a3);
 }
 
-.lyricWord.selected,
-.lyricLine.selected {
+.lyricWord.selected:not(.error),
+.lyricLine.selected:not(.error) {
 	box-shadow: 0 0 0 2px var(--accent-a11);
 	background-color: var(--accent-a5);
 	&:hover {
 		box-shadow: 0 0 0 2px var(--accent-a11);
 		background-color: var(--accent-a6);
 	}
+}
+
+.lyricWord.error,
+.lyricLine.error {
+	box-shadow: 0 0 0 2px var(--red-a10);
+}
+
+.lyricWord.error:hover,
+.lyricLine.error:hover {
+	background-color: var(--red-a2);
+}
+
+.lyricWord.error.selected,
+.lyricLine.error.selected {
+	background-color: var(--red-a3);
+}
+
+.lyricWord.error.selected:hover,
+.lyricLine.error.selected:hover {
+	background-color: var(--red-a4);
 }
 
 :global(.radix-themes.light) .lyricWord.selected {
