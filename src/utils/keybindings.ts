@@ -174,7 +174,8 @@ export function forceInvokeKeyBindingAtom(
 	const callbacks = registeredKeyBindings.get(joined);
 
 	if (callbacks) {
-		const downTimeOffset = evt?.timeStamp ?? Date.now();
+		const downTimeOffset = 0;
+
 		const e: KeyBindingEvent = {
 			downTime,
 			downTimeOffset,
@@ -279,8 +280,8 @@ export function useKeyBindingAtom(
 	return keyBindings;
 }
 
-let currentKeyDownEvent: ((evt: KeyboardEvent) => void) | undefined = undefined;
-let currentKeyUpEvent: ((evt: KeyboardEvent) => void) | undefined = undefined;
+let currentKeyDownEvent: ((evt: KeyboardEvent) => void) | undefined;
+let currentKeyUpEvent: ((evt: KeyboardEvent) => void) | undefined;
 
 export function stopRecordingShortcut() {
 	if (currentKeyDownEvent) {
