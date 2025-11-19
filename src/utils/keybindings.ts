@@ -82,14 +82,13 @@ function removeSideOfKeyCode(code: string) {
 	return code;
 }
 
-const bufferedKeys = new Set<string>();
 const pressingKeys = new Set<string>();
 const registeredKeyBindings = new Map<string, Set<KeyBindingCallback>>();
 let downTime = 0;
 window.addEventListener("keydown", (evt) => {
+	if (evt.repeat) return;
 	if (isEditing(evt)) {
 		pressingKeys.clear();
-		bufferedKeys.clear();
 		return;
 	}
 	if (pressingKeys.size === 0) {
@@ -99,7 +98,7 @@ window.addEventListener("keydown", (evt) => {
 	const code = removeSideOfKeyCode(evt.code);
 
 	// 阻止空格滚动
-	if (evt.keyCode === 32 && evt.target === document.body) {
+	if (evt.code === "Space" && evt.target === document.body) {
 		evt.preventDefault();
 		evt.stopPropagation();
 	}
@@ -111,57 +110,42 @@ window.addEventListener("keydown", (evt) => {
 	// 	}
 	// }
 	pressingKeys.add(code);
-	bufferedKeys.add(code);
-});
-let invoked = false;
-window.addEventListener("keyup", (evt) => {
-	if (isEditing(evt)) {
-		pressingKeys.clear();
-		bufferedKeys.clear();
-		return;
-	}
+	const joined = [...pressingKeys].join(" + ").trim();
+	const callbacks = registeredKeyBindings.get(joined);
 
-	const code = removeSideOfKeyCode(evt.code);
-	if (bufferedKeys.size > 0) {
-		const joined = [...pressingKeys].join(" + ").trim();
-		bufferedKeys.clear();
-		const callbacks = registeredKeyBindings.get(joined);
-
-		if (callbacks) {
-			const downTimeOffset = evt.timeStamp - downTime;
-			const e: KeyBindingEvent = {
-				downTime,
-				downTimeOffset,
-			};
-			for (const cb of callbacks) {
-				try {
-					cb(e);
-				} catch (err) {
-					warn("Error in key binding ", joined, "callback", err);
-				}
+	if (callbacks) {
+		const downTimeOffset = 0;
+		const e: KeyBindingEvent = {
+			downTime,
+			downTimeOffset,
+		};
+		for (const cb of callbacks) {
+			try {
+				cb(e);
+			} catch (err) {
+				warn("Error in key binding ", joined, "callback", err);
 			}
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.stopImmediatePropagation();
-			invoked = true;
 		}
-	} else {
-		invoked = false;
-	}
-	if (invoked) {
 		evt.preventDefault();
 		evt.stopPropagation();
 		evt.stopImmediatePropagation();
 	}
+});
+
+window.addEventListener("keyup", (evt) => {
+	if (isEditing(evt)) {
+		pressingKeys.clear();
+		return;
+	}
+
+	const code = removeSideOfKeyCode(evt.code);
 	pressingKeys.delete(code);
 });
 window.addEventListener("blur", () => {
 	pressingKeys.clear();
-	bufferedKeys.clear();
 });
 window.addEventListener("focus", () => {
 	pressingKeys.clear();
-	bufferedKeys.clear();
 });
 
 export function forceInvokeKeyBindingAtom(
