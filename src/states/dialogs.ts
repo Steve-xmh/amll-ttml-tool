@@ -7,6 +7,7 @@ export const latencyTestDialogAtom = atom(false);
 export const submitToAMLLDBDialogAtom = atom(false);
 export const splitWordDialogAtom = atom(false);
 export const advancedSegmentationDialogAtom = atom(false);
+export const timeShiftDialogAtom = atom(false);
 
 export const confirmDialogAtom = atom<{
 	open: boolean;

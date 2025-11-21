@@ -22,6 +22,7 @@ import {
 	metadataEditorDialogAtom,
 	settingsDialogAtom,
 	submitToAMLLDBDialogAtom,
+	timeShiftDialogAtom,
 } from "$/states/dialogs.ts";
 import {
 	keyDeleteSelectionAtom,
@@ -91,6 +92,7 @@ export const TopMenu: FC = () => {
 	const setAdvancedSegmentationDialog = useSetAtom(
 		advancedSegmentationDialogAtom,
 	);
+	const setTimeShiftDialog = useSetAtom(timeShiftDialogAtom);
 
 	const onNewFile = useCallback(() => {
 		const action = () => newLyricLine();
@@ -368,6 +370,10 @@ export const TopMenu: FC = () => {
 		});
 	}, [editLyricLines]);
 
+	const onOpenTimeShift = useCallback(() => {
+		setTimeShiftDialog(true);
+	}, [setTimeShiftDialog]);
+
 	return (
 		<Flex
 			p="2"
@@ -495,6 +501,10 @@ export const TopMenu: FC = () => {
 									shortcut={formatKeyBindings(deleteSelectionKey)}
 								>
 									<Trans i18nKey="contextMenu.deleteWords">删除选定单词</Trans>
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								<DropdownMenu.Item onSelect={onOpenTimeShift}>
+									{t("topBar.menu.timeShift", "平移时间...")}
 								</DropdownMenu.Item>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Item onSelect={onOpenMetadataEditor}>
@@ -671,6 +681,10 @@ export const TopMenu: FC = () => {
 								shortcut={formatKeyBindings(deleteSelectionKey)}
 							>
 								<Trans i18nKey="contextMenu.deleteWords">删除选定单词</Trans>
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onSelect={onOpenTimeShift}>
+								{t("topBar.menu.timeShift", "平移时间...")}
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={onOpenMetadataEditor}>

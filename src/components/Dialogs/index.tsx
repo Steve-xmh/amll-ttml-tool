@@ -8,6 +8,7 @@ import { HistoryRestoreDialog } from "./HistoryRestore.tsx";
 import { LatencyTestDialog } from "./latency-test";
 import { NoticeDialog } from "./notice.tsx";
 import { SplitWordDialog } from "./split-word";
+import { TimeShiftDialog } from "./TimeShift.tsx";
 
 export const Dialogs = () => {
 	return (
@@ -22,6 +23,7 @@ export const Dialogs = () => {
 			<ConfirmationDialog />
 			<HistoryRestoreDialog />
 			<AdvancedSegmentationDialog />
+			<TimeShiftDialog />
 		</>
 	);
 };

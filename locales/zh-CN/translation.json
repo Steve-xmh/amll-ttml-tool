@@ -345,6 +345,7 @@
 			"unselectAllLines": "取消选中所有歌词行",
 			"invertSelectAllLines": "反选所有歌词行",
 			"selectWordsOfMatchedSelection": "选择单词匹配项",
+			"timeShift": "平移时间...",
 			"editMetadata": "编辑歌词元数据",
 			"tool": "工具",
 			"splitWordBySimpleMethod": "使用简单方式对歌词行分词",
@@ -444,5 +445,21 @@
 		"offlineReady": "网站已成功离线缓存，后续可离线访问本网页",
 		"updateRefresh": "网站已更新，刷新网页以使用最新版本！",
 		"refresh": "刷新"
+	},
+	"timeShiftDialog": {
+		"title": "平移时间",
+		"description": "批量调整歌词行的时间戳。",
+		"direction": "方向",
+		"delay": "延后 (+)",
+		"advance": "提前 (-)",
+		"amount": "偏移量 (毫秒)",
+		"scope": "应用于",
+		"scope.all": "所有行",
+		"scope.selected": "所选行",
+		"scope.selectedFollowing": "所选行及其后续",
+		"scope.custom": "自定义范围",
+		"fromLine": "从",
+		"toLine": "行 到",
+		"line": "行"
 	}
 }

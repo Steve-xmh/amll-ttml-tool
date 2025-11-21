@@ -72,6 +72,7 @@
 			"openFromClipboard": "Open TTML from clipboard",
 			"saveLyricToClipboard": "Save TTML to clipboard",
 			"selectWordsOfMatchedSelection": "Select words matching selection",
+			"timeShift": "Time Shift...",
 			"editMetadata": "Edit lyrics metadata…",
 			"help": "Help",
 			"loadingJieba": "Loading Jieba tokenizer module",
@@ -462,5 +463,20 @@
 		"offlineReady": "Site successfully cached for offline use",
 		"updateRefresh": "Site updated, refresh to use the latest version!",
 		"refresh": "Refresh"
+	},
+	"timeShiftDialog": {
+		"title": "Time Shift",
+		"direction": "Direction",
+		"delay": "Delay (+)",
+		"advance": "Advance (-)",
+		"amount": "Offset (ms)",
+		"scope": "Scope",
+		"scope.all": "All lines",
+		"scope.selected": "Selected lines",
+		"scope.selectedFollowing": "Selected lines & following",
+		"scope.custom": "Custom range",
+		"fromLine": "From line",
+		"toLine": "to line",
+		"line": ""
 	}
 }
