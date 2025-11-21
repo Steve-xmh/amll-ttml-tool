@@ -21,6 +21,11 @@ import { useAtom } from "jotai";
 import { type FC, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
+	highlightActiveWordAtom,
+	highlightErrorsAtom,
+	showTimestampsAtom,
+} from "$/states/config.ts";
+import {
 	keySyncEndAtom,
 	keySyncNextAtom,
 	keySyncStartAtom,
@@ -68,6 +73,11 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 		);
 		const [showTouchSyncPanel, setShowTouchSyncPanel] = useAtom(
 			showTouchSyncPanelAtom,
+		);
+		const [showTimestamps, setShowTimestamps] = useAtom(showTimestampsAtom);
+		const [highlightErrors, setHighlightErrors] = useAtom(highlightErrorsAtom);
+		const [highlightActiveWord, setHighlightActiveWord] = useAtom(
+			highlightActiveWordAtom,
 		);
 		const [syncTimeOffset, setSyncTimeOffset] = useAtom(syncTimeOffsetAtom);
 		const { t } = useTranslation();
@@ -119,6 +129,33 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 						<Checkbox
 							checked={showTouchSyncPanel}
 							onCheckedChange={(v) => setShowTouchSyncPanel(!!v)}
+						/>
+					</Grid>
+				</RibbonSection>
+				<RibbonSection
+					label={t("ribbonBar.syncMode.displayOptions", "显示选项")}
+				>
+					<Grid columns="0fr 0fr" gap="2" gapY="1" flexGrow="1" align="center">
+						<Text wrap="nowrap" size="1">
+							{t("ribbonBar.syncMode.showTimestamps", "显示时间戳")}
+						</Text>
+						<Checkbox
+							checked={showTimestamps}
+							onCheckedChange={(v) => setShowTimestamps(!!v)}
+						/>
+						<Text wrap="nowrap" size="1">
+							{t("ribbonBar.syncMode.highlightActiveWord", "高亮当前音节")}
+						</Text>
+						<Checkbox
+							checked={highlightActiveWord}
+							onCheckedChange={(v) => setHighlightActiveWord(!!v)}
+						/>
+						<Text wrap="nowrap" size="1">
+							{t("ribbonBar.syncMode.highlightErrors", "高亮错误")}
+						</Text>
+						<Checkbox
+							checked={highlightErrors}
+							onCheckedChange={(v) => setHighlightErrors(!!v)}
 						/>
 					</Grid>
 				</RibbonSection>

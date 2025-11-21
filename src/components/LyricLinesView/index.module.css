@@ -168,10 +168,26 @@
 	&.sync {
 		flex-wrap: nowrap;
 		overflow: auto;
-		padding: 0 var(--space-3);
+		padding: var(--space-1) var(--space-3);
 		gap: 0;
 		border-left: solid 1px var(--gray-a5);
 		border-right: solid 1px var(--gray-a5);
+
+		&.hideTimestamps {
+			border-left: none;
+			border-right: none;
+
+			& .lyricWord.sync {
+				padding: var(--space-4) var(--space-4);
+				min-width: 3em;
+				justify-content: center;
+			}
+
+			& > :first-child .lyricWord.sync {
+				border-left: solid 1px var(--gray-a5);
+			}
+		}
+
 		&::-webkit-scrollbar {
 			border-top: solid 1px var(--gray-a5);
 		}

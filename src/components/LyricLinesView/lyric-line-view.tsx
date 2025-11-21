@@ -40,7 +40,10 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
-import { enablePerWordRomanizationAtom } from "$/states/config.ts";
+import {
+	enablePerWordRomanizationAtom,
+	showTimestampsAtom,
+} from "$/states/config.ts";
 import {
 	lyricLinesAtom,
 	selectedLinesAtom,
@@ -198,6 +201,7 @@ export const LyricLineView: FC<{
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
+	const showTimestamps = useAtomValue(showTimestampsAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const store = useStore();
 	const wordsContainerRef = useRef<HTMLDivElement>(null);
@@ -459,6 +463,7 @@ export const LyricLineView: FC<{
 										styles.lyricWordsContainer,
 										toolMode === ToolMode.Edit && styles.edit,
 										toolMode === ToolMode.Sync && styles.sync,
+										!showTimestamps && styles.hideTimestamps,
 									)}
 									ref={wordsContainerRef}
 								>
@@ -582,7 +587,7 @@ export const LyricLineView: FC<{
 									</IconButton>
 								</Flex>
 							)}
-							{toolMode === ToolMode.Sync && (
+							{toolMode === ToolMode.Sync && showTimestamps && (
 								<Flex pr="3" gap="1" direction="column" align="stretch">
 									<div className={styles.startTime} ref={startTimeRef}>
 										{msToTimestamp(line.startTime)}

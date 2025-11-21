@@ -36,7 +36,13 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { currentTimeAtom } from "$/states/audio";
-import { LayoutMode, layoutModeAtom } from "$/states/config.ts";
+import {
+	highlightActiveWordAtom,
+	highlightErrorsAtom,
+	LayoutMode,
+	layoutModeAtom,
+	showTimestampsAtom,
+} from "$/states/config.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import {
 	lyricLinesAtom,
@@ -645,6 +651,9 @@ const LyricWorldViewSync: FC<{
 	const setSelectedWords = useSetImmerAtom(selectedWordsAtom);
 	const setSelectedLines = useSetImmerAtom(selectedLinesAtom);
 	const visualizeTimestampUpdate = useAtomValue(visualizeTimestampUpdateAtom);
+	const showTimestamps = useAtomValue(showTimestampsAtom);
+	const highlightErrors = useAtomValue(highlightErrorsAtom);
+	const highlightActiveWord = useAtomValue(highlightActiveWordAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const isWordBlank = useWordBlank(word.word);
 	const displayWord = useDisplayWord(word.word, isWordBlank);
@@ -708,10 +717,24 @@ const LyricWorldViewSync: FC<{
 				styles.sync,
 				isWordSelected && styles.selected,
 				isWordBlank && styles.blank,
-				isWordActive && styles.active,
-				hasError && toolMode === ToolMode.Edit && styles.error,
+				isWordActive && highlightActiveWord && styles.active,
+				hasError &&
+					(toolMode === ToolMode.Edit ||
+						(toolMode === ToolMode.Sync &&
+							showTimestamps &&
+							highlightErrors)) &&
+					styles.error,
 			),
-		[isWordBlank, isWordSelected, isWordActive, hasError, toolMode],
+		[
+			isWordBlank,
+			isWordSelected,
+			isWordActive,
+			hasError,
+			toolMode,
+			highlightActiveWord,
+			showTimestamps,
+			highlightErrors,
+		],
 	);
 
 	return (
@@ -730,13 +753,17 @@ const LyricWorldViewSync: FC<{
 				});
 			}}
 		>
-			<div className={classNames(styles.startTime)} ref={startTimeRef}>
-				{msToTimestamp(word.startTime)}
-			</div>
+			{showTimestamps && (
+				<div className={classNames(styles.startTime)} ref={startTimeRef}>
+					{msToTimestamp(word.startTime)}
+				</div>
+			)}
 			<div className={styles.displayWord}>{displayWord}</div>
-			<div className={classNames(styles.endTime)} ref={endTimeRef}>
-				{msToTimestamp(word.endTime)}
-			</div>
+			{showTimestamps && (
+				<div className={classNames(styles.endTime)} ref={endTimeRef}>
+					{msToTimestamp(word.endTime)}
+				</div>
+			)}
 		</div>
 	);
 };
