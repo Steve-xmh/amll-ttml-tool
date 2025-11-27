@@ -229,7 +229,7 @@ export default function exportTTMLText(
 				if (bgLine.romanLyric) {
 					const span = doc.createElement("span");
 					span.setAttribute("ttm:role", "x-roman");
-					span.appendChild(doc.createTextNode(`(${bgLine.romanLyric})`));
+					span.appendChild(doc.createTextNode(bgLine.romanLyric));
 					bgLineSpan.appendChild(span);
 				}
 
