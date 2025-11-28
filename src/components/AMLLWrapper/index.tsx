@@ -3,6 +3,7 @@
 // #else
 import "@applemusic-like-lyrics/core/style.css";
 // #endif
+
 import {
 	LyricPlayer,
 	type LyricPlayerRef,
