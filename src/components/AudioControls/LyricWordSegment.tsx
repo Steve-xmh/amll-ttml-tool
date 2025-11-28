@@ -1,10 +1,11 @@
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
 	type FC,
 	type KeyboardEvent,
 	type MouseEvent,
 	useContext,
 } from "react";
+import { showPerWordRomanizationAtom } from "$/states/config.ts";
 import { selectedWordIdAtom, timelineDragAtom } from "$/states/dnd.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import type { WordSegment } from "$/utils/segment-processing.ts";
@@ -26,8 +27,9 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	const setTimelineDrag = useSetAtom(timelineDragAtom);
 	const { zoom, scrollLeft, scrollContainerRef } =
 		useContext(SpectrogramContext);
+	const showPerWordRomanization = useAtomValue(showPerWordRomanizationAtom);
 
-	const { startTime, endTime, word } = segment;
+	const { startTime, endTime, word, romanWord } = segment;
 
 	if (startTime == null || endTime == null || endTime <= startTime) {
 		return null;
@@ -93,6 +95,9 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 		backgroundColor: isSelected ? "var(--accent-a6)" : "transparent",
 	};
 
+	const hasRoman =
+		showPerWordRomanization && romanWord && romanWord.trim() !== "";
+
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: 在这里用 <button> 显然不正确
 		<div
@@ -105,7 +110,14 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 			tabIndex={0}
 			onKeyDown={handleKeyDown}
 		>
-			{word}
+			{hasRoman ? (
+				<>
+					<span className={styles.romanText}>{romanWord}</span>
+					<span className={styles.originText}>{word}</span>
+				</>
+			) : (
+				word
+			)}
 		</div>
 	);
 };

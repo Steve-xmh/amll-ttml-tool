@@ -41,6 +41,7 @@ import {
 	highlightErrorsAtom,
 	LayoutMode,
 	layoutModeAtom,
+	showPerWordRomanizationAtom,
 	showTimestampsAtom,
 } from "$/states/config.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
@@ -654,9 +655,15 @@ const LyricWorldViewSync: FC<{
 	const showTimestamps = useAtomValue(showTimestampsAtom);
 	const highlightErrors = useAtomValue(highlightErrorsAtom);
 	const highlightActiveWord = useAtomValue(highlightActiveWordAtom);
+	const showPerWordRomanization = useAtomValue(showPerWordRomanizationAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const isWordBlank = useWordBlank(word.word);
-	const displayWord = useDisplayWord(word.word, isWordBlank);
+	const displayWord = useDisplayWord(
+		word.word,
+		isWordBlank,
+		word.romanWord,
+		showPerWordRomanization,
+	);
 
 	const startTimeRef = useRef<HTMLDivElement>(null);
 	const endTimeRef = useRef<HTMLDivElement>(null);
@@ -768,16 +775,23 @@ const LyricWorldViewSync: FC<{
 	);
 };
 
-const useDisplayWord = (word: string, isWordBlank: boolean) => {
+const useDisplayWord = (
+	word: string,
+	isWordBlank: boolean,
+	romanWord?: string,
+	showPerWordRomanization?: boolean,
+) => {
 	const { t } = useTranslation();
 	return useMemo(() => {
+		if (showPerWordRomanization && romanWord && romanWord.trim() !== "")
+			return romanWord;
 		if (word === "") return t("lyricWordView.empty", "空白");
 		if (isWordBlank)
 			return t("lyricWordView.spaceCount", "空格 x{count}", {
 				count: word.length,
 			});
 		return word;
-	}, [word, isWordBlank, t]);
+	}, [word, isWordBlank, t, romanWord, showPerWordRomanization]);
 };
 
 export const LyricWordView: FC<{

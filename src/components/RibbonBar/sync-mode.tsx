@@ -17,12 +17,14 @@ import {
 	Text,
 	TextField,
 } from "@radix-ui/themes";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { type FC, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
+	enablePerWordRomanizationAtom,
 	highlightActiveWordAtom,
 	highlightErrorsAtom,
+	showPerWordRomanizationAtom,
 	showTimestampsAtom,
 } from "$/states/config.ts";
 import {
@@ -78,6 +80,12 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 		const [highlightErrors, setHighlightErrors] = useAtom(highlightErrorsAtom);
 		const [highlightActiveWord, setHighlightActiveWord] = useAtom(
 			highlightActiveWordAtom,
+		);
+		const [showPerWordRomanization, setShowPerWordRomanization] = useAtom(
+			showPerWordRomanizationAtom,
+		);
+		const enablePerWordRomanization = useAtomValue(
+			enablePerWordRomanizationAtom,
 		);
 		const [syncTimeOffset, setSyncTimeOffset] = useAtom(syncTimeOffsetAtom);
 		const { t } = useTranslation();
@@ -157,6 +165,20 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							checked={highlightErrors}
 							onCheckedChange={(v) => setHighlightErrors(!!v)}
 						/>
+						{enablePerWordRomanization && (
+							<>
+								<Text wrap="nowrap" size="1">
+									{t(
+										"ribbonBar.syncMode.showPerWordRomanization",
+										"显示逐字音译",
+									)}
+								</Text>
+								<Checkbox
+									checked={showPerWordRomanization}
+									onCheckedChange={(v) => setShowPerWordRomanization(!!v)}
+								/>
+							</>
+						)}
 					</Grid>
 				</RibbonSection>
 				<RibbonSection

@@ -6,14 +6,14 @@
 	border-radius: var(--radius-1);
 	color: var(--gray-12);
 	display: flex;
-	align-items: normal;
-	justify-content: center;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
 	user-select: none;
 	white-space: nowrap;
 	overflow: hidden;
-	text-overflow: ellipsis;
-	padding: 0 4px;
-	font-size: 15px;
+	padding: 4px 4px 0 4px;
+	font-size: 16px;
 	box-sizing: border-box;
 	pointer-events: auto;
 }
@@ -22,4 +22,22 @@
 .wordSegment:focus-visible {
 	border-color: var(--accent-13);
 	outline: none;
+}
+
+.romanText {
+	font-size: 12px;
+	line-height: 1.2;
+	color: var(--gray-11);
+	width: 100%;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.originText {
+	line-height: 1;
+	width: 100%;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

@@ -47,3 +47,8 @@ export const highlightActiveWordAtom = atomWithStorage(
 );
 
 export const highlightErrorsAtom = atomWithStorage("highlightErrors", false);
+
+export const showPerWordRomanizationAtom = atomWithStorage(
+	"showRomanization",
+	false,
+);

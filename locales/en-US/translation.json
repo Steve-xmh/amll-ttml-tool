@@ -290,7 +290,8 @@
 			"keyBindingReference": "Hotkey Cheatsheet",
 			"startSync": "Mark Begin",
 			"continuousSync": "Commit",
-			"endSync": "Mark End"
+			"endSync": "Mark End",
+			"showPerWordRomanization": "Show Per-Word Romanization"
 		},
 		"previewMode": {
 			"lyrics": "Lyrics",

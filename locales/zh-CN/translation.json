@@ -298,7 +298,8 @@
 			"keyBindingReference": "打轴键位速查",
 			"startSync": "起始轴",
 			"continuousSync": "连续轴",
-			"endSync": "结束轴"
+			"endSync": "结束轴",
+			"showPerWordRomanization": "显示逐字音译"
 		}
 	},
 	"topBar": {
