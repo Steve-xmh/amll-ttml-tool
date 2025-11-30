@@ -46,10 +46,6 @@ export const LyricLinesView: FC = forwardRef<HTMLDivElement>((_props, ref) => {
 		() =>
 			atom((get) => {
 				if (toolMode !== ToolMode.Sync) return;
-				const viewEl = viewElRef.current;
-				if (!viewEl) return;
-				const viewContainerEl = viewEl.parentElement;
-				if (!viewContainerEl) return;
 				const selectedLines = get(selectedLinesAtom);
 				let scrollToIndex = Number.NaN;
 				let i = 0;

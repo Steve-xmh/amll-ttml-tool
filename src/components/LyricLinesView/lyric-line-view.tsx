@@ -95,10 +95,10 @@ const LyricLineScroller = ({
 
 	useEffect(() => {
 		if (Number.isNaN(scrollToIndex)) return;
-		console.log({ scrollToIndex, wordsContainer });
+		// console.log({ scrollToIndex, wordsContainer });
 		if (!wordsContainer) return;
 		const wordEl = wordsContainer.children[scrollToIndex] as HTMLElement;
-		console.log({ wordEl, wordsContainer });
+		// console.log({ wordEl, wordsContainer });
 		if (!wordEl) return;
 		wordsContainer.scrollTo({
 			left: wordEl.offsetLeft - wordsContainer.clientWidth / 2,
