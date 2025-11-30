@@ -16,6 +16,148 @@
 			"description": "在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词"
 		}
 	},
+	"spectrogram": {
+		"invalidEndTime": "不能选择此结束时间"
+	},
+	"ribbonBar": {
+		"editMode": {
+			"startTime": "起始时间",
+			"endTime": "结束时间",
+			"multipleValues": "多个值…",
+			"syllableMode": "逐字模式",
+			"showAllSyllables": "显示所有音节",
+			"new": "新建",
+			"lyricLine": "歌词行",
+			"lineTiming": "行时间戳",
+			"lineProperties": "行属性",
+			"bgLyric": "背景歌词",
+			"duetLyric": "对唱歌词",
+			"ignoreSync": "忽略打轴",
+			"wordTiming": "词时间戳",
+			"emptyBeatCount": "空拍数量",
+			"wordProperties": "单词属性",
+			"wordContent": "单词内容",
+			"obscene": "不雅用语",
+			"secondaryContent": "次要内容",
+			"translatedLyric": "翻译歌词",
+			"romanLyric": "音译歌词",
+			"layoutMode": "布局模式",
+			"syllableDisplayMode": "音节显示模式"
+		},
+		"previewMode": {
+			"lyrics": "歌词",
+			"showTranslation": "显示翻译",
+			"showRoman": "显示音译",
+			"word": "单词",
+			"fadeWidth": "过渡宽度"
+		},
+		"syncMode": {
+			"currentEmptyBeat": "当前空拍",
+			"syncAdjustment": "打轴调整",
+			"timeOffset": "时间戳位移",
+			"assistSettings": "辅助设置",
+			"showTimestampUpdate": "呈现时间戳更新",
+			"touchSyncPanel": "触控打轴辅助面板",
+			"displayOptions": "显示选项",
+			"showTimestamps": "显示时间戳",
+			"highlightActiveWord": "高亮当前音节",
+			"highlightErrors": "高亮错误",
+			"showPerWordRomanization": "显示逐字音译",
+			"keyBindingReference": "打轴键位速查",
+			"startSync": "起始轴",
+			"continuousSync": "连续轴",
+			"endSync": "结束轴"
+		},
+		"loading": "面板载入中…"
+	},
+	"common": {
+		"clickToSet": "点击设置",
+		"cancel": "取消",
+		"apply": "应用",
+		"about": "关于",
+		"remove": "移除",
+		"fileNamePlaceholder": "文件名"
+	},
+	"audioPanel": {
+		"volume": "音量",
+		"gain": "频谱增益",
+		"playbackRate": "播放速度",
+		"clickToLoadMusic": "点击图标按钮以加载音乐",
+		"playPause": "播放 / 暂停音乐",
+		"expandSpectrogram": "展开 / 收起频谱图"
+	},
+	"splitWordDialog": {
+		"spaceCount": "空格x{count}",
+		"empty": "空白",
+		"title": "拆分/替换单词",
+		"tip": "拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除",
+		"applyToAll": "将此拆分/替换规则应用于所有相同的单词",
+		"actionButton": "确认"
+	},
+	"advancedSegmentDialog": {
+		"test": {
+			"outputError": "分词预览出错",
+			"title": "分词测试",
+			"input": "输入一行歌词或单词进行测试...",
+			"output": "预览结果:"
+		},
+		"title": "高级分词",
+		"scope": {
+			"title": "应用范围",
+			"all": "所有歌词行",
+			"range": {
+				"from": "从第",
+				"to": "行到第",
+				"end": "行"
+			}
+		},
+		"rules": {
+			"title": "自动分词规则",
+			"cjk": "CJK 按字符分词",
+			"english": "英文单词按音节分词"
+		},
+		"tip": "分词后，原音节的时长会按照字符数和权重重新分配给新的音节",
+		"postProcess": {
+			"title": "后处理",
+			"punct": {
+				"caption": "标点符号处理:",
+				"merge": "合并到前一个音节",
+				"standalone": "设为新音节",
+				"weight": "标点时长权重:"
+			},
+			"empty": "移除空白音节"
+		},
+		"custom": {
+			"title": "自定义分词规则",
+			"input": "输入单词进行手动分割...",
+			"add": "添加到自定义规则",
+			"list": "自定义规则列表:"
+		},
+		"ignore": {
+			"title": "忽略列表",
+			"placeholder": "每行一个单词，在此列表中的单词将不会被自动分词"
+		}
+	},
+	"confirmDialog": {
+		"cancel": "取消",
+		"confirm": "确定",
+		"importFile": {
+			"title": "确认导入歌词",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要导入歌词吗？"
+		},
+		"newFile": {
+			"title": "确认新建文件",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要新建文件吗？"
+		},
+		"openFile": {
+			"title": "确认打开文件",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"
+		},
+		"openFromClipboard": {
+			"title": "确认从剪贴板打开",
+			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？"
+		}
+	},
 	"historyRestoreDialog": {
 		"confirm": {
 			"title": "确认恢复",
@@ -29,16 +171,31 @@
 		"noHistory": "没有可用的历史记录",
 		"cancelButton": "取消"
 	},
+	"textImportDialog": {
+		"title": "导入纯文本歌词",
+		"actionButton": "导入歌词",
+		"contentMode": {
+			"caption": "导入模式",
+			"lyric": "仅歌词",
+			"withTranslation": "歌词和翻译歌词",
+			"withRoman": "歌词和音译歌词",
+			"withBoth": "歌词和翻译、音译歌词"
+		},
+		"separationMode": {
+			"caption": "歌词分行（翻译和音译）模式",
+			"multipleLine": "多行交错分隔",
+			"sameLine": "同行分隔"
+		},
+		"separator": "歌词行分隔符",
+		"swapTransAndRoman": "交换翻译行和音译行",
+		"wordSeparator": "单词分隔符",
+		"enableSpecialPrefix": "启用特殊前缀",
+		"bgLyricPrefix": "背景歌词前缀",
+		"duetLyricPrefix": "对唱歌词前缀",
+		"enableEmptyBeat": "启用空拍",
+		"emptyBeatSymbol": "空拍符号"
+	},
 	"metadataDialog": {
-		"title": "元数据编辑器",
-		"key": "元数据类型",
-		"value": "值",
-		"empty": "无任何元数据",
-		"addValue": "添加",
-		"addKeyValue": "添加新键值",
-		"customKey": "自定义键名",
-		"addPresets": "一键添加所有预设键",
-		"info": "了解详情",
 		"builtinOptions": {
 			"musicName": "歌曲名称",
 			"artists": "歌曲的艺术家",
@@ -58,7 +215,16 @@
 			"ttmlAuthorGithubInvalidMsg": "GitHub ID 应为纯数字",
 			"ttmlAuthorGithubLogin": "逐词歌词作者 GitHub 用户名",
 			"ttmlAuthorGithubLoginInvalidMsg": "GitHub 用户名应为不长于 39 字符的字母、数字或短横线"
-		}
+		},
+		"title": "元数据编辑器",
+		"key": "元数据类型",
+		"value": "值",
+		"empty": "无任何元数据",
+		"addValue": "添加",
+		"addKeyValue": "添加新键值",
+		"customKey": "自定义键名",
+		"addPresets": "一键添加所有预设键",
+		"info": "了解详情"
 	},
 	"aboutModal": {
 		"appName": "Apple Music-like lyrics TTML Tools",
@@ -83,44 +249,35 @@
 			"syncJudgeModeDesc": "设置打轴时间戳的判定模式，默认为\"首个按键按下时间\"。",
 			"syncJudgeModeOptions": {
 				"firstKeyDown": "首个按键按下时间",
-				"firstKeyDownLegacy": "首个按键按下时间（旧版）",
 				"lastKeyUp": "最后一个按键抬起时间",
-				"middleKey": "取按键按下和抬起的中间值"
+				"middleKey": "取按键按下和抬起的中间值",
+				"firstKeyDownLegacy": "首个按键按下时间（旧版）"
 			},
+			"volume": "音乐音量",
+			"playbackRate": "播放速度",
 			"autosave": {
 				"enable": "启用自动保存",
 				"interval": "保存间隔 (分钟)",
 				"limit": "保留快照数量"
-			},
-			"volume": "音乐音量",
-			"playbackRate": "播放速度"
+			}
+		},
+		"experimental": {
+			"perWordRomanization": "启用逐字音译"
 		},
 		"spectrogram": {
 			"palette": "配色方案",
 			"paletteCustom": "自定义",
 			"gradientEditorDesc": "Pos 0.0 对应最安静的部分，1.0 对应最响亮的部分。建议 Pos 越大，使用亮度越高的颜色。",
 			"addStop": "添加色标"
-		},
-		"experimental": {
-			"perWordRomanization": "启用逐字音译"
 		}
-	},
-	"audioPanel": {
-		"volume": "音量",
-		"gain": "频谱增益",
-		"playbackRate": "播放速度",
-		"clickToLoadMusic": "点击图标按钮以加载音乐",
-		"playPause": "播放 / 暂停音乐",
-		"expandSpectrogram": "展开 / 收起频谱图",
-		"waitForSpectrogram": "等待频谱图装载…"
 	},
 	"settingsDialog": {
 		"title": "首选项",
 		"tab": {
 			"common": "常规",
 			"keybindings": "按键绑定",
-			"experimental": "实验性",
-			"spectrogram": "频谱图"
+			"spectrogram": "频谱图",
+			"experimental": "实验性"
 		},
 		"keybindings": {
 			"newFile": "新建文件",
@@ -161,48 +318,6 @@
 			"latencyTest": "音频/输入延迟测试"
 		}
 	},
-	"textImportDialog": {
-		"title": "导入纯文本歌词",
-		"actionButton": "导入歌词",
-		"contentMode": {
-			"caption": "导入模式",
-			"lyric": "仅歌词",
-			"withTranslation": "歌词和翻译歌词",
-			"withRoman": "歌词和音译歌词",
-			"withBoth": "歌词和翻译、音译歌词"
-		},
-		"separationMode": {
-			"caption": "歌词分行（翻译和音译）模式",
-			"multipleLine": "多行交错分隔",
-			"sameLine": "同行分隔"
-		},
-		"separator": "歌词行分隔符",
-		"swapTransAndRoman": "交换翻译行和音译行",
-		"wordSeparator": "单词分隔符",
-		"enableSpecialPrefix": "启用特殊前缀",
-		"bgLyricPrefix": "背景歌词前缀",
-		"duetLyricPrefix": "对唱歌词前缀",
-		"enableEmptyBeat": "启用空拍",
-		"emptyBeatSymbol": "空拍符号"
-	},
-	"common": {
-		"about": "关于",
-		"fileNamePlaceholder": "文件名",
-		"remove": "移除",
-		"apply": "应用",
-		"cancel": "取消"
-	},
-	"splitWordDialog": {
-		"title": "拆分/替换单词",
-		"tip": "拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除",
-		"originalWord": "拆分/替换模板",
-		"delimiter": "分隔符",
-		"previewTitle": "拆分预览",
-		"spaceCount": "空格x{count}",
-		"empty": "空白",
-		"actionButton": "确认",
-		"applyToAll": "将此拆分/替换规则应用于所有相同的单词"
-	},
 	"submitToAMLLDB": {
 		"validation": {
 			"missingMusicName": "元数据缺少音乐名称",
@@ -235,72 +350,47 @@
 		"submitInstructions": "请输入以下提交信息然后跳转到 Github 议题提交页面！",
 		"closeWarning": "关闭上述警告信息"
 	},
+	"timeShiftDialog": {
+		"title": "平移时间",
+		"amount": "偏移量 (毫秒)",
+		"direction": "方向",
+		"advance": "提前 (-)",
+		"delay": "延后 (+)",
+		"scopeLabel": "应用于",
+		"scope": {
+			"all": "所有行",
+			"selected": "所选行",
+			"selectedFollowing": "所选行及其后续",
+			"custom": "自定义范围"
+		},
+		"fromLine": "从",
+		"toLine": "行 到",
+		"line": "行"
+	},
+	"contextMenu": {
+		"bgLyric": "背景歌词",
+		"duetLyric": "对唱歌词",
+		"insertLineBefore": "在前插入新行",
+		"insertLineAfter": "在后插入新行",
+		"copyLine": "复制行",
+		"combineLine": "合并行",
+		"deleteLine": "删除行",
+		"splitReplaceWord": "拆分或替换单词…",
+		"combineWords": "合并单词",
+		"deleteWords": "删除单词",
+		"moveFollowingWordToNewLine": "此后单词拆至新行",
+		"moveWordToNewLine": "选中单词拆至新行"
+	},
 	"lyricLineView": {
 		"translatedLabel": "翻译：",
 		"romanLabel": "音译：",
 		"empty": "无",
-		"insertWord": "插入单词…",
-		"insertLine": "在此插入新行"
+		"insertLine": "在此插入新行",
+		"insertWord": "插入单词…"
 	},
 	"lyricWordView": {
 		"empty": "空白",
 		"spaceCount": "空格 x{count}"
-	},
-	"ribbonBar": {
-		"loading": "面板载入中…",
-		"editMode": {
-			"multipleValues": "多个值…",
-			"new": "新建",
-			"lyricLine": "歌词行",
-			"lineTiming": "行时间戳",
-			"startTime": "起始时间",
-			"endTime": "结束时间",
-			"lineProperties": "行属性",
-			"bgLyric": "背景歌词",
-			"duetLyric": "对唱歌词",
-			"ignoreSync": "忽略打轴",
-			"wordTiming": "词时间戳",
-			"emptyBeatCount": "空拍数量",
-			"wordProperties": "单词属性",
-			"wordContent": "单词内容",
-			"obscene": "不雅用语",
-			"secondaryContent": "次要内容",
-			"translatedLyric": "翻译歌词",
-			"romanLyric": "音译歌词",
-			"layoutMode": "布局模式",
-			"syllableDisplayMode": "音节显示模式",
-			"lineMode": "逐行模式",
-			"syllableMode": "逐字模式",
-			"showAllSyllables": "显示所有音节",
-			"layoutModeOptions": {
-				"simple": "简单模式",
-				"advance": "高级模式"
-			}
-		},
-		"previewMode": {
-			"lyrics": "歌词",
-			"showTranslation": "显示翻译",
-			"showRoman": "显示音译",
-			"word": "单词",
-			"fadeWidth": "过渡宽度"
-		},
-		"syncMode": {
-			"currentEmptyBeat": "当前空拍",
-			"syncAdjustment": "打轴调整",
-			"timeOffset": "时间戳位移",
-			"assistSettings": "辅助设置",
-			"displayOptions": "显示选项",
-			"showTimestampUpdate": "呈现时间戳更新",
-			"showTimestamps": "显示时间戳",
-			"highlightErrors": "高亮错误",
-			"highlightActiveWord": "高亮当前音节",
-			"touchSyncPanel": "触控打轴辅助面板",
-			"keyBindingReference": "打轴键位速查",
-			"startSync": "起始轴",
-			"continuousSync": "连续轴",
-			"endSync": "结束轴",
-			"showPerWordRomanization": "显示逐字音译"
-		}
 	},
 	"topBar": {
 		"modeBtns": {
@@ -310,19 +400,6 @@
 		},
 		"appName": "Apple Music-like Lyrics TTML Tool",
 		"menu": {
-			"tools": {
-				"loadingJieba": "正在加载 Jieba 分词算法模块",
-				"processing": "正在分词中，请稍等…",
-				"completed": "分词完成！",
-				"error": "分词失败，请检查控制台错误输出！"
-			},
-			"file": "文件",
-			"newLyric": "新建 TTML 文件",
-			"openLyric": "打开 TTML 文件",
-			"openFromClipboard": "从剪切板打开 TTML 文件",
-			"saveLyric": "保存 TTML 文件",
-			"restoreFromHistory": "从历史记录恢复…",
-			"saveLyricToClipboard": "保存 TTML 文件到剪切板",
 			"importLyric": {
 				"import": "导入歌词",
 				"fromPlainText": "从纯文本导入…",
@@ -334,7 +411,6 @@
 			},
 			"exportLyric": {
 				"export": "导出歌词…",
-				"toPlainText": "导出为纯文本",
 				"toLyRiC": "导出到 LyRiC",
 				"toESLyRiC": "导出到 ESLyRiC",
 				"toQRC": "导出到 QRC",
@@ -342,6 +418,13 @@
 				"toLrcfySylb": "导出到 Lyricify Syllable",
 				"toASS": "导出到 ASS 字幕"
 			},
+			"file": "文件",
+			"newLyric": "新建 TTML 文件",
+			"openLyric": "打开 TTML 文件",
+			"openFromClipboard": "从剪切板打开 TTML 文件",
+			"saveLyric": "保存 TTML 文件",
+			"restoreFromHistory": "从历史记录恢复…",
+			"saveLyricToClipboard": "保存 TTML 文件到剪切板",
 			"uploadToAMLLDB": "上传到 AMLL 歌词数据库",
 			"edit": "编辑",
 			"undo": "撤销",
@@ -353,118 +436,20 @@
 			"timeShift": "平移时间...",
 			"editMetadata": "编辑歌词元数据",
 			"tool": "工具",
-			"splitWordBySimpleMethod": "使用简单方式对歌词行分词",
-			"splitWordByJieba": "使用 JieBa 对歌词行分词",
-			"splitWordByCompromise": "使用 Compromise 对歌词行分词",
+			"segmentationTools": "分词",
 			"autoSegment": "一键分词",
 			"advancedSegment": "高级分词...",
-			"segmentationTools": "分词",
 			"help": "帮助",
 			"helpDoc": "使用说明"
 		}
 	},
-	"confirmDialog": {
-		"newFile": {
-			"title": "确认新建文件",
-			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要新建文件吗？"
-		},
-		"openFile": {
-			"title": "确认打开文件",
-			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"
-		},
-		"openFromClipboard": {
-			"title": "确认从剪贴板打开",
-			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？"
-		},
-		"importFile": {
-			"title": "确认导入歌词",
-			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要导入歌词吗？"
-		},
-		"confirm": "确定",
-		"cancel": "取消"
-	},
-	"advancedSegmentDialog": {
-		"title": "高级分词",
-		"scope": {
-			"title": "应用范围",
-			"all": "所有歌词行",
-			"range": {
-				"from": "从第",
-				"to": "行到第",
-				"end": "行"
-			}
-		},
-		"rules": {
-			"title": "自动分词规则",
-			"cjk": "CJK 按字符分词",
-			"english": "英文单词按音节分词"
-		},
-		"tip": "分词后，原音节的时长会按照字符数和权重重新分配给新的音节",
-		"postProcess": {
-			"title": "后处理",
-			"punct": {
-				"caption": "标点符号处理:",
-				"merge": "合并到前一个音节",
-				"standalone": "设为新音节",
-				"weight": "标点时长权重:"
-			},
-			"empty": "移除空白音节"
-		},
-		"custom": {
-			"title": "自定义分词规则",
-			"input": "输入单词进行手动分割...",
-			"add": "添加到自定义规则",
-			"list": "自定义规则列表:"
-		},
-		"ignore": {
-			"title": "忽略列表",
-			"placeholder": "每行一个单词，在此列表中的单词将不会被自动分词"
-		},
-		"test": {
-			"title": "分词测试",
-			"input": "输入一行歌词或单词进行测试...",
-			"output": "预览结果:",
-			"outputError": "分词预览出错"
-		}
-	},
-	"contextMenu": {
-		"splitReplaceWord": "拆分或替换单词…",
-		"combineWords": "合并单词",
-		"deleteWords": "删除单词",
-		"moveFollowingWordToNewLine": "此后单词拆至新行",
-		"moveWordToNewLine": "选中单词拆至新行",
-		"bgLyric": "背景歌词",
-		"duetLyric": "对唱歌词",
-		"insertLineBefore": "在前插入新行",
-		"insertLineAfter": "在后插入新行",
-		"copyLine": "复制行",
-		"combineLine": "合并行",
-		"deleteLine": "删除行"
-	},
 	"touchSyncPanel": {
 		"prevWord": "跳上词",
-		"currentWord": "跳本词",
 		"nextWord": "跳下词"
 	},
 	"pwa": {
 		"offlineReady": "网站已成功离线缓存，后续可离线访问本网页",
 		"updateRefresh": "网站已更新，刷新网页以使用最新版本！",
 		"refresh": "刷新"
-	},
-	"timeShiftDialog": {
-		"title": "平移时间",
-		"description": "批量调整歌词行的时间戳。",
-		"direction": "方向",
-		"delay": "延后 (+)",
-		"advance": "提前 (-)",
-		"amount": "偏移量 (毫秒)",
-		"scope": "应用于",
-		"scope.all": "所有行",
-		"scope.selected": "所选行",
-		"scope.selectedFollowing": "所选行及其后续",
-		"scope.custom": "自定义范围",
-		"fromLine": "从",
-		"toLine": "行 到",
-		"line": "行"
 	}
 }

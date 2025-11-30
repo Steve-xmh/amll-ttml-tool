@@ -116,3 +116,24 @@
 	height: 100%;
 	background-color: var(--accent-a9);
 }
+
+.pendingCursor {
+	position: absolute;
+	top: 0;
+	width: 0;
+	height: 100%;
+	border-left: 2px dashed var(--accent-9);
+	z-index: 10;
+	pointer-events: none;
+}
+
+.rangePreviewRegion {
+	height: 100%;
+	background-color: var(--accent-a3);
+	border-top: 1px solid var(--accent-9);
+	border-bottom: 1px solid var(--accent-9);
+	border-radius: var(--radius-1);
+	position: absolute;
+	box-sizing: border-box;
+	pointer-events: auto;
+}

@@ -6,6 +6,7 @@ import {
 	timelineDragAtom,
 } from "$/states/dnd.ts";
 import {
+	editingTimeFieldAtom,
 	SyllableDisplayMode,
 	selectedLinesAtom,
 	syllableDisplayModeAtom,
@@ -42,6 +43,7 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 	const { zoom, scrollLeft, scrollContainerRef } =
 		useContext(SpectrogramContext);
 	const displayMode = useAtomValue(syllableDisplayModeAtom);
+	const editingTimeField = useAtomValue(editingTimeFieldAtom);
 
 	let displayLine: ProcessedLyricLine;
 	if (previewLine && previewLine.id === line.id) {
@@ -52,6 +54,8 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent) => {
+			if (editingTimeField) return;
+
 			if (!displayLine) return;
 			e.stopPropagation();
 
@@ -83,6 +87,7 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 			}
 		},
 		[
+			editingTimeField,
 			displayLine,
 			displayMode,
 			scrollContainerRef,

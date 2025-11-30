@@ -173,7 +173,7 @@ export const TimeShiftDialog = () => {
 
 					<Flex direction="column" gap="2">
 						<Text size="2" weight="bold">
-							{t("timeShiftDialog.scope", "应用于")}
+							{t("timeShiftDialog.scopeLabel", "应用于")}
 						</Text>
 						<RadioGroup.Root
 							value={scope}

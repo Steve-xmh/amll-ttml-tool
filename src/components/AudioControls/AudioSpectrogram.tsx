@@ -1,5 +1,7 @@
 import { Theme } from "@radix-ui/themes";
+import type { Draft } from "immer";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useSetImmerAtom } from "jotai-immer";
 import {
 	type FC,
 	memo,
@@ -10,9 +12,16 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useSpectrogramWorker } from "$/hooks/useSpectrogramWorker.ts";
 import { audioBufferAtom, currentTimeAtom } from "$/states/audio.ts";
 import { isDraggingAtom } from "$/states/dnd.ts";
+import {
+	editingTimeFieldAtom,
+	lyricLinesAtom,
+	requestFocusAtom,
+	selectedLinesAtom,
+} from "$/states/main.ts";
 import {
 	auditionTimeAtom,
 	currentPaletteAtom,
@@ -22,7 +31,9 @@ import {
 	spectrogramZoomAtom,
 } from "$/states/spectrogram.ts";
 import { audioEngine } from "$/utils/audio.ts";
+import { processSingleLine } from "$/utils/segment-processing.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
+import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
 import styles from "./AudioSpectrogram.module.css";
 import { LyricTimelineOverlay } from "./LyricTimelineOverlay.tsx";
 import {
@@ -88,6 +99,121 @@ const TileComponent = memo(
 	},
 );
 
+function tryInitializeZeroTimestampLine(
+	line: Draft<LyricLine>,
+	newStartTime: number,
+	newEndTime: number,
+): boolean {
+	const isAllZero =
+		line.words.length > 0 &&
+		line.words.every((w) => w.startTime === 0 && w.endTime === 0);
+
+	if (isAllZero) {
+		line.startTime = newStartTime;
+		line.endTime = newEndTime;
+		const totalDuration = newEndTime - newStartTime;
+		const perWordDuration = totalDuration / line.words.length;
+
+		line.words.forEach((word, index) => {
+			word.startTime = newStartTime + index * perWordDuration;
+			word.endTime = newStartTime + (index + 1) * perWordDuration;
+		});
+		return true;
+	}
+	return false;
+}
+
+function shiftLineStartTime(line: Draft<LyricLine>, newStartTime: number) {
+	const delta = newStartTime - line.startTime;
+	if (delta !== 0) {
+		line.startTime = newStartTime;
+		for (const word of line.words) {
+			word.startTime += delta;
+			word.endTime += delta;
+		}
+	}
+}
+
+function adjustLineEndTime(line: Draft<LyricLine>, newEndTime: number) {
+	const currentLastWordEnd =
+		line.words.length > 0
+			? line.words[line.words.length - 1].endTime
+			: line.endTime;
+
+	const diff = currentLastWordEnd - newEndTime;
+
+	if (line.words.length === 0) {
+		line.endTime = newEndTime;
+		return;
+	}
+
+	if (diff < 0) {
+		line.endTime = newEndTime;
+		const lastWord = line.words[line.words.length - 1];
+		if (newEndTime > lastWord.startTime) {
+			lastWord.endTime = newEndTime;
+		}
+	} else if (diff > 0) {
+		line.endTime = newEndTime;
+
+		const processedLine = processSingleLine(line);
+
+		interface CompressTarget {
+			duration: number;
+			ref?: Draft<LyricWord>;
+		}
+
+		const wordDraftMap = new Map<string, Draft<LyricWord>>();
+		for (const w of line.words) {
+			wordDraftMap.set(w.id, w);
+		}
+
+		const targets: CompressTarget[] = processedLine.segments.map((seg) => ({
+			duration: seg.endTime - seg.startTime,
+			ref: seg.type === "word" ? wordDraftMap.get(seg.id) : undefined,
+		}));
+
+		let remainingReduction = diff;
+		const MIN_DURATION = 50;
+
+		for (let i = targets.length - 1; i >= 0; i--) {
+			if (remainingReduction <= 0) break;
+
+			const target = targets[i];
+			const maxReducible = Math.max(0, target.duration - MIN_DURATION);
+			const reduceAmount = Math.min(remainingReduction, maxReducible);
+
+			target.duration -= reduceAmount;
+			remainingReduction -= reduceAmount;
+		}
+
+		if (remainingReduction > 0) {
+			const currentTotalDuration = targets.reduce(
+				(sum, t) => sum + t.duration,
+				0,
+			);
+			const targetTotalDuration = currentTotalDuration - remainingReduction;
+
+			if (targetTotalDuration > 0 && currentTotalDuration > 0) {
+				const scale = targetTotalDuration / currentTotalDuration;
+				for (const target of targets) {
+					target.duration *= scale;
+				}
+			}
+		}
+
+		let writeCursor = line.startTime;
+
+		for (const target of targets) {
+			if (target.ref) {
+				target.ref.startTime = writeCursor;
+				target.ref.endTime = writeCursor + target.duration;
+			}
+			writeCursor += target.duration;
+		}
+	}
+}
+
 export const AudioSpectrogram: FC = () => {
 	const audioBuffer = useAtomValue(audioBufferAtom);
 	const currentTimeInMs = useAtomValue(currentTimeAtom);
@@ -119,6 +245,14 @@ export const AudioSpectrogram: FC = () => {
 	const scrollLeftForScrubRef = useRef(scrollLeft);
 	const isScrubbingRef = useRef(false);
 	const currentMouseXRef = useRef(0);
+
+	const editingTimeField = useAtomValue(editingTimeFieldAtom);
+	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
+	const selectedLines = useAtomValue(selectedLinesAtom);
+	const rawLyricLines = useAtomValue(lyricLinesAtom);
+	const setRequestFocus = useSetAtom(requestFocusAtom);
+	const [pendingStartTime, setPendingStartTime] = useState<number | null>(null);
+	const { t } = useTranslation();
 
 	const { tileCache, requestTileIfNeeded, lastTileTimestamp } =
 		useSpectrogramWorker(audioBuffer, palette.data);
@@ -374,6 +508,104 @@ export const AudioSpectrogram: FC = () => {
 		}
 	};
 
+	const referenceStartTime = useMemo(() => {
+		if (pendingStartTime !== null) return pendingStartTime;
+
+		if (editingTimeField?.field === "endTime") {
+			let maxStartTime = -Infinity;
+			let hasSelection = false;
+
+			for (const line of rawLyricLines.lyricLines) {
+				if (selectedLines.has(line.id)) {
+					hasSelection = true;
+					if (line.startTime > maxStartTime) {
+						maxStartTime = line.startTime;
+					}
+				}
+			}
+			return hasSelection ? maxStartTime : 0;
+		}
+		return 0;
+	}, [pendingStartTime, editingTimeField, rawLyricLines, selectedLines]);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape") {
+				if (pendingStartTime !== null || editingTimeField) {
+					setPendingStartTime(null);
+					if (document.activeElement instanceof HTMLElement) {
+						document.activeElement.blur();
+					}
+				}
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [pendingStartTime, editingTimeField]);
+
+	const handleContainerMouseDown = useCallback(
+		(event: React.MouseEvent<HTMLDivElement>) => {
+			if (editingTimeField && !editingTimeField.isWord) {
+				event.preventDefault();
+
+				const rect = event.currentTarget.getBoundingClientRect();
+				const x = event.clientX - rect.left;
+				const clickX = scrollLeft + x;
+				const timeMs = (clickX / zoom) * 1000;
+
+				if (editingTimeField.field === "startTime") {
+					setPendingStartTime(timeMs);
+					setTimeout(() => {
+						setRequestFocus("endTime");
+					}, 0);
+				} else if (editingTimeField.field === "endTime") {
+					if (timeMs <= referenceStartTime) {
+						return;
+					}
+
+					editLyricLines((draft) => {
+						for (const line of draft.lyricLines) {
+							if (selectedLines.has(line.id)) {
+								const newStartTime = pendingStartTime ?? line.startTime;
+								const newEndTime = timeMs;
+
+								if (newEndTime <= newStartTime) continue;
+
+								if (
+									tryInitializeZeroTimestampLine(line, newStartTime, newEndTime)
+								) {
+									continue;
+								}
+
+								shiftLineStartTime(line, newStartTime);
+
+								adjustLineEndTime(line, newEndTime);
+							}
+						}
+					});
+
+					setPendingStartTime(null);
+					setTimeout(() => {
+						if (document.activeElement instanceof HTMLElement) {
+							document.activeElement.blur();
+						}
+					}, 0);
+				}
+			}
+		},
+		[
+			editingTimeField,
+			scrollLeft,
+			zoom,
+			editLyricLines,
+			selectedLines,
+			setRequestFocus,
+			pendingStartTime,
+			referenceStartTime,
+		],
+	);
+
 	const handleScrubMove = useCallback(
 		(event: MouseEvent) => {
 			if (!scrollContainerRef.current || !audioBuffer) return;
@@ -425,7 +657,50 @@ export const AudioSpectrogram: FC = () => {
 	const clampedMouseX = Math.max(0, Math.min(hoverPositionPx, containerWidth));
 	const hoverX = scrollLeft + clampedMouseX;
 	const hoverTimeS = audioBuffer && zoom > 0 ? hoverX / zoom : 0;
-	const hoverTimeFormatted = msToTimestamp(hoverTimeS * 1000);
+	const hoverTimeMs = hoverTimeS * 1000;
+
+	const isInvalidEndTime =
+		editingTimeField?.field === "endTime" && hoverTimeMs <= referenceStartTime;
+
+	let hoverTimeFormatted = msToTimestamp(hoverTimeMs);
+	let tooltipBgColor: string | undefined;
+	let hoverLineColor: string | undefined;
+
+	if (isInvalidEndTime) {
+		hoverTimeFormatted = t("spectrogram.invalidEndTime", "不能选择此结束时间");
+		tooltipBgColor = "var(--red-9)";
+		hoverLineColor = "var(--red-9)";
+	} else if (editingTimeField && !editingTimeField.isWord) {
+		const fieldName =
+			editingTimeField.field === "startTime"
+				? t("ribbonBar.editMode.startTime", "起始时间")
+				: t("ribbonBar.editMode.endTime", "结束时间");
+		hoverTimeFormatted = `${t("common.clickToSet", "点击设置")}${fieldName}: ${hoverTimeFormatted}`;
+		tooltipBgColor = "var(--accent-9)";
+	}
+
+	const pendingCursorPosition =
+		pendingStartTime !== null ? (pendingStartTime / 1000) * zoom : null;
+
+	const showRangePreview =
+		editingTimeField?.field === "endTime" &&
+		pendingStartTime !== null &&
+		!isInvalidEndTime;
+	3;
+
+	let previewStyle: React.CSSProperties | undefined;
+	if (showRangePreview && pendingStartTime !== null) {
+		const startPx = (pendingStartTime / 1000) * zoom;
+		const endPx = (hoverTimeMs / 1000) * zoom;
+		const width = endPx - startPx;
+
+		if (width > 0) {
+			previewStyle = {
+				left: `${startPx}px`,
+				width: `${width}px`,
+			};
+		}
+	}
 
 	return (
 		<div className={styles.spectrogramContainer}>
@@ -444,6 +719,7 @@ export const AudioSpectrogram: FC = () => {
 						style={{
 							left: `${hoverPositionPx}px`,
 							opacity: isHovering ? 1 : 0,
+							backgroundColor: tooltipBgColor,
 						}}
 					>
 						{hoverTimeFormatted}
@@ -490,6 +766,7 @@ export const AudioSpectrogram: FC = () => {
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
 				onMouseMove={handleMouseMove}
+				onMouseDown={handleContainerMouseDown}
 				onContextMenu={(e) => e.preventDefault()}
 				role="group"
 			>
@@ -509,6 +786,15 @@ export const AudioSpectrogram: FC = () => {
 							left: `${cursorPosition}px`,
 						}}
 					/>
+
+					{pendingCursorPosition !== null && (
+						<div
+							className={styles.pendingCursor}
+							style={{
+								left: `${pendingCursorPosition}px`,
+							}}
+						/>
+					)}
 					{auditionCursorPosition !== null && (
 						<div
 							className={styles.auditionCursor}
@@ -517,9 +803,15 @@ export const AudioSpectrogram: FC = () => {
 							}}
 						/>
 					)}
+					{showRangePreview && previewStyle && (
+						<div className={styles.rangePreviewRegion} style={previewStyle} />
+					)}
 					<SpectrogramContext.Provider value={contextValue}>
 						<Theme appearance="dark">
-							<LyricTimelineOverlay clientWidth={containerWidth} />
+							<LyricTimelineOverlay
+								clientWidth={containerWidth}
+								hiddenLineIds={showRangePreview ? selectedLines : null}
+							/>
 							{audioBuffer && !isDragging && (
 								<div
 									className={styles.hoverCursorContainer}
@@ -528,7 +820,10 @@ export const AudioSpectrogram: FC = () => {
 										opacity: isHovering ? 1 : 0,
 									}}
 								>
-									<div className={styles.hoverCursorLine} />
+									<div
+										className={styles.hoverCursorLine}
+										style={{ backgroundColor: hoverLineColor }}
+									/>
 								</div>
 							)}
 						</Theme>

@@ -116,7 +116,7 @@ export const LyricWordMenu = ({
 			>
 				{t("contextMenu.deleteWords", {
 					count: selectedWordsSize,
-					defaultValue: "删除单词",
+					defaultValue: "删除选定单词",
 				})}
 			</ContextMenu.Item>
 

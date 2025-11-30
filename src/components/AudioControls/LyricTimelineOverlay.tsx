@@ -30,12 +30,14 @@ import { SpectrogramContext } from "./SpectrogramContext.ts";
 
 interface LyricTimelineOverlayProps {
 	clientWidth: number;
+	hiddenLineIds?: Set<string> | null;
 }
 
 const SNAP_THRESHOLD_PX = 7;
 
 export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	clientWidth,
+	hiddenLineIds,
 }) => {
 	const processedLines = useAtomValue(processedLyricLinesAtom);
 	const [timelineDrag, setTimelineDrag] = useAtom(timelineDragAtom);
@@ -238,7 +240,7 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	let foundClosestRight = false;
 
 	for (const line of processedLines) {
-		if (!line.startTime || !line.endTime) continue;
+		if (line.startTime == null || line.endTime == null) continue;
 
 		const inBufferedView =
 			line.endTime > viewStartMs && line.startTime < viewEndMs;
@@ -266,8 +268,12 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 
 	let linesToRender: ProcessedLyricLine[] = visibleLines;
 
+	if (hiddenLineIds && hiddenLineIds.size > 0) {
+		linesToRender = linesToRender.filter((line) => !hiddenLineIds.has(line.id));
+	}
+
 	if (displayMode === SyllableDisplayMode.SyllableMode && !showAllSyllables) {
-		linesToRender = visibleLines.filter((line) => selectedLines.has(line.id));
+		linesToRender = linesToRender.filter((line) => selectedLines.has(line.id));
 	}
 
 	return (

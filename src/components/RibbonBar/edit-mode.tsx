@@ -24,15 +24,19 @@ import {
 	type FC,
 	forwardRef,
 	useCallback,
+	useEffect,
 	useId,
 	useLayoutEffect,
 	useMemo,
+	useRef,
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { LayoutMode, layoutModeAtom } from "$/states/config";
 import {
+	editingTimeFieldAtom,
 	lyricLinesAtom,
+	requestFocusAtom,
 	SyllableDisplayMode,
 	selectedLinesAtom,
 	selectedWordsAtom,
@@ -77,6 +81,17 @@ function EditField<
 
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const { t } = useTranslation();
+	const setEditingTimeField = useSetAtom(editingTimeFieldAtom);
+
+	const [requestFocus, setRequestFocus] = useAtom(requestFocusAtom);
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (requestFocus === fieldName && !isWordField && inputRef.current) {
+			inputRef.current.focus();
+			setRequestFocus(null);
+		}
+	}, [requestFocus, fieldName, isWordField, setRequestFocus]);
 
 	const hasErrorAtom = useMemo(
 		() =>
@@ -206,6 +221,7 @@ function EditField<
 				{label}
 			</Text>
 			<TextField.Root
+				ref={inputRef}
 				size="1"
 				color={hasError ? "red" : undefined}
 				variant={hasError ? "soft" : undefined}
@@ -218,7 +234,20 @@ function EditField<
 					if (evt.key !== "Enter") return;
 					onInputFinished(evt.currentTarget.value);
 				}}
+				onFocus={() => {
+					if (
+						!isWordField &&
+						(fieldName === "startTime" || fieldName === "endTime")
+					) {
+						setEditingTimeField({
+							isWord: false,
+							field: fieldName as "startTime" | "endTime",
+						});
+					}
+				}}
 				onBlur={(evt) => {
+					setEditingTimeField(null);
+
 					if (evt.currentTarget.value === currentValue) return;
 					onInputFinished(evt.currentTarget.value);
 				}}

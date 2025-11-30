@@ -82,3 +82,12 @@ export const syllableDisplayModeAtom = atomWithStorage(
 	SyllableDisplayMode.SyllableMode,
 );
 export const showAllSyllablesAtom = atomWithStorage("showAllSyllables", false);
+
+export interface EditingTimeFieldState {
+	isWord: boolean;
+	field: "startTime" | "endTime";
+}
+
+export const editingTimeFieldAtom = atom<EditingTimeFieldState | null>(null);
+
+export const requestFocusAtom = atom<string | null>(null);

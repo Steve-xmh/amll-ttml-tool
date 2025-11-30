@@ -19,47 +19,49 @@ export interface ProcessedLyricLine extends Omit<LyricLine, "words"> {
 	segments: ProcessedSegment[];
 }
 
-function createProcessedLyricLines(
-	dirtyLines: LyricLine[],
-): ProcessedLyricLine[] {
-	return dirtyLines.map((line) => {
-		const segments: ProcessedSegment[] = [];
+export function processSingleLine(line: LyricLine): ProcessedLyricLine {
+	const segments: ProcessedSegment[] = [];
 
-		const validWords = [...line.words]
-			.filter((w) => w.endTime > w.startTime)
-			.sort((a, b) => a.startTime - b.startTime);
+	const validWords = [...line.words]
+		.filter((w) => w.endTime > w.startTime)
+		.sort((a, b) => a.startTime - b.startTime);
 
-		let cursor = line.startTime;
+	let cursor = line.startTime;
 
-		for (const word of validWords) {
-			if (word.startTime > cursor) {
-				segments.push({
-					type: "gap",
-					id: `${line.id}-gap-${cursor}`,
-					startTime: cursor,
-					endTime: word.startTime,
-				});
-			}
-
-			segments.push({ ...word, type: "word" });
-
-			cursor = word.endTime;
-		}
-
-		if (line.endTime > cursor) {
+	for (const word of validWords) {
+		if (word.startTime > cursor) {
 			segments.push({
 				type: "gap",
-				id: `${line.id}-gap-end`,
+				id: `${line.id}-gap-${cursor}`,
 				startTime: cursor,
-				endTime: line.endTime,
+				endTime: word.startTime,
 			});
 		}
 
-		return {
-			...line,
-			segments: segments,
-		};
-	});
+		segments.push({ ...word, type: "word" });
+
+		cursor = word.endTime;
+	}
+
+	if (line.endTime > cursor) {
+		segments.push({
+			type: "gap",
+			id: `${line.id}-gap-end`,
+			startTime: cursor,
+			endTime: line.endTime,
+		});
+	}
+
+	return {
+		...line,
+		segments: segments,
+	};
+}
+
+function createProcessedLyricLines(
+	dirtyLines: LyricLine[],
+): ProcessedLyricLine[] {
+	return dirtyLines.map(processSingleLine);
 }
 
 export const processedLyricLinesAtom = atom<ProcessedLyricLine[]>((get) => {

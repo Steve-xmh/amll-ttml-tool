@@ -7,6 +7,7 @@ import {
 } from "react";
 import { showPerWordRomanizationAtom } from "$/states/config.ts";
 import { selectedWordIdAtom, timelineDragAtom } from "$/states/dnd.ts";
+import { editingTimeFieldAtom } from "$/states/main.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import type { WordSegment } from "$/utils/segment-processing.ts";
 import styles from "./LyricWordSegment.module.css";
@@ -28,6 +29,7 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	const { zoom, scrollLeft, scrollContainerRef } =
 		useContext(SpectrogramContext);
 	const showPerWordRomanization = useAtomValue(showPerWordRomanizationAtom);
+	const editingTimeField = useAtomValue(editingTimeFieldAtom);
 
 	const { startTime, endTime, word, romanWord } = segment;
 
@@ -41,11 +43,13 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	const isSelected = selectedWordId === segment.id;
 
 	const handleClick = (e: MouseEvent<HTMLDivElement>) => {
+		if (editingTimeField) return;
 		e.stopPropagation();
 		setSelectedWordId(segment.id);
 	};
 
 	const handlePanStart = (e: MouseEvent<HTMLDivElement>) => {
+		if (editingTimeField) return;
 		if (e.button !== 0) return;
 
 		e.preventDefault();
@@ -70,6 +74,7 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	};
 
 	const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+		if (editingTimeField) return;
 		e.preventDefault();
 		e.stopPropagation();
 		setSelectedWordId(segment.id);
