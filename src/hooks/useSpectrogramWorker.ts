@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { TileGenerationParams, WorkerResponse } from "$/types/spectrogram";
 import { LRUCache } from "$/utils/lru-cache.ts";
 
 const MAX_CACHED_TILES = 70;
@@ -10,167 +11,157 @@ export type TileEntry = {
 	paletteId: string;
 };
 
-export interface RequestTileParams {
-	cacheId: string;
-	reqId: string;
-	startTime: number;
-	endTime: number;
-	gain: number;
-	tileWidthPx: number;
-	paletteId: string;
+class SpectrogramWorkerClient {
+	private worker: Worker;
+	private reqIdCounter = 0;
+	private pendingRequests = new Map<
+		number,
+		{
+			resolve: (bmp: ImageBitmap) => void;
+			reject: (err: Error) => void;
+		}
+	>();
+
+	constructor() {
+		this.worker = new Worker(
+			new URL("../workers/spectrogram.worker.ts", import.meta.url),
+			{ type: "module" },
+		);
+		this.worker.onmessage = this.handleMessage.bind(this);
+	}
+
+	private handleMessage(event: MessageEvent<WorkerResponse>) {
+		const msg = event.data;
+		if (msg.type === "TILE_READY") {
+			const request = this.pendingRequests.get(msg.reqId);
+			if (request) {
+				request.resolve(msg.imageBitmap);
+				this.pendingRequests.delete(msg.reqId);
+			} else {
+				msg.imageBitmap.close();
+			}
+		} else if (msg.type === "ERROR") {
+			const request = this.pendingRequests.get(msg.reqId);
+			if (request) {
+				console.warn(`Worker Error req ${msg.reqId}:`, msg.message);
+				request.reject(new Error(msg.message));
+				this.pendingRequests.delete(msg.reqId);
+			}
+		}
+	}
+
+	public getTile(params: TileGenerationParams): Promise<ImageBitmap> {
+		const reqId = this.reqIdCounter++;
+		return new Promise((resolve, reject) => {
+			this.pendingRequests.set(reqId, { resolve, reject });
+			this.worker.postMessage({
+				type: "GET_TILE",
+				reqId,
+				params,
+			});
+		});
+	}
+
+	public initAudio(audioData: Float32Array, sampleRate: number) {
+		this.worker.postMessage({ type: "INIT", audioData, sampleRate }, [
+			audioData.buffer,
+		]);
+	}
+
+	public setPalette(palette: Uint8Array) {
+		this.worker.postMessage({ type: "SET_PALETTE", palette });
+	}
+
+	public terminate() {
+		this.worker.terminate();
+		this.pendingRequests.clear();
+	}
 }
 
 export const useSpectrogramWorker = (
 	audioBuffer: AudioBuffer | null,
 	paletteData: Uint8Array,
 ) => {
-	const workerRef = useRef<Worker | null>(null);
+	const clientRef = useRef<SpectrogramWorkerClient | null>(null);
 	const tileCache = useRef<LRUCache<string, TileEntry>>(
 		new LRUCache(MAX_CACHED_TILES, (_key, entry) => {
 			entry.bitmap.close();
 		}),
 	);
-	const requestedTiles = useRef<Set<string>>(new Set());
-
+	const activeRequests = useRef<Set<string>>(new Set());
 	const [lastTileTimestamp, setLastTileTimestamp] = useState(0);
 
 	const paletteDataRef = useRef(paletteData);
 	useEffect(() => {
 		paletteDataRef.current = paletteData;
+		if (clientRef.current) {
+			clientRef.current.setPalette(paletteData);
+		}
 	}, [paletteData]);
 
 	useEffect(() => {
-		const worker = new Worker(
-			new URL("../workers/spectrogram.worker.ts", import.meta.url),
-			{ type: "module" },
-		);
-		workerRef.current = worker;
+		const client = new SpectrogramWorkerClient();
+		clientRef.current = client;
 
-		worker.onmessage = (event: MessageEvent) => {
-			const {
-				type,
-				tileId,
-				imageBitmap,
-				renderedWidth,
-				gain: renderedGain,
-				paletteId: renderedPaletteId,
-			} = event.data;
+		if (paletteDataRef.current) {
+			client.setPalette(paletteDataRef.current);
+		}
 
-			if (type === "TILE_READY") {
-				if (tileId) {
-					requestedTiles.current.delete(tileId);
-				}
-
-				if (
-					tileId &&
-					imageBitmap &&
-					renderedWidth &&
-					renderedGain != null &&
-					renderedPaletteId != null
-				) {
-					const tileIndex = tileId.split("-")[1];
-					if (tileIndex == null) {
-						imageBitmap.close();
-						return;
-					}
-					const cacheId = `tile-${tileIndex}`;
-					const existingEntry = tileCache.current.get(cacheId);
-
-					if (
-						!existingEntry ||
-						renderedWidth >= existingEntry.width ||
-						renderedGain !== existingEntry.gain ||
-						renderedPaletteId !== existingEntry.paletteId
-					) {
-						tileCache.current.set(cacheId, {
-							bitmap: imageBitmap,
-							width: renderedWidth,
-							gain: renderedGain,
-							paletteId: renderedPaletteId,
-						});
-					} else {
-						imageBitmap.close();
-					}
-				}
-				setLastTileTimestamp(Date.now());
-			} else if (type === "INIT_COMPLETE") {
-				requestedTiles.current.clear();
-
-				if (workerRef.current && paletteDataRef.current) {
-					workerRef.current.postMessage({
-						type: "SET_PALETTE",
-						palette: paletteDataRef.current,
-					});
-				}
-
-				setLastTileTimestamp(Date.now());
-			}
-		};
-
-		return () => worker.terminate();
+		return () => client.terminate();
 	}, []);
 
 	useEffect(() => {
-		if (audioBuffer && workerRef.current) {
+		if (audioBuffer && clientRef.current) {
 			tileCache.current.clear();
-			requestedTiles.current.clear();
-			setLastTileTimestamp(Date.now());
+			activeRequests.current.clear();
 
 			const channelData = audioBuffer.getChannelData(0);
 			const channelDataCopy = channelData.slice();
 
-			workerRef.current.postMessage(
-				{
-					type: "INIT",
-					audioData: channelDataCopy,
-					sampleRate: audioBuffer.sampleRate,
-				},
-				[channelDataCopy.buffer],
-			);
+			clientRef.current.initAudio(channelDataCopy, audioBuffer.sampleRate);
+
+			if (paletteDataRef.current) {
+				clientRef.current.setPalette(paletteDataRef.current);
+			}
+
+			setLastTileTimestamp(Date.now());
 		}
 	}, [audioBuffer]);
 
-	useEffect(() => {
-		if (workerRef.current && paletteData) {
-			workerRef.current.postMessage({
-				type: "SET_PALETTE",
-				palette: paletteData,
-			});
-		}
-	}, [paletteData]);
-
 	const requestTileIfNeeded = useCallback(
-		({
-			cacheId,
-			reqId,
-			startTime,
-			endTime,
-			gain,
-			tileWidthPx,
-			paletteId,
-		}: RequestTileParams) => {
-			const cacheEntry = tileCache.current.get(cacheId);
-			const currentWidth = cacheEntry?.width || 0;
-			const currentGain = cacheEntry?.gain;
-			const currentPaletteId = cacheEntry?.paletteId;
+		async (params: TileGenerationParams) => {
+			if (!clientRef.current) return;
 
-			const needsRequest =
-				(tileWidthPx > currentWidth ||
-					currentGain !== gain ||
-					currentPaletteId !== paletteId) &&
-				tileWidthPx > 0;
+			const cacheKey = `tile-${params.tileIndex}`;
+			const requestFingerprint = `${params.tileIndex}-w${params.tileWidthPx}-g${params.gain}-p${params.paletteId}`;
 
-			if (needsRequest && !requestedTiles.current.has(reqId)) {
-				requestedTiles.current.add(reqId);
-				workerRef.current?.postMessage({
-					type: "GET_TILE",
-					tileId: reqId,
-					startTime,
-					endTime,
-					gain,
-					tileWidthPx,
-					paletteId,
-				});
+			const cacheEntry = tileCache.current.get(cacheKey);
+
+			const isStale =
+				!cacheEntry ||
+				cacheEntry.width < params.tileWidthPx ||
+				cacheEntry.gain !== params.gain ||
+				cacheEntry.paletteId !== params.paletteId;
+
+			if (isStale && !activeRequests.current.has(requestFingerprint)) {
+				activeRequests.current.add(requestFingerprint);
+
+				try {
+					const bitmap = await clientRef.current.getTile(params);
+
+					tileCache.current.set(cacheKey, {
+						bitmap,
+						width: params.tileWidthPx,
+						gain: params.gain,
+						paletteId: params.paletteId,
+					});
+
+					setLastTileTimestamp(Date.now());
+				} catch (err) {
+					console.error("生成频谱图瓦片失败", err);
+				} finally {
+					activeRequests.current.delete(requestFingerprint);
+				}
 			}
 		},
 		[],

@@ -31,6 +31,7 @@ interface ImportMetaEnv {
 	// 更多环境变量...
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: 环境声明文件
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
 }

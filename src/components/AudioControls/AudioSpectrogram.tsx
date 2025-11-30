@@ -291,11 +291,8 @@ export const AudioSpectrogram: FC = () => {
 				LOD_WIDTHS.find((w) => w >= tileDisplayWidthPx) ||
 				LOD_WIDTHS[LOD_WIDTHS.length - 1];
 
-			const reqId = `req-${i}-w${targetLodWidth}-g${gain}-p${currentPaletteId}`;
-
 			requestTileIfNeeded({
-				cacheId,
-				reqId,
+				tileIndex: i,
 				startTime: i * TILE_DURATION_S,
 				endTime: i * TILE_DURATION_S + TILE_DURATION_S,
 				gain: gain,
