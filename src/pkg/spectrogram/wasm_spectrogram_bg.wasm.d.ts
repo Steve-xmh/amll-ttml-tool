@@ -1,6 +1,20 @@
 /* tslint:disable */
 /* eslint-disable */
-export const generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => [number, number, number, number];
+export const __wbg_get_spectrogramconfig_fft_size: (a: number) => number;
+export const __wbg_get_spectrogramconfig_gain: (a: number) => number;
+export const __wbg_get_spectrogramconfig_hop_length: (a: number) => number;
+export const __wbg_get_spectrogramconfig_img_height: (a: number) => number;
+export const __wbg_get_spectrogramconfig_img_width: (a: number) => number;
+export const __wbg_get_spectrogramconfig_sample_rate: (a: number) => number;
+export const __wbg_set_spectrogramconfig_fft_size: (a: number, b: number) => void;
+export const __wbg_set_spectrogramconfig_gain: (a: number, b: number) => void;
+export const __wbg_set_spectrogramconfig_hop_length: (a: number, b: number) => void;
+export const __wbg_set_spectrogramconfig_img_height: (a: number, b: number) => void;
+export const __wbg_set_spectrogramconfig_img_width: (a: number, b: number) => void;
+export const __wbg_set_spectrogramconfig_sample_rate: (a: number, b: number) => void;
+export const __wbg_spectrogramconfig_free: (a: number, b: number) => void;
+export const generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number) => [number, number, number, number];
+export const spectrogramconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
 export const init_thread_pool: (a: number) => any;
 export const __wbg_wbg_rayon_poolbuilder_free: (a: number, b: number) => void;
 export const initThreadPool: (a: number) => any;

@@ -1,6 +1,7 @@
 import init, {
 	generate_spectrogram_image,
 	initThreadPool,
+	SpectrogramConfig,
 } from "$/pkg/spectrogram/wasm_spectrogram";
 import type { WorkerRequest } from "$/types/spectrogram";
 
@@ -54,18 +55,26 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
 		);
 
 		const TILE_HEIGHT = 256;
+		const FFT_SIZE = 1024;
+		const HOP_LENGTH = 64;
 
 		try {
-			const pixelData = generate_spectrogram_image(
-				audioSlice,
+			const config = new SpectrogramConfig(
 				audioSampleRate,
-				1024,
-				64,
+				FFT_SIZE,
+				HOP_LENGTH,
 				tileWidthPx,
 				TILE_HEIGHT,
 				gain,
-				currentPalette,
 			);
+
+			const pixelData = generate_spectrogram_image(
+				audioSlice,
+				currentPalette,
+				config,
+			);
+
+			config.free();
 
 			const canvas = new OffscreenCanvas(tileWidthPx, TILE_HEIGHT);
 			const ctx = canvas.getContext("2d");

@@ -1,9 +1,20 @@
 /* tslint:disable */
 /* eslint-disable */
+export function generate_spectrogram_image(audio_data: Float32Array, palette: Uint8Array, config: SpectrogramConfig): Uint8Array;
 export function init_thread_pool(num_threads: number): Promise<any>;
-export function generate_spectrogram_image(audio_data: Float32Array, sample_rate: number, fft_size: number, hop_length: number, img_width: number, img_height: number, gain: number, palette: Uint8Array): Uint8Array;
 export function initThreadPool(num_threads: number): Promise<any>;
 export function wbg_rayon_start_worker(receiver: number): void;
+export class SpectrogramConfig {
+  free(): void;
+  [Symbol.dispose](): void;
+  constructor(sample_rate: number, fft_size: number, hop_length: number, img_width: number, img_height: number, gain: number);
+  sample_rate: number;
+  fft_size: number;
+  hop_length: number;
+  img_width: number;
+  img_height: number;
+  gain: number;
+}
 export class wbg_rayon_PoolBuilder {
   private constructor();
   free(): void;
@@ -16,7 +27,21 @@ export class wbg_rayon_PoolBuilder {
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
-  readonly generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => [number, number, number, number];
+  readonly __wbg_get_spectrogramconfig_fft_size: (a: number) => number;
+  readonly __wbg_get_spectrogramconfig_gain: (a: number) => number;
+  readonly __wbg_get_spectrogramconfig_hop_length: (a: number) => number;
+  readonly __wbg_get_spectrogramconfig_img_height: (a: number) => number;
+  readonly __wbg_get_spectrogramconfig_img_width: (a: number) => number;
+  readonly __wbg_get_spectrogramconfig_sample_rate: (a: number) => number;
+  readonly __wbg_set_spectrogramconfig_fft_size: (a: number, b: number) => void;
+  readonly __wbg_set_spectrogramconfig_gain: (a: number, b: number) => void;
+  readonly __wbg_set_spectrogramconfig_hop_length: (a: number, b: number) => void;
+  readonly __wbg_set_spectrogramconfig_img_height: (a: number, b: number) => void;
+  readonly __wbg_set_spectrogramconfig_img_width: (a: number, b: number) => void;
+  readonly __wbg_set_spectrogramconfig_sample_rate: (a: number, b: number) => void;
+  readonly __wbg_spectrogramconfig_free: (a: number, b: number) => void;
+  readonly generate_spectrogram_image: (a: number, b: number, c: number, d: number, e: number) => [number, number, number, number];
+  readonly spectrogramconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly init_thread_pool: (a: number) => any;
   readonly __wbg_wbg_rayon_poolbuilder_free: (a: number, b: number) => void;
   readonly initThreadPool: (a: number) => any;
