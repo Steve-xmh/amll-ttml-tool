@@ -451,14 +451,14 @@ export const TopMenu: FC = () => {
 								<DropdownMenu.Item
 									onSelect={onUndo}
 									shortcut={formatKeyBindings(undoKey)}
-									disabled={undoLyricLines.canUndo}
+									disabled={!undoLyricLines.canUndo}
 								>
 									<Trans i18nKey="topBar.menu.undo">撤销</Trans>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									onSelect={onRedo}
 									shortcut={formatKeyBindings(redoKey)}
-									disabled={undoLyricLines.canRedo}
+									disabled={!undoLyricLines.canRedo}
 								>
 									<Trans i18nKey="topBar.menu.redo">重做</Trans>
 								</DropdownMenu.Item>
@@ -631,14 +631,14 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.Item
 								onSelect={onUndo}
 								shortcut={formatKeyBindings(undoKey)}
-								disabled={undoLyricLines.canUndo}
+								disabled={!undoLyricLines.canUndo}
 							>
 								<Trans i18nKey="topBar.menu.undo">撤销</Trans>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onSelect={onRedo}
 								shortcut={formatKeyBindings(redoKey)}
-								disabled={undoLyricLines.canRedo}
+								disabled={!undoLyricLines.canRedo}
 							>
 								<Trans i18nKey="topBar.menu.redo">重做</Trans>
 							</DropdownMenu.Item>
