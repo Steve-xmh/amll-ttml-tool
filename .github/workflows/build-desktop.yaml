@@ -6,7 +6,7 @@ on:
 jobs:
   clean-pre-release:
     name: 删除预发布版本的构建产物
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: 删除预发布版本的构建产物
         uses: mknejp/delete-release-assets@v1
@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: ubuntu-22.04
+          - platform: ubuntu-latest
             args: ""
             name: linux
             arch: x86_64
@@ -48,54 +48,46 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: 克隆仓库
-        uses: actions/checkout@v4.2.0
-          
-      - name: 缓存 Cargo 产物
-        uses: actions/cache@v4.2.3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          
+        uses: actions/checkout@v6
+
+      - name: 缓存 Rust 依赖
+        uses: Swatinem/rust-cache@v2
+
       - name: 安装 PNPM
-        uses: pnpm/action-setup@v4.0.0
-          
+        uses: pnpm/action-setup@v4
+
       - name: 安装 Node.js
-        uses: actions/setup-node@v4.0.4
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: pnpm
-          
+
       - name: 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-          
+
       - name: 安装 wasm32 目标
         run: rustup target add wasm32-unknown-unknown
-        
+
       # macOS 自带的 Xcode LLVM 不支持 WASM 目标
       - name: "macOS: 安装 LLVM 和 Clang"
         uses: KyleMayes/install-llvm-action@v2
         if: matrix.platform == 'macos-latest'
         with:
           version: "15"
-          
+
       - name: 安装 Tauri 所需系统依赖（仅 Linux）
-        if: matrix.platform == 'ubuntu-22.04'
+        if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libasound2-dev libappindicator3-dev libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-          
+
       - name: 安装前端依赖
         run: pnpm i
-        
+
       - name: 构建 AMLL TTML Tools 程序并发布自动构建
-        uses: tauri-apps/tauri-action@v0.5.15
+        uses: tauri-apps/tauri-action@v0
         with:
           tagName: ${{ github.ref_name }}-dev
           includeUpdaterJson: true
@@ -111,9 +103,9 @@ jobs:
           args: ${{ matrix.args }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: 上传产物到 Action Artifact
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v5
         with:
           name: AMLL TTML Tools ${{matrix.name}}-${{matrix.arch}}
           path: |
