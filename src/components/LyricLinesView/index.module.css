@@ -105,6 +105,11 @@
 	user-select: none;
 	display: flex;
 
+	transition:
+		opacity 0.1s ease-in-out,
+		background-color 0.1s ease,
+		box-shadow 0.1s ease;
+
 	&.dropTop {
 		border-top: solid 3px var(--accent-a11);
 	}
@@ -258,4 +263,38 @@
 	&.selected {
 		background-color: var(--blue-a7);
 	}
+}
+
+.lineNumber {
+	min-width: 2em;
+	position: relative;
+	display: inline-block;
+	transition: opacity 0.2s ease-in-out;
+}
+
+.lineNumber::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 100%;
+	height: 1.5px;
+	background-color: currentColor;
+	border-radius: 999px;
+	transform-origin: center;
+
+	opacity: 0;
+	transform: translateY(-50%) rotate(-135deg) scaleX(0);
+
+	transition: opacity 0.2s ease-in-out;
+	pointer-events: none;
+}
+
+.lineNumber.ignored {
+	opacity: 0.6;
+}
+
+.lineNumber.ignored::after {
+	opacity: 1;
+	transform: translateY(-50%) rotate(-135deg) scaleX(1);
 }

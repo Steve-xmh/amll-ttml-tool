@@ -444,9 +444,10 @@ export const LyricLineView: FC<{
 						<div>
 							<Flex direction="column" align="center" justify="center" ml="3">
 								<Text
-									style={{
-										minWidth: "2em",
-									}}
+									className={classNames(
+										styles.lineNumber,
+										line.ignoreSync && styles.ignored,
+									)}
 									align="center"
 									color="gray"
 								>
