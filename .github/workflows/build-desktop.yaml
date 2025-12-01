@@ -52,6 +52,8 @@ jobs:
 
       - name: 缓存 Rust 依赖
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri -> target
 
       - name: 安装 PNPM
         uses: pnpm/action-setup@v4
@@ -81,7 +83,7 @@ jobs:
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libappindicator3-dev libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libasound2-dev libappindicator3-dev libwebkit2gtk-4.1-dev librsvg2-dev patchelf
 
       - name: 安装前端依赖
         run: pnpm i
