@@ -24,7 +24,7 @@ log = "0.4"
 tauri = { version = "2.9.1", features = ["devtools"] }
 tao = "*"
 tauri-plugin-log = "2.7.0"
-window-vibrancy = "0.6"
+window-vibrancy = "0.7"
 tauri-plugin-os = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-decorum = "1"
