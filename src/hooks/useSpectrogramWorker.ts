@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { TileGenerationParams, WorkerResponse } from "$/types/spectrogram";
+import type {
+	SpectrogramWorker,
+	TileGenerationParams,
+	WorkerResponse,
+} from "$/types/spectrogram";
 import { LRUCache } from "$/utils/lru-cache.ts";
 
 const MAX_CACHED_TILES = 70;
@@ -12,7 +16,7 @@ export type TileEntry = {
 };
 
 class SpectrogramWorkerClient {
-	private worker: Worker;
+	private worker: SpectrogramWorker;
 	private reqIdCounter = 0;
 	private pendingRequests = new Map<
 		number,
