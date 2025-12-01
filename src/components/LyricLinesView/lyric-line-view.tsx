@@ -41,8 +41,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
 import {
-	enablePerWordRomanizationAtom,
+	showLineRomanizationAtom,
+	showLineTranslationAtom,
 	showTimestampsAtom,
+	showWordRomanizationInputAtom,
 } from "$/states/config.ts";
 import {
 	lyricLinesAtom,
@@ -218,7 +220,9 @@ export const LyricLineView: FC<{
 		return false;
 	}, [line.startTime, line.endTime, line.words]);
 
-	const enablePerWordRomanization = useAtomValue(enablePerWordRomanizationAtom);
+	const showWordRomanizationInput = useAtomValue(showWordRomanizationInputAtom);
+	const showTranslation = useAtomValue(showLineTranslationAtom);
+	const showRomanization = useAtomValue(showLineRomanizationAtom);
 	const editingRomanWordIndexAtom = useMemo(
 		() => atom<number | null>(null),
 		[],
@@ -503,7 +507,7 @@ export const LyricLineView: FC<{
 														lineIndex={lineIndex}
 													/>
 													{toolMode === ToolMode.Edit &&
-														enablePerWordRomanization && (
+														showWordRomanizationInput && (
 															<RomanWordView
 																wordAtom={wordAtom}
 																wordIndex={wi}
@@ -559,16 +563,20 @@ export const LyricLineView: FC<{
 								</div>
 								{toolMode === ToolMode.Edit && (
 									<>
-										<SubLineEdit
-											lineAtom={lineAtom}
-											lineIndex={lineIndex}
-											type="translatedLyric"
-										/>
-										<SubLineEdit
-											lineAtom={lineAtom}
-											lineIndex={lineIndex}
-											type="romanLyric"
-										/>
+										{showTranslation && (
+											<SubLineEdit
+												lineAtom={lineAtom}
+												lineIndex={lineIndex}
+												type="translatedLyric"
+											/>
+										)}
+										{showRomanization && (
+											<SubLineEdit
+												lineAtom={lineAtom}
+												lineIndex={lineIndex}
+												type="romanLyric"
+											/>
+										)}
 									</>
 								)}
 							</div>

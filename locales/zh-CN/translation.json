@@ -26,6 +26,9 @@
 			"multipleValues": "多个值…",
 			"syllableMode": "逐字模式",
 			"showAllSyllables": "显示所有音节",
+			"showTranslation": "显示翻译行",
+			"showRomanization": "显示音译行",
+			"showWordRomanizationInput": "显示逐字音译",
 			"new": "新建",
 			"lyricLine": "歌词行",
 			"lineTiming": "行时间戳",
@@ -37,11 +40,13 @@
 			"emptyBeatCount": "空拍数量",
 			"wordProperties": "单词属性",
 			"wordContent": "单词内容",
+			"romanWord": "单词音译",
 			"obscene": "不雅用语",
 			"secondaryContent": "次要内容",
 			"translatedLyric": "翻译歌词",
 			"romanLyric": "音译歌词",
 			"layoutMode": "布局模式",
+			"auxiliaryLineDisplay": "辅助行显示",
 			"syllableDisplayMode": "音节显示模式"
 		},
 		"previewMode": {
@@ -261,9 +266,6 @@
 				"limit": "保留快照数量"
 			}
 		},
-		"experimental": {
-			"perWordRomanization": "启用逐字音译"
-		},
 		"spectrogram": {
 			"palette": "配色方案",
 			"paletteCustom": "自定义",
@@ -276,8 +278,7 @@
 		"tab": {
 			"common": "常规",
 			"keybindings": "按键绑定",
-			"spectrogram": "频谱图",
-			"experimental": "实验性"
+			"spectrogram": "频谱图"
 		},
 		"keybindings": {
 			"newFile": "新建文件",

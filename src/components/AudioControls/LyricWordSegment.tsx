@@ -5,7 +5,7 @@ import {
 	type MouseEvent,
 	useContext,
 } from "react";
-import { showPerWordRomanizationAtom } from "$/states/config.ts";
+import { displayRomanizationInSyncAtom } from "$/states/config.ts";
 import { selectedWordIdAtom, timelineDragAtom } from "$/states/dnd.ts";
 import { editingTimeFieldAtom } from "$/states/main.ts";
 import { audioEngine } from "$/utils/audio.ts";
@@ -28,7 +28,7 @@ export const LyricWordSegment: FC<LyricWordSegmentProps> = ({
 	const setTimelineDrag = useSetAtom(timelineDragAtom);
 	const { zoom, scrollLeft, scrollContainerRef } =
 		useContext(SpectrogramContext);
-	const showPerWordRomanization = useAtomValue(showPerWordRomanizationAtom);
+	const showPerWordRomanization = useAtomValue(displayRomanizationInSyncAtom);
 	const editingTimeField = useAtomValue(editingTimeFieldAtom);
 
 	const { startTime, endTime, word, romanWord } = segment;

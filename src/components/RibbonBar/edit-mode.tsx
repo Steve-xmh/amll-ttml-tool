@@ -32,7 +32,13 @@ import {
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { LayoutMode, layoutModeAtom } from "$/states/config";
+import {
+	LayoutMode,
+	layoutModeAtom,
+	showLineRomanizationAtom,
+	showLineTranslationAtom,
+	showWordRomanizationInputAtom,
+} from "$/states/config";
 import {
 	editingTimeFieldAtom,
 	lyricLinesAtom,
@@ -537,6 +543,58 @@ const SyllableDisplayModeField: FC = () => {
 // 	);
 // }
 
+const AuxiliaryDisplayField: FC = () => {
+	const [showTranslation, setShowTranslation] = useAtom(
+		showLineTranslationAtom,
+	);
+	const [showRomanization, setShowRomanization] = useAtom(
+		showLineRomanizationAtom,
+	);
+	const [showWordRomanizationInput, setShowWordRomanizationInput] = useAtom(
+		showWordRomanizationInputAtom,
+	);
+	const { t } = useTranslation();
+
+	const idTranslation = useId();
+	const idRomanization = useId();
+	const idPerWord = useId();
+
+	return (
+		<Grid columns="1fr auto" gapX="4" gapY="1" flexGrow="1" align="center">
+			<Text size="1" asChild>
+				<label htmlFor={idTranslation}>
+					{t("ribbonBar.editMode.showTranslation", "显示翻译行")}
+				</label>
+			</Text>
+			<Checkbox
+				id={idTranslation}
+				checked={showTranslation}
+				onCheckedChange={(c) => setShowTranslation(Boolean(c))}
+			/>
+			<Text size="1" asChild>
+				<label htmlFor={idRomanization}>
+					{t("ribbonBar.editMode.showRomanization", "显示音译行")}
+				</label>
+			</Text>
+			<Checkbox
+				id={idRomanization}
+				checked={showRomanization}
+				onCheckedChange={(c) => setShowRomanization(Boolean(c))}
+			/>
+			<Text size="1" asChild>
+				<label htmlFor={idPerWord}>
+					{t("ribbonBar.editMode.showWordRomanizationInput", "显示逐字音译")}
+				</label>
+			</Text>
+			<Checkbox
+				id={idPerWord}
+				checked={showWordRomanizationInput}
+				onCheckedChange={(c) => setShowWordRomanizationInput(Boolean(c))}
+			/>
+		</Grid>
+	);
+};
+
 export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 	(_props, ref) => {
 		const editLyricLines = useSetAtom(lyricLinesAtom);
@@ -636,6 +694,13 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							parser={(v) => v}
 							formatter={(v) => v}
 						/>
+						<EditField
+							label={t("ribbonBar.editMode.romanWord", "单词音译")}
+							fieldName="romanWord"
+							isWordField
+							parser={(v) => v}
+							formatter={(v) => v || ""}
+						/>
 						<CheckboxField
 							label={t("ribbonBar.editMode.obscene", "不雅用语")}
 							isWordField
@@ -675,6 +740,11 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							"高级模式",
 						)}
 					/>
+				</RibbonSection>
+				<RibbonSection
+					label={t("ribbonBar.editMode.auxiliaryLineDisplay", "辅助行显示")}
+				>
+					<AuxiliaryDisplayField />
 				</RibbonSection>
 				<RibbonSection
 					label={t("ribbonBar.editMode.syllableDisplayMode", "音节显示模式")}

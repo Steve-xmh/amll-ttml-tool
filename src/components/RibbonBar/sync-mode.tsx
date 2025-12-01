@@ -21,11 +21,11 @@ import { useAtom, useAtomValue } from "jotai";
 import { type FC, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
-	enablePerWordRomanizationAtom,
+	displayRomanizationInSyncAtom,
 	highlightActiveWordAtom,
 	highlightErrorsAtom,
-	showPerWordRomanizationAtom,
 	showTimestampsAtom,
+	showWordRomanizationInputAtom,
 } from "$/states/config.ts";
 import {
 	keySyncEndAtom,
@@ -81,11 +81,11 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 		const [highlightActiveWord, setHighlightActiveWord] = useAtom(
 			highlightActiveWordAtom,
 		);
-		const [showPerWordRomanization, setShowPerWordRomanization] = useAtom(
-			showPerWordRomanizationAtom,
+		const [displayRomanizationInSync, setdisplayRomanizationInSync] = useAtom(
+			displayRomanizationInSyncAtom,
 		);
-		const enablePerWordRomanization = useAtomValue(
-			enablePerWordRomanizationAtom,
+		const showWordRomanizationInput = useAtomValue(
+			showWordRomanizationInputAtom,
 		);
 		const [syncTimeOffset, setSyncTimeOffset] = useAtom(syncTimeOffsetAtom);
 		const { t } = useTranslation();
@@ -165,7 +165,7 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							checked={highlightErrors}
 							onCheckedChange={(v) => setHighlightErrors(!!v)}
 						/>
-						{enablePerWordRomanization && (
+						{showWordRomanizationInput && (
 							<>
 								<Text wrap="nowrap" size="1">
 									{t(
@@ -174,8 +174,8 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 									)}
 								</Text>
 								<Checkbox
-									checked={showPerWordRomanization}
-									onCheckedChange={(v) => setShowPerWordRomanization(!!v)}
+									checked={displayRomanizationInSync}
+									onCheckedChange={(v) => setdisplayRomanizationInSync(!!v)}
 								/>
 							</>
 						)}

@@ -21,9 +21,24 @@ export const syncJudgeModeAtom = atomWithStorage(
 
 export const layoutModeAtom = atomWithStorage("layoutMode", LayoutMode.Simple);
 
-export const enablePerWordRomanizationAtom = atomWithStorage(
-	"enablePerWordRomanization",
+export const showWordRomanizationInputAtom = atomWithStorage(
+	"showWordRomanizationInput",
 	false,
+);
+
+export const displayRomanizationInSyncAtom = atomWithStorage(
+	"displayRomanizationInSync",
+	false,
+);
+
+export const showLineTranslationAtom = atomWithStorage(
+	"showLineTranslation",
+	true,
+);
+
+export const showLineRomanizationAtom = atomWithStorage(
+	"showLineRomanization",
+	true,
 );
 
 export const hideSubmitAMLLDBWarningAtom = atomWithStorage(
@@ -47,8 +62,3 @@ export const highlightActiveWordAtom = atomWithStorage(
 );
 
 export const highlightErrorsAtom = atomWithStorage("highlightErrors", false);
-
-export const showPerWordRomanizationAtom = atomWithStorage(
-	"showRomanization",
-	false,
-);

@@ -26,6 +26,9 @@
 			"multipleValues": "Multiple values…",
 			"syllableMode": "Syllable Mode",
 			"showAllSyllables": "Show All Syllables",
+			"showTranslation": "Show Translation Line",
+			"showRomanization": "Show Romanization Line",
+			"showWordRomanizationInput": "Show Per-Word Romanization",
 			"new": "New",
 			"lyricLine": "Lyric Line",
 			"lineTiming": "Line Timing",
@@ -37,11 +40,13 @@
 			"emptyBeatCount": "Empty Beat Count",
 			"wordProperties": "Word Properties",
 			"wordContent": "Word Content",
+			"romanWord": "Word Romanization",
 			"obscene": "Obscene",
 			"secondaryContent": "Secondary Content",
 			"translatedLyric": "Translation",
 			"romanLyric": "Romanization",
 			"layoutMode": "Layout",
+			"auxiliaryLineDisplay": "Auxiliary Line Display",
 			"syllableDisplayMode": "Syllable Display Mode"
 		},
 		"previewMode": {
@@ -261,9 +266,6 @@
 				"limit": "Snapshots to keep"
 			}
 		},
-		"experimental": {
-			"perWordRomanization": "Enable Per-Word Romanization"
-		},
 		"spectrogram": {
 			"palette": "Color Palette",
 			"paletteCustom": "Custom",
@@ -276,8 +278,7 @@
 		"tab": {
 			"common": "General",
 			"keybindings": "Keybindings",
-			"spectrogram": "Spectrogram",
-			"experimental": "Experimental"
+			"spectrogram": "Spectrogram"
 		},
 		"keybindings": {
 			"newFile": "New File",

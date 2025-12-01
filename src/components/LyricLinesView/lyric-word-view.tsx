@@ -37,11 +37,11 @@ import {
 import { useTranslation } from "react-i18next";
 import { currentTimeAtom } from "$/states/audio";
 import {
+	displayRomanizationInSyncAtom,
 	highlightActiveWordAtom,
 	highlightErrorsAtom,
 	LayoutMode,
 	layoutModeAtom,
-	showPerWordRomanizationAtom,
 	showTimestampsAtom,
 } from "$/states/config.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
@@ -655,14 +655,14 @@ const LyricWorldViewSync: FC<{
 	const showTimestamps = useAtomValue(showTimestampsAtom);
 	const highlightErrors = useAtomValue(highlightErrorsAtom);
 	const highlightActiveWord = useAtomValue(highlightActiveWordAtom);
-	const showPerWordRomanization = useAtomValue(showPerWordRomanizationAtom);
+	const displayRomanizationInSync = useAtomValue(displayRomanizationInSyncAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const isWordBlank = useWordBlank(word.word);
 	const displayWord = useDisplayWord(
 		word.word,
 		isWordBlank,
 		word.romanWord,
-		showPerWordRomanization,
+		displayRomanizationInSync,
 	);
 
 	const startTimeRef = useRef<HTMLDivElement>(null);
@@ -779,11 +779,11 @@ const useDisplayWord = (
 	word: string,
 	isWordBlank: boolean,
 	romanWord?: string,
-	showPerWordRomanization?: boolean,
+	displayRomanizationInSync?: boolean,
 ) => {
 	const { t } = useTranslation();
 	return useMemo(() => {
-		if (showPerWordRomanization && romanWord && romanWord.trim() !== "")
+		if (displayRomanizationInSync && romanWord && romanWord.trim() !== "")
 			return romanWord;
 		if (word === "") return t("lyricWordView.empty", "空白");
 		if (isWordBlank)
@@ -791,7 +791,7 @@ const useDisplayWord = (
 				count: word.length,
 			});
 		return word;
-	}, [word, isWordBlank, t, romanWord, showPerWordRomanization]);
+	}, [word, isWordBlank, t, romanWord, displayRomanizationInSync]);
 };
 
 export const LyricWordView: FC<{
