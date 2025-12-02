@@ -3,18 +3,7 @@ import { Button, Flex } from "@radix-ui/themes";
 import { t } from "i18next";
 import { toast } from "react-toastify";
 
-if (import.meta.env.TAURI_ENV_PLATFORM) {
-	navigator.serviceWorker
-		.getRegistrations()
-		.then((registrations) => {
-			for (const registration of registrations) {
-				registration.unregister();
-			}
-		})
-		.catch((error) => {
-			console.error("Service Worker unregistration failed: ", error);
-		});
-} else {
+if (!import.meta.env.TAURI_ENV_PLATFORM) {
 	const refresh = registerSW({
 		onOfflineReady() {
 			toast.info(
