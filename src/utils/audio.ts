@@ -212,18 +212,17 @@ class AudioEngine extends EventTarget {
 				auditionRafId = null;
 			} else {
 				globalStore.set(auditionTimeAtom, currentAuditionTime);
-				auditionRafId = requestAnimationFrame(progressLoop); // 请求下一帧
+				auditionRafId = requestAnimationFrame(progressLoop);
 			}
 		};
 
 		source.addEventListener("ended", () => {
-			if (auditionRafId) {
-				cancelAnimationFrame(auditionRafId);
-				auditionRafId = null;
-			}
-			globalStore.set(auditionTimeAtom, null);
-
 			if (this.auditionSourceNode === source) {
+				if (auditionRafId) {
+					cancelAnimationFrame(auditionRafId);
+					auditionRafId = null;
+				}
+				globalStore.set(auditionTimeAtom, null);
 				this.auditionSourceNode = null;
 			}
 			source.disconnect();
