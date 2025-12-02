@@ -3,6 +3,7 @@ export interface TileGenerationParams {
 	startTime: number;
 	endTime: number;
 	gain: number;
+	height: number;
 	tileWidthPx: number;
 	paletteId: string;
 }

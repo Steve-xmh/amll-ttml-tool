@@ -49,7 +49,7 @@ ctx.onmessage = async (event) => {
 				return;
 			}
 
-			const { startTime, endTime, gain, tileWidthPx } = params;
+			const { startTime, endTime, gain, tileWidthPx, height } = params;
 
 			const startSample = Math.floor(startTime * audioSampleRate);
 			const endSample = Math.ceil(endTime * audioSampleRate);
@@ -67,7 +67,6 @@ ctx.onmessage = async (event) => {
 				Math.min(endSample, fullAudioData.length),
 			);
 
-			const TILE_HEIGHT = 256;
 			const FFT_SIZE = 1024;
 			const HOP_LENGTH = 64;
 
@@ -77,7 +76,7 @@ ctx.onmessage = async (event) => {
 					FFT_SIZE,
 					HOP_LENGTH,
 					tileWidthPx,
-					TILE_HEIGHT,
+					height,
 					gain,
 				);
 
@@ -89,14 +88,14 @@ ctx.onmessage = async (event) => {
 
 				config.free();
 
-				const canvas = new OffscreenCanvas(tileWidthPx, TILE_HEIGHT);
+				const canvas = new OffscreenCanvas(tileWidthPx, height);
 				const context = canvas.getContext("2d");
 				if (!context) throw new Error("OffscreenCanvas context 失败");
 
 				const imageData = new ImageData(
 					new Uint8ClampedArray(pixelData),
 					tileWidthPx,
-					TILE_HEIGHT,
+					height,
 				);
 				context.putImageData(imageData, 0, 0);
 

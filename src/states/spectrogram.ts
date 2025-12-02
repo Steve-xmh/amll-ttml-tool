@@ -17,6 +17,10 @@ export const spectrogramZoomAtom = atomWithStorage(
 	"settings_spectrogramZoom",
 	200,
 );
+export const spectrogramHeightAtom = atomWithStorage(
+	"settings_spectrogramHeight",
+	256,
+);
 export const spectrogramScrollLeftAtom = atom(0);
 export const spectrogramContainerWidthAtom = atom(0);
 

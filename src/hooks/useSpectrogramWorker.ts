@@ -11,6 +11,7 @@ const MAX_CACHED_TILES = 70;
 export type TileEntry = {
 	bitmap: ImageBitmap;
 	width: number;
+	height: number;
 	gain: number;
 	paletteId: string;
 };
@@ -137,13 +138,14 @@ export const useSpectrogramWorker = (
 			if (!clientRef.current) return;
 
 			const cacheKey = `tile-${params.tileIndex}`;
-			const requestFingerprint = `${params.tileIndex}-w${params.tileWidthPx}-g${params.gain}-p${params.paletteId}`;
+			const requestFingerprint = `${params.tileIndex}-w${params.tileWidthPx}-h${params.height}-g${params.gain}-p${params.paletteId}`;
 
 			const cacheEntry = tileCache.current.get(cacheKey);
 
 			const isStale =
 				!cacheEntry ||
 				cacheEntry.width < params.tileWidthPx ||
+				cacheEntry.height !== params.height ||
 				cacheEntry.gain !== params.gain ||
 				cacheEntry.paletteId !== params.paletteId;
 
@@ -156,6 +158,7 @@ export const useSpectrogramWorker = (
 					tileCache.current.set(cacheKey, {
 						bitmap,
 						width: params.tileWidthPx,
+						height: params.height,
 						gain: params.gain,
 						paletteId: params.paletteId,
 					});

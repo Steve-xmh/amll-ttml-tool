@@ -13,6 +13,7 @@ import {
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useSpectrogramResize } from "$/hooks/useSpectrogramResize.ts";
 import { useSpectrogramWorker } from "$/hooks/useSpectrogramWorker.ts";
 import { audioBufferAtom, currentTimeAtom } from "$/states/audio.ts";
 import { isDraggingAtom } from "$/states/dnd.ts";
@@ -27,6 +28,7 @@ import {
 	currentPaletteAtom,
 	spectrogramContainerWidthAtom,
 	spectrogramGainAtom,
+	spectrogramHeightAtom,
 	spectrogramScrollLeftAtom,
 	spectrogramZoomAtom,
 } from "$/states/spectrogram.ts";
@@ -47,7 +49,6 @@ import {
 } from "./TimelineRuler.tsx";
 
 const TILE_DURATION_S = 5;
-const SPECTROGRAM_HEIGHT = 256;
 const LOD_WIDTHS = [512, 1024, 2048, 4096, 8192];
 
 const clampZoom = (z: number) => Math.max(50, Math.min(z, 10000));
@@ -56,12 +57,20 @@ interface TileComponentProps {
 	tileId: string;
 	left: number;
 	width: number;
+	height: number;
 	canvasWidth: number;
 	bitmap?: ImageBitmap;
 }
 
 const TileComponent = memo(
-	({ tileId, left, width, canvasWidth, bitmap }: TileComponentProps) => {
+	({
+		tileId,
+		left,
+		width,
+		height,
+		canvasWidth,
+		bitmap,
+	}: TileComponentProps) => {
 		const canvasRef = useRef<HTMLCanvasElement>(null);
 		const currentBitmapRef = useRef<ImageBitmap | undefined>(undefined);
 
@@ -87,7 +96,7 @@ const TileComponent = memo(
 				ref={canvasRef}
 				id={tileId}
 				width={canvasWidth > 0 ? canvasWidth : 1}
-				height={SPECTROGRAM_HEIGHT}
+				height={height}
 				className={styles.tileCanvas}
 				style={{
 					left: `${left}px`,
@@ -223,6 +232,12 @@ export const AudioSpectrogram: FC = () => {
 
 	const [zoom, setZoom] = useAtom(spectrogramZoomAtom);
 	const gain = useAtomValue(spectrogramGainAtom);
+	const [dataHeight, setDataHeight] = useAtom(spectrogramHeightAtom);
+
+	const { height: uiHeight, resizeHandleProps } = useSpectrogramResize({
+		initialHeight: dataHeight,
+		onCommit: setDataHeight,
+	});
 	const palette = useAtomValue(currentPaletteAtom);
 	const [visibleTiles, setVisibleTiles] = useState<TileComponentProps[]>([]);
 
@@ -296,6 +311,7 @@ export const AudioSpectrogram: FC = () => {
 				startTime: i * TILE_DURATION_S,
 				endTime: i * TILE_DURATION_S + TILE_DURATION_S,
 				gain: gain,
+				height: dataHeight,
 				tileWidthPx: targetLodWidth,
 				paletteId: currentPaletteId,
 			});
@@ -307,6 +323,7 @@ export const AudioSpectrogram: FC = () => {
 				tileId: cacheId,
 				left: i * tileDisplayWidthPx,
 				width: tileDisplayWidthPx,
+				height: dataHeight,
 				canvasWidth: currentBitmap?.width || targetLodWidth,
 				bitmap: currentBitmap,
 			});
@@ -316,6 +333,7 @@ export const AudioSpectrogram: FC = () => {
 		audioBuffer,
 		containerWidth,
 		gain,
+		dataHeight,
 		requestTileIfNeeded,
 		tileCache,
 		palette.id,
@@ -700,7 +718,11 @@ export const AudioSpectrogram: FC = () => {
 	}
 
 	return (
-		<div className={styles.spectrogramContainer}>
+		<div
+			className={styles.spectrogramContainer}
+			style={{ height: `${uiHeight}px` }}
+		>
+			<div className={styles.resizeHandle} {...resizeHandleProps} />
 			<TimelineRuler
 				ref={rulerRef}
 				zoom={zoom}

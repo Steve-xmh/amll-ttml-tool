@@ -1,10 +1,39 @@
 .spectrogramContainer {
-	height: 16rem;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	background-color: var(--gray-2);
 	position: relative;
+	min-height: 100px;
+	will-change: height;
+}
+
+.resizeHandle {
+	position: absolute;
+	top: 0px;
+	left: 0;
+	right: 0;
+	height: 10px;
+	cursor: ns-resize;
+	z-index: 100;
+	background: transparent;
+}
+
+.resizeHandle::after {
+	content: "";
+	position: absolute;
+	top: 0px;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background-color: var(--accent-9);
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.resizeHandle:hover::after,
+.resizeHandle:active::after {
+	opacity: 1;
 }
 
 .playheadScrubHandle {
