@@ -1,6 +1,6 @@
 import { Card } from "@radix-ui/themes";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
@@ -9,6 +9,7 @@ import {
 	currentDurationAtom,
 	currentTimeAtom,
 } from "$/states/audio.ts";
+import { lyricLinesAtom, selectedLinesAtom } from "$/states/main";
 import {
 	spectrogramContainerWidthAtom,
 	spectrogramScrollLeftAtom,
@@ -41,6 +42,8 @@ export const AudioSlider = () => {
 	const [scrollLeft, setScrollLeft] = useAtom(spectrogramScrollLeftAtom);
 	const containerWidth = useAtomValue(spectrogramContainerWidthAtom);
 	const currentDuration = useAtomValue(currentDurationAtom);
+	const lyricLines = useAtomValue(lyricLinesAtom);
+	const selectedLines = useAtomValue(selectedLinesAtom);
 
 	const wsContainerRef = useRef<HTMLDivElement>(null);
 	const waveSurferRef = useRef<WaveSurfer | null>(null);
@@ -293,6 +296,22 @@ export const AudioSlider = () => {
 		],
 	);
 
+	const selectedRegions = useMemo(() => {
+		if (currentDuration <= 0 || sliderWidthPx <= 0) return [];
+
+		const pixelsPerMs = sliderWidthPx / currentDuration;
+		const regions: { id: string; left: number; width: number }[] = [];
+
+		for (const line of lyricLines.lyricLines) {
+			if (selectedLines.has(line.id)) {
+				const left = line.startTime * pixelsPerMs;
+				const width = (line.endTime - line.startTime) * pixelsPerMs;
+				regions.push({ id: line.id, left, width });
+			}
+		}
+		return regions;
+	}, [lyricLines.lyricLines, selectedLines, currentDuration, sliderWidthPx]);
+
 	const audioLoaded = currentDuration > 0 && sliderWidthPx > 0;
 	let rectLeftPx = 0;
 	let rectWidthPx = 0;
@@ -326,6 +345,16 @@ export const AudioSlider = () => {
 				ref={wsContainerRef}
 				style={{ width: "100%", height: "100%", overflow: "hidden" }}
 			>
+				{selectedRegions.map((region) => (
+					<div
+						key={region.id}
+						className={styles.selectedLyricRegion}
+						style={{
+							left: `${region.left}px`,
+							width: `${region.width}px`,
+						}}
+					/>
+				))}
 				{audioLoaded && rectWidthPx > 0 && (
 					<div
 						className={styles.spectrogramRegion}
