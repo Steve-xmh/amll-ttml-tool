@@ -62,7 +62,7 @@ ctx.onmessage = async (event) => {
 				});
 				return;
 			}
-			const audioSlice = fullAudioData.slice(
+			const audioSlice = fullAudioData.subarray(
 				startSample,
 				Math.min(endSample, fullAudioData.length),
 			);
