@@ -319,17 +319,10 @@ export const AudioSpectrogram: FC = () => {
 			const cacheEntry = tileCache.current.get(cacheId);
 			const currentBitmap = cacheEntry?.bitmap;
 
-			const rawLeft = i * tileDisplayWidthPx;
-			const rawRight = (i + 1) * tileDisplayWidthPx;
-
-			const alignedLeft = Math.floor(rawLeft);
-
-			const alignedWidth = Math.floor(rawRight) - alignedLeft;
-
 			newVisibleTiles.push({
 				tileId: cacheId,
-				left: alignedLeft,
-				width: alignedWidth,
+				left: i * tileDisplayWidthPx,
+				width: tileDisplayWidthPx,
 				height: dataHeight,
 				canvasWidth: currentBitmap?.width || targetLodWidth,
 				bitmap: currentBitmap,
@@ -724,6 +717,10 @@ export const AudioSpectrogram: FC = () => {
 		}
 	}
 
+	const isZooming = Math.abs(zoom - targetZoomRef.current) > 0.01;
+
+	const transformX = isZooming ? scrollLeft : Math.round(scrollLeft);
+
 	return (
 		<div
 			className={styles.spectrogramContainer}
@@ -800,7 +797,7 @@ export const AudioSpectrogram: FC = () => {
 					className={styles.virtualScrollContent}
 					style={{
 						width: `${Math.ceil(totalWidth)}px`,
-						transform: `translate3d(${-Math.round(scrollLeft)}px, 0, 0)`,
+						transform: `translate3d(${-transformX}px, 0, 0)`,
 					}}
 				>
 					{visibleTiles.map((tile) => (
