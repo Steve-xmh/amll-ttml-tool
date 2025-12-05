@@ -24,6 +24,8 @@ import {
 	spectrogramContainerWidthAtom,
 	spectrogramGainAtom,
 	spectrogramHeightAtom,
+	spectrogramHoverPxAtom,
+	spectrogramHoverTimeMsAtom,
 } from "$/states/spectrogram.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
@@ -72,7 +74,9 @@ export const AudioSpectrogram: FC = () => {
 	);
 
 	const [isHovering, setIsHovering] = useState(false);
-	const [hoverPositionPx, setHoverPositionPx] = useState(0);
+	const hoverPx = useAtomValue(spectrogramHoverPxAtom);
+	const setHoverPx = useSetAtom(spectrogramHoverPxAtom);
+	const hoverTimeMs = useAtomValue(spectrogramHoverTimeMsAtom);
 	const isDragging = useAtomValue(isDraggingAtom);
 
 	const rulerRef = useRef<TimelineRulerHandle>(null);
@@ -82,11 +86,6 @@ export const AudioSpectrogram: FC = () => {
 	const { tileCache, requestTileIfNeeded, lastTileTimestamp } =
 		useSpectrogramWorker(audioBuffer, palette.data);
 
-	const clampedMouseX = Math.max(0, Math.min(hoverPositionPx, containerWidth));
-	const hoverX = scrollLeft + clampedMouseX;
-	const hoverTimeS = audioBuffer && zoom > 0 ? hoverX / zoom : 0;
-	const hoverTimeMs = hoverTimeS * 1000;
-
 	const {
 		handleContainerMouseDown,
 		isInvalidEndTime,
@@ -94,7 +93,7 @@ export const AudioSpectrogram: FC = () => {
 		showRangePreview,
 		previewStyle,
 		editingTimeField,
-	} = useTimelineEditing(scrollLeft, zoom, hoverTimeMs);
+	} = useTimelineEditing(scrollLeft, zoom);
 
 	const { handleScrubStart } = useScrubbing(
 		scrollContainerRef,
@@ -222,7 +221,7 @@ export const AudioSpectrogram: FC = () => {
 	const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
 		const rect = event.currentTarget.getBoundingClientRect();
 		const x = event.clientX - rect.left;
-		setHoverPositionPx(x);
+		setHoverPx(x);
 	};
 
 	const totalWidth = audioBuffer ? audioBuffer.duration * zoom : 0;
@@ -249,6 +248,8 @@ export const AudioSpectrogram: FC = () => {
 
 	const transformX = isZooming ? scrollLeft : Math.round(scrollLeft);
 
+	const hoverX = scrollLeft + hoverPx;
+
 	return (
 		<div
 			className={styles.spectrogramContainer}
@@ -268,7 +269,7 @@ export const AudioSpectrogram: FC = () => {
 					<div
 						className={styles.hoverTimeTooltip}
 						style={{
-							left: `${hoverPositionPx}px`,
+							left: `${hoverPx}px`,
 							opacity: isHovering ? 1 : 0,
 							backgroundColor: tooltipBgColor,
 						}}
@@ -279,7 +280,7 @@ export const AudioSpectrogram: FC = () => {
 					<div
 						className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeLeft}`}
 						style={{
-							width: `${hoverPositionPx}px`,
+							width: `${hoverPx}px`,
 							height: `${RULER_HEIGHT}px`,
 							opacity: isHovering ? 1 : 0,
 						}}
@@ -288,7 +289,7 @@ export const AudioSpectrogram: FC = () => {
 					<div
 						className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeRight}`}
 						style={{
-							left: `${hoverPositionPx}px`,
+							left: `${hoverPx}px`,
 							height: `${RULER_HEIGHT}px`,
 							opacity: isHovering ? 1 : 0,
 						}}

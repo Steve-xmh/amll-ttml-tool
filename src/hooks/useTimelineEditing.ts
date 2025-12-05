@@ -7,23 +7,21 @@ import {
 	requestFocusAtom,
 	selectedLinesAtom,
 } from "$/states/main.ts";
+import { spectrogramHoverTimeMsAtom } from "$/states/spectrogram.ts";
 import {
 	adjustLineEndTime,
 	shiftLineStartTime,
 	tryInitializeZeroTimestampLine,
 } from "$/utils/timeline-mutations.ts";
 
-export function useTimelineEditing(
-	scrollLeft: number,
-	zoom: number,
-	hoverTimeMs: number,
-) {
+export function useTimelineEditing(scrollLeft: number, zoom: number) {
 	const editingTimeField = useAtomValue(editingTimeFieldAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const selectedLines = useAtomValue(selectedLinesAtom);
 	const rawLyricLines = useAtomValue(lyricLinesAtom);
 	const setRequestFocus = useSetAtom(requestFocusAtom);
 	const [pendingStartTime, setPendingStartTime] = useState<number | null>(null);
+	const hoverTimeMs = useAtomValue(spectrogramHoverTimeMsAtom);
 
 	const referenceStartTime = useMemo(() => {
 		if (pendingStartTime !== null) return pendingStartTime;

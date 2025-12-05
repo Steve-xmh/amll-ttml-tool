@@ -11,6 +11,7 @@ import {
 	selectedLinesAtom,
 	syllableDisplayModeAtom,
 } from "$/states/main.ts";
+import { spectrogramHoverTimeMsAtom } from "$/states/spectrogram.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import type { ProcessedLyricLine } from "$/utils/segment-processing.ts";
 import {
@@ -40,8 +41,8 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 	const setSelectedLines = useSetAtom(selectedLinesAtom);
 	const setSelectedWordId = useSetAtom(selectedWordIdAtom);
 	const setTimelineDrag = useSetAtom(timelineDragAtom);
-	const { zoom, scrollLeft, scrollContainerRef } =
-		useContext(SpectrogramContext);
+	const { zoom } = useContext(SpectrogramContext);
+	const hoverTimeMs = useAtomValue(spectrogramHoverTimeMsAtom);
 	const displayMode = useAtomValue(syllableDisplayModeAtom);
 	const editingTimeField = useAtomValue(editingTimeFieldAtom);
 
@@ -67,18 +68,10 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 			} else if (displayMode === SyllableDisplayMode.LineMode) {
 				if (e.button !== 0) return;
 				e.preventDefault();
-
-				const scrollContainer = scrollContainerRef.current;
-				if (!scrollContainer) return;
-				const rect = scrollContainer.getBoundingClientRect();
-
-				const initialMouseTimeMS =
-					((scrollLeft + (e.clientX - rect.left)) / zoom) * 1000;
-
 				setTimelineDrag({
 					type: "line-pan",
 					lineId: id,
-					initialMouseTimeMS,
+					initialMouseTimeMS: hoverTimeMs,
 					initialLineStartMS: startTime,
 				});
 
@@ -90,12 +83,10 @@ export const LyricLineSegment: FC<LyricLineSegmentProps> = ({
 			editingTimeField,
 			displayLine,
 			displayMode,
-			scrollContainerRef,
-			scrollLeft,
-			zoom,
 			setSelectedLines,
 			setSelectedWordId,
 			setTimelineDrag,
+			hoverTimeMs,
 		],
 	);
 

@@ -86,3 +86,20 @@ export const currentPaletteAtom = atom((get) => {
 
 	return icyBluePalette;
 });
+
+export const spectrogramHoverPxAtom = atom(0);
+
+export const spectrogramHoverTimeMsAtom = atom((get) => {
+	const hoverPx = get(spectrogramHoverPxAtom);
+	const scrollLeft = get(spectrogramScrollLeftAtom);
+	const zoom = get(spectrogramZoomAtom);
+	const containerWidth = get(spectrogramContainerWidthAtom);
+
+	if (zoom <= 0) return 0;
+
+	const clampedMouseX = Math.max(0, Math.min(hoverPx, containerWidth));
+	const hoverX = scrollLeft + clampedMouseX;
+	const hoverTimeS = hoverX / zoom;
+
+	return hoverTimeS * 1000;
+});
