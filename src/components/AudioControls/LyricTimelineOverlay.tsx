@@ -13,7 +13,6 @@ import {
 	showAllSyllablesAtom,
 	syllableDisplayModeAtom,
 } from "$/states/main.ts";
-import { spectrogramHoverTimeMsAtom } from "$/states/spectrogram.ts";
 import { globalStore } from "$/states/store.ts";
 import {
 	type ProcessedLyricLine,
@@ -45,8 +44,8 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	const setPreviewLine = useSetAtom(previewLineAtom);
 	const currentTime = useAtomValue(currentTimeAtom);
 	const snapTargetsMs = useRef<number[]>([]);
-	const { zoom, scrollLeft } = useContext(SpectrogramContext);
-	const hoverTimeMs = useAtomValue(spectrogramHoverTimeMsAtom);
+	const { scrollContainerRef, zoom, scrollLeft } =
+		useContext(SpectrogramContext);
 
 	const displayMode = useAtomValue(syllableDisplayModeAtom);
 	const showAllSyllables = useAtomValue(showAllSyllablesAtom);
@@ -107,7 +106,13 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 					const processedLine = processedLines.find((l) => l.id === lineId);
 					if (!processedLine) return;
 
-					const timeDeltaMS = hoverTimeMs - initialMouseTimeMS;
+					const scrollContainer = scrollContainerRef.current;
+					if (!scrollContainer) return;
+					const rect = scrollContainer.getBoundingClientRect();
+
+					const mouseXPx = event.clientX - rect.left;
+					const currentMouseTimeMS = ((scrollLeft + mouseXPx) / zoom) * 1000;
+					const timeDeltaMS = currentMouseTimeMS - initialMouseTimeMS;
 					const desiredNewStartMS = initialWordStartMS + timeDeltaMS;
 
 					const preview = getUpdatedLineForWordPan(
@@ -126,7 +131,13 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 					const processedLine = processedLines.find((l) => l.id === lineId);
 					if (!processedLine) return;
 
-					const timeDeltaMS = hoverTimeMs - initialMouseTimeMS;
+					const scrollContainer = scrollContainerRef.current;
+					if (!scrollContainer) return;
+					const rect = scrollContainer.getBoundingClientRect();
+
+					const mouseXPx = event.clientX - rect.left;
+					const currentMouseTimeMS = ((scrollLeft + mouseXPx) / zoom) * 1000;
+					const timeDeltaMS = currentMouseTimeMS - initialMouseTimeMS;
 					let desiredNewStartMS = initialLineStartMS + timeDeltaMS;
 
 					if (!event.shiftKey) {
@@ -214,9 +225,10 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 		setTimelineDrag,
 		setPreviewLine,
 		zoom,
+		scrollLeft,
+		scrollContainerRef,
 		processedLines,
 		currentTime,
-		hoverTimeMs,
 	]);
 
 	const bufferPx = 500;
