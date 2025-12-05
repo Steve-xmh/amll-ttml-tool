@@ -1,9 +1,12 @@
+import type { Draft } from "immer";
 import { lyricLinesAtom } from "$/states/main";
 import { globalStore } from "$/states/store.ts";
-import type {
-	ProcessedLyricLine,
-	WordSegment,
+import {
+	type ProcessedLyricLine,
+	processSingleLine,
+	type WordSegment,
 } from "$/utils/segment-processing.ts";
+import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
 
 const MIN_DIVIDER_WIDTH_PX = 15;
 const MIN_WORD_DURATION_MS = 10;
@@ -254,4 +257,134 @@ export function getUpdatedLineForLinePan(
 		endTime: newEndMS,
 		segments: newSegments,
 	};
+}
+
+export function tryInitializeZeroTimestampLine(
+	line: Draft<LyricLine>,
+	newStartTime: number,
+	newEndTime: number,
+): boolean {
+	const isAllZero =
+		line.words.length > 0 &&
+		line.words.every((w) => w.startTime === 0 && w.endTime === 0);
+
+	if (isAllZero) {
+		line.startTime = newStartTime;
+		line.endTime = newEndTime;
+		const totalDuration = newEndTime - newStartTime;
+		const nonEmptyWordCount = line.words.filter(
+			(w) => w.word.trim() !== "",
+		).length;
+
+		if (nonEmptyWordCount === 0) {
+			return true;
+		}
+
+		const perWordDuration = totalDuration / nonEmptyWordCount;
+		let nonEmptyWordIndex = 0;
+
+		line.words.forEach((word) => {
+			if (word.word.trim() !== "") {
+				word.startTime = newStartTime + nonEmptyWordIndex * perWordDuration;
+				word.endTime = newStartTime + (nonEmptyWordIndex + 1) * perWordDuration;
+				nonEmptyWordIndex++;
+			}
+		});
+		return true;
+	}
+	return false;
+}
+
+export function shiftLineStartTime(
+	line: Draft<LyricLine>,
+	newStartTime: number,
+) {
+	const delta = newStartTime - line.startTime;
+	if (delta !== 0) {
+		line.startTime = newStartTime;
+		for (const word of line.words) {
+			word.startTime += delta;
+			word.endTime += delta;
+		}
+	}
+}
+
+export function adjustLineEndTime(line: Draft<LyricLine>, newEndTime: number) {
+	const currentLastWordEnd =
+		line.words.length > 0
+			? line.words[line.words.length - 1].endTime
+			: line.endTime;
+
+	const diff = currentLastWordEnd - newEndTime;
+
+	if (line.words.length === 0) {
+		line.endTime = newEndTime;
+		return;
+	}
+
+	if (diff < 0) {
+		line.endTime = newEndTime;
+		const lastWord = line.words[line.words.length - 1];
+		if (newEndTime > lastWord.startTime) {
+			lastWord.endTime = newEndTime;
+		}
+	} else if (diff > 0) {
+		line.endTime = newEndTime;
+
+		const processedLine = processSingleLine(line);
+
+		interface CompressTarget {
+			duration: number;
+			ref?: Draft<LyricWord>;
+		}
+
+		const wordDraftMap = new Map<string, Draft<LyricWord>>();
+		for (const w of line.words) {
+			wordDraftMap.set(w.id, w);
+		}
+
+		const targets: CompressTarget[] = processedLine.segments.map((seg) => ({
+			duration: seg.endTime - seg.startTime,
+			ref: seg.type === "word" ? wordDraftMap.get(seg.id) : undefined,
+		}));
+
+		let remainingReduction = diff;
+		const MIN_DURATION = 50;
+
+		for (let i = targets.length - 1; i >= 0; i--) {
+			if (remainingReduction <= 0) break;
+
+			const target = targets[i];
+			const maxReducible = Math.max(0, target.duration - MIN_DURATION);
+			const reduceAmount = Math.min(remainingReduction, maxReducible);
+
+			target.duration -= reduceAmount;
+			remainingReduction -= reduceAmount;
+		}
+
+		if (remainingReduction > 0) {
+			const currentTotalDuration = targets.reduce(
+				(sum, t) => sum + t.duration,
+				0,
+			);
+			const targetTotalDuration = currentTotalDuration - remainingReduction;
+
+			if (targetTotalDuration > 0 && currentTotalDuration > 0) {
+				const scale = targetTotalDuration / currentTotalDuration;
+				for (const target of targets) {
+					target.duration *= scale;
+				}
+			}
+		}
+
+		let writeCursor = line.startTime;
+
+		for (const target of targets) {
+			if (target.ref) {
+				target.ref.startTime = writeCursor;
+				target.ref.endTime = writeCursor + target.duration;
+			}
+			writeCursor += target.duration;
+		}
+	}
 }
