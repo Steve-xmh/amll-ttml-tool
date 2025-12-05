@@ -121,11 +121,23 @@ function tryInitializeZeroTimestampLine(
 		line.startTime = newStartTime;
 		line.endTime = newEndTime;
 		const totalDuration = newEndTime - newStartTime;
-		const perWordDuration = totalDuration / line.words.length;
+		const nonEmptyWordCount = line.words.filter(
+			(w) => w.word.trim() !== "",
+		).length;
 
-		line.words.forEach((word, index) => {
-			word.startTime = newStartTime + index * perWordDuration;
-			word.endTime = newStartTime + (index + 1) * perWordDuration;
+		if (nonEmptyWordCount === 0) {
+			return true;
+		}
+
+		const perWordDuration = totalDuration / nonEmptyWordCount;
+		let nonEmptyWordIndex = 0;
+
+		line.words.forEach((word) => {
+			if (word.word.trim() !== "") {
+				word.startTime = newStartTime + nonEmptyWordIndex * perWordDuration;
+				word.endTime = newStartTime + (nonEmptyWordIndex + 1) * perWordDuration;
+				nonEmptyWordIndex++;
+			}
 		});
 		return true;
 	}
