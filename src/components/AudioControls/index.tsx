@@ -31,6 +31,7 @@ import { useAtom, useAtomValue, useStore } from "jotai";
 import { type FC, memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AudioSlider } from "$/components/AudioControls/AudioSlider";
+import { useFileOpener } from "$/hooks/useFileOpener";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
@@ -105,6 +106,7 @@ export const AudioControls: FC = memo(() => {
 	const [volume, setVolume] = useAtom(volumeAtom);
 	const [playbackRate, setPlaybackRate] = useAtom(playbackRateAtom);
 	const [gain, setGain] = useAtom(spectrogramGainAtom);
+	const { openFile } = useFileOpener();
 	const { t } = useTranslation();
 
 	const onLoadMusic = useCallback(() => {
@@ -116,14 +118,14 @@ export const AudioControls: FC = memo(() => {
 			() => {
 				const file = inputEl.files?.[0];
 				if (!file) return;
-				audioEngine.loadMusic(file);
+				openFile(file);
 			},
 			{
 				once: true,
 			},
 		);
 		inputEl.click();
-	}, []);
+	}, [openFile]);
 
 	const onTogglePlay = useCallback(() => {
 		if (audioEngine.musicPlaying) {

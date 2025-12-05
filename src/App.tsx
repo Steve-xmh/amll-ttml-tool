@@ -10,14 +10,6 @@
  */
 
 import {
-	type LyricLine as CoreLyricLine,
-	parseEslrc,
-	parseLrc,
-	parseLys,
-	parseQrc,
-	parseYrc,
-} from "@applemusic-like-lyrics/lyric";
-import {
 	Box,
 	Button,
 	Flex,
@@ -34,25 +26,27 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { platform, version } from "@tauri-apps/plugin-os";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtomValue, useStore } from "jotai";
+import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
 import { ToastContainer, toast } from "react-toastify";
 import saveFile from "save-file";
 import semverGt from "semver/functions/gt";
-import { uid } from "uid";
 import styles from "./App.module.css";
 import AudioControls from "./components/AudioControls";
 import DarkThemeDetector from "./components/DarkThemeDetector";
+import { GlobalDragOverlay } from "./components/GlobalDragOverlay/index.tsx";
 import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
+import { useFileOpener } from "./hooks/useFileOpener.ts";
 import {
 	autosaveEnabledAtom,
 	autosaveIntervalAtom,
 	autosaveLimitAtom,
 } from "./states/config.ts";
+import { isGlobalFileDraggingAtom } from "./states/dnd.ts";
 import {
 	isDarkThemeAtom,
 	lyricLinesAtom,
@@ -61,8 +55,6 @@ import {
 } from "./states/main.ts";
 import { showTouchSyncPanelAtom } from "./states/sync.ts";
 import { addSnapshot } from "./utils/autosave.ts";
-import { parseLyric as parseTTML } from "./utils/ttml-parser.ts";
-import type { TTMLLyric } from "./utils/ttml-types.ts";
 import exportTTMLText from "./utils/ttml-writer.ts";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
@@ -139,6 +131,9 @@ function App() {
 	const autosaveLimit = useAtomValue(autosaveLimitAtom);
 	const lastSnapshotRef = useRef<string | null>(null);
 
+	const setIsGlobalDragging = useSetAtom(isGlobalFileDraggingAtom);
+	const { openFile } = useFileOpener();
+
 	useEffect(() => {
 		if (!autosaveEnabled) {
 			return;
@@ -173,7 +168,6 @@ function App() {
 	}, [store, autosaveEnabled, autosaveInterval, autosaveLimit]);
 
 	if (import.meta.env.TAURI_ENV_PLATFORM) {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			(async () => {
 				const file: {
@@ -181,55 +175,18 @@ function App() {
 					data: string;
 					ext: string;
 				} | null = await invoke("get_open_file_data");
+
 				if (file) {
 					log("File data from tauri args", file);
-					try {
-						const setLyric = (l: TTMLLyric) => store.set(lyricLinesAtom, l);
-						const makeTTML = (lyricLines: CoreLyricLine[]) =>
-							({
-								lyricLines: lyricLines.map((line) => ({
-									...line,
-									words: line.words.map((word) => ({
-										...word,
-										id: uid(),
-										obscene: false,
-										emptyBeat: 0,
-									})),
-									ignoreSync: false,
-									id: uid(),
-								})),
-								metadata: [],
-							}) as TTMLLyric;
-						switch (file.ext) {
-							case "ttml":
-								setLyric(parseTTML(file.data));
-								break;
-							case "lrc":
-								setLyric(makeTTML(parseLrc(file.data)));
-								break;
-							case "eslrc":
-								setLyric(makeTTML(parseEslrc(file.data)));
-								break;
-							case "qrc":
-								setLyric(makeTTML(parseQrc(file.data)));
-								break;
-							case "yrc":
-								setLyric(makeTTML(parseYrc(file.data)));
-								break;
-							case "lys":
-								setLyric(makeTTML(parseLys(file.data)));
-								break;
-							default:
-								toast.error("打开失败：无法识别这个文件的格式");
-						}
-					} catch (e) {
-						logError("Failed to parse TTML file from tauri arguments", e);
-						toast.error("打开文件失败，请检查文件格式是否正确");
-					}
+
+					const fileObj = new File([file.data], file.filename, {
+						type: "text/plain",
+					});
+
+					openFile(fileObj);
 				}
 			})();
-		}, [store]);
-		// eslint-disable-next-line react-hooks/rules-of-hooks
+		}, [openFile]);
 		useEffect(() => {
 			(async () => {
 				const win = getCurrentWindow();
@@ -274,6 +231,46 @@ function App() {
 		};
 	}, [store]);
 
+	useEffect(() => {
+		const handleDragEnter = (e: DragEvent) => {
+			if (e.dataTransfer?.types.includes("Files")) {
+				setIsGlobalDragging(true);
+			}
+		};
+
+		const handleDragOver = (e: DragEvent) => {
+			e.preventDefault();
+		};
+
+		const handleDragLeave = (e: DragEvent) => {
+			if (e.relatedTarget === null) {
+				setIsGlobalDragging(false);
+			}
+		};
+
+		const handleDrop = (e: DragEvent) => {
+			e.preventDefault();
+			setIsGlobalDragging(false);
+
+			const files = e.dataTransfer?.files;
+			if (files && files.length > 0) {
+				openFile(files[0]);
+			}
+		};
+
+		window.addEventListener("dragenter", handleDragEnter);
+		window.addEventListener("dragover", handleDragOver);
+		window.addEventListener("dragleave", handleDragLeave);
+		window.addEventListener("drop", handleDrop);
+
+		return () => {
+			window.removeEventListener("dragenter", handleDragEnter);
+			window.removeEventListener("dragover", handleDragOver);
+			window.removeEventListener("dragleave", handleDragLeave);
+			window.removeEventListener("drop", handleDrop);
+		};
+	}, [setIsGlobalDragging, openFile]);
+
 	return (
 		<Theme
 			appearance={isDarkTheme ? "dark" : "light"}
@@ -288,6 +285,7 @@ function App() {
 					// TODO
 				}}
 			>
+				<GlobalDragOverlay />
 				{toolMode === ToolMode.Sync && <SyncKeyBinding />}
 				<DarkThemeDetector />
 				<Flex direction="column" height="100vh">

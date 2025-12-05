@@ -1,0 +1,154 @@
+/**
+ * @description 处理打开文件的逻辑
+ */
+
+import {
+	type LyricLine,
+	parseEslrc,
+	parseLrc,
+	parseLys,
+	parseQrc,
+	parseYrc,
+} from "@applemusic-like-lyrics/lyric";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { uid } from "uid";
+
+import { confirmDialogAtom } from "$/states/dialogs.ts";
+import {
+	isDirtyAtom,
+	lyricLinesAtom,
+	saveFileNameAtom,
+} from "$/states/main.ts";
+import { audioEngine } from "$/utils/audio";
+import { error as logError } from "$/utils/logging.ts";
+import { parseLyric as parseTTML } from "$/utils/ttml-parser.ts";
+import type { TTMLLyric } from "$/utils/ttml-types.ts";
+
+const LYRIC_PARSERS: Record<string, (text: string) => LyricLine[]> = {
+	lrc: parseLrc,
+	eslrc: parseEslrc,
+	qrc: parseQrc,
+	yrc: parseYrc,
+	lys: parseLys,
+};
+
+const AUDIO_EXTENSIONS = new Set([
+	"opus",
+	"flac",
+	"webm",
+	"weba",
+	"wav",
+	"ogg",
+	"m4a",
+	"oga",
+	"mid",
+	"mp3",
+	"aiff",
+	"wma",
+	"au",
+]);
+
+export const useFileOpener = () => {
+	const setLyricLines = useSetAtom(lyricLinesAtom);
+	const setSaveFileName = useSetAtom(saveFileNameAtom);
+	const setConfirmDialog = useSetAtom(confirmDialogAtom);
+	const isDirty = useAtomValue(isDirtyAtom);
+	const { t } = useTranslation();
+
+	const normalizeLyricLines = useCallback(
+		(lyricLines: LyricLine[]): TTMLLyric => {
+			return {
+				lyricLines: lyricLines.map((line) => ({
+					...line,
+					words: line.words.map((word) => ({
+						...word,
+						id: uid(),
+						obscene: false,
+						emptyBeat: 0,
+					})),
+					ignoreSync: false,
+					id: uid(),
+				})),
+				metadata: [],
+			};
+		},
+		[],
+	);
+
+	const performOpenFile = useCallback(
+		async (file: File, forceExt?: string) => {
+			const rawExt = file.name.split(".").pop()?.toLowerCase() || "";
+			const ext = forceExt ? forceExt.toLowerCase() : rawExt;
+
+			try {
+				if (AUDIO_EXTENSIONS.has(ext)) {
+					audioEngine.loadMusic(file);
+					return;
+				}
+
+				if (ext === "ttml") {
+					const text = await file.text();
+					const ttmlData = parseTTML(text);
+					setLyricLines(ttmlData);
+					setSaveFileName(file.name);
+				} else if (ext in LYRIC_PARSERS) {
+					const text = await file.text();
+					const parser = LYRIC_PARSERS[ext];
+					const rawLines = parser(text);
+					const normalizedData = normalizeLyricLines(rawLines);
+					setLyricLines(normalizedData);
+					setSaveFileName(file.name);
+				} else {
+					toast.error(
+						t("error.unsupportedFileFormat", "不支持的文件格式: {ext}", {
+							ext,
+						}),
+					);
+				}
+			} catch (e) {
+				logError(`Failed to open file: ${file.name}`, e);
+				toast.error(t("error.openFileFailed", "打开文件失败"));
+			}
+		},
+		[setLyricLines, setSaveFileName, normalizeLyricLines, t],
+	);
+
+	const openFile = useCallback(
+		/**
+		 * 打开文件
+		 * @param file
+		 * @param forceExt 可选参数，用于强制指定解析方式，不传入则从文件后缀名推断
+		 */
+		(file: File, forceExt?: string) => {
+			const run = () => performOpenFile(file, forceExt);
+
+			const rawExt = file.name.split(".").pop()?.toLowerCase() || "";
+			const finalExt = forceExt || rawExt;
+
+			if (AUDIO_EXTENSIONS.has(finalExt)) {
+				run();
+				return;
+			}
+
+			if (isDirty) {
+				setConfirmDialog({
+					open: true,
+					title: t("confirmDialog.openFile.title", "确认打开文件"),
+					description: t(
+						"confirmDialog.openFile.description",
+						"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？",
+					),
+					onConfirm: run,
+				});
+			} else {
+				run();
+			}
+		},
+		[isDirty, setConfirmDialog, t, performOpenFile],
+	);
+
+	return { openFile };
+};

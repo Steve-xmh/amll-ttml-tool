@@ -14,6 +14,7 @@ import { type FC, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import saveFile from "save-file";
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
+import { useFileOpener } from "$/hooks/useFileOpener.ts";
 import {
 	advancedSegmentationDialogAtom,
 	confirmDialogAtom,
@@ -50,7 +51,6 @@ import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { error, log } from "$/utils/logging.ts";
 import { segmentWord } from "$/utils/segmentation";
 import type { SegmentationConfig } from "$/utils/segmentation-types";
-import { parseLyric } from "$/utils/ttml-parser.ts";
 import exportTTMLText from "$/utils/ttml-writer.ts";
 
 const useWindowSize = () => {
@@ -79,7 +79,6 @@ export const TopMenu: FC = () => {
 	const showHomeButton = width < 800;
 	const [saveFileName, setSaveFileName] = useAtom(saveFileNameAtom);
 	const newLyricLine = useSetAtom(newLyricLinesAtom);
-	const setLyricLines = useSetAtom(lyricLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const setMetadataEditorOpened = useSetAtom(metadataEditorDialogAtom);
 	const setSettingsDialogOpened = useSetAtom(settingsDialogAtom);
@@ -93,6 +92,7 @@ export const TopMenu: FC = () => {
 		advancedSegmentationDialogAtom,
 	);
 	const setTimeShiftDialog = useSetAtom(timeShiftDialogAtom);
+	const { openFile } = useFileOpener();
 
 	const onNewFile = useCallback(() => {
 		const action = () => newLyricLine();
@@ -114,75 +114,38 @@ export const TopMenu: FC = () => {
 	const newFileKey = useKeyBindingAtom(keyNewFileAtom, onNewFile, [onNewFile]);
 
 	const onOpenFile = useCallback(() => {
-		const action = () => {
-			const inputEl = document.createElement("input");
-			inputEl.type = "file";
-			inputEl.accept = ".ttml,*/*";
-			inputEl.addEventListener(
-				"change",
-				async () => {
-					const file = inputEl.files?.[0];
-					if (!file) return;
-					try {
-						const ttmlText = await file.text();
-						const ttmlData = parseLyric(ttmlText);
-						setLyricLines(ttmlData);
-						setSaveFileName(file.name);
-					} catch (e) {
-						error("Failed to parse TTML file", e);
-					}
-				},
-				{
-					once: true,
-				},
-			);
-			inputEl.click();
-		};
-
-		if (isDirty) {
-			setConfirmDialog({
-				open: true,
-				title: t("confirmDialog.openFile.title", "确认打开文件"),
-				description: t(
-					"confirmDialog.openFile.description",
-					"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？",
-				),
-				onConfirm: action,
-			});
-		} else {
-			action();
-		}
-	}, [isDirty, setLyricLines, setSaveFileName, setConfirmDialog, t]);
+		const inputEl = document.createElement("input");
+		inputEl.type = "file";
+		inputEl.accept = ".ttml,.lrc,.qrc,.eslrc,.lys,.yrc,*/*";
+		inputEl.addEventListener(
+			"change",
+			() => {
+				const file = inputEl.files?.[0];
+				if (!file) return;
+				openFile(file);
+			},
+			{
+				once: true,
+			},
+		);
+		inputEl.click();
+	}, [openFile]);
 
 	const openFileKey = useKeyBindingAtom(keyOpenFileAtom, onOpenFile, [
 		onOpenFile,
 	]);
 
 	const onOpenFileFromClipboard = useCallback(async () => {
-		const action = async () => {
-			try {
-				const ttmlText = await navigator.clipboard.readText();
-				const ttmlData = parseLyric(ttmlText);
-				setLyricLines(ttmlData);
-			} catch (e) {
-				error("Failed to parse TTML file from clipboard", e);
-			}
-		};
-
-		if (isDirty) {
-			setConfirmDialog({
-				open: true,
-				title: t("confirmDialog.openFromClipboard.title", "确认从剪贴板打开"),
-				description: t(
-					"confirmDialog.openFromClipboard.description",
-					"当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？",
-				),
-				onConfirm: action,
+		try {
+			const ttmlText = await navigator.clipboard.readText();
+			const file = new File([ttmlText], "lyric.ttml", {
+				type: "application/xml",
 			});
-		} else {
-			await action();
+			openFile(file);
+		} catch (e) {
+			error("Failed to parse TTML file from clipboard", e);
 		}
-	}, [isDirty, setLyricLines, setConfirmDialog, t]);
+	}, [openFile]);
 
 	const onSaveFile = useCallback(() => {
 		try {

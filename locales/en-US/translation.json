@@ -157,10 +157,6 @@
 		"openFile": {
 			"title": "Confirm Open File",
 			"description": "You have unsaved changes. If you proceed, these changes will be lost. Are you sure you want to open a new file?"
-		},
-		"openFromClipboard": {
-			"title": "Confirm Open from Clipboard",
-			"description": "You have unsaved changes. If you proceed, these changes will be lost. Are you sure you want to open from the clipboard?"
 		}
 	},
 	"historyRestoreDialog": {
@@ -368,6 +364,9 @@
 		"toLine": "to line",
 		"line": ""
 	},
+	"globalDragOverlay": {
+		"title": "Release to load"
+	},
 	"contextMenu": {
 		"bgLyric": "Background line",
 		"duetLyric": "Duet line",
@@ -447,6 +446,10 @@
 	"touchSyncPanel": {
 		"prevWord": "Jump Previous Word",
 		"nextWord": "Jump Next Word"
+	},
+	"error": {
+		"unsupportedFileFormat": "Unsupported file format: {ext}",
+		"openFileFailed": "Failed to open file"
 	},
 	"pwa": {
 		"offlineReady": "Site successfully cached for offline use",

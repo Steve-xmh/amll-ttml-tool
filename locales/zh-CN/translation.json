@@ -157,10 +157,6 @@
 		"openFile": {
 			"title": "确认打开文件",
 			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"
-		},
-		"openFromClipboard": {
-			"title": "确认从剪贴板打开",
-			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要从剪贴板打开吗？"
 		}
 	},
 	"historyRestoreDialog": {
@@ -368,6 +364,9 @@
 		"toLine": "行 到",
 		"line": "行"
 	},
+	"globalDragOverlay": {
+		"title": "拖放到此处以加载"
+	},
 	"contextMenu": {
 		"bgLyric": "背景歌词",
 		"duetLyric": "对唱歌词",
@@ -447,6 +446,10 @@
 	"touchSyncPanel": {
 		"prevWord": "跳上词",
 		"nextWord": "跳下词"
+	},
+	"error": {
+		"unsupportedFileFormat": "不支持的文件格式: {ext}",
+		"openFileFailed": "打开文件失败"
 	},
 	"pwa": {
 		"offlineReady": "网站已成功离线缓存，后续可离线访问本网页",

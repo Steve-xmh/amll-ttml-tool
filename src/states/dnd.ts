@@ -37,3 +37,8 @@ export const previewLineAtom = atom<ProcessedLyricLine | null>(null);
 export const isDraggingAtom = atom((get) => get(timelineDragAtom) !== null);
 
 export const selectedWordIdAtom = atom<string | null>(null);
+
+/**
+ * @description 用于控制全局文件拖拽遮罩层的显示
+ */
+export const isGlobalFileDraggingAtom = atom(false);
