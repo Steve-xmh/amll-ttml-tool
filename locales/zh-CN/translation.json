@@ -18,6 +18,8 @@
 	},
 	"spectrogram": {
 		"invalidEndTime": "不能选择此结束时间",
+		"noAudioLoaded": "请先加载一个音频文件来渲染频谱图哦",
+		"loadAudio": "加载音频文件",
 		"showUnselectedLines": "显示未选中行"
 	},
 	"ribbonBar": {
