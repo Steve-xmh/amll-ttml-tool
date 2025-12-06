@@ -74,7 +74,7 @@ export const selectedWordsAtom = atom(new Set<string>());
 export const saveFileNameAtom = atom("lyric.ttml");
 
 export const showUnselectedLinesAtom = atomWithStorage(
-	"showUnselectedLinesAtom",
+	"showUnselectedLines",
 	true,
 );
 
