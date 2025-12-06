@@ -126,7 +126,7 @@
 			"title": "后处理",
 			"punct": {
 				"caption": "标点符号处理:",
-				"merge": "合并到前一个音节",
+				"merge": "合并到相邻音节",
 				"standalone": "设为新音节",
 				"weight": "标点时长权重:"
 			},

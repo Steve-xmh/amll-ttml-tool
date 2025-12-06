@@ -126,7 +126,7 @@
 			"title": "Post-processing",
 			"punct": {
 				"caption": "Punctuation handling:",
-				"merge": "Merge to previous segment",
+				"merge": "Merge to adjacent syllable",
 				"standalone": "Set as standalone segment",
 				"weight": "Punctuation time weight:"
 			},

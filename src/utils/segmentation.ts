@@ -5,6 +5,10 @@
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types.ts";
 import { CharType, type SegmentationConfig } from "./segmentation-types";
 
+const RE_WHITESPACE = /[\s\n\t]/;
+const RE_LATIN = /[a-zA-Z'-]/;
+const RE_NUMERIC = /[0-9]/;
+
 /**
  * @description 判断单个字符的类型
  */
@@ -14,15 +18,10 @@ function getCharType(c: string): CharType {
 	}
 	const code = c.charCodeAt(0);
 
-	if (c.match(/[\s\n\t]/)) {
-		return CharType.Whitespace;
-	}
-	if (c.match(/[a-zA-Z'-]/)) {
-		return CharType.Latin;
-	}
-	if (c.match(/[0-9]/)) {
-		return CharType.Numeric;
-	}
+	if (RE_WHITESPACE.test(c)) return CharType.Whitespace;
+	if (RE_LATIN.test(c)) return CharType.Latin;
+	if (RE_NUMERIC.test(c)) return CharType.Numeric;
+
 	if (
 		(code >= 0x4e00 && code <= 0x9fff) || // CJK
 		(code >= 0x3040 && code <= 0x309f) || // 日语平假名
@@ -33,6 +32,30 @@ function getCharType(c: string): CharType {
 	}
 	// 标点符号和emoji等
 	return CharType.Other;
+}
+
+/**
+ * @description 判断两个相邻字符是否应该合并
+ */
+function isMergeablePair(
+	prev: CharType,
+	curr: CharType,
+	splitCJK: boolean,
+): boolean {
+	if (prev !== curr) {
+		return false;
+	}
+
+	switch (prev) {
+		case CharType.Latin:
+		case CharType.Numeric:
+		case CharType.Whitespace:
+			return true;
+		case CharType.Cjk:
+			return !splitCJK;
+		default:
+			return false;
+	}
 }
 
 /**
@@ -84,16 +107,7 @@ function autoTokenize(text: string, config: SegmentationConfig): string[] {
 
 			if (
 				!shouldBreak &&
-				!matches(
-					[lastCharType, currentCharType],
-					[
-						[CharType.Latin, CharType.Latin],
-						[CharType.Numeric, CharType.Numeric],
-						[CharType.Whitespace, CharType.Whitespace],
-
-						[!config.splitCJK, CharType.Cjk, CharType.Cjk],
-					],
-				)
+				!isMergeablePair(lastCharType, currentCharType, config.splitCJK)
 			) {
 				shouldBreak = true;
 			}
@@ -110,32 +124,6 @@ function autoTokenize(text: string, config: SegmentationConfig): string[] {
 	pushCurrentToken();
 
 	return tokens;
-}
-
-/**
- * @description 辅助函数，用于模式匹配
- */
-function matches(
-	current: [CharType, CharType],
-	patterns: (boolean | CharType)[][],
-): boolean {
-	for (const pattern of patterns) {
-		if (pattern.length === 2) {
-			if (pattern[0] === current[0] && pattern[1] === current[1]) {
-				return true;
-			}
-		} else if (pattern.length === 3) {
-			// 用于 [!config.splitCJK, ...] 这种模式
-			if (
-				pattern[0] &&
-				pattern[1] === current[0] &&
-				pattern[2] === current[1]
-			) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 function calculateWeight(token: string, config: SegmentationConfig): number {
@@ -160,7 +148,48 @@ function calculateWeight(token: string, config: SegmentationConfig): number {
 }
 
 /**
+ * @description 标点符号的结合方向
+ */
+enum MergeDirection {
+	Left,
+	Right,
+}
+
+const rightAssociativeChars = new Set([
+	"(",
+	"[",
+	"{",
+	"<",
+	"（",
+	"【",
+	"《",
+	"「",
+	"『",
+	"“",
+	"‘",
+	"¿",
+	"¡",
+]);
+
+/**
+ * @description 判断标点符号应该向哪个方向合并
+ */
+function getMergeDirection(text: string): MergeDirection {
+	const firstChar = text.trim().charAt(0);
+
+	if (rightAssociativeChars.has(firstChar)) {
+		return MergeDirection.Right;
+	}
+
+	// 句号、逗号、右括号等其他所有标点向左合并
+	return MergeDirection.Left;
+}
+
+/**
  * @description 后处理
+ *
+ * 处理标点粘连，过滤空字符，计算总权重
+ * @returns 处理完的 Token 列表、对应的权重列表、总权重
  */
 function postProcess(
 	tokens: string[],
@@ -169,24 +198,61 @@ function postProcess(
 	const processedTokens: string[] = [];
 	const tokenWeights: number[] = [];
 
+	/**
+	 * @description 用于存储等待向右合并的标点。例如 `(`
+	 */
+	let pendingPrefix = "";
+	let pendingPrefixWeight = 0;
+
 	for (const token of tokens) {
 		const tokenWeight = calculateWeight(token, config);
 		const firstChar = token.length > 0 ? Array.from(token)[0] : " ";
 		const charType = getCharType(firstChar);
 
-		if (
-			config.punctuationMode === "merge" &&
-			charType === CharType.Other &&
-			processedTokens.length > 0
-		) {
-			processedTokens[processedTokens.length - 1] += token;
-			tokenWeights[tokenWeights.length - 1] += tokenWeight;
+		if (config.punctuationMode === "merge" && charType === CharType.Other) {
+			const direction = getMergeDirection(token);
+
+			if (direction === MergeDirection.Right) {
+				// 向右合并
+				pendingPrefix += token;
+				pendingPrefixWeight += tokenWeight;
+			} else {
+				// 向左合并
+				if (processedTokens.length > 0) {
+					processedTokens[processedTokens.length - 1] += token;
+					tokenWeights[tokenWeights.length - 1] += tokenWeight;
+				} else {
+					// 行首就是应该向左合并的标点符号，存起来然后合并到第一个音节中
+					pendingPrefix += token;
+					pendingPrefixWeight += tokenWeight;
+				}
+			}
 		} else {
-			processedTokens.push(token);
-			tokenWeights.push(tokenWeight);
+			// 实词，将缓冲区的标点拼接在词前
+			const combinedToken = pendingPrefix + token;
+			const combinedWeight = pendingPrefixWeight + tokenWeight;
+
+			processedTokens.push(combinedToken);
+			tokenWeights.push(combinedWeight);
+
+			pendingPrefix = "";
+			pendingPrefixWeight = 0;
 		}
 	}
 
+	// 行尾缓冲区里还有应该向右合并的标点，拼接到上一个词中
+	if (pendingPrefix) {
+		if (processedTokens.length > 0) {
+			processedTokens[processedTokens.length - 1] += pendingPrefix;
+			tokenWeights[tokenWeights.length - 1] += pendingPrefixWeight;
+		} else {
+			// 整行都只有标点了
+			processedTokens.push(pendingPrefix);
+			tokenWeights.push(pendingPrefixWeight);
+		}
+	}
+
+	// 权重计算
 	const finalTokens: string[] = [];
 	const finalWeights: number[] = [];
 	let totalWeight = 0;
@@ -208,7 +274,11 @@ function postProcess(
 }
 
 /**
- * @description 分配时长
+ * @description 把原 `LyricWord` 的总时长按权重分给切分后的 `tokens`
+ * @param originalWord 原始的大词对象
+ * @param tokens 切分后的文本数组
+ * @param weights 对应的权重数组
+ * @param totalWeight 总权重
  */
 function distributeTime(
 	originalWord: LyricWord,
@@ -269,6 +339,8 @@ function distributeTime(
 
 /**
  * @description 转义正则特殊字符
+ *
+ * 防治字符串里的特殊符号搞崩正则
  */
 function escapeRegExp(string: string): string {
 	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

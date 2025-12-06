@@ -422,7 +422,7 @@ export const AdvancedSegmentationDialog = memo(() => {
 											<Text>
 												{t(
 													"advancedSegmentDialog.postProcess.punct.merge",
-													"合并到前一个音节",
+													"合并到相邻音节",
 												)}
 											</Text>
 										</Flex>
