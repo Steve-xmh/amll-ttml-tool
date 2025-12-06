@@ -16,19 +16,21 @@ import {
 	Flex,
 	IconButton,
 	RadioGroup,
+	Select,
 	Text,
 	TextArea,
 	TextField,
 } from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { advancedSegmentationDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
 import {
 	segmentationCustomRulesAtom,
 	segmentationIgnoreListTextAtom,
+	segmentationLangAtom,
 	segmentationPunctuationModeAtom,
 	segmentationPunctuationWeightAtom,
 	segmentationRangeEndAtom,
@@ -38,8 +40,12 @@ import {
 	segmentationSplitCJKAtom,
 	segmentationSplitEnglishAtom,
 } from "$/states/segmentation.ts";
+import { loadHyphenator, SUPPORTED_LANGUAGES } from "$/utils/hyphen-loader";
 import { segmentWord } from "$/utils/segmentation.ts";
-import type { SegmentationConfig } from "$/utils/segmentation-types";
+import type {
+	HyphenatorFunc,
+	SegmentationConfig,
+} from "$/utils/segmentation-types";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import styles from "./AdvancedSegmentation.module.css";
 import { ManualWordSplitter } from "./ManualWordSplitter";
@@ -73,6 +79,13 @@ export const AdvancedSegmentationDialog = memo(() => {
 
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const currentLyric = useAtomValue(lyricLinesAtom);
+
+	const [lang, setLang] = useAtom(segmentationLangAtom);
+
+	const [activeHyphenator, setActiveHyphenator] = useState<
+		HyphenatorFunc | undefined
+	>(undefined);
+	const [isLoadingLang, setIsLoadingLang] = useState(false);
 	const { t } = useTranslation();
 
 	const toggleSplitPoint = useCallback((index: number) => {
@@ -135,6 +148,25 @@ export const AdvancedSegmentationDialog = memo(() => {
 		);
 	}, [ignoreListText]);
 
+	useEffect(() => {
+		let isMounted = true;
+
+		const fetchHyphenator = async () => {
+			setIsLoadingLang(true);
+			const func = await loadHyphenator(lang);
+			if (isMounted && func) {
+				setActiveHyphenator(() => func);
+			}
+			if (isMounted) setIsLoadingLang(false);
+		};
+
+		fetchHyphenator();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [lang]);
+
 	const segmentationConfig = useMemo((): SegmentationConfig => {
 		const weight = parseFloat(punctuationWeight);
 		const finalPunctuationWeight = Number.isNaN(weight) ? 0.2 : weight;
@@ -147,6 +179,7 @@ export const AdvancedSegmentationDialog = memo(() => {
 			removeEmptySegments,
 			ignoreList,
 			customRules,
+			hyphenator: activeHyphenator,
 		};
 	}, [
 		splitCJK,
@@ -156,6 +189,7 @@ export const AdvancedSegmentationDialog = memo(() => {
 		removeEmptySegments,
 		ignoreList,
 		customRules,
+		activeHyphenator,
 	]);
 
 	const testPreview = useMemo(() => {
@@ -310,15 +344,47 @@ export const AdvancedSegmentationDialog = memo(() => {
 								{t("advancedSegmentDialog.rules.cjk", "CJK 按字符分词")}
 							</Flex>
 						</Text>
-						<Text as="label" size="2">
-							<Flex gap="2" align="center">
-								<Checkbox
-									checked={splitEnglish}
-									onCheckedChange={(c) => setSplitEnglish(c as boolean)}
-								/>
-								{t("advancedSegmentDialog.rules.english", "英文单词按音节分词")}
-							</Flex>
-						</Text>
+
+						<Flex direction="column" gap="2">
+							<Text as="label" size="2">
+								<Flex gap="2" align="center">
+									<Checkbox
+										checked={splitEnglish}
+										onCheckedChange={(c) => setSplitEnglish(c as boolean)}
+									/>
+									{t(
+										"advancedSegmentDialog.rules.syllable",
+										"西文单词按音节分词",
+									)}
+								</Flex>
+							</Text>
+
+							{splitEnglish && (
+								<Flex direction="column" gap="1" ml="5">
+									<Text size="2" color="gray">
+										{t(
+											"advancedSegmentDialog.language.select",
+											"选择一个分词语言模型：",
+										)}
+									</Text>
+									<Select.Root
+										value={lang}
+										onValueChange={setLang}
+										disabled={isLoadingLang}
+									>
+										<Select.Trigger style={{ width: "100%" }} />
+										<Select.Content>
+											{SUPPORTED_LANGUAGES.map((l) => (
+												<Select.Item key={l.value} value={l.value}>
+													{l.label}
+												</Select.Item>
+											))}
+										</Select.Content>
+									</Select.Root>
+								</Flex>
+							)}
+						</Flex>
+
 						<Callout.Root color="blue">
 							<Callout.Icon>
 								<Info16Regular />

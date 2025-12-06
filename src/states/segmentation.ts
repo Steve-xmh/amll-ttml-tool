@@ -66,3 +66,5 @@ export const segmentationCustomRulesAtom = atom<
 		set(segmentationCustomRulesStorageAtom, rulesArray);
 	},
 );
+
+export const segmentationLangAtom = atom<string>("en-us");

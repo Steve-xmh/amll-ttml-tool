@@ -82,7 +82,6 @@
 		"fileNamePlaceholder": "文件名"
 	},
 	"audioPanel": {
-		"gain": "频谱增益",
 		"volume": "音量",
 		"playbackRate": "播放速度",
 		"clickToLoadMusic": "点击图标按钮以加载音乐",
@@ -117,7 +116,10 @@
 		"rules": {
 			"title": "自动分词规则",
 			"cjk": "CJK 按字符分词",
-			"english": "英文单词按音节分词"
+			"syllable": "西文单词按音节分词"
+		},
+		"language": {
+			"select": "选择一个分词语言模型："
 		},
 		"tip": "分词后，原音节的时长会按照字符数和权重重新分配给新的音节",
 		"postProcess": {

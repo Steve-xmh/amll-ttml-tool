@@ -2,7 +2,6 @@
  * @description 分词引擎
  */
 
-import { hyphenateSync } from "hyphen/en-us";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types.ts";
 import { CharType, type SegmentationConfig } from "./segmentation-types";
 
@@ -53,9 +52,10 @@ function autoTokenize(text: string, config: SegmentationConfig): string[] {
 		if (
 			lastCharType === CharType.Latin &&
 			config.splitEnglish &&
-			currentToken.length > 1
+			currentToken.length > 1 &&
+			config.hyphenator
 		) {
-			const syllables = hyphenateSync(currentToken).split("\u00AD");
+			const syllables = config.hyphenator(currentToken).split("\u00AD");
 			tokens.push(...syllables);
 		} else {
 			tokens.push(currentToken);

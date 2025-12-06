@@ -82,7 +82,6 @@
 		"fileNamePlaceholder": "File Name"
 	},
 	"audioPanel": {
-		"gain": "Spectrum Gain",
 		"volume": "Volume",
 		"playbackRate": "Playback rate",
 		"clickToLoadMusic": "Click the icon button to load music",
@@ -117,7 +116,10 @@
 		"rules": {
 			"title": "Auto Segmentation Rules",
 			"cjk": "Split CJK characters",
-			"english": "Split English words by syllable"
+			"syllable": "Split Western words by syllables"
+		},
+		"language": {
+			"select": "Select a hyphenation language model:"
 		},
 		"tip": "After splitting, the original word's total duration will be redistributed based on the number of characters and their weights.",
 		"postProcess": {
