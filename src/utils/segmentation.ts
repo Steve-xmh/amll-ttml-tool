@@ -268,37 +268,85 @@ function distributeTime(
 }
 
 /**
+ * @description 转义正则特殊字符
+ */
+function escapeRegExp(string: string): string {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * @description 将单个 LyricWord 拆分为多个
  */
 export function segmentWord(
 	word: LyricWord,
 	config: SegmentationConfig,
 ): LyricWord[] {
-	const customParts = config.customRules.get(word.word);
-	if (customParts) {
-		let customTotalWeight = 0;
-		const customWeights = customParts.map((token) => {
-			const weight = calculateWeight(token, config);
-			customTotalWeight += weight;
-			return weight;
-		});
+	const protectedWords = new Set([
+		...config.ignoreList,
+		...config.customRules.keys(),
+	]);
 
-		return distributeTime(word, customParts, customWeights, customTotalWeight);
+	if (protectedWords.size === 0) {
+		const tokens = autoTokenize(word.word, config);
+		if (tokens.length === 0) return [];
+		const { finalTokens, finalWeights, totalWeight } = postProcess(
+			tokens,
+			config,
+		);
+		return distributeTime(word, finalTokens, finalWeights, totalWeight);
 	}
 
-	if (config.ignoreList.has(word.word)) {
-		return [word];
+	const sortedPatterns = Array.from(protectedWords)
+		.filter((k) => k.trim() !== "")
+		.sort((a, b) => b.length - a.length)
+		.map(escapeRegExp);
+
+	if (sortedPatterns.length === 0) {
+		const tokens = autoTokenize(word.word, config);
+		if (tokens.length === 0) return [];
+		const { finalTokens, finalWeights, totalWeight } = postProcess(
+			tokens,
+			config,
+		);
+		return distributeTime(word, finalTokens, finalWeights, totalWeight);
 	}
 
-	const tokens = autoTokenize(word.word, config);
-	if (tokens.length === 0) {
-		return [];
+	const pattern = new RegExp(`(${sortedPatterns.join("|")})`, "g");
+
+	const parts = word.word.split(pattern);
+
+	const allTokens: string[] = [];
+	const allWeights: number[] = [];
+	let grandTotalWeight = 0;
+
+	for (const part of parts) {
+		if (!part) continue;
+
+		if (config.customRules.has(part)) {
+			const ruleParts = config.customRules.get(part);
+			if (!ruleParts) continue;
+			for (const token of ruleParts) {
+				const weight = calculateWeight(token, config);
+				allTokens.push(token);
+				allWeights.push(weight);
+				grandTotalWeight += weight;
+			}
+		} else if (config.ignoreList.has(part)) {
+			const weight = calculateWeight(part, config);
+			allTokens.push(part);
+			allWeights.push(weight);
+			grandTotalWeight += weight;
+		} else {
+			const tokens = autoTokenize(part, config);
+			const { finalTokens, finalWeights, totalWeight } = postProcess(
+				tokens,
+				config,
+			);
+			allTokens.push(...finalTokens);
+			allWeights.push(...finalWeights);
+			grandTotalWeight += totalWeight;
+		}
 	}
 
-	const { finalTokens, finalWeights, totalWeight } = postProcess(
-		tokens,
-		config,
-	);
-
-	return distributeTime(word, finalTokens, finalWeights, totalWeight);
+	return distributeTime(word, allTokens, allWeights, grandTotalWeight);
 }
