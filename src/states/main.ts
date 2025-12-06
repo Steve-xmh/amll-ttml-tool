@@ -73,15 +73,10 @@ export const selectedWordsAtom = atom(new Set<string>());
 
 export const saveFileNameAtom = atom("lyric.ttml");
 
-export enum SyllableDisplayMode {
-	LineMode,
-	SyllableMode,
-}
-export const syllableDisplayModeAtom = atomWithStorage(
-	"syllableDisplayMode",
-	SyllableDisplayMode.SyllableMode,
+export const showUnselectedLinesAtom = atomWithStorage(
+	"showUnselectedLinesAtom",
+	true,
 );
-export const showAllSyllablesAtom = atomWithStorage("showAllSyllables", false);
 
 export interface EditingTimeFieldState {
 	isWord: boolean;

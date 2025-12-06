@@ -7,12 +7,7 @@ import {
 	type TimelineDragOperation,
 	timelineDragAtom,
 } from "$/states/dnd.ts";
-import {
-	SyllableDisplayMode,
-	selectedLinesAtom,
-	showAllSyllablesAtom,
-	syllableDisplayModeAtom,
-} from "$/states/main.ts";
+import { selectedLinesAtom, showUnselectedLinesAtom } from "$/states/main.ts";
 import { globalStore } from "$/states/store.ts";
 import {
 	type ProcessedLyricLine,
@@ -21,7 +16,6 @@ import {
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
-	getUpdatedLineForLinePan,
 	getUpdatedLineForWordPan,
 } from "$/utils/timeline-mutations";
 import { LyricLineSegment } from "./LyricLineSegment";
@@ -47,8 +41,7 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 	const { scrollContainerRef, zoom, scrollLeft } =
 		useContext(SpectrogramContext);
 
-	const displayMode = useAtomValue(syllableDisplayModeAtom);
-	const showAllSyllables = useAtomValue(showAllSyllablesAtom);
+	const showUnselectedLines = useAtomValue(showUnselectedLinesAtom);
 	const selectedLines = useAtomValue(selectedLinesAtom);
 
 	useEffect(() => {
@@ -124,50 +117,6 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 					setPreviewLine(preview);
 					break;
 				}
-
-				case "line-pan": {
-					const { lineId, initialMouseTimeMS, initialLineStartMS } =
-						timelineDrag;
-					const processedLine = processedLines.find((l) => l.id === lineId);
-					if (!processedLine) return;
-
-					const scrollContainer = scrollContainerRef.current;
-					if (!scrollContainer) return;
-					const rect = scrollContainer.getBoundingClientRect();
-
-					const mouseXPx = event.clientX - rect.left;
-					const currentMouseTimeMS = ((scrollLeft + mouseXPx) / zoom) * 1000;
-					const timeDeltaMS = currentMouseTimeMS - initialMouseTimeMS;
-					let desiredNewStartMS = initialLineStartMS + timeDeltaMS;
-
-					if (!event.shiftKey) {
-						let closestSnapTime: number | null = null;
-						let minDistancePx = SNAP_THRESHOLD_PX;
-
-						const newTimePx = (desiredNewStartMS / 1000) * zoom;
-
-						for (const targetTime of snapTargetsMs.current) {
-							const targetTimePx = (targetTime / 1000) * zoom;
-							const distancePx = Math.abs(newTimePx - targetTimePx);
-
-							if (distancePx < minDistancePx) {
-								minDistancePx = distancePx;
-								closestSnapTime = targetTime;
-							}
-						}
-
-						if (closestSnapTime !== null) {
-							desiredNewStartMS = closestSnapTime;
-						}
-					}
-
-					const preview = getUpdatedLineForLinePan(
-						processedLine,
-						desiredNewStartMS,
-					);
-					setPreviewLine(preview);
-					break;
-				}
 			}
 		};
 
@@ -195,8 +144,6 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 					segmentIndex === -1 ||
 					segmentIndex === lineBeingDragged.segments.length - 1;
 			}
-		} else if (timelineDrag.type === "line-pan") {
-			needsBoundarySnapping = true;
 		}
 
 		if (needsBoundarySnapping) {
@@ -272,7 +219,7 @@ export const LyricTimelineOverlay: FC<LyricTimelineOverlayProps> = ({
 		linesToRender = linesToRender.filter((line) => !hiddenLineIds.has(line.id));
 	}
 
-	if (displayMode === SyllableDisplayMode.SyllableMode && !showAllSyllables) {
+	if (!showUnselectedLines) {
 		linesToRender = linesToRender.filter((line) => selectedLines.has(line.id));
 	}
 

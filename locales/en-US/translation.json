@@ -17,15 +17,14 @@
 		}
 	},
 	"spectrogram": {
-		"invalidEndTime": "Cannot select this end time"
+		"invalidEndTime": "Cannot select this end time",
+		"showUnselectedLines": "Show unselected lines"
 	},
 	"ribbonBar": {
 		"editMode": {
 			"startTime": "Start Time",
 			"endTime": "End Time",
 			"multipleValues": "Multiple values…",
-			"syllableMode": "Syllable Mode",
-			"showAllSyllables": "Show All Syllables",
 			"showTranslation": "Show Translation Line",
 			"showRomanization": "Show Romanization Line",
 			"showWordRomanizationInput": "Show Per-Word Romanization",
@@ -46,8 +45,7 @@
 			"translatedLyric": "Translation",
 			"romanLyric": "Romanization",
 			"layoutMode": "Layout",
-			"auxiliaryLineDisplay": "Auxiliary Line Display",
-			"syllableDisplayMode": "Syllable Display Mode"
+			"auxiliaryLineDisplay": "Auxiliary Line Display"
 		},
 		"previewMode": {
 			"lyrics": "Lyrics",
@@ -84,8 +82,8 @@
 		"fileNamePlaceholder": "File Name"
 	},
 	"audioPanel": {
-		"volume": "Volume",
 		"gain": "Spectrum Gain",
+		"volume": "Volume",
 		"playbackRate": "Playback rate",
 		"clickToLoadMusic": "Click the icon button to load music",
 		"playPause": "Play / pause music",

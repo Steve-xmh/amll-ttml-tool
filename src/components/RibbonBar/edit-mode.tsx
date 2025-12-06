@@ -43,11 +43,8 @@ import {
 	editingTimeFieldAtom,
 	lyricLinesAtom,
 	requestFocusAtom,
-	SyllableDisplayMode,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	showAllSyllablesAtom,
-	syllableDisplayModeAtom,
 } from "$/states/main.ts";
 import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
 import {
@@ -393,51 +390,6 @@ function EditModeField({
 		</RadioGroup.Root>
 	);
 }
-
-const SyllableDisplayModeField: FC = () => {
-	const [displayMode, setDisplayMode] = useAtom(syllableDisplayModeAtom);
-	const [showAll, setShowAll] = useAtom(showAllSyllablesAtom);
-	const { t } = useTranslation();
-
-	const isSyllableMode = displayMode === SyllableDisplayMode.SyllableMode;
-
-	const handleSyllableModeToggle = (isChecked: boolean) => {
-		if (isChecked) {
-			setDisplayMode(SyllableDisplayMode.SyllableMode);
-		} else {
-			setDisplayMode(SyllableDisplayMode.LineMode);
-		}
-	};
-
-	const syllableModeCheckboxId = useId();
-	const showAllCheckboxId = useId();
-
-	return (
-		<Grid columns="0fr 0fr" gap="4" gapY="1" flexGrow="1" align="center">
-			<Text wrap="nowrap" size="1">
-				<label htmlFor={syllableModeCheckboxId}>
-					{t("ribbonBar.editMode.syllableMode", "逐字模式")}
-				</label>
-			</Text>
-			<Checkbox
-				id={syllableModeCheckboxId}
-				checked={isSyllableMode}
-				onCheckedChange={handleSyllableModeToggle}
-			/>
-			<Text wrap="nowrap" size="1">
-				<label htmlFor={showAllCheckboxId}>
-					{t("ribbonBar.editMode.showAllSyllables", "显示所有音节")}
-				</label>
-			</Text>
-			<Checkbox
-				id={showAllCheckboxId}
-				checked={showAll}
-				onCheckedChange={(checked) => setShowAll(Boolean(checked))}
-			/>
-		</Grid>
-	);
-};
-
 // function DropdownField<
 // 	L extends Word extends true ? LyricWord : LyricLine,
 // 	F extends keyof L,
@@ -745,11 +697,6 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 					label={t("ribbonBar.editMode.auxiliaryLineDisplay", "辅助行显示")}
 				>
 					<AuxiliaryDisplayField />
-				</RibbonSection>
-				<RibbonSection
-					label={t("ribbonBar.editMode.syllableDisplayMode", "音节显示模式")}
-				>
-					<SyllableDisplayModeField />
 				</RibbonSection>
 			</RibbonFrame>
 		);

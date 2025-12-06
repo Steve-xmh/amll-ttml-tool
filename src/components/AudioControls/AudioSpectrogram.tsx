@@ -1,4 +1,5 @@
-import { Theme } from "@radix-ui/themes";
+import { EyeFilled, EyeOffFilled } from "@fluentui/react-icons";
+import { Flex, IconButton, Slider, Theme, Tooltip } from "@radix-ui/themes";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
 	type FC,
@@ -17,7 +18,7 @@ import { useSpectrogramWorker } from "$/hooks/useSpectrogramWorker.ts";
 import { useTimelineEditing } from "$/hooks/useTimelineEditing.ts";
 import { audioBufferAtom, currentTimeAtom } from "$/states/audio.ts";
 import { isDraggingAtom } from "$/states/dnd.ts";
-import { selectedLinesAtom } from "$/states/main.ts";
+import { selectedLinesAtom, showUnselectedLinesAtom } from "$/states/main.ts";
 import {
 	auditionTimeAtom,
 	currentPaletteAtom,
@@ -53,8 +54,11 @@ export const AudioSpectrogram: FC = () => {
 	const auditionTime = useAtomValue(auditionTimeAtom);
 	const selectedLines = useAtomValue(selectedLinesAtom);
 
-	const gain = useAtomValue(spectrogramGainAtom);
+	const [gain, setGain] = useAtom(spectrogramGainAtom);
 	const [dataHeight, setDataHeight] = useAtom(spectrogramHeightAtom);
+	const [showUnselectedLines, setShowUnselectedLines] = useAtom(
+		showUnselectedLinesAtom,
+	);
 
 	const { height: uiHeight, resizeHandleProps } = useSpectrogramResize({
 		initialHeight: dataHeight,
@@ -250,136 +254,204 @@ export const AudioSpectrogram: FC = () => {
 
 	const hoverX = scrollLeft + hoverPx;
 
+	const minGain = 0.5;
+	const maxGain = 8;
+	const gainPercent = ((gain - minGain) / (maxGain - minGain)) * 100;
+	const THUMB_HEIGHT_PX = 13;
+	const thumbOffsetPx = (0.5 - gainPercent / 100) * THUMB_HEIGHT_PX;
+
 	return (
 		<div
 			className={styles.spectrogramContainer}
 			style={{ height: `${uiHeight}px` }}
 		>
 			<div className={styles.resizeHandle} {...resizeHandleProps} />
-			<TimelineRuler
-				ref={rulerRef}
-				zoom={zoom}
-				duration={audioBuffer?.duration || 0}
-				containerWidth={containerWidth}
-				onSeek={handleRulerSeek}
-			/>
 
-			{audioBuffer && !isDragging && (
-				<>
-					<div
-						className={styles.hoverTimeTooltip}
-						style={{
-							left: `${hoverPx}px`,
-							opacity: isHovering ? 1 : 0,
-							backgroundColor: tooltipBgColor,
-						}}
+			<div className={styles.innerContainer}>
+				<div className={`${styles.sidebar} ${styles.leftSidebar}`}>
+					<Flex
+						direction="column"
+						align="center"
+						gap="2"
+						style={{ height: "100%", width: "100%" }}
 					>
-						{hoverTimeFormatted}
-					</div>
-
-					<div
-						className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeLeft}`}
-						style={{
-							width: `${hoverPx}px`,
-							height: `${RULER_HEIGHT}px`,
-							opacity: isHovering ? 1 : 0,
-						}}
-					/>
-
-					<div
-						className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeRight}`}
-						style={{
-							left: `${hoverPx}px`,
-							height: `${RULER_HEIGHT}px`,
-							opacity: isHovering ? 1 : 0,
-						}}
-					/>
-				</>
-			)}
-
-			{audioBuffer && (
-				// biome-ignore lint/a11y/noStaticElementInteractions: 全局快捷键已经可以处理播放控制了，不应该再在这里额外添加处理
-				<div
-					className={styles.playheadScrubHandle}
-					style={{
-						left: `${handleLeftPosition}px`,
-						display:
-							handleLeftPosition < 0 || handleLeftPosition > containerWidth
-								? "none"
-								: "block",
-					}}
-					onMouseDown={handleScrubStart}
-				/>
-			)}
-			{/** biome-ignore lint/a11y/useSemanticElements: <fieldset> 在这里不适用 */}
-			<div
-				ref={scrollContainerRef}
-				className={styles.virtualScrollContainer}
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
-				onMouseMove={handleMouseMove}
-				onMouseDown={handleContainerMouseDown}
-				onContextMenu={(e) => e.preventDefault()}
-				role="group"
-			>
-				<div
-					className={styles.virtualScrollContent}
-					style={{
-						width: `${Math.ceil(totalWidth)}px`,
-						transform: `translate3d(${-transformX}px, 0, 0)`,
-					}}
-				>
-					{visibleTiles.map((tile) => (
-						<TileComponent key={tile.tileId} {...tile} />
-					))}
-					<div
-						className={styles.playheadCursor}
-						style={{
-							left: `${cursorPosition}px`,
-						}}
-					/>
-
-					{pendingCursorPosition !== null && (
-						<div
-							className={styles.pendingCursor}
-							style={{
-								left: `${pendingCursorPosition}px`,
-							}}
-						/>
-					)}
-					{auditionCursorPosition !== null && (
-						<div
-							className={styles.auditionCursor}
-							style={{
-								left: `${auditionCursorPosition}px`,
-							}}
-						/>
-					)}
-					{showRangePreview && previewStyle && (
-						<div className={styles.rangePreviewRegion} style={previewStyle} />
-					)}
-					<SpectrogramContext.Provider value={contextValue}>
-						<Theme appearance="dark">
-							<LyricTimelineOverlay
-								clientWidth={containerWidth}
-								hiddenLineIds={showRangePreview ? selectedLines : null}
-							/>
-							{audioBuffer && !isDragging && (
+						<Flex
+							direction="column"
+							align="center"
+							justify="end"
+							style={{ flex: 1, width: "100%", padding: "4px 0" }}
+						>
+							<div
+								className={styles.gainSliderContainer}
+								style={{ height: "95%" }}
+							>
+								<Slider
+									orientation="vertical"
+									size="1"
+									min={minGain}
+									max={maxGain}
+									step={0.5}
+									value={[gain]}
+									onValueChange={(v) => setGain(v[0])}
+									style={{ flex: 1, width: "18px", zIndex: 10 }}
+								/>
 								<div
-									className={styles.hoverCursorContainer}
+									className={styles.gainTooltip}
 									style={{
-										left: `${hoverX}px`,
-										opacity: isHovering ? 1 : 0,
+										bottom: `calc(${gainPercent}% + ${thumbOffsetPx}px)`,
 									}}
 								>
-									<div
-										className={styles.hoverCursorLine}
-										style={{ backgroundColor: hoverLineColor }}
-									/>
+									{gain}x
 								</div>
+							</div>
+						</Flex>
+					</Flex>
+				</div>
+
+				<div className={styles.mainContent}>
+					<TimelineRuler
+						ref={rulerRef}
+						zoom={zoom}
+						duration={audioBuffer?.duration || 0}
+						containerWidth={containerWidth}
+						onSeek={handleRulerSeek}
+					/>
+
+					{audioBuffer && !isDragging && (
+						<>
+							<div
+								className={styles.hoverTimeTooltip}
+								style={{
+									left: `${hoverPx}px`,
+									opacity: isHovering ? 1 : 0,
+									backgroundColor: tooltipBgColor,
+								}}
+							>
+								{hoverTimeFormatted}
+							</div>
+
+							<div
+								className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeLeft}`}
+								style={{
+									width: `${hoverPx}px`,
+									height: `${RULER_HEIGHT}px`,
+									opacity: isHovering ? 1 : 0,
+								}}
+							/>
+
+							<div
+								className={`${styles.rulerHoverFade} ${styles.rulerHoverFadeRight}`}
+								style={{
+									left: `${hoverPx}px`,
+									height: `${RULER_HEIGHT}px`,
+									opacity: isHovering ? 1 : 0,
+								}}
+							/>
+						</>
+					)}
+
+					{audioBuffer && (
+						// biome-ignore lint/a11y/noStaticElementInteractions: 全局快捷键已经可以处理播放控制了，不应该再在这里额外添加处理
+						<div
+							className={styles.playheadScrubHandle}
+							style={{
+								left: `${handleLeftPosition}px`,
+								display:
+									handleLeftPosition < 0 || handleLeftPosition > containerWidth
+										? "none"
+										: "block",
+							}}
+							onMouseDown={handleScrubStart}
+						/>
+					)}
+					{/** biome-ignore lint/a11y/useSemanticElements: <fieldset> 在这里不适用 */}
+					<div
+						ref={scrollContainerRef}
+						className={styles.virtualScrollContainer}
+						onMouseEnter={handleMouseEnter}
+						onMouseLeave={handleMouseLeave}
+						onMouseMove={handleMouseMove}
+						onMouseDown={handleContainerMouseDown}
+						onContextMenu={(e) => e.preventDefault()}
+						role="group"
+					>
+						<div
+							className={styles.virtualScrollContent}
+							style={{
+								width: `${Math.ceil(totalWidth)}px`,
+								transform: `translate3d(${-transformX}px, 0, 0)`,
+							}}
+						>
+							{visibleTiles.map((tile) => (
+								<TileComponent key={tile.tileId} {...tile} />
+							))}
+							<div
+								className={styles.playheadCursor}
+								style={{
+									left: `${cursorPosition}px`,
+								}}
+							/>
+
+							{pendingCursorPosition !== null && (
+								<div
+									className={styles.pendingCursor}
+									style={{
+										left: `${pendingCursorPosition}px`,
+									}}
+								/>
 							)}
-						</Theme>
-					</SpectrogramContext.Provider>
+							{auditionCursorPosition !== null && (
+								<div
+									className={styles.auditionCursor}
+									style={{
+										left: `${auditionCursorPosition}px`,
+									}}
+								/>
+							)}
+							{showRangePreview && previewStyle && (
+								<div
+									className={styles.rangePreviewRegion}
+									style={previewStyle}
+								/>
+							)}
+							<SpectrogramContext.Provider value={contextValue}>
+								<Theme appearance="dark">
+									<LyricTimelineOverlay
+										clientWidth={containerWidth}
+										hiddenLineIds={showRangePreview ? selectedLines : null}
+									/>
+									{audioBuffer && !isDragging && (
+										<div
+											className={styles.hoverCursorContainer}
+											style={{
+												left: `${hoverX}px`,
+												opacity: isHovering ? 1 : 0,
+											}}
+										>
+											<div
+												className={styles.hoverCursorLine}
+												style={{ backgroundColor: hoverLineColor }}
+											/>
+										</div>
+									)}
+								</Theme>
+							</SpectrogramContext.Provider>
+						</div>
+					</div>
+				</div>
+
+				<div className={`${styles.sidebar} ${styles.rightSidebar}`}>
+					<Tooltip
+						content={t("spectrogram.showUnselectedLines", "显示未选中行")}
+						side="left"
+					>
+						<IconButton
+							variant={showUnselectedLines ? "solid" : "outline"}
+							onClick={() => setShowUnselectedLines((prev) => !prev)}
+						>
+							{showUnselectedLines ? <EyeFilled /> : <EyeOffFilled />}
+						</IconButton>
+					</Tooltip>
 				</div>
 			</div>
 		</div>

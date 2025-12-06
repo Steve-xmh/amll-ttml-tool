@@ -18,17 +18,7 @@ type WordPanOperation = {
 	initialWordStartMS: number;
 };
 
-type LinePanOperation = {
-	type: "line-pan";
-	lineId: string;
-	initialMouseTimeMS: number;
-	initialLineStartMS: number;
-};
-
-export type TimelineDragOperation =
-	| DividerDragOperation
-	| WordPanOperation
-	| LinePanOperation;
+export type TimelineDragOperation = DividerDragOperation | WordPanOperation;
 
 export const timelineDragAtom = atom<TimelineDragOperation | null>(null);
 

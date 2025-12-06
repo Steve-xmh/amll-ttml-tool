@@ -49,7 +49,6 @@ import {
 	keyVolumeDownAtom,
 	keyVolumeUpAtom,
 } from "$/states/keybindings.ts";
-import { spectrogramGainAtom } from "$/states/spectrogram";
 import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
@@ -105,7 +104,6 @@ export const AudioControls: FC = memo(() => {
 	const [audioPlaying, setAudioPlaying] = useAtom(audioPlayingAtom);
 	const [volume, setVolume] = useAtom(volumeAtom);
 	const [playbackRate, setPlaybackRate] = useAtom(playbackRateAtom);
-	const [gain, setGain] = useAtom(spectrogramGainAtom);
 	const { openFile } = useFileOpener();
 	const { t } = useTranslation();
 
@@ -208,19 +206,6 @@ export const AudioControls: FC = memo(() => {
 										/>
 										<Text wrap="nowrap" color="gray" size="1">
 											{(volume * 100).toFixed()}%
-										</Text>
-										<Text wrap="nowrap">
-											{t("audioPanel.gain", "频谱增益")}
-										</Text>
-										<Slider
-											min={0.5}
-											max={8}
-											defaultValue={[gain]}
-											step={0.5}
-											onValueChange={(v) => setGain(v[0])}
-										/>
-										<Text wrap="nowrap" color="gray" size="1">
-											{gain.toFixed(1)}
 										</Text>
 										<Text wrap="nowrap">
 											{t("audioPanel.playbackRate", "播放速度")}

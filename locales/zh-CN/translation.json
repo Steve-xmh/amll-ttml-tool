@@ -17,15 +17,14 @@
 		}
 	},
 	"spectrogram": {
-		"invalidEndTime": "不能选择此结束时间"
+		"invalidEndTime": "不能选择此结束时间",
+		"showUnselectedLines": "显示未选中行"
 	},
 	"ribbonBar": {
 		"editMode": {
 			"startTime": "起始时间",
 			"endTime": "结束时间",
 			"multipleValues": "多个值…",
-			"syllableMode": "逐字模式",
-			"showAllSyllables": "显示所有音节",
 			"showTranslation": "显示翻译行",
 			"showRomanization": "显示音译行",
 			"showWordRomanizationInput": "显示逐字音译",
@@ -46,8 +45,7 @@
 			"translatedLyric": "翻译歌词",
 			"romanLyric": "音译歌词",
 			"layoutMode": "布局模式",
-			"auxiliaryLineDisplay": "辅助行显示",
-			"syllableDisplayMode": "音节显示模式"
+			"auxiliaryLineDisplay": "辅助行显示"
 		},
 		"previewMode": {
 			"lyrics": "歌词",
@@ -84,8 +82,8 @@
 		"fileNamePlaceholder": "文件名"
 	},
 	"audioPanel": {
-		"volume": "音量",
 		"gain": "频谱增益",
+		"volume": "音量",
 		"playbackRate": "播放速度",
 		"clickToLoadMusic": "点击图标按钮以加载音乐",
 		"playPause": "播放 / 暂停音乐",
