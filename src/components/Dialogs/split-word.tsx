@@ -11,10 +11,26 @@ import {
 } from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
 import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
+import {
+	segmentationCustomRulesAtom,
+	segmentationIgnoreListTextAtom,
+	segmentationLangAtom,
+	segmentationPunctuationModeAtom,
+	segmentationPunctuationWeightAtom,
+	segmentationRemoveEmptySegmentsAtom,
+	segmentationSplitCJKAtom,
+	segmentationSplitEnglishAtom,
+} from "$/states/segmentation.ts";
+import { loadHyphenator } from "$/utils/hyphen-loader.ts";
+import { segmentWord } from "$/utils/segmentation.ts";
+import type {
+	HyphenatorFunc,
+	SegmentationConfig,
+} from "$/utils/segmentation-types.ts";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import { ManualWordSplitter } from "./ManualWordSplitter";
 
@@ -29,7 +45,70 @@ export const SplitWordDialog = memo(() => {
 	const [originalWord, setOriginalWord] = useState("");
 	const [applyToAll, setApplyToAll] = useState(false);
 
+	const splitCJK = useAtomValue(segmentationSplitCJKAtom);
+	const splitEnglish = useAtomValue(segmentationSplitEnglishAtom);
+	const punctuationMode = useAtomValue(segmentationPunctuationModeAtom);
+	const punctuationWeight = useAtomValue(segmentationPunctuationWeightAtom);
+	const removeEmptySegments = useAtomValue(segmentationRemoveEmptySegmentsAtom);
+	const ignoreListText = useAtomValue(segmentationIgnoreListTextAtom);
+	const customRules = useAtomValue(segmentationCustomRulesAtom);
+	const lang = useAtomValue(segmentationLangAtom);
+	const [activeHyphenator, setActiveHyphenator] = useState<
+		HyphenatorFunc | undefined
+	>(undefined);
+
 	useEffect(() => {
+		let isMounted = true;
+
+		const fetchHyphenator = async () => {
+			const func = await loadHyphenator(lang);
+			if (isMounted && func) {
+				setActiveHyphenator(() => func);
+			}
+		};
+
+		fetchHyphenator();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [lang]);
+
+	const ignoreList = useMemo(() => {
+		return new Set(
+			ignoreListText.split("\n").filter((line) => line.trim() !== ""),
+		);
+	}, [ignoreListText]);
+
+	const segmentationConfig = useMemo((): SegmentationConfig => {
+		const weight = parseFloat(punctuationWeight);
+		const finalPunctuationWeight = Number.isNaN(weight) ? 0.2 : weight;
+
+		return {
+			splitCJK,
+			splitEnglish,
+			punctuationMode,
+			punctuationWeight: finalPunctuationWeight,
+			removeEmptySegments,
+			ignoreList,
+			customRules,
+			hyphenator: activeHyphenator,
+		};
+	}, [
+		splitCJK,
+		splitEnglish,
+		punctuationMode,
+		punctuationWeight,
+		removeEmptySegments,
+		ignoreList,
+		customRules,
+		activeHyphenator,
+	]);
+
+	useEffect(() => {
+		if (!splitWordDialog) {
+			return;
+		}
 		const line = lyricLines.lyricLines[splitState.lineIndex];
 		const word = line?.words[splitState.wordIndex];
 
@@ -38,21 +117,36 @@ export const SplitWordDialog = memo(() => {
 			setSplitState((state) => {
 				state.word = word.word;
 			});
+
+			const resultWords = segmentWord(word, segmentationConfig);
+			if (resultWords.length > 1) {
+				const indices = new Set<number>();
+				let currentIndex = 0;
+				for (let i = 0; i < resultWords.length - 1; i++) {
+					currentIndex += resultWords[i].word.length;
+					indices.add(currentIndex);
+				}
+				setSplitIndices(indices);
+			} else {
+				setSplitIndices(new Set());
+			}
 		} else {
 			setOriginalWord("");
 			setSplitState((state) => {
 				state.word = "";
 			});
+			setSplitIndices(new Set());
 		}
 
-		setSplitIndices(new Set());
 		setApplyToAll(false);
-	}, [splitState.lineIndex, splitState.wordIndex, lyricLines, setSplitState]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: 用来在外部单词发生变化时重置分割点
-	useEffect(() => {
-		setSplitIndices(new Set());
-	}, [splitState.word]);
+	}, [
+		splitWordDialog,
+		splitState.lineIndex,
+		splitState.wordIndex,
+		lyricLines,
+		setSplitState,
+		segmentationConfig,
+	]);
 
 	const toggleSplitPoint = useCallback((index: number) => {
 		setSplitIndices((prev) => {
@@ -86,11 +180,12 @@ export const SplitWordDialog = memo(() => {
 					</Callout.Root>
 					<TextField.Root
 						value={splitState.word}
-						onChange={(evt) =>
+						onChange={(evt) => {
 							setSplitState((state) => {
 								state.word = evt.target.value;
-							})
-						}
+							});
+							setSplitIndices(new Set());
+						}}
 					/>
 					<Box my="3">
 						<ManualWordSplitter
