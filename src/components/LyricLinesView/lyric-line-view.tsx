@@ -73,10 +73,11 @@ const lineDisplayNumbersAtom = atom((get) => {
 	const displayNumbers: number[] = [];
 	let currentNumber = 0;
 
-	for (const line of lyricLines) {
+	for (const [index, line] of lyricLines.entries()) {
 		// 核心逻辑：只有当不是背景行时，计数器才+1
 		// 这样背景行就会自动继承上一行的行号
-		if (!line.isBG) {
+		// 特例：首行从 1 开始
+		if (!index || !line.isBG) {
 			currentNumber++;
 		}
 		displayNumbers.push(currentNumber);
@@ -229,7 +230,7 @@ export const LyricLineView: FC<{
 	// 创建一个仅订阅当前行显示行号的 atom，优化性能
 	const displayNumberAtom = useMemo(
 		() => atom((get) => get(lineDisplayNumbersAtom)[lineIndex]),
-		[lineIndex]
+		[lineIndex],
 	);
 	const displayNumber = useAtomValue(displayNumberAtom);
 
