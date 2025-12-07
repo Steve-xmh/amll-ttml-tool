@@ -67,6 +67,24 @@ import { RomanWordView } from "./roman-word-view.tsx";
 
 const isDraggingAtom = atom(false);
 
+// 定义一个派生 Atom，用于计算每一行的显示行号
+const lineDisplayNumbersAtom = atom((get) => {
+	const { lyricLines } = get(lyricLinesAtom);
+	const displayNumbers: number[] = [];
+	let currentNumber = 0;
+
+	for (const line of lyricLines) {
+		// 核心逻辑：只有当不是背景行时，计数器才+1
+		// 这样背景行就会自动继承上一行的行号
+		if (!line.isBG) {
+			currentNumber++;
+		}
+		displayNumbers.push(currentNumber);
+	}
+
+	return displayNumbers;
+});
+
 const LyricLineScroller = ({
 	lineAtom,
 	wordsContainer,
@@ -207,6 +225,13 @@ export const LyricLineView: FC<{
 	const toolMode = useAtomValue(toolModeAtom);
 	const store = useStore();
 	const wordsContainerRef = useRef<HTMLDivElement>(null);
+
+	// 创建一个仅订阅当前行显示行号的 atom，优化性能
+	const displayNumberAtom = useMemo(
+		() => atom((get) => get(lineDisplayNumbersAtom)[lineIndex]),
+		[lineIndex]
+	);
+	const displayNumber = useAtomValue(displayNumberAtom);
 
 	const hasError = useMemo(() => {
 		if (line.startTime > line.endTime) {
@@ -451,7 +476,7 @@ export const LyricLineView: FC<{
 									align="center"
 									color="gray"
 								>
-									{lineIndex + 1}
+									{displayNumber}
 								</Text>
 								{line.isBG && <VideoBackgroundEffectFilled color="#4466FF" />}
 								{line.isDuet && <TextAlignRightFilled color="#44AA33" />}
