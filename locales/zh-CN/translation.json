@@ -233,6 +233,12 @@
 		"gitCommit": "Git 提交：{commit}"
 	},
 	"settings": {
+		"group": {
+			"display": "显示",
+			"timing": "打轴",
+			"playback": "播放",
+			"autosave": "自动保存"
+		},
 		"common": {
 			"language": "界面语言",
 			"languageDesc": "选择界面显示的语言",

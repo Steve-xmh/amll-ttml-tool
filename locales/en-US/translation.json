@@ -233,6 +233,12 @@
 		"gitCommit": "Git Commit: {commit}"
 	},
 	"settings": {
+		"group": {
+			"display": "Display",
+			"timing": "Timing",
+			"playback": "Playback",
+			"autosave": "Autosave"
+		},
 		"common": {
 			"language": "Interface Language",
 			"languageDesc": "Select the language for the interface",
