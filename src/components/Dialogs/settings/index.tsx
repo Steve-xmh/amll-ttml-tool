@@ -15,7 +15,7 @@ export const SettingsDialog = memo(() => {
 
 	return (
 		<Dialog.Root open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
-			<Dialog.Content>
+			<Dialog.Content maxWidth="600px">
 				<Dialog.Title>{t("settingsDialog.title", "首选项")}</Dialog.Title>
 				<Tabs.Root>
 					<Tabs.List>
@@ -32,7 +32,7 @@ export const SettingsDialog = memo(() => {
 							{t("common.about", "关于")}
 						</Tabs.Trigger>
 					</Tabs.List>
-					<Box pt="3">
+					<Box pt="3" style={{ height: "630px", overflowY: "auto" }}>
 						<Tabs.Content value="common">
 							<SettingsCommonTab />
 						</Tabs.Content>
