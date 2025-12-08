@@ -30,7 +30,7 @@ import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import saveFile from "save-file";
 import semverGt from "semver/functions/gt";
 import styles from "./App.module.css";
@@ -124,7 +124,6 @@ function App() {
 	const showTouchSyncPanel = useAtomValue(showTouchSyncPanelAtom);
 	const [hasBackground, setHasBackground] = useState(false);
 	const store = useStore();
-	const { t } = useTranslation();
 
 	const autosaveEnabled = useAtomValue(autosaveEnabledAtom);
 	const autosaveInterval = useAtomValue(autosaveIntervalAtom);
@@ -167,42 +166,49 @@ function App() {
 		};
 	}, [store, autosaveEnabled, autosaveInterval, autosaveLimit]);
 
-	if (import.meta.env.TAURI_ENV_PLATFORM) {
-		useEffect(() => {
-			(async () => {
-				const file: {
-					filename: string;
-					data: string;
-					ext: string;
-				} | null = await invoke("get_open_file_data");
+	useEffect(() => {
+		if (!import.meta.env.TAURI_ENV_PLATFORM) {
+			return;
+		}
 
-				if (file) {
-					log("File data from tauri args", file);
+		(async () => {
+			const file: {
+				filename: string;
+				data: string;
+				ext: string;
+			} | null = await invoke("get_open_file_data");
 
-					const fileObj = new File([file.data], file.filename, {
-						type: "text/plain",
-					});
+			if (file) {
+				log("File data from tauri args", file);
 
-					openFile(fileObj);
+				const fileObj = new File([file.data], file.filename, {
+					type: "text/plain",
+				});
+
+				openFile(fileObj);
+			}
+		})();
+	}, [openFile]);
+
+	useEffect(() => {
+		if (!import.meta.env.TAURI_ENV_PLATFORM) {
+			return;
+		}
+
+		(async () => {
+			const win = getCurrentWindow();
+			if (platform() === "windows") {
+				if (semverGt("10.0.22000", version())) {
+					setHasBackground(true);
+					await win.clearEffects();
 				}
-			})();
-		}, [openFile]);
-		useEffect(() => {
-			(async () => {
-				const win = getCurrentWindow();
-				if (platform() === "windows") {
-					if (semverGt("10.0.22000", version())) {
-						setHasBackground(true);
-						await win.clearEffects();
-					}
-				}
+			}
 
-				await new Promise((r) => requestAnimationFrame(r));
+			await new Promise((r) => requestAnimationFrame(r));
 
-				await win.show();
-			})();
-		}, []);
-	}
+			await win.show();
+		})();
+	}, []);
 
 	useEffect(() => {
 		const onBeforeClose = (evt: BeforeUnloadEvent) => {
