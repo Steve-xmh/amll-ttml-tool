@@ -1,6 +1,3 @@
-> **WARNING**
-> 本工具仍在开发当中，仍有很多缺失的功能和 BUG，请仅用作尝鲜用途，并随时保存你的歌词文件以防万一！
-
 <div align=center>
 
 <img src="./public/logo.svg" align="center" width="256">
@@ -20,9 +17,9 @@
 > [!WARNING]
 > 本工具不建议移动手机或小尺寸电子设备使用，操作会非常繁琐！
 
-你可以通过访问 [`https://steve-xmh.github.io/amll-ttml-tool/`](https://steve-xmh.github.io/amll-ttml-tool/)来使用本工具的在线版本。
+你可以通过访问 [`https://amll-ttml-tool.stevexmh.net/`](https://amll-ttml-tool.stevexmh.net/)来使用本工具的在线版本。
 
-也可以使用 Github Action 构建的 Tauri 桌面版本，具体见 [Github Action 构建 Tauri 桌面版本](https://github.com/Steve-xmh/amll-ttml-tool/actions/workflows/build-test.yaml)。
+也可以使用 Github Action 构建的 Tauri 桌面版本，具体见 [Github Action 构建 Tauri 桌面版本](https://github.com/Steve-xmh/amll-ttml-tool/actions/workflows/build-desktop.yaml)。
 
 ## 编辑器功能
 
@@ -37,7 +34,7 @@
 
 ## 开发构建
 
-本工具构建可能相对比较复杂，如果文字描述太过繁杂的话可以直接参考 [`build-web.yaml`](.github/workflows/build-web.yaml) 工作流的步骤自行进行。
+本工具构建可能相对比较复杂，如果文字描述太过繁杂的话可以直接参考 [`build-desktop.yaml`](.github/workflows/build-desktop.yaml) 工作流的步骤自行进行。
 
 首先，本项目仅可使用 PNPM，请确保你已经安装好了 PNPM 包管理器！
 
@@ -55,4 +52,4 @@ pnpm tauri build # 构建 Tauri 桌面版本
 
 欢迎各种积极的代码/翻译贡献！也欢迎积极提交各种议题和建议！
 
-如果想要提供新的语言翻译，可以参考 [`./src/i18n/index.ts`](./src/i18n/index.ts) 和 [`./src/i18n/zh-cn.ts`](./src/i18n/zh-cn.ts) 哦！
+如果想要提供新的语言翻译，可以参考 [`./src/i18n/index.ts`](./src/i18n/index.ts) 和 [`./locales/zh-CN/translation.json`](./locales/zh-CN/translation.json) 哦！
