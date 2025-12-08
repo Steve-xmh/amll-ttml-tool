@@ -205,15 +205,6 @@ function App() {
 	}
 
 	useEffect(() => {
-		toast.warn(
-			t(
-				"app.wip.warning",
-				"本重构版本仍在开发当中，敬请保存备份你的项目以免发生意外！",
-			),
-		);
-	}, [t]);
-
-	useEffect(() => {
 		const onBeforeClose = (evt: BeforeUnloadEvent) => {
 			const currentLyricLines = store.get(lyricLinesAtom);
 			if (

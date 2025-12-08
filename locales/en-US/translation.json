@@ -8,9 +8,6 @@
 			"tryRestart": "Try reloading the app",
 			"details": "Approximate error info:"
 		},
-		"wip": {
-			"warning": "This refactored version is still under development. Please keep backups of your project to avoid accidents!"
-		},
 		"empty": {
 			"title": "No lyric lines",
 			"description": "Add new lyric lines in the top panel or open/import existing lyrics from the menu"
