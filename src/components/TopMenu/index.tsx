@@ -1,11 +1,5 @@
 import { HomeRegular } from "@fluentui/react-icons";
-import {
-	Button,
-	DropdownMenu,
-	Flex,
-	IconButton,
-	TextField,
-} from "@radix-ui/themes";
+import { Box, Button, DropdownMenu, Flex, IconButton } from "@radix-ui/themes";
 import { open } from "@tauri-apps/plugin-shell";
 import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom, withImmer } from "jotai-immer";
@@ -13,6 +7,7 @@ import { Toolbar } from "radix-ui";
 import { type FC, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import saveFile from "save-file";
+import { uid } from "uid";
 import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
 import { useFileOpener } from "$/hooks/useFileOpener.ts";
 import {
@@ -40,6 +35,7 @@ import {
 	isDirtyAtom,
 	lyricLinesAtom,
 	newLyricLinesAtom,
+	projectIdAtom,
 	redoLyricLinesAtom,
 	saveFileNameAtom,
 	selectedLinesAtom,
@@ -52,6 +48,7 @@ import { error, log } from "$/utils/logging.ts";
 import { segmentWord } from "$/utils/segmentation";
 import type { SegmentationConfig } from "$/utils/segmentation-types";
 import exportTTMLText from "$/utils/ttml-writer.ts";
+import { HeaderFileInfo } from "./HeaderFileInfo";
 
 const useWindowSize = () => {
 	const [windowSize, setWindowSize] = useState({
@@ -93,9 +90,15 @@ export const TopMenu: FC = () => {
 	);
 	const setTimeShiftDialog = useSetAtom(timeShiftDialogAtom);
 	const { openFile } = useFileOpener();
+	const setProjectId = useSetAtom(projectIdAtom);
 
 	const onNewFile = useCallback(() => {
-		const action = () => newLyricLine();
+		const action = () => {
+			newLyricLine();
+			setProjectId(uid());
+			setSaveFileName("lyric.ttml");
+		};
+
 		if (isDirty) {
 			setConfirmDialog({
 				open: true,
@@ -109,7 +112,14 @@ export const TopMenu: FC = () => {
 		} else {
 			action();
 		}
-	}, [isDirty, newLyricLine, setConfirmDialog, t]);
+	}, [
+		isDirty,
+		newLyricLine,
+		setConfirmDialog,
+		t,
+		setProjectId,
+		setSaveFileName,
+	]);
 
 	const newFileKey = useKeyBindingAtom(keyNewFileAtom, onNewFile, [onNewFile]);
 
@@ -721,17 +731,9 @@ export const TopMenu: FC = () => {
 					</DropdownMenu.Root>
 				</Toolbar.Root>
 			)}
-			<TextField.Root
-				style={{
-					flexBasis: "20em",
-				}}
-				mr="2"
-				placeholder={t("common.fileNamePlaceholder", "文件名")}
-				value={saveFileName}
-				onChange={(e) => {
-					setSaveFileName(e.target.value);
-				}}
-			/>
+			<Box style={{ marginLeft: "16px" }}>
+				<HeaderFileInfo />
+			</Box>
 		</Flex>
 	);
 };

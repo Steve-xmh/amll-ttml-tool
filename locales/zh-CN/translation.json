@@ -76,9 +76,13 @@
 		"clickToSet": "点击设置",
 		"cancel": "取消",
 		"apply": "应用",
+		"success": "恢复成功",
+		"error": "数据已损坏或丢失",
+		"deleteSuccess": "删除成功",
+		"time": "时间",
+		"restore": "恢复",
 		"about": "关于",
-		"remove": "移除",
-		"fileNamePlaceholder": "文件名"
+		"remove": "移除"
 	},
 	"audioPanel": {
 		"volume": "音量",
@@ -159,17 +163,35 @@
 		}
 	},
 	"historyRestoreDialog": {
+		"loadError": "加载历史记录失败",
 		"confirm": {
 			"title": "确认恢复",
 			"description": "此操作将覆盖当前编辑器中的所有内容，确定要恢复此快照吗？"
 		},
-		"deleteFailed": "删除快照失败",
-		"title": "从历史记录恢复",
-		"description": "选择一个自动保存的快照进行恢复",
-		"tableHeader": "保存时间",
-		"restoreButton": "恢复",
+		"deleteProject": {
+			"title": "删除项目记录",
+			"description": "确定要删除该项目的所有自动保存记录吗？此操作无法撤销。"
+		},
+		"projects": "最近项目",
+		"noProjects": "暂无自动保存记录",
+		"latestState": "最新版本",
+		"restoreLatest": "恢复此版本",
+		"historyVersions": "其它版本",
 		"noHistory": "没有可用的历史记录",
-		"cancelButton": "取消"
+		"selectProject": "请从左侧选择一个项目"
+	},
+	"autosave": {
+		"legacyProjectName": "旧版本快照",
+		"untitledProjectName": "未命名项目"
+	},
+	"time": {
+		"daysAgo": "{count}天前",
+		"hoursAgo": "{count}小时前",
+		"minutesAgo": "{count}分钟前",
+		"justNow": "刚刚"
+	},
+	"metadata": {
+		"title": "元数据信息"
 	},
 	"textImportDialog": {
 		"title": "导入纯文本歌词",
@@ -446,6 +468,18 @@
 			"advancedSegment": "高级分词...",
 			"help": "帮助",
 			"helpDoc": "使用说明"
+		}
+	},
+	"header": {
+		"status": {
+			"saving": "正在保存...",
+			"pending": "正在保存...",
+			"savedAt": "已保存",
+			"saved": "已保存"
+		},
+		"popover": {
+			"filename": "文件名",
+			"versionHistory": "版本历史记录..."
 		}
 	},
 	"touchSyncPanel": {

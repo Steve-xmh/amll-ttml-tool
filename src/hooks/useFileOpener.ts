@@ -19,11 +19,14 @@ import { uid } from "uid";
 import { confirmDialogAtom } from "$/states/dialogs.ts";
 import {
 	isDirtyAtom,
-	lyricLinesAtom,
+	newLyricLinesAtom,
+	projectIdAtom,
 	saveFileNameAtom,
 } from "$/states/main.ts";
 import { audioEngine } from "$/utils/audio";
-import { error as logError } from "$/utils/logging.ts";
+import { getProjectList } from "$/utils/autosave.ts";
+import { log, error as logError } from "$/utils/logging.ts";
+import { isProjectMatch } from "$/utils/project-match.ts";
 import { parseLyric as parseTTML } from "$/utils/ttml-parser.ts";
 import type { TTMLLyric } from "$/utils/ttml-types.ts";
 
@@ -52,7 +55,8 @@ const AUDIO_EXTENSIONS = new Set([
 ]);
 
 export const useFileOpener = () => {
-	const setLyricLines = useSetAtom(lyricLinesAtom);
+	const setNewLyricLines = useSetAtom(newLyricLinesAtom);
+	const setProjectId = useSetAtom(projectIdAtom);
 	const setSaveFileName = useSetAtom(saveFileNameAtom);
 	const setConfirmDialog = useSetAtom(confirmDialogAtom);
 	const isDirty = useAtomValue(isDirtyAtom);
@@ -89,31 +93,57 @@ export const useFileOpener = () => {
 					return;
 				}
 
+				let lyricData: TTMLLyric | null = null;
+				const text = await file.text();
+
 				if (ext === "ttml") {
-					const text = await file.text();
-					const ttmlData = parseTTML(text);
-					setLyricLines(ttmlData);
-					setSaveFileName(file.name);
+					lyricData = parseTTML(text);
 				} else if (ext in LYRIC_PARSERS) {
-					const text = await file.text();
 					const parser = LYRIC_PARSERS[ext];
 					const rawLines = parser(text);
-					const normalizedData = normalizeLyricLines(rawLines);
-					setLyricLines(normalizedData);
-					setSaveFileName(file.name);
+					lyricData = normalizeLyricLines(rawLines);
 				} else {
 					toast.error(
 						t("error.unsupportedFileFormat", "不支持的文件格式: {ext}", {
 							ext,
 						}),
 					);
+					return;
 				}
+
+				if (!lyricData) return;
+
+				let resolvedProjectId = uid();
+
+				try {
+					if (lyricData.metadata.length > 0) {
+						const projects = await getProjectList();
+						const matchedProject = projects.find((p) =>
+							isProjectMatch(p, lyricData as TTMLLyric),
+						);
+
+						if (matchedProject) {
+							log(
+								`匹配到了已有项目: ${matchedProject.name} (${matchedProject.id})`,
+							);
+							resolvedProjectId = matchedProject.id;
+						} else {
+							log("未匹配已有项目");
+						}
+					}
+				} catch (e) {
+					logError("解析项目数据时失败", e);
+				}
+
+				setProjectId(resolvedProjectId);
+				setNewLyricLines(lyricData);
+				setSaveFileName(file.name);
 			} catch (e) {
 				logError(`Failed to open file: ${file.name}`, e);
 				toast.error(t("error.openFileFailed", "打开文件失败"));
 			}
 		},
-		[setLyricLines, setSaveFileName, normalizeLyricLines, t],
+		[setNewLyricLines, setProjectId, setSaveFileName, normalizeLyricLines, t],
 	);
 
 	const openFile = useCallback(

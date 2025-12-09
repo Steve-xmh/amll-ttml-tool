@@ -27,7 +27,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { platform, version } from "@tauri-apps/plugin-os";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useSetAtom, useStore } from "jotai";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
 import { ToastContainer } from "react-toastify";
@@ -35,17 +35,13 @@ import saveFile from "save-file";
 import semverGt from "semver/functions/gt";
 import styles from "./App.module.css";
 import AudioControls from "./components/AudioControls";
+import { AutosaveManager } from "./components/AutosaveManager/AutosaveManager";
 import DarkThemeDetector from "./components/DarkThemeDetector";
 import { GlobalDragOverlay } from "./components/GlobalDragOverlay/index.tsx";
 import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { useFileOpener } from "./hooks/useFileOpener.ts";
-import {
-	autosaveEnabledAtom,
-	autosaveIntervalAtom,
-	autosaveLimitAtom,
-} from "./states/config.ts";
 import { isGlobalFileDraggingAtom } from "./states/dnd.ts";
 import {
 	isDarkThemeAtom,
@@ -54,7 +50,6 @@ import {
 	toolModeAtom,
 } from "./states/main.ts";
 import { showTouchSyncPanelAtom } from "./states/sync.ts";
-import { addSnapshot } from "./utils/autosave.ts";
 import exportTTMLText from "./utils/ttml-writer.ts";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
@@ -125,46 +120,8 @@ function App() {
 	const [hasBackground, setHasBackground] = useState(false);
 	const store = useStore();
 
-	const autosaveEnabled = useAtomValue(autosaveEnabledAtom);
-	const autosaveInterval = useAtomValue(autosaveIntervalAtom);
-	const autosaveLimit = useAtomValue(autosaveLimitAtom);
-	const lastSnapshotRef = useRef<string | null>(null);
-
 	const setIsGlobalDragging = useSetAtom(isGlobalFileDraggingAtom);
 	const { openFile } = useFileOpener();
-
-	useEffect(() => {
-		if (!autosaveEnabled) {
-			return;
-		}
-
-		const intervalId = setInterval(
-			() => {
-				const currentLyrics = store.get(lyricLinesAtom);
-				const currentSnapshot = JSON.stringify(currentLyrics);
-
-				if (
-					currentSnapshot !== lastSnapshotRef.current &&
-					(currentLyrics.lyricLines.length > 0 ||
-						currentLyrics.metadata.length > 0)
-				) {
-					addSnapshot(currentLyrics, autosaveLimit)
-						.then(() => {
-							log("Autosaved snapshot.");
-							lastSnapshotRef.current = currentSnapshot;
-						})
-						.catch((err) => {
-							logError("Failed to autosave snapshot.", err);
-						});
-				}
-			},
-			autosaveInterval * 60 * 1000,
-		);
-
-		return () => {
-			clearInterval(intervalId);
-		};
-	}, [store, autosaveEnabled, autosaveInterval, autosaveLimit]);
 
 	useEffect(() => {
 		if (!import.meta.env.TAURI_ENV_PLATFORM) {
@@ -282,6 +239,7 @@ function App() {
 					// TODO
 				}}
 			>
+				<AutosaveManager />
 				<GlobalDragOverlay />
 				{toolMode === ToolMode.Sync && <SyncKeyBinding />}
 				<DarkThemeDetector />

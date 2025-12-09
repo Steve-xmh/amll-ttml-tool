@@ -76,9 +76,13 @@
 		"clickToSet": "Click to set ",
 		"cancel": "Cancel",
 		"apply": "Apply",
+		"success": "Restore successful",
+		"error": "Data corrupted or lost",
+		"deleteSuccess": "Delete Success",
+		"time": "Time",
+		"restore": "Restore",
 		"about": "About",
-		"remove": "Remove",
-		"fileNamePlaceholder": "File Name"
+		"remove": "Remove"
 	},
 	"audioPanel": {
 		"volume": "Volume",
@@ -159,17 +163,35 @@
 		}
 	},
 	"historyRestoreDialog": {
+		"loadError": "Failed to load history",
 		"confirm": {
 			"title": "Confirm Restore",
 			"description": "This will overwrite all content in the current editor. Are you sure you want to restore this snapshot?"
 		},
-		"deleteFailed": "Failed to delete snapshot",
-		"title": "Restore from History",
-		"description": "Select an autosaved snapshot to restore.",
-		"tableHeader": "Save Time",
-		"restoreButton": "Restore",
+		"deleteProject": {
+			"title": "Delete project history",
+			"description": "Are you sure you want to delete all autosaved records for this project? This action cannot be undone."
+		},
+		"projects": "Recent Projects",
+		"noProjects": "No records were automatically saved.",
+		"latestState": "Latest version",
+		"restoreLatest": "Restore this version",
+		"historyVersions": "Other versions",
 		"noHistory": "No history available",
-		"cancelButton": "Cancel"
+		"selectProject": "Please select an item from the left panel"
+	},
+	"autosave": {
+		"legacyProjectName": "Legacy snapshots",
+		"untitledProjectName": "Untitled Project"
+	},
+	"time": {
+		"daysAgo": "{count} days ago",
+		"hoursAgo": "{count} hours ago",
+		"minutesAgo": "{count} minutes ago",
+		"justNow": "Just now"
+	},
+	"metadata": {
+		"title": "Metadata"
 	},
 	"textImportDialog": {
 		"title": "Import Lyrics from Plain Text",
@@ -446,6 +468,18 @@
 			"advancedSegment": "Advanced Segment...",
 			"help": "Help",
 			"helpDoc": "Documentation (CN)"
+		}
+	},
+	"header": {
+		"status": {
+			"saving": "Saving...",
+			"pending": "Saving...",
+			"savedAt": "Last saved at",
+			"saved": "Saved"
+		},
+		"popover": {
+			"filename": "File Name",
+			"versionHistory": "Version History..."
 		}
 	},
 	"touchSyncPanel": {

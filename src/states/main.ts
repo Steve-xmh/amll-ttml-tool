@@ -12,6 +12,8 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { REDO, UNDO, withHistory } from "jotai-history";
+import { uid } from "uid";
+import { identifyProject } from "$/utils/project-info";
 import type { TTMLLyric } from "../utils/ttml-types";
 
 export enum DarkMode {
@@ -39,6 +41,51 @@ export const lyricLinesAtom = atom({
 	lyricLines: [],
 	metadata: [],
 } as TTMLLyric);
+
+/**
+ * @description 当前项目的唯一标识符
+ *
+ * - 打开应用和新建文件时会生成一个随机的 UUID
+ * - 打开文件时会尝试与数据库中的历史项目进行匹配，如果匹配成功，则复用旧项目的 ID，否则生成新 ID
+ */
+export const projectIdAtom = atom(uid());
+
+/**
+ * @description 当前项目的显示身份信息，主要用于在 UI 上显示项目名称
+ * @readonly
+ */
+export const projectIdentityAtom = atom((get) => {
+	const lyrics = get(lyricLinesAtom);
+	return identifyProject(lyrics);
+});
+
+/**
+ * @description 自动保存的状态
+ */
+export enum SaveStatus {
+	/**
+	 * @description 已保存，当前编辑器的内容和数据库的一致
+	 */
+	Saved = "saved",
+	/**
+	 * @description 等待保存
+	 */
+	Pending = "pending",
+	/**
+	 * @description 正在保存
+	 */
+	Saving = "saving",
+}
+
+/**
+ * @description 当前自动保存的状态
+ */
+export const saveStatusAtom = atom<SaveStatus>(SaveStatus.Saved);
+
+/**
+ * @description 上次自动保存的时间戳
+ */
+export const lastSavedTimeAtom = atom<number | null>(null);
 
 export const undoableLyricLinesAtom = withHistory(lyricLinesAtom, 256);
 export const isDirtyAtom = atom((get) => get(undoableLyricLinesAtom).canUndo);
