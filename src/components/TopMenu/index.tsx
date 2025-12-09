@@ -496,21 +496,28 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.SubTrigger>
 								<Trans i18nKey="topBar.menu.tool">工具</Trans>
 							</DropdownMenu.SubTrigger>
-							<DropdownMenu.Sub>
-								<DropdownMenu.SubTrigger>
-									{t("topBar.menu.segmentationTools", "分词")}
-								</DropdownMenu.SubTrigger>
-								<DropdownMenu.SubContent>
-									<DropdownMenu.Item onSelect={onAutoSegment}>
-										{t("topBar.menu.autoSegment", "自动分词")}
-									</DropdownMenu.Item>
-									<DropdownMenu.Item
-										onSelect={() => setAdvancedSegmentationDialog(true)}
-									>
-										{t("topBar.menu.advancedSegment", "高级分词...")}
-									</DropdownMenu.Item>
-								</DropdownMenu.SubContent>
-							</DropdownMenu.Sub>
+
+							<DropdownMenu.SubContent>
+								<DropdownMenu.Sub>
+									<DropdownMenu.SubTrigger>
+										{t("topBar.menu.segmentationTools", "分词")}
+									</DropdownMenu.SubTrigger>
+									<DropdownMenu.SubContent>
+										<DropdownMenu.Item onSelect={onAutoSegment}>
+											{t("topBar.menu.autoSegment", "自动分词")}
+										</DropdownMenu.Item>
+										<DropdownMenu.Item
+											onSelect={() => setAdvancedSegmentationDialog(true)}
+										>
+											{t("topBar.menu.advancedSegment", "高级分词...")}
+										</DropdownMenu.Item>
+									</DropdownMenu.SubContent>
+								</DropdownMenu.Sub>
+
+								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
+									{t("settingsDialog.common.latencyTest", "音频/输入延迟测试")}
+								</DropdownMenu.Item>
+							</DropdownMenu.SubContent>
 						</DropdownMenu.Sub>
 
 						<DropdownMenu.Sub>
