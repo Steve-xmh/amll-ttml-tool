@@ -219,6 +219,7 @@
 	},
 	"metadataDialog": {
 		"openLink": "Open link",
+		"duplicateMsg": "Found duplicate metadata values",
 		"addValue": "Add",
 		"builtinOptions": {
 			"musicName": "Track Name",

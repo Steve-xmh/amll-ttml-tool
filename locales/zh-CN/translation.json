@@ -219,6 +219,7 @@
 	},
 	"metadataDialog": {
 		"openLink": "打开链接",
+		"duplicateMsg": "存在重复的元数据值",
 		"addValue": "添加",
 		"builtinOptions": {
 			"musicName": "歌曲名称",

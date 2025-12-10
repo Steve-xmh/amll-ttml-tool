@@ -56,6 +56,11 @@ const MetadataEntry = memo(
 				)
 			: false;
 
+		const rowHasDuplicate = useMemo(() => {
+			const values = entry.value.filter((v) => v.trim() !== "");
+			return new Set(values).size !== values.length;
+		}, [entry.value]);
+
 		const { t } = useTranslation();
 
 		return (
@@ -64,6 +69,9 @@ const MetadataEntry = memo(
 					const itemHasError = validation
 						? vv.trim() !== "" && !validation.verifier(vv)
 						: false;
+					const isDuplicate =
+						vv.trim() !== "" && entry.value.filter((v) => v === vv).length > 1;
+					const hasAnyError = itemHasError || isDuplicate;
 
 					const url = option?.urlFormatter?.(vv);
 					const isLinkable = !!option?.isLinkable;
@@ -112,12 +120,15 @@ const MetadataEntry = memo(
 												prev.metadata[index].value[ii] = newValue;
 											});
 										}}
+										variant={hasAnyError ? "soft" : "surface"}
 										color={
 											itemHasError
 												? validation?.severe
 													? "red"
 													: "orange"
-												: undefined
+												: isDuplicate
+													? "red"
+													: undefined
 										}
 									/>
 									{isLinkable && (
@@ -171,6 +182,11 @@ const MetadataEntry = memo(
 									wrap="wrap"
 								>
 									{validation.message}
+								</Text>
+							)}
+							{rowHasDuplicate && (
+								<Text color="red" size="1" mb="1" mt="1" wrap="wrap">
+									{t("metadataDialog.duplicateMsg", "存在重复的元数据值")}
 								</Text>
 							)}
 							<Button
