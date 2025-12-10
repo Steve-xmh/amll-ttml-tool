@@ -35,10 +35,15 @@ export const AutosaveManager = () => {
 			return;
 		}
 
+		if (lyricLines.lyricLines.length === 0) {
+			setSaveStatus(SaveStatus.Saved);
+			return;
+		}
+
 		setSaveStatus(SaveStatus.Pending);
 
 		const timer = setTimeout(() => {
-			if (lyricLines.lyricLines.length > 0 || lyricLines.metadata.length > 0) {
+			if (lyricLines.lyricLines.length > 0) {
 				setSaveStatus(SaveStatus.Saving);
 				log("Auto-saving project...", projectId);
 
