@@ -1,7 +1,12 @@
 import {
 	Add16Regular,
+	AlbumRegular,
 	Delete16Regular,
 	Info16Regular,
+	MusicNote1Regular,
+	NumberSymbol16Regular,
+	Open16Regular,
+	Person16Regular,
 } from "@fluentui/react-icons";
 import {
 	Button,
@@ -14,15 +19,185 @@ import {
 } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useImmerAtom } from "jotai-immer";
-import { Fragment, useCallback, useMemo, useState } from "react";
+import {
+	Fragment,
+	memo,
+	type ReactNode,
+	useCallback,
+	useMemo,
+	useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
+import {
+	AppleMusicIcon,
+	GithubIcon,
+	NeteaseIcon,
+	QQMusicIcon,
+	SpotifyIcon,
+} from "$/utils/PlatformIcons";
+import type { TTMLLyric } from "$/utils/ttml-types";
 import styles from "./metadata.module.css";
+
+interface MetadataEntryProps {
+	entry: { key: string; value: string[] };
+	index: number;
+	setLyricLines: (args: (prev: TTMLLyric) => void) => void;
+	option: SelectOption | null;
+}
+
+const MetadataEntry = memo(
+	({ entry, index, setLyricLines, option }: MetadataEntryProps) => {
+		const validation = option?.validation;
+		const rowHasError = validation
+			? entry.value.some(
+					(val) => val.trim() !== "" && !validation.verifier(val),
+				)
+			: false;
+
+		const { t } = useTranslation();
+
+		return (
+			<Fragment>
+				{entry.value.map((vv, ii) => {
+					const itemHasError = validation
+						? vv.trim() !== "" && !validation.verifier(vv)
+						: false;
+
+					const url = option?.urlFormatter?.(vv);
+					const isLinkable = !!option?.isLinkable;
+					const isValid = validation ? validation.verifier(vv) : true;
+					const isButtonEnabled = !!url && isValid;
+
+					return (
+						<tr key={`metadata-${entry.key}-${ii}`}>
+							<td>
+								{ii === 0 && (
+									<Flex
+										align="center"
+										gap="2"
+										style={{
+											width: "100%",
+										}}
+									>
+										<span
+											style={{
+												display: "flex",
+												color: "var(--gray-12)",
+											}}
+										>
+											{option?.icon || <Info16Regular />}
+										</span>
+
+										<Text
+											style={{
+												whiteSpace: "normal",
+												wordBreak: "break-word",
+											}}
+										>
+											{option?.label || entry.key}
+										</Text>
+									</Flex>
+								)}
+							</td>
+							<td>
+								<Flex gap="1" ml="2" mt="1">
+									<TextField.Root
+										value={vv}
+										className={styles.metadataInput}
+										onChange={(e) => {
+											const newValue = e.currentTarget.value;
+											setLyricLines((prev) => {
+												prev.metadata[index].value[ii] = newValue;
+											});
+										}}
+										color={
+											itemHasError
+												? validation?.severe
+													? "red"
+													: "orange"
+												: undefined
+										}
+									/>
+									{isLinkable && (
+										<IconButton
+											disabled={!isButtonEnabled}
+											asChild={isButtonEnabled}
+											variant="soft"
+											title={t("metadataDialog.openLink", "打开链接")}
+										>
+											{isButtonEnabled ? (
+												<a
+													href={url || ""}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													<Open16Regular />
+												</a>
+											) : (
+												<Open16Regular />
+											)}
+										</IconButton>
+									)}
+									<IconButton
+										variant="soft"
+										onClick={() => {
+											setLyricLines((prev) => {
+												prev.metadata[index].value.splice(ii, 1);
+												if (prev.metadata[index].value.length === 0) {
+													prev.metadata.splice(index, 1);
+												}
+											});
+										}}
+									>
+										<Delete16Regular />
+									</IconButton>
+								</Flex>
+							</td>
+						</tr>
+					);
+				})}
+				<tr className={styles.newItemLine}>
+					<td />
+					<td className={styles.newItemBtnRow}>
+						<Flex direction="column">
+							{validation && rowHasError && (
+								<Text
+									color={validation.severe ? "red" : "orange"}
+									size="1"
+									mb="1"
+									mt="1"
+									wrap="wrap"
+								>
+									{validation.message}
+								</Text>
+							)}
+							<Button
+								variant="soft"
+								my="1"
+								onClick={() => {
+									setLyricLines((prev) => {
+										prev.metadata[index].value.push("");
+									});
+								}}
+							>
+								{t("metadataDialog.addValue", "添加")}
+							</Button>
+						</Flex>
+					</td>
+				</tr>
+			</Fragment>
+		);
+	},
+);
 
 interface SelectOption {
 	label: string;
 	value: string;
+	icon: ReactNode;
+	isLinkable?: true;
+	urlFormatter?: (value: string) => string | null;
 	validation?: {
 		verifier: (value: string) => boolean;
 		message: string;
@@ -43,16 +218,39 @@ export const MetadataEditor = () => {
 	const builtinOptions: SelectOption[] = useMemo(() => {
 		const numeric = (value: string) => /^\d+$/.test(value);
 		const alphanumeric = (value: string) => /^[a-zA-Z0-9]+$/.test(value);
+
+		const getPlatformUrl = (key: string, value: string) => {
+			if (!value || !value.trim()) return null;
+
+			switch (key) {
+				case "ncmMusicId":
+					return `https://music.163.com/#/song?id=${value}`;
+				case "qqMusicId":
+					return `https://y.qq.com/n/ryqq/songDetail/${value}`;
+				case "spotifyId":
+					return `https://open.spotify.com/track/${value}`;
+				case "appleMusicId":
+					return `https://music.apple.com/song/${value}`;
+				case "ttmlAuthorGithubLogin":
+					return `https://github.com/${value}`;
+				case "isrc":
+					return `https://isrcsearch.ifpi.org/?tab=%22code%22&isrcCode=%22${value}%22`;
+				default:
+					return null;
+			}
+		};
 		return [
 			{
 				// 歌词所匹配的歌曲名
 				label: t("metadataDialog.builtinOptions.musicName", "歌曲名称"),
 				value: "musicName",
+				icon: <MusicNote1Regular />,
 			},
 			{
 				// 歌词所匹配的歌手名
 				label: t("metadataDialog.builtinOptions.artists", "歌曲的艺术家"),
 				value: "artists",
+				icon: <Person16Regular />,
 				validation: {
 					verifier: (value: string) => !/^.+[,;&，；、].+$/.test(value),
 					message: t(
@@ -65,11 +263,15 @@ export const MetadataEditor = () => {
 				// 歌词所匹配的专辑名
 				label: t("metadataDialog.builtinOptions.album", "歌曲的专辑名"),
 				value: "album",
+				icon: <AlbumRegular />,
 			},
 			{
 				// 歌词所匹配的网易云音乐 ID
 				label: t("metadataDialog.builtinOptions.ncmMusicId", "网易云音乐 ID"),
 				value: "ncmMusicId",
+				icon: <NeteaseIcon />,
+				isLinkable: true,
+				urlFormatter: (val) => getPlatformUrl("ncmMusicId", val),
 				validation: {
 					verifier: numeric,
 					message: t(
@@ -83,6 +285,9 @@ export const MetadataEditor = () => {
 				// 歌词所匹配的 QQ 音乐 ID
 				label: t("metadataDialog.builtinOptions.qqMusicId", "QQ 音乐 ID"),
 				value: "qqMusicId",
+				icon: <QQMusicIcon />,
+				isLinkable: true,
+				urlFormatter: (val) => getPlatformUrl("qqMusicId", val),
 				validation: {
 					verifier: alphanumeric,
 					message: t(
@@ -96,6 +301,9 @@ export const MetadataEditor = () => {
 				// 歌词所匹配的 Spotify 音乐 ID
 				label: t("metadataDialog.builtinOptions.spotifyId", "Spotify 音乐 ID"),
 				value: "spotifyId",
+				icon: <SpotifyIcon />,
+				isLinkable: true,
+				urlFormatter: (val) => getPlatformUrl("spotifyId", val),
 				validation: {
 					verifier: alphanumeric,
 					message: t(
@@ -112,6 +320,9 @@ export const MetadataEditor = () => {
 					"Apple Music 音乐 ID",
 				),
 				value: "appleMusicId",
+				icon: <AppleMusicIcon />,
+				isLinkable: true,
+				urlFormatter: (val) => getPlatformUrl("appleMusicId", val),
 				validation: {
 					verifier: numeric,
 					message: t(
@@ -125,6 +336,9 @@ export const MetadataEditor = () => {
 				// 歌词所匹配的 ISRC 编码
 				label: t("metadataDialog.builtinOptions.isrc", "歌曲的 ISRC 号码"),
 				value: "isrc",
+				icon: <NumberSymbol16Regular />,
+				isLinkable: true,
+				urlFormatter: (val) => getPlatformUrl("isrc", val),
 				validation: {
 					verifier: (value: string) =>
 						/^[A-Z]{2}-?[A-Z0-9]{3}-?\d{2}-?\d{5}$/.test(value),
@@ -139,9 +353,10 @@ export const MetadataEditor = () => {
 				// 逐词歌词作者 GitHub ID，例如 39523898
 				label: t(
 					"metadataDialog.builtinOptions.ttmlAuthorGithub",
-					"逐词歌词作者 GitHub ID",
+					"歌词作者 GitHub ID",
 				),
 				value: "ttmlAuthorGithub",
+				icon: <GithubIcon />,
 				validation: {
 					verifier: numeric,
 					message: t(
@@ -155,9 +370,12 @@ export const MetadataEditor = () => {
 				// 逐词歌词作者 GitHub 用户名，例如 Steve-xmh
 				label: t(
 					"metadataDialog.builtinOptions.ttmlAuthorGithubLogin",
-					"逐词歌词作者 GitHub 用户名",
+					"歌词作者 GitHub 用户名",
 				),
 				value: "ttmlAuthorGithubLogin",
+				icon: <GithubIcon />,
+				isLinkable: true,
+				urlFormatter: (val) => getPlatformUrl("ttmlAuthorGithubLogin", val),
 				validation: {
 					verifier: (value: string) =>
 						/^(?!.*--)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(
@@ -173,19 +391,9 @@ export const MetadataEditor = () => {
 		];
 	}, [t]);
 
-	const toDisplayKey = useCallback(
+	const findOptionByKey = useCallback(
 		(key: string) => {
-			const found = builtinOptions.find((v) => v.value === key);
-			if (found) return found.label;
-			return key;
-		},
-		[builtinOptions],
-	);
-	const toDisplayValidation = useCallback(
-		(key: string) => {
-			const found = builtinOptions.find((v) => v.value === key);
-			if (found?.validation) return found.validation;
-			return null;
+			return builtinOptions.find((v) => v.value === key) || null;
 		},
 		[builtinOptions],
 	);
@@ -195,130 +403,53 @@ export const MetadataEditor = () => {
 			open={metadataEditorDialog}
 			onOpenChange={setMetadataEditorDialog}
 		>
-			<Dialog.Content>
-				<Dialog.Title>{t("metadataDialog.title", "元数据编辑器")}</Dialog.Title>
-				<table className={styles.metadataTable}>
-					<thead>
-						<tr>
-							<th style={{ width: "1%" }}>
-								{t("metadataDialog.key", "元数据类型")}
-							</th>
-							<th>{t("metadataDialog.value", "值")}</th>
-						</tr>
-					</thead>
-					<tbody>
-						{lyricLines.metadata.length === 0 && (
-							<tr
-								style={{
-									height: "4em",
-								}}
-							>
-								<td
-									colSpan={2}
-									style={{ color: "var(--gray-9)", textAlign: "center" }}
-								>
-									{t("metadataDialog.empty", "无任何元数据")}
-								</td>
+			<Dialog.Content className={styles.dialogContent}>
+				<div className={styles.dialogHeader}>
+					<Dialog.Title style={{ margin: 0 }}>
+						{t("metadataDialog.title", "元数据编辑器")}
+					</Dialog.Title>
+				</div>
+
+				<div className={styles.dialogBody}>
+					<table className={styles.metadataTable}>
+						<thead>
+							<tr>
+								<th className={styles.keyColumn}>
+									{t("metadataDialog.key", "元数据类型")}
+								</th>
+								<th>{t("metadataDialog.value", "值")}</th>
 							</tr>
-						)}
-						{lyricLines.metadata.map((v, i) => {
-							const validation = toDisplayValidation(v.key);
-							if (validation) {
-								const error = v.value.some((val) => !validation.verifier(val));
-								if (error !== !!v.error)
-									setLyricLines((prev) => {
-										prev.metadata[i].error = error;
-									});
-							}
-							return (
-								<Fragment key={`metadata-${v.key}`}>
-									{v.value.map((vv, ii) => (
-										<tr key={`metadata-${v.key}-${ii}`}>
-											<td>{ii === 0 && toDisplayKey(v.key)}</td>
-											<td>
-												<Flex gap="1" ml="2" mt="1">
-													<TextField.Root
-														value={vv}
-														className={styles.metadataInput}
-														onChange={(e) => {
-															const newValue = e.currentTarget.value;
-															setLyricLines((prev) => {
-																const metadataItem = prev.metadata[i];
-																metadataItem.value[ii] = newValue;
-																if (validation) {
-																	const error = metadataItem.value.some(
-																		(vv) => !validation.verifier(vv),
-																	);
-																	if (error !== !!metadataItem.error)
-																		metadataItem.error = error;
-																}
-															});
-														}}
-														color={
-															validation && v.error
-																? validation.severe
-																	? "red"
-																	: "orange"
-																: undefined
-														}
-													/>
-													<IconButton
-														variant="soft"
-														onClick={() => {
-															setLyricLines((prev) => {
-																prev.metadata[i].value.splice(ii, 1);
-																if (prev.metadata[i].value.length === 0) {
-																	prev.metadata.splice(i, 1);
-																}
-															});
-														}}
-													>
-														<Delete16Regular />
-													</IconButton>
-												</Flex>
-											</td>
-										</tr>
-									))}
-									<tr className={styles.newItemLine}>
-										<td />
-										<td className={styles.newItemBtnRow}>
-											<Flex direction="column">
-												{validation && v.error && (
-													<Text
-														color={validation.severe ? "red" : "orange"}
-														size="1"
-														mb="1"
-														mt="1"
-														wrap="wrap"
-													>
-														{validation.message}
-													</Text>
-												)}
-												<Button
-													variant="soft"
-													my="1"
-													onClick={() => {
-														setLyricLines((prev) => {
-															prev.metadata[i].value.push("");
-														});
-													}}
-												>
-													{t("metadataDialog.addValue", "添加")}
-												</Button>
-											</Flex>
-										</td>
-									</tr>
-								</Fragment>
-							);
-						})}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{lyricLines.metadata.length === 0 && (
+								<tr style={{ height: "4em" }}>
+									<td
+										colSpan={2}
+										style={{ color: "var(--gray-9)", textAlign: "center" }}
+									>
+										{t("metadataDialog.empty", "无任何元数据")}
+									</td>
+								</tr>
+							)}
+							{lyricLines.metadata.map((v, i) => (
+								<MetadataEntry
+									key={`metadata-${v.key}`}
+									entry={v}
+									index={i}
+									setLyricLines={setLyricLines}
+									option={findOptionByKey(v.key)}
+								/>
+							))}
+						</tbody>
+					</table>
+				</div>
 				<Flex
 					gap="1"
 					direction={{
 						sm: "row",
 						initial: "column",
 					}}
+					className={styles.dialogFooter}
 				>
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger
@@ -382,7 +513,10 @@ export const MetadataEditor = () => {
 										});
 									}}
 								>
-									{v.label}
+									<Flex gap="2" align="center">
+										{v.icon}
+										{v.label}
+									</Flex>
 								</DropdownMenu.Item>
 							))}
 						</DropdownMenu.Content>
@@ -409,6 +543,19 @@ export const MetadataEditor = () => {
 						}}
 					>
 						{t("metadataDialog.addPresets", "一键添加所有预设键")}
+					</Button>
+					<Button
+						style={{ flex: "1 0 auto" }}
+						color="red"
+						variant="solid"
+						onClick={() => {
+							setLyricLines((prev) => {
+								prev.metadata = [];
+							});
+						}}
+					>
+						<Delete16Regular />
+						{t("metadataDialog.clear", "清空")}
 					</Button>
 					<Button asChild variant="soft">
 						<a

@@ -17,7 +17,7 @@
 		"MiSans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
 	background: transparent;
 
 	&:hover {
@@ -41,7 +41,7 @@
 	&:hover {
 		background: transparent;
 	}
-}
+} */
 
 .rt-BaseButton:where(.rt-variant-soft) {
 	background-color: var(--accent-a3);

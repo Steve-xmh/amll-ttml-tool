@@ -218,6 +218,8 @@
 		"emptyBeatSymbol": "空拍符号"
 	},
 	"metadataDialog": {
+		"openLink": "打开链接",
+		"addValue": "添加",
 		"builtinOptions": {
 			"musicName": "歌曲名称",
 			"artists": "歌曲的艺术家",
@@ -233,19 +235,19 @@
 			"appleMusicIdInvalidMsg": "Apple Music 音乐 ID 应为纯数字",
 			"isrc": "歌曲的 ISRC 号码",
 			"isrcInvalidMsg": "ISRC 号码格式应为 CC-XXX-YY-NNNNN",
-			"ttmlAuthorGithub": "逐词歌词作者 GitHub ID",
+			"ttmlAuthorGithub": "歌词作者 GitHub ID",
 			"ttmlAuthorGithubInvalidMsg": "GitHub ID 应为纯数字",
-			"ttmlAuthorGithubLogin": "逐词歌词作者 GitHub 用户名",
+			"ttmlAuthorGithubLogin": "歌词作者 GitHub 用户名",
 			"ttmlAuthorGithubLoginInvalidMsg": "GitHub 用户名应为不长于 39 字符的字母、数字或短横线"
 		},
 		"title": "元数据编辑器",
 		"key": "元数据类型",
 		"value": "值",
 		"empty": "无任何元数据",
-		"addValue": "添加",
 		"addKeyValue": "添加新键值",
 		"customKey": "自定义键名",
 		"addPresets": "一键添加所有预设键",
+		"clear": "清空",
 		"info": "了解详情"
 	},
 	"aboutModal": {

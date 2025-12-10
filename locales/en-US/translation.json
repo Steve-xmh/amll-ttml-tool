@@ -218,6 +218,8 @@
 		"emptyBeatSymbol": "Empty Beat Symbol"
 	},
 	"metadataDialog": {
+		"openLink": "Open link",
+		"addValue": "Add",
 		"builtinOptions": {
 			"musicName": "Track Name",
 			"artists": "Track Artists",
@@ -242,10 +244,10 @@
 		"key": "Key",
 		"value": "Value",
 		"empty": "No metadata",
-		"addValue": "Add",
 		"addKeyValue": "Add new key-value",
 		"customKey": "Custom Key",
 		"addPresets": "Add all preset keys",
+		"clear": "Clear",
 		"info": "Learn more"
 	},
 	"aboutModal": {

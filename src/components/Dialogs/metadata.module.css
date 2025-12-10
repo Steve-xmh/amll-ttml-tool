@@ -2,17 +2,7 @@
 	width: 100%;
 	white-space: nowrap;
 	border-collapse: collapse;
-
-	tbody tr {
-		/*border-bottom: solid 1px var(--gray-6);*/
-		padding: var(--space-1);
-
-		> td:first-child {
-			text-align: end;
-			vertical-align: top;
-			line-height: 2.25rem;
-		}
-	}
+	table-layout: fixed;
 }
 
 .metadataInput {
@@ -30,4 +20,36 @@
 
 .newItemLine:not(:last-child) {
 	border-bottom: solid 1px var(--gray-6);
+}
+
+.dialogContent {
+	max-width: 680px;
+	max-height: 90vh;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	overflow: hidden;
+}
+
+.dialogHeader {
+	padding: 20px 20px 10px 20px;
+	flex-shrink: 0;
+}
+
+.dialogBody {
+	flex: 1;
+	overflow-y: auto;
+	padding: 0 20px 10px 20px;
+}
+
+.keyColumn {
+	width: 220px;
+	padding-left: 8px;
+}
+
+.dialogFooter {
+	padding: 16px 20px;
+	border-top: 1px solid var(--gray-5);
+	flex-shrink: 0;
+	background: var(--color-bg-1);
 }
