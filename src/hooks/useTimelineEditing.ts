@@ -11,6 +11,7 @@ import { spectrogramHoverTimeMsAtom } from "$/states/spectrogram.ts";
 import {
 	adjustLineEndTime,
 	shiftLineStartTime,
+	tryFixPartialInitialization,
 	tryInitializeZeroTimestampLine,
 } from "$/utils/timeline-mutations.ts";
 
@@ -92,6 +93,8 @@ export function useTimelineEditing(scrollLeft: number, zoom: number) {
 								) {
 									continue;
 								}
+
+								tryFixPartialInitialization(line);
 
 								shiftLineStartTime(line, newStartTime);
 

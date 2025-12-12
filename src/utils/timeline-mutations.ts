@@ -295,6 +295,70 @@ export function tryInitializeZeroTimestampLine(
 	return false;
 }
 
+export function tryFixPartialInitialization(line: Draft<LyricLine>): boolean {
+	const hasZeroWord = line.words.some(
+		(w) => w.startTime === 0 && w.endTime === 0 && w.word.trim() !== "",
+	);
+	const hasNonZeroWord = line.words.some(
+		(w) => w.startTime !== 0 || w.endTime !== 0,
+	);
+
+	if (!hasZeroWord || !hasNonZeroWord) {
+		return false;
+	}
+
+	let didChange = false;
+
+	for (let i = 0; i < line.words.length; i++) {
+		const anchorWord = line.words[i];
+
+		if (anchorWord.startTime !== 0 || anchorWord.endTime !== 0) {
+			const groupToProcess = [anchorWord];
+			let lookaheadIndex = i + 1;
+
+			while (
+				lookaheadIndex < line.words.length &&
+				line.words[lookaheadIndex].startTime === 0 &&
+				line.words[lookaheadIndex].endTime === 0
+			) {
+				groupToProcess.push(line.words[lookaheadIndex]);
+				lookaheadIndex++;
+			}
+
+			if (groupToProcess.length > 1) {
+				didChange = true;
+				const groupStartTime = anchorWord.startTime;
+				const totalDuration = anchorWord.endTime - anchorWord.startTime;
+
+				const nonEmptyWords = groupToProcess.filter(
+					(w) => w.word.trim() !== "",
+				);
+				const nonEmptyWordCount = nonEmptyWords.length;
+
+				if (nonEmptyWordCount > 0 && totalDuration > 0) {
+					const perWordDuration = totalDuration / nonEmptyWordCount;
+					let cursorTime = groupStartTime;
+
+					for (const word of groupToProcess) {
+						if (word.word.trim() !== "") {
+							word.startTime = cursorTime;
+							word.endTime = cursorTime + perWordDuration;
+							cursorTime += perWordDuration;
+						} else {
+							word.startTime = cursorTime;
+							word.endTime = cursorTime;
+						}
+					}
+				}
+
+				i = lookaheadIndex - 1;
+			}
+		}
+	}
+
+	return didChange;
+}
+
 export function shiftLineStartTime(
 	line: Draft<LyricLine>,
 	newStartTime: number,
