@@ -228,7 +228,9 @@ export const SplitWordDialog = memo(() => {
 								}
 								parts.push(editedWord.slice(lastIndex));
 
-								const splittedWords = parts.filter((p) => p !== "");
+								const splittedWords = parts
+									.filter((p) => p.trim() !== "")
+									.map((p) => p.trim());
 
 								if (splittedWords.length === 0 && editedWord) {
 									splittedWords.push(editedWord);
