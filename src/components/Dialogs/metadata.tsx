@@ -19,14 +19,7 @@ import {
 } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useImmerAtom } from "jotai-immer";
-import {
-	Fragment,
-	memo,
-	type ReactNode,
-	useCallback,
-	useMemo,
-	useState,
-} from "react";
+import { memo, type ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
@@ -63,8 +56,67 @@ const MetadataEntry = memo(
 
 		const { t } = useTranslation();
 
+		const [isDraggingCategory, setIsDraggingCategory] = useState(false);
+		const [dragInputIndex, setDragInputIndex] = useState<number | null>(null);
+
+		const handleCategoryDrop = useCallback(
+			(e: React.DragEvent) => {
+				e.preventDefault();
+				setIsDraggingCategory(false);
+				const text = e.dataTransfer.getData("text");
+				if (!text) return;
+
+				const parts = text
+					.split(/[\n,;/，；、|\\]/)
+					.map((s) => s.trim())
+					.filter((s) => s !== "");
+
+				if (parts.length === 0) return;
+
+				setLyricLines((prev) => {
+					const currentList = prev.metadata[index].value;
+					const existingSet = new Set<string>();
+					const emptyIndices: number[] = [];
+
+					currentList.forEach((val, i) => {
+						if (val.trim() === "") {
+							emptyIndices.push(i);
+						} else {
+							existingSet.add(val);
+						}
+					});
+
+					for (const part of parts) {
+						if (existingSet.has(part)) continue;
+
+						if (emptyIndices.length > 0) {
+							// biome-ignore lint/style/noNonNullAssertion: 肯定有
+							const slotIndex = emptyIndices.shift()!;
+							currentList[slotIndex] = part;
+						} else {
+							currentList.push(part);
+						}
+						existingSet.add(part);
+					}
+				});
+			},
+			[index, setLyricLines],
+		);
+
 		return (
-			<Fragment>
+			<tbody
+				className={isDraggingCategory ? styles.dragOverCategory : undefined}
+				onDragOver={(e) => {
+					e.preventDefault();
+					setIsDraggingCategory(true);
+				}}
+				onDragLeave={(e) => {
+					if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+						setIsDraggingCategory(false);
+					}
+				}}
+				onDrop={handleCategoryDrop}
+			>
 				{entry.value.map((vv, ii) => {
 					const itemHasError = validation
 						? vv.trim() !== "" && !validation.verifier(vv)
@@ -113,12 +165,32 @@ const MetadataEntry = memo(
 								<Flex gap="1" ml="2" mt="1">
 									<TextField.Root
 										value={vv}
-										className={styles.metadataInput}
+										className={`${styles.metadataInput} ${
+											dragInputIndex === ii ? styles.dragOverInput : ""
+										}`}
 										onChange={(e) => {
 											const newValue = e.currentTarget.value;
 											setLyricLines((prev) => {
 												prev.metadata[index].value[ii] = newValue;
 											});
+										}}
+										onDragOver={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setDragInputIndex(ii);
+										}}
+										onDragLeave={() => setDragInputIndex(null)}
+										onDrop={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setDragInputIndex(null);
+											setIsDraggingCategory(false);
+											const text = e.dataTransfer.getData("text");
+											if (text) {
+												setLyricLines((prev) => {
+													prev.metadata[index].value[ii] = text;
+												});
+											}
 										}}
 										variant={hasAnyError ? "soft" : "surface"}
 										color={
@@ -203,7 +275,7 @@ const MetadataEntry = memo(
 						</Flex>
 					</td>
 				</tr>
-			</Fragment>
+			</tbody>
 		);
 	},
 );
@@ -436,8 +508,8 @@ export const MetadataEditor = () => {
 								<th>{t("metadataDialog.value", "值")}</th>
 							</tr>
 						</thead>
-						<tbody>
-							{lyricLines.metadata.length === 0 && (
+						{lyricLines.metadata.length === 0 && (
+							<tbody>
 								<tr style={{ height: "4em" }}>
 									<td
 										colSpan={2}
@@ -446,17 +518,17 @@ export const MetadataEditor = () => {
 										{t("metadataDialog.empty", "无任何元数据")}
 									</td>
 								</tr>
-							)}
-							{lyricLines.metadata.map((v, i) => (
-								<MetadataEntry
-									key={`metadata-${v.key}`}
-									entry={v}
-									index={i}
-									setLyricLines={setLyricLines}
-									option={findOptionByKey(v.key)}
-								/>
-							))}
-						</tbody>
+							</tbody>
+						)}
+						{lyricLines.metadata.map((v, i) => (
+							<MetadataEntry
+								key={`metadata-${v.key}`}
+								entry={v}
+								index={i}
+								setLyricLines={setLyricLines}
+								option={findOptionByKey(v.key)}
+							/>
+						))}
 					</table>
 				</div>
 				<Flex

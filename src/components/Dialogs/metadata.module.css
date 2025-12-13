@@ -9,6 +9,17 @@
 	flex-grow: 1;
 }
 
+.dragOverInput {
+	box-shadow: 0 0 0 2px var(--accent-9);
+	background-color: var(--accent-3);
+}
+
+.dragOverCategory {
+	outline: 2px solid var(--accent-9);
+	background-color: var(--gray-3);
+	border-radius: 4px;
+}
+
 .newItemBtnRow {
 	display: block;
 	padding-left: var(--space-2);
