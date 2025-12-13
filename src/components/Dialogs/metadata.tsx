@@ -19,7 +19,15 @@ import {
 } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useImmerAtom } from "jotai-immer";
-import { memo, type ReactNode, useCallback, useMemo, useState } from "react";
+import {
+	memo,
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
@@ -55,6 +63,22 @@ const MetadataEntry = memo(
 		}, [entry.value]);
 
 		const { t } = useTranslation();
+
+		const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+		const [focusIndex, setFocusIndex] = useState<number | null>(null);
+
+		useEffect(() => {
+			if (focusIndex !== null) {
+				const targetInput = inputRefs.current[focusIndex];
+				if (targetInput) {
+					targetInput.focus();
+					const len = targetInput.value.length;
+					targetInput.setSelectionRange(len, len);
+				}
+				setFocusIndex(null);
+			}
+		}, [focusIndex]);
 
 		const [isDraggingCategory, setIsDraggingCategory] = useState(false);
 		const [dragInputIndex, setDragInputIndex] = useState<number | null>(null);
@@ -164,6 +188,37 @@ const MetadataEntry = memo(
 							<td>
 								<Flex gap="1" ml="2" mt="1">
 									<TextField.Root
+										ref={(el) => {
+											inputRefs.current[ii] = el;
+										}}
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												setLyricLines((prev) => {
+													prev.metadata[index].value.splice(ii + 1, 0, "");
+												});
+												setFocusIndex(ii + 1);
+											} else if (
+												e.key === "Backspace" &&
+												e.currentTarget.value === ""
+											) {
+												e.preventDefault();
+
+												if (ii > 0) {
+													setLyricLines((prev) => {
+														prev.metadata[index].value.splice(ii, 1);
+													});
+													setFocusIndex(ii - 1);
+												} else {
+													setLyricLines((prev) => {
+														prev.metadata[index].value.splice(ii, 1);
+														if (prev.metadata[index].value.length === 0) {
+															prev.metadata.splice(index, 1);
+														}
+													});
+												}
+											}
+										}}
 										value={vv}
 										className={`${styles.metadataInput} ${
 											dragInputIndex === ii ? styles.dragOverInput : ""
