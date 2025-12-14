@@ -202,6 +202,8 @@ const MetadataEntry = memo(
 												e.key === "Backspace" &&
 												e.currentTarget.value === ""
 											) {
+												if (e.repeat) return;
+
 												e.preventDefault();
 
 												if (ii > 0) {
