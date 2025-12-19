@@ -151,8 +151,9 @@ export const useFileOpener = () => {
 		 * 打开文件
 		 * @param file
 		 * @param forceExt 可选参数，用于强制指定解析方式，不传入则从文件后缀名推断
+		 * @param skipConfirm 可选参数，如果为 true 则跳过未保存更改的确认对话框
 		 */
-		(file: File, forceExt?: string) => {
+		(file: File, forceExt?: string, skipConfirm = false) => {
 			const run = () => performOpenFile(file, forceExt);
 
 			const rawExt = file.name.split(".").pop()?.toLowerCase() || "";
@@ -163,7 +164,7 @@ export const useFileOpener = () => {
 				return;
 			}
 
-			if (isDirty) {
+			if (isDirty && !skipConfirm) {
 				setConfirmDialog({
 					open: true,
 					title: t("confirmDialog.openFile.title", "确认打开文件"),

@@ -14,6 +14,7 @@ export const confirmDialogAtom = atom<{
 	title: string;
 	description: string;
 	onConfirm?: () => void;
+	onCancel?: () => void;
 }>({
 	open: false,
 	title: "",
