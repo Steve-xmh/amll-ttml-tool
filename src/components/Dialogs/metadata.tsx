@@ -504,6 +504,8 @@ export const MetadataEditor = () => {
 				),
 				value: "ttmlAuthorGithub",
 				icon: <GithubIcon />,
+				isLinkable: true,
+				urlFormatter: (val) => getPlatformUrl("ttmlAuthorGithub", val),
 				validation: {
 					verifier: numeric,
 					message: t(
