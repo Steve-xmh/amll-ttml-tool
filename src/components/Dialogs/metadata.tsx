@@ -375,7 +375,9 @@ export const MetadataEditor = () => {
 				case "spotifyId":
 					return `https://open.spotify.com/track/${value}`;
 				case "appleMusicId":
-					return `https://music.apple.com/song/${value}`;
+					return `https://beta.music.apple.com/song/${value}`;
+				case "ttmlAuthorGithub":
+					return `https://api.github.com/user/${value}`;
 				case "ttmlAuthorGithubLogin":
 					return `https://github.com/${value}`;
 				case "isrc":
