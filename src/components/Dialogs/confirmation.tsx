@@ -13,7 +13,6 @@ export const ConfirmationDialog = () => {
 	};
 
 	const handleCancel = () => {
-		dialogState.onCancel?.();
 		setDialogState({ ...dialogState, open: false });
 	};
 

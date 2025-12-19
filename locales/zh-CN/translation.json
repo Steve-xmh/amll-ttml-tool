@@ -160,10 +160,6 @@
 		"openFile": {
 			"title": "确认打开文件",
 			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"
-		},
-		"postMessage": {
-			"title": "收到打开项目请求",
-			"description": "{origin} 正在请求打开一个项目，如果继续，当前未保存的更改将会丢失。确定要加载吗？"
 		}
 	},
 	"historyRestoreDialog": {
@@ -495,9 +491,7 @@
 	},
 	"error": {
 		"unsupportedFileFormat": "不支持的文件格式: {ext}",
-		"openFileFailed": "打开文件失败",
-		"postMessageAudioFetchFailed": "无法从 URL 加载音频",
-		"postMessageLoadFailed": "加载来自外部的项目失败"
+		"openFileFailed": "打开文件失败"
 	},
 	"pwa": {
 		"offlineReady": "网站已成功离线缓存，后续可离线访问本网页",

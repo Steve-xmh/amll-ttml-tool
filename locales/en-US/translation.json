@@ -160,10 +160,6 @@
 		"openFile": {
 			"title": "Confirm Open File",
 			"description": "You have unsaved changes. If you proceed, these changes will be lost. Are you sure you want to open a new file?"
-		},
-		"postMessage": {
-			"title": "Received request to open project",
-			"description": "{origin} is requesting to open a project. If you continue, any unsaved changes will be lost. Are you sure you want to load it?"
 		}
 	},
 	"historyRestoreDialog": {
@@ -495,9 +491,7 @@
 	},
 	"error": {
 		"unsupportedFileFormat": "Unsupported file format: {ext}",
-		"openFileFailed": "Failed to open file",
-		"postMessageAudioFetchFailed": "Unable to load audio from URL",
-		"postMessageLoadFailed": "Failed to load project from external website"
+		"openFileFailed": "Failed to open file"
 	},
 	"pwa": {
 		"offlineReady": "Site successfully cached for offline use",

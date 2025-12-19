@@ -42,7 +42,6 @@ import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx"
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { useFileOpener } from "./hooks/useFileOpener.ts";
-import { usePostMessageListener } from "./hooks/usePostMessageListener.ts";
 import { isGlobalFileDraggingAtom } from "./states/dnd.ts";
 import {
 	isDarkThemeAtom,
@@ -115,7 +114,6 @@ const AppErrorPage = ({
 };
 
 function App() {
-	usePostMessageListener();
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const showTouchSyncPanel = useAtomValue(showTouchSyncPanelAtom);
