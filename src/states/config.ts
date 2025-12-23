@@ -62,3 +62,6 @@ export const highlightActiveWordAtom = atomWithStorage(
 );
 
 export const highlightErrorsAtom = atomWithStorage("highlightErrors", false);
+
+export const smartFirstWordAtom = atomWithStorage("smartFirstWord", false);
+export const smartLastWordAtom = atomWithStorage("smartLastWord", false);

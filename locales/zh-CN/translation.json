@@ -284,6 +284,10 @@
 				"middleKey": "取按键按下和抬起的中间值",
 				"firstKeyDownLegacy": "首个按键按下时间（旧版）"
 			},
+			"smartFirstWord": "智能首字",
+			"smartFirstWordDesc": "对行首第一个音节打轴时，第一次按下“起始轴”按钮会设置其开始时间，但不会设置其结束时间。",
+			"smartLastWord": "智能尾字",
+			"smartLastWordDesc": "对行末最后一个音节打轴时，最后一次按下“结束轴”按钮会设置其结束时间，但不会设置下一行第一个音节的开始时间。",
 			"volume": "音乐音量",
 			"playbackRate": "播放速度",
 			"autosave": {

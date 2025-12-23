@@ -1,7 +1,12 @@
 import { produce } from "immer";
 import { useStore } from "jotai";
 import { type FC, useCallback } from "react";
-import { SyncJudgeMode, syncJudgeModeAtom } from "$/states/config.ts";
+import {
+	SyncJudgeMode,
+	smartFirstWordAtom,
+	smartLastWordAtom,
+	syncJudgeModeAtom,
+} from "$/states/config.ts";
 import {
 	keyMoveNextLineAtom,
 	keyMoveNextWordAndPlayAtom,
@@ -18,7 +23,11 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 } from "$/states/main.ts";
-import { currentEmptyBeatAtom, syncTimeOffsetAtom } from "$/states/sync.ts";
+import {
+	currentEmptyBeatAtom,
+	smartFirstWordActiveIdAtom,
+	syncTimeOffsetAtom,
+} from "$/states/sync.ts";
 import { audioEngine } from "$/utils/audio";
 import {
 	type KeyBindingEvent,
@@ -192,6 +201,12 @@ export const SyncKeyBinding: FC = () => {
 			const location = getCurrentLocation(store);
 			if (!location) return;
 			const currentTime = calcJudgeTime(evt);
+
+			const smartFirstWord = store.get(smartFirstWordAtom);
+			if (smartFirstWord && location.isFirstWord) {
+				store.set(smartFirstWordActiveIdAtom, location.word.id);
+			}
+
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const line = state.lyricLines[location.lineIndex];
@@ -209,12 +224,46 @@ export const SyncKeyBinding: FC = () => {
 		(evt) => {
 			const location = getCurrentLocation(store);
 			if (!location) return;
+			const currentTime = calcJudgeTime(evt);
+
+			// 智能首字
+			const smartFirstWord = store.get(smartFirstWordAtom);
+			if (smartFirstWord && location.isFirstWord) {
+				const activeId = store.get(smartFirstWordActiveIdAtom);
+				if (activeId !== location.word.id) {
+					store.set(lyricLinesAtom, (state) =>
+						produce(state, (state) => {
+							const line = state.lyricLines[location.lineIndex];
+							line.startTime = currentTime;
+							line.words[location.wordIndex].startTime = currentTime;
+						}),
+					);
+					store.set(smartFirstWordActiveIdAtom, location.word.id);
+					return;
+				}
+			}
+			store.set(smartFirstWordActiveIdAtom, null);
+
 			const emptyBeat = store.get(currentEmptyBeatAtom);
 			if (emptyBeat < location.word.emptyBeat) {
 				store.set(currentEmptyBeatAtom, emptyBeat + 1);
 				return;
 			}
-			const currentTime = calcJudgeTime(evt);
+
+			// 智能尾字
+			const smartLastWord = store.get(smartLastWordAtom);
+			if (smartLastWord && location.isLastWord) {
+				store.set(lyricLinesAtom, (state) =>
+					produce(state, (state) => {
+						const line = state.lyricLines[location.lineIndex];
+						line.words[location.wordIndex].endTime = currentTime;
+						line.endTime = currentTime;
+					}),
+				);
+				moveToNextWord();
+				return;
+			}
+
 			store.set(lyricLinesAtom, (state) =>
 				produce(state, (state) => {
 					const curLine = state.lyricLines[location.lineIndex];
@@ -234,6 +283,14 @@ export const SyncKeyBinding: FC = () => {
 				}),
 			);
 			moveToNextWord();
+
+			// 开了智能首字后，连轴打到下一行时跳过智能首字
+			if (smartFirstWord) {
+				const newLocation = getCurrentLocation(store);
+				if (newLocation?.isFirstWord) {
+					store.set(smartFirstWordActiveIdAtom, newLocation.word.id);
+				}
+			}
 		},
 		[store, moveToNextWord],
 	);

@@ -3,6 +3,8 @@ import {
 	ContentView24Regular,
 	History24Regular,
 	LocalLanguage24Regular,
+	PaddingLeft24Regular,
+	PaddingRight24Regular,
 	Save24Regular,
 	Speaker224Regular,
 	Stack24Regular,
@@ -30,6 +32,8 @@ import {
 	LayoutMode,
 	layoutModeAtom,
 	SyncJudgeMode,
+	smartFirstWordAtom,
+	smartLastWordAtom,
 	syncJudgeModeAtom,
 } from "$/states/config.ts";
 
@@ -38,6 +42,8 @@ const languageOptions: readonly string[] = Object.keys(resources);
 export const SettingsCommonTab = () => {
 	const [layoutMode, setLayoutMode] = useAtom(layoutModeAtom);
 	const [syncJudgeMode, setSyncJudgeMode] = useAtom(syncJudgeModeAtom);
+	const [smartFirstWord, setSmartFirstWord] = useAtom(smartFirstWordAtom);
+	const [smartLastWord, setSmartLastWord] = useAtom(smartLastWordAtom);
 	const [volume, setVolume] = useAtom(volumeAtom);
 	const [playbackRate, setPlaybackRate] = useAtom(playbackRateAtom);
 	const [autosaveEnabled, setAutosaveEnabled] = useAtom(autosaveEnabledAtom);
@@ -216,6 +222,60 @@ export const SettingsCommonTab = () => {
 							</Flex>
 						</Box>
 					</Flex>
+				</Card>
+
+				<Card>
+					<Text as="label">
+						<Flex gap="3" align="center">
+							<PaddingLeft24Regular />
+							<Box flexGrow="1">
+								<Flex gap="2" align="center" justify="between">
+									<Flex direction="column" gap="1">
+										<Text>
+											{t("settings.common.smartFirstWord", "智能首字")}
+										</Text>
+										<Text size="1" color="gray">
+											{t(
+												"settings.common.smartFirstWordDesc",
+												"对行首第一个音节打轴时，第一次按下“起始轴”按钮会设置其开始时间，但不会设置其结束时间。",
+											)}
+										</Text>
+									</Flex>
+									<Switch
+										checked={smartFirstWord}
+										onCheckedChange={setSmartFirstWord}
+									/>
+								</Flex>
+							</Box>
+						</Flex>
+					</Text>
+				</Card>
+
+				<Card>
+					<Text as="label">
+						<Flex gap="3" align="center">
+							<PaddingRight24Regular />
+							<Box flexGrow="1">
+								<Flex gap="2" align="center" justify="between">
+									<Flex direction="column" gap="1">
+										<Text>
+											{t("settings.common.smartLastWord", "智能尾字")}
+										</Text>
+										<Text size="1" color="gray">
+											{t(
+												"settings.common.smartLastWordDesc",
+												"对行末最后一个音节打轴时，最后一次按下“结束轴”按钮会设置其结束时间，但不会设置下一行第一个音节的开始时间。",
+											)}
+										</Text>
+									</Flex>
+									<Switch
+										checked={smartLastWord}
+										onCheckedChange={setSmartLastWord}
+									/>
+								</Flex>
+							</Box>
+						</Flex>
+					</Text>
 				</Card>
 			</Flex>
 

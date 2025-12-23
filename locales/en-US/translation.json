@@ -284,6 +284,10 @@
 				"middleKey": "Middle of key down & up",
 				"firstKeyDownLegacy": "First key down time (legacy)"
 			},
+			"smartFirstWord": "Smart First Word",
+			"smartFirstWordDesc": "When syncing the first word of a line, the first key press sets its start time only, without immediately setting its end time.",
+			"smartLastWord": "Smart Last Word",
+			"smartLastWordDesc": "When syncing the last word of a line, the key press sets its end time without automatically setting the start time of the next line's first word.",
 			"volume": "Music Volume",
 			"playbackRate": "Playback Speed",
 			"autosave": {

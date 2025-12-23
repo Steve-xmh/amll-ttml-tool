@@ -19,6 +19,7 @@ export const visualizeTimestampUpdateAtom = atomWithStorage(
 export const syncTimeOffsetAtom = atomWithStorage("syncTimeOffset", 0);
 
 export const currentEmptyBeatAtom = atom(0);
+export const smartFirstWordActiveIdAtom = atom<string | null>(null);
 
 export const callbackSyncStartAtom = atom(c(() => {}));
 export const callbackSyncNextAtom = atom(c(() => {}));
