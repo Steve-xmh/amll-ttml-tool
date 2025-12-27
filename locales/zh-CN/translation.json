@@ -239,7 +239,9 @@
 			"ttmlAuthorGithub": "歌词作者 GitHub ID",
 			"ttmlAuthorGithubInvalidMsg": "GitHub ID 应为纯数字",
 			"ttmlAuthorGithubLogin": "歌词作者 GitHub 用户名",
-			"ttmlAuthorGithubLoginInvalidMsg": "GitHub 用户名应为不长于 39 字符的字母、数字或短横线"
+			"ttmlAuthorGithubLoginInvalidMsg": "GitHub 用户名应为不长于 39 字符的字母、数字或短横线",
+			"songwriter": "词曲作者",
+			"songwriterInvalidMsg": "如果有多个词曲作者，请多次添加该键值，避免使用分隔符"
 		},
 		"title": "元数据编辑器",
 		"key": "元数据类型",

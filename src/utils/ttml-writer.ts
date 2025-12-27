@@ -71,6 +71,34 @@ export default function exportTTMLText(
 		"http://music.apple.com/lyric-ttml-internal",
 	);
 
+	// Determine itunes:timing mode for Spicylyrics compatibility
+	// Word = at least one line has 2+ non-blank words (dynamic/per-word timing)
+	// Line = has lyric lines but every line has 0 or 1 non-blank word
+	// None = no timed words at all
+	const nonBlankWordCountsPerLine = lyric.map((l) =>
+		l.words.filter((w) => w.word.trim().length > 0).length,
+	);
+	const totalNonBlankWords = nonBlankWordCountsPerLine.reduce(
+		(sum, v) => sum + v,
+		0,
+	);
+	const hasAnyTiming = lyric.some((l) =>
+		l.words.some((w) => w.word.trim().length > 0 && w.endTime > w.startTime),
+	);
+	let timingMode: "Word" | "Line" | "None";
+	if (totalNonBlankWords === 0 || !hasAnyTiming) timingMode = "None";
+	else if (nonBlankWordCountsPerLine.some((c) => c > 1)) timingMode = "Word";
+	else timingMode = "Line";
+	ttRoot.setAttribute("itunes:timing", timingMode);
+
+	// Set xml:lang from metadata or default to "en"
+	const languageMeta = ttmlLyric.metadata.find((m) => m.key === "language");
+	const rawLang =
+		languageMeta?.value.find((v) => v.trim().length > 0) || "en";
+	// Convert to ISO 639-1 (first 2 chars, lowercase)
+	const isoLang = rawLang.toLowerCase().slice(0, 2) || "en";
+	ttRoot.setAttribute("xml:lang", isoLang);
+
 	doc.appendChild(ttRoot);
 
 	const head = doc.createElement("head");
@@ -95,7 +123,37 @@ export default function exportTTMLText(
 		metadataEl.appendChild(otherPersonAgent);
 	}
 
+	// Extract songwriter metadata to emit in iTunes format (Spicylyrics compatibility)
+	const songwriterMeta = ttmlLyric.metadata.find(
+		(m) => m.key === "songwriter" && m.value.some((v) => v.trim().length > 0),
+	);
+
+	if (songwriterMeta) {
+		const iTunesMetadata = doc.createElement("iTunesMetadata");
+		iTunesMetadata.setAttribute(
+			"xmlns",
+			"http://music.apple.com/lyric-ttml-internal",
+		);
+		iTunesMetadata.setAttribute("leadingSilence", "0");
+		const translationsEl = doc.createElement("translations");
+		iTunesMetadata.appendChild(translationsEl);
+		const songwritersEl = doc.createElement("songwriters");
+		for (const name of songwriterMeta.value) {
+			const trimmed = name.trim();
+			if (!trimmed) continue;
+			const swEl = doc.createElement("songwriter");
+			swEl.appendChild(doc.createTextNode(trimmed));
+			songwritersEl.appendChild(swEl);
+		}
+		if (songwritersEl.childNodes.length > 0) {
+			iTunesMetadata.appendChild(songwritersEl);
+			metadataEl.appendChild(iTunesMetadata);
+		}
+	}
+
+	// Append remaining metadata entries (skip songwriter since it's in iTunes format)
 	for (const metadata of ttmlLyric.metadata) {
+		if (metadata.key === "songwriter") continue;
 		for (const value of metadata.value) {
 			const metaEl = doc.createElement("amll:meta");
 			metaEl.setAttribute("key", metadata.key);

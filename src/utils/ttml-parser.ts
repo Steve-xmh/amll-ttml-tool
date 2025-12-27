@@ -216,6 +216,25 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		}
 	}
 
+	const songwriterElements = ttmlDoc.querySelectorAll(
+		"iTunesMetadata > songwriters > songwriter",
+	);
+	if (songwriterElements.length > 0) {
+		const songwriterValues: string[] = [];
+		songwriterElements.forEach((el) => {
+			const name = el.textContent?.trim();
+			if (name) {
+				songwriterValues.push(name);
+			}
+		});
+		if (songwriterValues.length > 0) {
+			metadata.push({
+				key: "songwriter",
+				value: songwriterValues,
+			});
+		}
+	}
+
 	for (const agent of ttmlDoc.querySelectorAll("ttm\\:agent")) {
 		if (agent.getAttribute("type") === "person") {
 			const id = agent.getAttribute("xml:id");
