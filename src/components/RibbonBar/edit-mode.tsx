@@ -630,7 +630,10 @@ export const EditModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 							label={t("ribbonBar.editMode.emptyBeatCount", "空拍数量")}
 							fieldName="emptyBeat"
 							isWordField
-							parser={Number.parseInt}
+							parser={(v) => {
+								const parsed = Number.parseInt(v, 10);
+								return Number.isNaN(parsed) ? 0 : parsed;
+							}}
 							formatter={String}
 						/>
 					</Grid>
