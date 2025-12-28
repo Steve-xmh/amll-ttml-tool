@@ -91,14 +91,6 @@ export default function exportTTMLText(
 	else timingMode = "Line";
 	ttRoot.setAttribute("itunes:timing", timingMode);
 
-	// Set xml:lang from metadata or default to "en"
-	const languageMeta = ttmlLyric.metadata.find((m) => m.key === "language");
-	const rawLang =
-		languageMeta?.value.find((v) => v.trim().length > 0) || "en";
-	// Convert to ISO 639-1 (first 2 chars, lowercase)
-	const isoLang = rawLang.toLowerCase().slice(0, 2) || "en";
-	ttRoot.setAttribute("xml:lang", isoLang);
-
 	doc.appendChild(ttRoot);
 
 	const head = doc.createElement("head");
@@ -134,9 +126,6 @@ export default function exportTTMLText(
 			"xmlns",
 			"http://music.apple.com/lyric-ttml-internal",
 		);
-		iTunesMetadata.setAttribute("leadingSilence", "0");
-		const translationsEl = doc.createElement("translations");
-		iTunesMetadata.appendChild(translationsEl);
 		const songwritersEl = doc.createElement("songwriters");
 		for (const name of songwriterMeta.value) {
 			const trimmed = name.trim();
