@@ -40,6 +40,7 @@ import {
 	playbackRateAtom,
 	volumeAtom,
 } from "$/modules/audio/states";
+import { AuditionKeyBinding } from "$/modules/keyboard/components/AuditionKeyBinding";
 import { AudioSpectrogram } from "$/modules/spectrogram/components/AudioSpectrogram";
 import {
 	keyPlaybackRateDownAtom,
@@ -53,7 +54,6 @@ import {
 } from "$/states/keybindings.ts";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
-import { AuditionKeyBinding } from "../../../components/KeyBinding/AuditionKeyBinding";
 
 const AudioPlaybackKeyBinding = memo(() => {
 	const store = useStore();

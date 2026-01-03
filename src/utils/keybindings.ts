@@ -239,28 +239,23 @@ export function useKeyBinding(
 	callback: KeyBindingCallback,
 	deps?: DependencyList,
 ) {
-	useEffect(
-		() => {
-			return registerKeyBindings(cfg, callback);
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- 因为调用者可能会传递 deps
-		[cfg, callback, ...(deps || [])],
-	);
+	useEffect(() => {
+		return registerKeyBindings(cfg, callback);
+	}, [cfg, callback, ...(deps || [])]);
 }
 
+/**
+ * @deprecated 请使用 useCommand
+ */
 export function useKeyBindingAtom(
 	thisAtom: ReturnType<typeof atomWithKeybindingStorage>,
 	callback: KeyBindingCallback,
 	deps?: DependencyList,
 ): KeyBindingsConfig {
 	const keyBindings = useAtomValue(thisAtom);
-	useEffect(
-		() => {
-			return registerKeyBindings(keyBindings, callback);
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- 因为调用者可能会传递 deps
-		[keyBindings, callback, ...(deps || [])],
-	);
+	useEffect(() => {
+		return registerKeyBindings(keyBindings, callback);
+	}, [keyBindings, callback, ...(deps || [])]);
 	return keyBindings;
 }
 

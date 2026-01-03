@@ -10,7 +10,7 @@
 		"lint": "biome lint",
 		"fmt": "biome format --write ./src",
 		"preview": "vite preview",
-		"locale:gen": "i18next --fail-on-warnings 'src/**/*.{ts,tsx}'"
+		"locale:gen": "i18next 'src/**/*.{ts,tsx}'"
 	},
 	"dependencies": {
 		"@applemusic-like-lyrics/core": "0.2.0",

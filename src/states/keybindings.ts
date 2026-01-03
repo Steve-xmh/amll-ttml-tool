@@ -1,14 +1,42 @@
+/**
+ * @fileoverview 只用于兼容旧代码
+ */
+
 import type { WritableAtom } from "jotai";
 import {
-	atomWithKeybindingStorage,
-	type KeyBindingsConfig,
-} from "../utils/keybindings.ts";
-
-// https://developer.mozilla.org/zh-CN/docs/Web/API/UI_Events/Keyboard_event_key_values
-
-const IS_MAC = navigator.userAgent.includes("Mac");
-const CONTROL_KEY = IS_MAC ? "Meta" : "Control";
-const DELETE_KEY = IS_MAC ? "Backspace" : "Delete";
+	cmdDeleteSelection,
+	cmdMoveNextLine,
+	cmdMoveNextWord,
+	cmdMoveNextWordAndPlay,
+	cmdMovePrevLine,
+	cmdMovePrevWord,
+	cmdMovePrevWordAndPlay,
+	cmdNewFile,
+	cmdOpenAudio,
+	cmdOpenFile,
+	cmdPlaybackRateDown,
+	cmdPlaybackRateReset,
+	cmdPlaybackRateUp,
+	cmdPlayPause,
+	cmdRedo,
+	cmdSaveFile,
+	cmdSeekBackward,
+	cmdSeekForward,
+	cmdSelectAll,
+	cmdSelectInverted,
+	cmdSelectWordsOfMatchedSelection,
+	cmdSwitchEditMode,
+	cmdSwitchPreviewMode,
+	cmdSwitchSyncMode,
+	cmdSyncEnd,
+	cmdSyncNext,
+	cmdSyncStart,
+	cmdUndo,
+	cmdUnselectAll,
+	cmdVolumeDown,
+	cmdVolumeUp,
+} from "$/modules/keyboard/commands";
+import type { KeyBindingsConfig } from "$/utils/keybindings";
 
 export type KeyBindingAtom = WritableAtom<
 	KeyBindingsConfig,
@@ -16,140 +44,40 @@ export type KeyBindingAtom = WritableAtom<
 	Promise<void>
 >;
 
-// 文件
-export const keyNewFileAtom = atomWithKeybindingStorage("newFile", [
-	CONTROL_KEY,
-	"KeyN",
-]);
-export const keyOpenFileAtom = atomWithKeybindingStorage("openFile", [
-	CONTROL_KEY,
-	"KeyO",
-]);
-export const keySaveFileAtom = atomWithKeybindingStorage("saveFile", [
-	CONTROL_KEY,
-	"KeyS",
-]);
+export const keyNewFileAtom = cmdNewFile.atom;
+export const keyOpenFileAtom = cmdOpenFile.atom;
+export const keySaveFileAtom = cmdSaveFile.atom;
+export const keyOpenAudioAtom = cmdOpenAudio.atom;
 
-export const keyOpenAudioAtom = atomWithKeybindingStorage("openAudio", [
-	CONTROL_KEY,
-	"KeyM",
-]);
+export const keyUndoAtom = cmdUndo.atom;
+export const keyRedoAtom = cmdRedo.atom;
+export const keySelectAllAtom = cmdSelectAll.atom;
+export const keyUnselectAllAtom = cmdUnselectAll.atom;
+export const keySelectInvertedAtom = cmdSelectInverted.atom;
+export const keySelectWordsOfMatchedSelectionAtom =
+	cmdSelectWordsOfMatchedSelection.atom;
+export const keyDeleteSelectionAtom = cmdDeleteSelection.atom;
 
-// 撤销重做
-export const keyUndoAtom = atomWithKeybindingStorage("openAudio", [
-	CONTROL_KEY,
-	"KeyZ",
-]);
-export const keyRedoAtom = atomWithKeybindingStorage(
-	"openAudio",
-	IS_MAC ? ["Shift", CONTROL_KEY, "KeyZ"] : [CONTROL_KEY, "KeyY"],
-);
+export const keySwitchEditModeAtom = cmdSwitchEditMode.atom;
+export const keySwitchSyncModeAtom = cmdSwitchSyncMode.atom;
+export const keySwitchPreviewModeAtom = cmdSwitchPreviewMode.atom;
 
-// 选中
-export const keyUnselectAllAtom = atomWithKeybindingStorage("selectAll", [
-	CONTROL_KEY,
-	"Escape",
-]);
-export const keySelectAllAtom = atomWithKeybindingStorage("selectAll", [
-	CONTROL_KEY,
-	"KeyA",
-]);
-export const keySelectInvertedAtom = atomWithKeybindingStorage("selectNext", [
-	CONTROL_KEY,
-	"KeyI",
-]);
-export const keySelectWordsOfMatchedSelectionAtom = atomWithKeybindingStorage(
-	"selectWordsOfMatchedSelection",
-	[CONTROL_KEY, "F2"],
-);
+export const keyMoveNextWordAtom = cmdMoveNextWord.atom;
+export const keyMovePrevWordAtom = cmdMovePrevWord.atom;
+export const keyMoveNextLineAtom = cmdMoveNextLine.atom;
+export const keyMovePrevLineAtom = cmdMovePrevLine.atom;
+export const keyMovePrevWordAndPlayAtom = cmdMovePrevWordAndPlay.atom;
+export const keyMoveNextWordAndPlayAtom = cmdMoveNextWordAndPlay.atom;
 
-// 删除所选
-export const keyDeleteSelectionAtom = atomWithKeybindingStorage(
-	"deleteSelection",
-	[DELETE_KEY],
-);
+export const keySyncStartAtom = cmdSyncStart.atom;
+export const keySyncNextAtom = cmdSyncNext.atom;
+export const keySyncEndAtom = cmdSyncEnd.atom;
 
-// 模式切换
-export const keySwitchEditModeAtom = atomWithKeybindingStorage(
-	"switchEditMode",
-	["Shift", "Digit1"],
-);
-export const keySwitchSyncModeAtom = atomWithKeybindingStorage(
-	"switchSyncMode",
-	["Shift", "Digit2"],
-);
-export const keySwitchPreviewModeAtom = atomWithKeybindingStorage(
-	"switchPreviewMode",
-	["Shift", "Digit3"],
-);
-// 打轴 - 移动单词
-export const keyMoveNextWordAtom = atomWithKeybindingStorage("moveNextWord", [
-	"KeyD",
-]);
-export const keyMovePrevWordAtom = atomWithKeybindingStorage("movePrevWord", [
-	"KeyA",
-]);
-export const keyMoveNextLineAtom = atomWithKeybindingStorage("moveNextLine", [
-	"KeyS",
-]);
-export const keyMovePrevLineAtom = atomWithKeybindingStorage("movePrevLine", [
-	"KeyW",
-]);
-export const keyMovePrevWordAndPlayAtom = atomWithKeybindingStorage(
-	"movePrevWordAndPlay",
-	["KeyR"],
-);
-export const keyMoveNextWordAndPlayAtom = atomWithKeybindingStorage(
-	"moveNextWordAndPlay",
-	["KeyY"],
-);
-// 打轴 - 记录时间戳
-export const keySyncStartAtom = atomWithKeybindingStorage("syncStart", [
-	"KeyF",
-]);
-export const keySyncNextAtom = atomWithKeybindingStorage("syncNext", ["KeyG"]);
-export const keySyncEndAtom = atomWithKeybindingStorage("syncEnd", ["KeyH"]);
-
-// 音频控制
-export const keyPlayPauseAtom = atomWithKeybindingStorage("playPause", [
-	"Space",
-]);
-export const keySeekForwardAtom = atomWithKeybindingStorage("seekForward", [
-	"ArrowRight",
-]);
-export const keySeekBackwardAtom = atomWithKeybindingStorage("seekBackward", [
-	"ArrowLeft",
-]);
-export const keyVolumeUpAtom = atomWithKeybindingStorage("volumeUp", [
-	"ArrowUp",
-]);
-export const keyVolumeDownAtom = atomWithKeybindingStorage("volumeDown", [
-	"ArrowDown",
-]);
-export const keyPlaybackRateUpAtom = atomWithKeybindingStorage(
-	"playbackRateUp",
-	["BracketRight"],
-);
-export const keyPlaybackRateDownAtom = atomWithKeybindingStorage(
-	"playbackRateDown",
-	["BracketLeft"],
-);
-export const keyPlaybackRateResetAtom = atomWithKeybindingStorage(
-	"playbackRateReset",
-	["Quote"],
-);
-
-// 频谱图相关控制
-// 试听相关
-export const keyAuditionSelectionBeforeAtom = atomWithKeybindingStorage(
-	"auditionSelectionBefore",
-	["KeyQ"],
-);
-export const keyAuditionSelectionAtom = atomWithKeybindingStorage(
-	"auditionSelection",
-	["KeyS"],
-);
-export const keyAuditionSelectionAfterAtom = atomWithKeybindingStorage(
-	"auditionSelectionAfter",
-	["KeyW"],
-);
+export const keyPlayPauseAtom = cmdPlayPause.atom;
+export const keySeekForwardAtom = cmdSeekForward.atom;
+export const keySeekBackwardAtom = cmdSeekBackward.atom;
+export const keyVolumeUpAtom = cmdVolumeUp.atom;
+export const keyVolumeDownAtom = cmdVolumeDown.atom;
+export const keyPlaybackRateUpAtom = cmdPlaybackRateUp.atom;
+export const keyPlaybackRateDownAtom = cmdPlaybackRateDown.atom;
+export const keyPlaybackRateResetAtom = cmdPlaybackRateReset.atom;

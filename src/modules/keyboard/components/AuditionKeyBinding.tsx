@@ -2,16 +2,13 @@ import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { audioEngine } from "$/modules/audio/audio-engine";
 import {
-	processedLyricLinesAtom,
-	type WordSegment,
-} from "$/modules/segmentation/utils/segment-processing";
+	cmdAuditionSelection,
+	cmdAuditionSelectionAfter,
+	cmdAuditionSelectionBefore,
+} from "$/modules/keyboard/commands";
+import { useCommand } from "$/modules/keyboard/hooks";
+import { processedLyricLinesAtom } from "$/modules/segmentation/utils/segment-processing";
 import { selectedWordIdAtom } from "$/modules/spectrogram/states/dnd";
-import {
-	keyAuditionSelectionAfterAtom,
-	keyAuditionSelectionAtom,
-	keyAuditionSelectionBeforeAtom,
-} from "$/states/keybindings.ts";
-import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 
 /**
  * 试听片段前后的时长 (毫秒)
@@ -29,15 +26,14 @@ export const AuditionKeyBinding = () => {
 			const segment = line.segments.find(
 				(s) => s.type === "word" && s.id === selectedWordId,
 			);
-			if (segment) return segment as WordSegment;
+			if (segment) return segment;
 		}
 		return null;
 	}, [selectedWordId, processedLines]);
 
 	// 播放选中片段前 500ms
-	useKeyBindingAtom(keyAuditionSelectionBeforeAtom, () => {
+	useCommand(cmdAuditionSelectionBefore, () => {
 		if (!selectedSegment?.startTime) return;
-
 		audioEngine.auditionRange(
 			(selectedSegment.startTime - AUDITION_PADDING_MS) / 1000,
 			selectedSegment.startTime / 1000,
@@ -45,9 +41,8 @@ export const AuditionKeyBinding = () => {
 	}, [selectedSegment]);
 
 	// 播放选中的片段
-	useKeyBindingAtom(keyAuditionSelectionAtom, () => {
+	useCommand(cmdAuditionSelection, () => {
 		if (!selectedSegment?.startTime || !selectedSegment?.endTime) return;
-
 		audioEngine.auditionRange(
 			selectedSegment.startTime / 1000,
 			selectedSegment.endTime / 1000,
@@ -55,9 +50,8 @@ export const AuditionKeyBinding = () => {
 	}, [selectedSegment]);
 
 	// 播放选中片段后 500ms
-	useKeyBindingAtom(keyAuditionSelectionAfterAtom, () => {
+	useCommand(cmdAuditionSelectionAfter, () => {
 		if (!selectedSegment?.endTime) return;
-
 		audioEngine.auditionRange(
 			selectedSegment.endTime / 1000,
 			(selectedSegment.endTime + AUDITION_PADDING_MS) / 1000,
