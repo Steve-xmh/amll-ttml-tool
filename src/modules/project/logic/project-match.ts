@@ -1,5 +1,5 @@
 import type { ProjectInfo } from "$/modules/project/autosave/autosave";
-import type { TTMLLyric } from "$/utils/ttml-types";
+import type { TTMLLyric } from "$/types/ttml";
 
 /**
  * 判断数据库中的项目是否匹配当前的歌词文件

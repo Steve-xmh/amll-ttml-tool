@@ -5,7 +5,7 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 } from "$/states/main.ts";
-import type { LyricLine, LyricWord } from "$/utils/ttml-types";
+import type { LyricLine, LyricWord } from "$/types/ttml";
 
 export interface LineLocationResult {
 	lines: LyricLine[];

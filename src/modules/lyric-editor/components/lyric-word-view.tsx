@@ -54,12 +54,8 @@ import {
 	ToolMode,
 	toolModeAtom,
 } from "$/states/main.ts";
+import { type LyricLine, type LyricWord, newLyricWord } from "$/types/ttml.ts";
 import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
-import {
-	type LyricLine,
-	type LyricWord,
-	newLyricWord,
-} from "$/utils/ttml-types.ts";
 import { normalizeLineTime } from "../utils/normalize-line-time.ts";
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";

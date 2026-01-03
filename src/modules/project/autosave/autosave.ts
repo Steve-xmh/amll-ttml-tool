@@ -1,6 +1,6 @@
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { identifyProject } from "$/modules/project/logic/project-info";
-import type { TTMLLyric } from "$/utils/ttml-types";
+import type { TTMLLyric } from "$/types/ttml";
 
 const DB_NAME = "amll-autosave-db";
 const DB_VERSION = 2;

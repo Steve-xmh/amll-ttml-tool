@@ -24,7 +24,7 @@ import {
 } from "$/modules/settings/states";
 import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main";
-import type { TTMLMetadata } from "$/utils/ttml-types";
+import type { TTMLMetadata } from "$/types/ttml";
 
 enum UploadDBType {
 	Official = "official",

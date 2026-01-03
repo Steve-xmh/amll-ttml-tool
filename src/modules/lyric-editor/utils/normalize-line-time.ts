@@ -1,4 +1,4 @@
-import type { LyricLine } from "$/utils/ttml-types";
+import type { LyricLine } from "$/types/ttml";
 
 export function normalizeLineTime(line: LyricLine) {
 	if (!line.words.length) return;

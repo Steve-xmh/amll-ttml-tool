@@ -46,12 +46,8 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 } from "$/states/main.ts";
+import { type LyricLine, type LyricWord, newLyricLine } from "$/types/ttml";
 import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
-import {
-	type LyricLine,
-	type LyricWord,
-	newLyricLine,
-} from "$/utils/ttml-types";
 import { RibbonFrame, RibbonSection } from "./common";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");

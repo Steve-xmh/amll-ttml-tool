@@ -1,4 +1,4 @@
-import type { TTMLLyric } from "$/utils/ttml-types";
+import type { TTMLLyric } from "$/types/ttml";
 
 /**
  * @description 用于识别项目的元数据键列表。

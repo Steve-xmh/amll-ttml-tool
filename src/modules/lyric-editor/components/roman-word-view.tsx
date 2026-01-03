@@ -10,7 +10,7 @@ import {
 	useState,
 } from "react";
 import { lyricLinesAtom } from "$/states/main";
-import type { LyricWord } from "$/utils/ttml-types";
+import type { LyricWord } from "$/types/ttml";
 import styles from "./roman-word-view.module.css";
 
 interface RomanWordViewProps {

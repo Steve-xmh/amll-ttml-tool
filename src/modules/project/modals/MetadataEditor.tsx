@@ -31,7 +31,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
-import type { TTMLLyric } from "$/utils/ttml-types";
+import type { TTMLLyric } from "$/types/ttml";
 import styles from "./MetadataEditor.module.css";
 import {
 	AppleMusicIcon,

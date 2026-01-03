@@ -49,7 +49,7 @@ import {
 import { segmentWord } from "$/modules/segmentation/utils/segmentation.ts";
 import { advancedSegmentationDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
-import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
+import { type LyricWord, newLyricWord } from "$/types/ttml";
 import styles from "./AdvancedSegmentation.module.css";
 import { ManualWordSplitter } from "./ManualWordSplitter";
 

@@ -31,7 +31,7 @@ import { loadHyphenator } from "$/modules/segmentation/utils/hyphen-loader.ts";
 import { segmentWord } from "$/modules/segmentation/utils/segmentation.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
-import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
+import { type LyricWord, newLyricWord } from "$/types/ttml";
 import { ManualWordSplitter } from "./ManualWordSplitter";
 
 export const SplitWordDialog = memo(() => {

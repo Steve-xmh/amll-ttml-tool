@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { lyricLinesAtom } from "$/states/main.ts";
-import type { LyricLine, LyricWord } from "$/utils/ttml-types";
+import type { LyricLine, LyricWord } from "$/types/ttml";
 
 export interface WordSegment extends LyricWord {
 	type: "word";

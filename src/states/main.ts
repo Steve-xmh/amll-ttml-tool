@@ -14,7 +14,7 @@ import { atomWithStorage } from "jotai/utils";
 import { REDO, UNDO, withHistory } from "jotai-history";
 import { uid } from "uid";
 import { identifyProject } from "$/modules/project/logic/project-info";
-import type { TTMLLyric } from "../utils/ttml-types";
+import type { TTMLLyric } from "../types/ttml";
 
 export enum DarkMode {
 	Auto = "auto",

@@ -53,12 +53,8 @@ import {
 	ToolMode,
 	toolModeAtom,
 } from "$/states/main.ts";
+import { type LyricLine, newLyricLine, newLyricWord } from "$/types/ttml.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
-import {
-	type LyricLine,
-	newLyricLine,
-	newLyricWord,
-} from "$/utils/ttml-types.ts";
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { draggingIdAtom } from "./lyric-line-view-states.ts";

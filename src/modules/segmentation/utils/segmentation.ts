@@ -2,7 +2,7 @@
  * @description 分词引擎
  */
 
-import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
+import { type LyricWord, newLyricWord } from "$/types/ttml";
 import { CharType, type SegmentationConfig } from "../types";
 
 const RE_WHITESPACE = /[\s\n\t]/;
