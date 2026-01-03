@@ -3,7 +3,7 @@ import type {
 	SpectrogramWorker,
 	TileGenerationParams,
 	WorkerResponse,
-} from "$/types/spectrogram";
+} from "$/modules/spectrogram/workers/types";
 import { LRUCache } from "$/utils/lru-cache.ts";
 
 const MAX_CACHED_TILES = 70;

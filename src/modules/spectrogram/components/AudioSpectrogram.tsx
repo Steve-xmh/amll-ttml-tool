@@ -24,23 +24,26 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useFileOpener } from "$/hooks/useFileOpener.ts";
-import { useScrubbing } from "$/hooks/useScrubbing.ts";
-import { useSpectrogramInteraction } from "$/hooks/useSpectrogramInteraction.ts";
-import { useSpectrogramResize } from "$/hooks/useSpectrogramResize.ts";
-import { useSpectrogramWorker } from "$/hooks/useSpectrogramWorker.ts";
-import { useTimelineEditing } from "$/hooks/useTimelineEditing.ts";
-import { audioBufferAtom, currentTimeAtom } from "$/states/audio.ts";
-import { isDraggingAtom } from "$/states/dnd.ts";
-import { selectedLinesAtom, showUnselectedLinesAtom } from "$/states/main.ts";
+import { useScrubbing } from "$/modules/spectrogram/hooks/useScrubbing";
+import { useSpectrogramInteraction } from "$/modules/spectrogram/hooks/useSpectrogramInteraction.ts";
+import { useSpectrogramResize } from "$/modules/spectrogram/hooks/useSpectrogramResize.ts";
+import { useSpectrogramWorker } from "$/modules/spectrogram/hooks/useSpectrogramWorker.ts";
+import { useTimelineEditing } from "$/modules/spectrogram/hooks/useTimelineEditing.ts";
 import {
-	auditionTimeAtom,
 	currentPaletteAtom,
 	spectrogramContainerWidthAtom,
 	spectrogramGainAtom,
 	spectrogramHeightAtom,
 	spectrogramHoverPxAtom,
 	spectrogramHoverTimeMsAtom,
-} from "$/states/spectrogram.ts";
+} from "$/modules/spectrogram/states";
+import {
+	audioBufferAtom,
+	auditionTimeAtom,
+	currentTimeAtom,
+} from "$/states/audio.ts";
+import { isDraggingAtom } from "$/states/dnd.ts";
+import { selectedLinesAtom, showUnselectedLinesAtom } from "$/states/main.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import styles from "./AudioSpectrogram.module.css";

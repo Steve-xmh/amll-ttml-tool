@@ -7,13 +7,13 @@ import {
 	requestFocusAtom,
 	selectedLinesAtom,
 } from "$/states/main.ts";
-import { spectrogramHoverTimeMsAtom } from "$/states/spectrogram.ts";
 import {
 	adjustLineEndTime,
 	shiftLineStartTime,
 	tryFixPartialInitialization,
 	tryInitializeZeroTimestampLine,
 } from "$/utils/timeline-mutations.ts";
+import { spectrogramHoverTimeMsAtom } from "../states";
 
 export function useTimelineEditing(scrollLeft: number, zoom: number) {
 	const editingTimeField = useAtomValue(editingTimeFieldAtom);

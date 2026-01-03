@@ -24,8 +24,6 @@ export const spectrogramHeightAtom = atomWithStorage(
 export const spectrogramScrollLeftAtom = atom(0);
 export const spectrogramContainerWidthAtom = atom(0);
 
-export const auditionTimeAtom = atom<number | null>(null);
-
 const icyBluePalette = {
 	id: "icy_blue",
 	name: "Icy Blue",

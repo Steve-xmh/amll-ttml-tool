@@ -2,8 +2,8 @@ import init, {
 	generate_spectrogram_image,
 	initThreadPool,
 	SpectrogramConfig,
-} from "$/pkg/spectrogram/wasm_spectrogram";
-import type { SpectrogramWorkerScope } from "$/types/spectrogram";
+} from "$/modules/spectrogram/vendor";
+import type { SpectrogramWorkerScope } from "$/modules/spectrogram/workers/types";
 
 const ctx: SpectrogramWorkerScope = self as SpectrogramWorkerScope;
 

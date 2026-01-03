@@ -1,11 +1,11 @@
 import { useAtom } from "jotai";
 import { useAtomValue } from "jotai/index";
 import { useCallback, useEffect, useRef } from "react";
-import { audioBufferAtom } from "$/states/audio.ts";
 import {
 	spectrogramScrollLeftAtom,
 	spectrogramZoomAtom,
-} from "$/states/spectrogram.ts";
+} from "$/modules/spectrogram/states";
+import { audioBufferAtom } from "$/states/audio.ts";
 
 const clampZoom = (z: number) => Math.max(50, Math.min(z, 10000));
 

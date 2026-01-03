@@ -534,10 +534,7 @@ export const MetadataEditor = () => {
 				},
 			},
 			{
-				label: t(
-					"metadataDialog.builtinOptions.songwriter",
-					"词曲作者",
-				),
+				label: t("metadataDialog.builtinOptions.songwriter", "词曲作者"),
 				value: "songwriter",
 				icon: <Person16Regular />,
 				validation: {

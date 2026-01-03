@@ -75,8 +75,8 @@ export default function exportTTMLText(
 	// Word = at least one line has 2+ non-blank words (dynamic/per-word timing)
 	// Line = has lyric lines but every line has 0 or 1 non-blank word
 	// None = no timed words at all
-	const nonBlankWordCountsPerLine = lyric.map((l) =>
-		l.words.filter((w) => w.word.trim().length > 0).length,
+	const nonBlankWordCountsPerLine = lyric.map(
+		(l) => l.words.filter((w) => w.word.trim().length > 0).length,
 	);
 	const totalNonBlankWords = nonBlankWordCountsPerLine.reduce(
 		(sum, v) => sum + v,

@@ -7,7 +7,7 @@
 			"!**/dist",
 			"!**/build",
 			"!**/target",
-			"!**/pkg"
+			"!**/vendor"
 		]
 	},
 	"formatter": {

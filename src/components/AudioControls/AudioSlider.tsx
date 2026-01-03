@@ -5,16 +5,16 @@ import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
 import {
+	spectrogramContainerWidthAtom,
+	spectrogramScrollLeftAtom,
+	spectrogramZoomAtom,
+} from "$/modules/spectrogram/states";
+import {
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
 } from "$/states/audio.ts";
 import { lyricLinesAtom, selectedLinesAtom } from "$/states/main";
-import {
-	spectrogramContainerWidthAtom,
-	spectrogramScrollLeftAtom,
-	spectrogramZoomAtom,
-} from "$/states/spectrogram";
 import { audioEngine } from "$/utils/audio";
 import { msToTimestamp } from "$/utils/timestamp";
 import styles from "./AudioSlider.module.css";

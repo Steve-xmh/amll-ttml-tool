@@ -6,7 +6,7 @@ import {
 	customPaletteStopsAtom,
 	predefinedPalettes,
 	selectedPaletteIdAtom,
-} from "$/states/spectrogram";
+} from "$/modules/spectrogram/states";
 
 export const SettingsSpectrogramTab = () => {
 	const { t } = useTranslation();

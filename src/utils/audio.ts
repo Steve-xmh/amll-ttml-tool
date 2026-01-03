@@ -1,5 +1,4 @@
-import { audioBufferAtom } from "$/states/audio.ts";
-import { auditionTimeAtom } from "$/states/spectrogram.ts";
+import { audioBufferAtom, auditionTimeAtom } from "$/states/audio.ts";
 import { globalStore } from "$/states/store.ts";
 import { log } from "./logging.ts";
 

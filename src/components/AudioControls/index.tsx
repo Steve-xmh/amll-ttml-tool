@@ -32,6 +32,7 @@ import { type FC, memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AudioSlider } from "$/components/AudioControls/AudioSlider";
 import { useFileOpener } from "$/hooks/useFileOpener";
+import { AudioSpectrogram } from "$/modules/spectrogram/components/AudioSpectrogram";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
@@ -53,7 +54,6 @@ import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import { AuditionKeyBinding } from "../KeyBinding/AuditionKeyBinding";
-import { AudioSpectrogram } from "./AudioSpectrogram";
 
 const AudioPlaybackKeyBinding = memo(() => {
 	const store = useStore();
