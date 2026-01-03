@@ -1,11 +1,11 @@
 import type { Draft } from "immer";
-import { lyricLinesAtom } from "$/states/main";
-import { globalStore } from "$/states/store.ts";
 import {
 	type ProcessedLyricLine,
 	processSingleLine,
 	type WordSegment,
-} from "$/utils/segment-processing.ts";
+} from "$/modules/segmentation/utils/segment-processing";
+import { lyricLinesAtom } from "$/states/main";
+import { globalStore } from "$/states/store.ts";
 import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
 
 const MIN_DIVIDER_WIDTH_PX = 15;
@@ -131,7 +131,6 @@ export function commitUpdatedLine(updatedLine: ProcessedLyricLine) {
 				const updatedWord = updatedWordsMap.get(originalWord.id);
 
 				if (updatedWord) {
-					// biome-ignore lint/correctness/noUnusedVariables: 为了移除 type 属性
 					const { type, ...word } = updatedWord;
 					return word;
 				} else {

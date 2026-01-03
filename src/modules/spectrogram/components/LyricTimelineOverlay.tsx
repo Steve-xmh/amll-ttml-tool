@@ -1,6 +1,10 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import type { FC } from "react";
 import { useContext, useEffect, useRef } from "react";
+import {
+	type ProcessedLyricLine,
+	processedLyricLinesAtom,
+} from "$/modules/segmentation/utils/segment-processing.ts";
 import { currentTimeAtom } from "$/states/audio.ts";
 import {
 	previewLineAtom,
@@ -9,10 +13,6 @@ import {
 } from "$/states/dnd.ts";
 import { selectedLinesAtom, showUnselectedLinesAtom } from "$/states/main.ts";
 import { globalStore } from "$/states/store.ts";
-import {
-	type ProcessedLyricLine,
-	processedLyricLinesAtom,
-} from "$/utils/segment-processing.ts";
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,

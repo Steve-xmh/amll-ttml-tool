@@ -1,5 +1,9 @@
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
+import {
+	processedLyricLinesAtom,
+	type WordSegment,
+} from "$/modules/segmentation/utils/segment-processing";
 import { selectedWordIdAtom } from "$/states/dnd.ts";
 import {
 	keyAuditionSelectionAfterAtom,
@@ -8,10 +12,6 @@ import {
 } from "$/states/keybindings.ts";
 import { audioEngine } from "$/utils/audio.ts";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
-import {
-	processedLyricLinesAtom,
-	type WordSegment,
-} from "$/utils/segment-processing.ts";
 
 /**
  * 试听片段前后的时长 (毫秒)

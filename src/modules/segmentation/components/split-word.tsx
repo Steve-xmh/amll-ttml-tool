@@ -13,8 +13,6 @@ import { useAtom, useAtomValue } from "jotai";
 import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { splitWordDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
 import {
 	segmentationCustomRulesAtom,
 	segmentationIgnoreListTextAtom,
@@ -24,13 +22,15 @@ import {
 	segmentationRemoveEmptySegmentsAtom,
 	segmentationSplitCJKAtom,
 	segmentationSplitEnglishAtom,
-} from "$/states/segmentation.ts";
-import { loadHyphenator } from "$/utils/hyphen-loader.ts";
-import { segmentWord } from "$/utils/segmentation.ts";
+} from "$/modules/segmentation/states/segmentation.ts";
 import type {
 	HyphenatorFunc,
 	SegmentationConfig,
-} from "$/utils/segmentation-types.ts";
+} from "$/modules/segmentation/types";
+import { loadHyphenator } from "$/modules/segmentation/utils/hyphen-loader.ts";
+import { segmentWord } from "$/modules/segmentation/utils/segmentation.ts";
+import { splitWordDialogAtom } from "$/states/dialogs.ts";
+import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types";
 import { ManualWordSplitter } from "./ManualWordSplitter";
 

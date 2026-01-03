@@ -1,5 +1,5 @@
 import { type FC, useContext } from "react";
-import type { GapSegment as GapSegmentType } from "$/utils/segment-processing.ts";
+import type { GapSegment as GapSegmentType } from "$/modules/segmentation/utils/segment-processing.ts";
 import styles from "./GapSegment.module.css";
 import { SpectrogramContext } from "./SpectrogramContext.ts";
 

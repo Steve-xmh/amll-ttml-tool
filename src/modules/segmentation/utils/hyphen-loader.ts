@@ -3,7 +3,7 @@
  * 用于按需异步加载不同语言的断词模式
  */
 
-import type { HyphenatorFunc } from "./segmentation-types";
+import type { HyphenatorFunc } from "../types";
 
 /**
  * @description 支持的分词语言列表

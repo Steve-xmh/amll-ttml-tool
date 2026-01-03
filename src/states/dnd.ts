@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { ProcessedLyricLine } from "$/utils/segment-processing.ts";
+import type { ProcessedLyricLine } from "$/modules/segmentation/utils/segment-processing.ts";
 
 type DividerDragOperation = {
 	type: "divider";

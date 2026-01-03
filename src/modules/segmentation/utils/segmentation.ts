@@ -3,7 +3,7 @@
  */
 
 import { type LyricWord, newLyricWord } from "$/utils/ttml-types.ts";
-import { CharType, type SegmentationConfig } from "./segmentation-types";
+import { CharType, type SegmentationConfig } from "../types";
 
 const RE_WHITESPACE = /[\s\n\t]/;
 const RE_LATIN =
