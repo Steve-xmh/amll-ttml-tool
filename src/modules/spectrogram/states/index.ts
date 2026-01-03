@@ -7,7 +7,7 @@ import {
 	getGrayscaleColor,
 	getGreenColor,
 	getIcyBlueColor,
-} from "$/utils/colors.ts";
+} from "$/modules/spectrogram/utils/colors";
 
 export const spectrogramGainAtom = atomWithStorage(
 	"settings_spectrogramGain",

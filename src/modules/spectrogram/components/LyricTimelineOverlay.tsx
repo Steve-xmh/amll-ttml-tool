@@ -11,13 +11,13 @@ import {
 	type TimelineDragOperation,
 	timelineDragAtom,
 } from "$/modules/spectrogram/states/dnd.ts";
-import { selectedLinesAtom, showUnselectedLinesAtom } from "$/states/main.ts";
-import { globalStore } from "$/states/store.ts";
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
 	getUpdatedLineForWordPan,
-} from "$/utils/timeline-mutations";
+} from "$/modules/spectrogram/utils/timeline-mutations.ts";
+import { selectedLinesAtom, showUnselectedLinesAtom } from "$/states/main.ts";
+import { globalStore } from "$/states/store.ts";
 import { LyricLineSegment } from "./LyricLineSegment";
 import styles from "./LyricTimelineOverlay.module.css";
 import { SpectrogramContext } from "./SpectrogramContext.ts";

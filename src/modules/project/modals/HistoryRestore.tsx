@@ -21,8 +21,6 @@ import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { confirmDialogAtom, historyRestoreDialogAtom } from "$/states/dialogs";
-import { newLyricLinesAtom, projectIdAtom } from "$/states/main";
 import {
 	deleteProject,
 	getProjectLatestState,
@@ -30,7 +28,9 @@ import {
 	getProjectVersions,
 	type ProjectInfo,
 	type ProjectVersion,
-} from "$/utils/autosave";
+} from "$/modules/project/autosave/autosave";
+import { confirmDialogAtom, historyRestoreDialogAtom } from "$/states/dialogs";
+import { newLyricLinesAtom, projectIdAtom } from "$/states/main";
 import { error as logError } from "$/utils/logging";
 
 export const HistoryRestoreDialog = () => {

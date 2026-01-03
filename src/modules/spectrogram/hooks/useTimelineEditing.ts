@@ -2,17 +2,17 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+	adjustLineEndTime,
+	shiftLineStartTime,
+	tryFixPartialInitialization,
+	tryInitializeZeroTimestampLine,
+} from "$/modules/spectrogram/utils/timeline-mutations";
+import {
 	editingTimeFieldAtom,
 	lyricLinesAtom,
 	requestFocusAtom,
 	selectedLinesAtom,
 } from "$/states/main.ts";
-import {
-	adjustLineEndTime,
-	shiftLineStartTime,
-	tryFixPartialInitialization,
-	tryInitializeZeroTimestampLine,
-} from "$/utils/timeline-mutations.ts";
 import { spectrogramHoverTimeMsAtom } from "../states";
 
 export function useTimelineEditing(scrollLeft: number, zoom: number) {

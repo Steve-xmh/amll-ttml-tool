@@ -8,8 +8,9 @@ import { type FC, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import saveFile from "save-file";
 import { uid } from "uid";
-import { ImportExportLyric } from "$/components/TopMenu/import-export-lyric.tsx";
 import { useFileOpener } from "$/hooks/useFileOpener.ts";
+import exportTTMLText from "$/modules/project/logic/ttml-writer";
+import { ImportExportLyric } from "$/modules/project/modals/ImportExportLyric";
 import type { SegmentationConfig } from "$/modules/segmentation/types";
 import { segmentWord } from "$/modules/segmentation/utils/segmentation";
 import {
@@ -47,7 +48,6 @@ import {
 } from "$/states/main.ts";
 import { formatKeyBindings, useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { error, log } from "$/utils/logging.ts";
-import exportTTMLText from "$/utils/ttml-writer.ts";
 import { HeaderFileInfo } from "./HeaderFileInfo";
 
 const useWindowSize = () => {

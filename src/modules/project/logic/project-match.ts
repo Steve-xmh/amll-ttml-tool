@@ -1,4 +1,4 @@
-import type { ProjectInfo } from "$/utils/autosave";
+import type { ProjectInfo } from "$/modules/project/autosave/autosave";
 import type { TTMLLyric } from "$/utils/ttml-types";
 
 /**

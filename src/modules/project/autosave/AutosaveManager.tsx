@@ -1,5 +1,6 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
+import { autoSaveProject } from "$/modules/project/autosave/autosave";
 import {
 	autosaveEnabledAtom,
 	autosaveIntervalAtom,
@@ -13,7 +14,6 @@ import {
 	SaveStatus,
 	saveStatusAtom,
 } from "$/states/main";
-import { autoSaveProject } from "$/utils/autosave";
 import { log, error as logError } from "$/utils/logging";
 
 export const AutosaveManager = () => {

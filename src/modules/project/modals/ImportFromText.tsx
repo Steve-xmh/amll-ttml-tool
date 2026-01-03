@@ -25,7 +25,7 @@ import {
 	newLyricWord,
 } from "$/utils/ttml-types.ts";
 
-// import styles from "./import-from-text.module.css";
+// import styles from "./ImportFromText.module.css";
 import error = toast.error;
 
 import { useTranslation } from "react-i18next";

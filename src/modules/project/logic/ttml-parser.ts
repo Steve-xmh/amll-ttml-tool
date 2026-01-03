@@ -17,14 +17,14 @@
  */
 
 import { uid } from "uid";
-import { log } from "./logging.ts";
-import { parseTimespan } from "./timestamp";
+import { log } from "../../../utils/logging.ts";
+import { parseTimespan } from "../../../utils/timestamp.ts";
 import type {
 	LyricLine,
 	LyricWord,
 	TTMLLyric,
 	TTMLMetadata,
-} from "./ttml-types";
+} from "../../../utils/ttml-types.ts";
 
 interface RomanWord {
 	startTime: number;

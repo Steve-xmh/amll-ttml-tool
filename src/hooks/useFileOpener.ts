@@ -16,6 +16,9 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { uid } from "uid";
 import { audioEngine } from "$/modules/audio/audio-engine";
+import { getProjectList } from "$/modules/project/autosave/autosave";
+import { isProjectMatch } from "$/modules/project/logic/project-match";
+import { parseLyric as parseTTML } from "$/modules/project/logic/ttml-parser";
 import { confirmDialogAtom } from "$/states/dialogs.ts";
 import {
 	isDirtyAtom,
@@ -23,10 +26,7 @@ import {
 	projectIdAtom,
 	saveFileNameAtom,
 } from "$/states/main.ts";
-import { getProjectList } from "$/utils/autosave.ts";
 import { log, error as logError } from "$/utils/logging.ts";
-import { isProjectMatch } from "$/utils/project-match.ts";
-import { parseLyric as parseTTML } from "$/utils/ttml-parser.ts";
 import type { TTMLLyric } from "$/utils/ttml-types.ts";
 
 const LYRIC_PARSERS: Record<string, (text: string) => LyricLine[]> = {

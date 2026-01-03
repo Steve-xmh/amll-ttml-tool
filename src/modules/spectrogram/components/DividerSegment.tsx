@@ -5,7 +5,7 @@ import { timelineDragAtom } from "$/modules/spectrogram/states/dnd";
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,
-} from "$/utils/timeline-mutations.ts";
+} from "$/modules/spectrogram/utils/timeline-mutations";
 import styles from "./DividerSegment.module.css";
 import { SpectrogramContext } from "./SpectrogramContext";
 

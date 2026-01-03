@@ -17,6 +17,7 @@ import { atomWithStorage } from "jotai/utils";
 import { memo, useCallback, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import exportTTMLText from "$/modules/project/logic/ttml-writer";
 import {
 	generateNameFromMetadataAtom,
 	hideSubmitAMLLDBWarningAtom,
@@ -24,7 +25,6 @@ import {
 import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main";
 import type { TTMLMetadata } from "$/utils/ttml-types";
-import exportTTMLText from "$/utils/ttml-writer";
 
 enum UploadDBType {
 	Official = "official",

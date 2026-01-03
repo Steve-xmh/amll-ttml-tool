@@ -31,15 +31,15 @@ import {
 import { useTranslation } from "react-i18next";
 import { metadataEditorDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
+import type { TTMLLyric } from "$/utils/ttml-types";
+import styles from "./MetadataEditor.module.css";
 import {
 	AppleMusicIcon,
 	GithubIcon,
 	NeteaseIcon,
 	QQMusicIcon,
 	SpotifyIcon,
-} from "$/utils/PlatformIcons";
-import type { TTMLLyric } from "$/utils/ttml-types";
-import styles from "./metadata.module.css";
+} from "./PlatformIcons";
 
 interface MetadataEntryProps {
 	entry: { key: string; value: string[] };

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LRUCache } from "$/modules/spectrogram/utils/lru-cache";
 import type {
 	SpectrogramWorker,
 	TileGenerationParams,
 	WorkerResponse,
 } from "$/modules/spectrogram/workers/types";
-import { LRUCache } from "$/utils/lru-cache.ts";
 
 const MAX_CACHED_TILES = 70;
 

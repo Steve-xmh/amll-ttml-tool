@@ -34,14 +34,15 @@ import { ToastContainer } from "react-toastify";
 import saveFile from "save-file";
 import semverGt from "semver/functions/gt";
 import styles from "./App.module.css";
-import { AutosaveManager } from "./components/AutosaveManager/AutosaveManager";
 import DarkThemeDetector from "./components/DarkThemeDetector";
-import { GlobalDragOverlay } from "./components/GlobalDragOverlay/index.tsx";
 import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx";
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { useFileOpener } from "./hooks/useFileOpener.ts";
 import AudioControls from "./modules/audio/components/index.tsx";
+import { AutosaveManager } from "./modules/project/autosave/AutosaveManager.tsx";
+import exportTTMLText from "./modules/project/logic/ttml-writer.ts";
+import { GlobalDragOverlay } from "./modules/project/modals/GlobalDragOverlay.tsx";
 import {
 	isDarkThemeAtom,
 	isGlobalFileDraggingAtom,
@@ -50,7 +51,6 @@ import {
 	toolModeAtom,
 } from "./states/main.ts";
 import { showTouchSyncPanelAtom } from "./states/sync.ts";
-import exportTTMLText from "./utils/ttml-writer.ts";
 
 const LyricLinesView = lazy(() => import("./components/LyricLinesView"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
