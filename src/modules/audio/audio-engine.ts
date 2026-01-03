@@ -1,6 +1,9 @@
-import { audioBufferAtom, auditionTimeAtom } from "$/states/audio.ts";
+import {
+	audioBufferAtom,
+	auditionTimeAtom,
+} from "$/modules/audio/states/index.ts";
 import { globalStore } from "$/states/store.ts";
-import { log } from "./logging.ts";
+import { log } from "$/utils/logging";
 
 // Magic, pending original dev's explanation
 // Even don't know where should I put this after refactoring

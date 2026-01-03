@@ -7,7 +7,7 @@ import { Flex, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
-import { isGlobalFileDraggingAtom } from "$/states/dnd.ts";
+import { isGlobalFileDraggingAtom } from "$/states/main";
 
 export const GlobalDragOverlay = () => {
 	const isDragging = useAtomValue(isGlobalFileDraggingAtom);

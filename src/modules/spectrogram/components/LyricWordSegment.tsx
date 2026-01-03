@@ -5,11 +5,14 @@ import {
 	type MouseEvent,
 	useContext,
 } from "react";
+import { audioEngine } from "$/modules/audio/audio-engine.ts";
 import type { WordSegment } from "$/modules/segmentation/utils/segment-processing.ts";
+import {
+	selectedWordIdAtom,
+	timelineDragAtom,
+} from "$/modules/spectrogram/states/dnd.ts";
 import { displayRomanizationInSyncAtom } from "$/states/config.ts";
-import { selectedWordIdAtom, timelineDragAtom } from "$/states/dnd.ts";
 import { editingTimeFieldAtom } from "$/states/main.ts";
-import { audioEngine } from "$/utils/audio.ts";
 import styles from "./LyricWordSegment.module.css";
 import { SpectrogramContext } from "./SpectrogramContext.ts";
 

@@ -30,16 +30,17 @@ import {
 import { useAtom, useAtomValue, useStore } from "jotai";
 import { type FC, memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AudioSlider } from "$/components/AudioControls/AudioSlider";
 import { useFileOpener } from "$/hooks/useFileOpener";
-import { AudioSpectrogram } from "$/modules/spectrogram/components/AudioSpectrogram";
+import { audioEngine } from "$/modules/audio/audio-engine";
+import { AudioSlider } from "$/modules/audio/components/AudioSlider";
 import {
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
 	playbackRateAtom,
 	volumeAtom,
-} from "$/states/audio.ts";
+} from "$/modules/audio/states";
+import { AudioSpectrogram } from "$/modules/spectrogram/components/AudioSpectrogram";
 import {
 	keyPlaybackRateDownAtom,
 	keyPlaybackRateResetAtom,
@@ -50,10 +51,9 @@ import {
 	keyVolumeDownAtom,
 	keyVolumeUpAtom,
 } from "$/states/keybindings.ts";
-import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
-import { AuditionKeyBinding } from "../KeyBinding/AuditionKeyBinding";
+import { AuditionKeyBinding } from "../../../components/KeyBinding/AuditionKeyBinding";
 
 const AudioPlaybackKeyBinding = memo(() => {
 	const store = useStore();

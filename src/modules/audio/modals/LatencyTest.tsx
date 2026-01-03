@@ -1,6 +1,7 @@
 import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
 import { memo, useEffect, useRef, useState } from "react";
+import { audioEngine } from "$/modules/audio/audio-engine";
 import {
 	latencyTestBPMAtom,
 	SyncJudgeMode,
@@ -8,7 +9,6 @@ import {
 } from "$/states/config";
 import { latencyTestDialogAtom } from "$/states/dialogs.ts";
 import { keySyncNextAtom } from "$/states/keybindings";
-import { audioEngine } from "$/utils/audio";
 import { useKeyBindingAtom } from "$/utils/keybindings";
 
 const BeepVisualizer = ({ enable }: { enable: boolean }) => {

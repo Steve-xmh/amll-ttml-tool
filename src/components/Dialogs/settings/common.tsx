@@ -24,7 +24,7 @@ import {
 } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
-import { playbackRateAtom, volumeAtom } from "$/states/audio";
+import { playbackRateAtom, volumeAtom } from "$/modules/audio/states";
 import {
 	autosaveEnabledAtom,
 	autosaveIntervalAtom,

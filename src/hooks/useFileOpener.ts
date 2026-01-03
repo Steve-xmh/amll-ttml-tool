@@ -15,7 +15,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { uid } from "uid";
-
+import { audioEngine } from "$/modules/audio/audio-engine";
 import { confirmDialogAtom } from "$/states/dialogs.ts";
 import {
 	isDirtyAtom,
@@ -23,7 +23,6 @@ import {
 	projectIdAtom,
 	saveFileNameAtom,
 } from "$/states/main.ts";
-import { audioEngine } from "$/utils/audio";
 import { getProjectList } from "$/utils/autosave.ts";
 import { log, error as logError } from "$/utils/logging.ts";
 import { isProjectMatch } from "$/utils/project-match.ts";

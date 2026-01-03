@@ -35,7 +35,7 @@ import {
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { currentTimeAtom } from "$/states/audio";
+import { currentTimeAtom } from "$/modules/audio/states/index.ts";
 import {
 	displayRomanizationInSyncAtom,
 	highlightActiveWordAtom,

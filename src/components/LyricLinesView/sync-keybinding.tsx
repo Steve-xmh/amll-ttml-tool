@@ -1,6 +1,7 @@
 import { produce } from "immer";
 import { useStore } from "jotai";
 import { type FC, useCallback } from "react";
+import { audioEngine } from "$/modules/audio/audio-engine";
 import {
 	SyncJudgeMode,
 	smartFirstWordAtom,
@@ -28,7 +29,6 @@ import {
 	smartFirstWordActiveIdAtom,
 	syncTimeOffsetAtom,
 } from "$/states/sync.ts";
-import { audioEngine } from "$/utils/audio";
 import {
 	type KeyBindingEvent,
 	useKeyBindingAtom,

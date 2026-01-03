@@ -1,16 +1,16 @@
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
+import { audioEngine } from "$/modules/audio/audio-engine";
 import {
 	processedLyricLinesAtom,
 	type WordSegment,
 } from "$/modules/segmentation/utils/segment-processing";
-import { selectedWordIdAtom } from "$/states/dnd.ts";
+import { selectedWordIdAtom } from "$/modules/spectrogram/states/dnd";
 import {
 	keyAuditionSelectionAfterAtom,
 	keyAuditionSelectionAtom,
 	keyAuditionSelectionBeforeAtom,
 } from "$/states/keybindings.ts";
-import { audioEngine } from "$/utils/audio.ts";
 import { useKeyBindingAtom } from "$/utils/keybindings.ts";
 
 /**

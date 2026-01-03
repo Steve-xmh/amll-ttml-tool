@@ -1,7 +1,10 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import React, { type FC, useCallback, useContext } from "react";
 import type { ProcessedLyricLine } from "$/modules/segmentation/utils/segment-processing.ts";
-import { previewLineAtom, selectedWordIdAtom } from "$/states/dnd.ts";
+import {
+	previewLineAtom,
+	selectedWordIdAtom,
+} from "$/modules/spectrogram/states/dnd.ts";
 import { editingTimeFieldAtom, selectedLinesAtom } from "$/states/main.ts";
 import { DividerSegment } from "./DividerSegment.tsx";
 import { GapSegment } from "./GapSegment.tsx";

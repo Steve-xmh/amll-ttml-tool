@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useRef } from "react";
-import { audioBufferAtom, currentTimeAtom } from "$/states/audio.ts";
-import { audioEngine } from "$/utils/audio.ts";
+import { audioEngine } from "$/modules/audio/audio-engine";
+import { audioBufferAtom, currentTimeAtom } from "$/modules/audio/states";
 
 export function useScrubbing(
 	scrollContainerRef: React.RefObject<HTMLDivElement | null>,

@@ -34,7 +34,6 @@ import { ToastContainer } from "react-toastify";
 import saveFile from "save-file";
 import semverGt from "semver/functions/gt";
 import styles from "./App.module.css";
-import AudioControls from "./components/AudioControls";
 import { AutosaveManager } from "./components/AutosaveManager/AutosaveManager";
 import DarkThemeDetector from "./components/DarkThemeDetector";
 import { GlobalDragOverlay } from "./components/GlobalDragOverlay/index.tsx";
@@ -42,9 +41,10 @@ import { SyncKeyBinding } from "./components/LyricLinesView/sync-keybinding.tsx"
 import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { useFileOpener } from "./hooks/useFileOpener.ts";
-import { isGlobalFileDraggingAtom } from "./states/dnd.ts";
+import AudioControls from "./modules/audio/components/index.tsx";
 import {
 	isDarkThemeAtom,
+	isGlobalFileDraggingAtom,
 	lyricLinesAtom,
 	ToolMode,
 	toolModeAtom,

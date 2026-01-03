@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { type FC, useCallback, useContext } from "react";
 import { processedLyricLinesAtom } from "$/modules/segmentation/utils/segment-processing.ts";
-import { timelineDragAtom } from "$/states/dnd.ts";
+import { timelineDragAtom } from "$/modules/spectrogram/states/dnd";
 import {
 	commitUpdatedLine,
 	getUpdatedLineForDivider,

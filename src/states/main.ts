@@ -133,3 +133,8 @@ export interface EditingTimeFieldState {
 export const editingTimeFieldAtom = atom<EditingTimeFieldState | null>(null);
 
 export const requestFocusAtom = atom<string | null>(null);
+
+/**
+ * @description 用于控制全局文件拖拽遮罩层的显示
+ */
+export const isGlobalFileDraggingAtom = atom(false);
