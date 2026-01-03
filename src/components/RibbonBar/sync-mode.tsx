@@ -27,7 +27,7 @@ import {
 	highlightErrorsAtom,
 	showTimestampsAtom,
 	showWordRomanizationInputAtom,
-} from "$/states/config.ts";
+} from "$/modules/settings/states/index.ts";
 import {
 	keySyncEndAtom,
 	keySyncNextAtom,

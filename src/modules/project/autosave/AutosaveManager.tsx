@@ -5,7 +5,7 @@ import {
 	autosaveEnabledAtom,
 	autosaveIntervalAtom,
 	autosaveLimitAtom,
-} from "$/states/config";
+} from "$/modules/settings/states";
 import {
 	isDirtyAtom,
 	lastSavedTimeAtom,

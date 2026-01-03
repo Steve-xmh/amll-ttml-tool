@@ -43,7 +43,7 @@ import {
 	LayoutMode,
 	layoutModeAtom,
 	showTimestampsAtom,
-} from "$/states/config.ts";
+} from "$/modules/settings/states/index.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import {
 	lyricLinesAtom,

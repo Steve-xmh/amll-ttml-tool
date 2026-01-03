@@ -38,7 +38,7 @@ import {
 	showLineRomanizationAtom,
 	showLineTranslationAtom,
 	showWordRomanizationInputAtom,
-} from "$/states/config";
+} from "$/modules/settings/states";
 import {
 	editingTimeFieldAtom,
 	lyricLinesAtom,

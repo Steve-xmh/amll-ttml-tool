@@ -44,7 +44,7 @@ import {
 	showLineTranslationAtom,
 	showTimestampsAtom,
 	showWordRomanizationInputAtom,
-} from "$/states/config.ts";
+} from "$/modules/settings/states/index.ts";
 import {
 	lyricLinesAtom,
 	selectedLinesAtom,

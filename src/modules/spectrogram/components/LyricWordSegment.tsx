@@ -7,11 +7,11 @@ import {
 } from "react";
 import { audioEngine } from "$/modules/audio/audio-engine.ts";
 import type { WordSegment } from "$/modules/segmentation/utils/segment-processing.ts";
+import { displayRomanizationInSyncAtom } from "$/modules/settings/states/index.ts";
 import {
 	selectedWordIdAtom,
 	timelineDragAtom,
 } from "$/modules/spectrogram/states/dnd.ts";
-import { displayRomanizationInSyncAtom } from "$/states/config.ts";
 import { editingTimeFieldAtom } from "$/states/main.ts";
 import styles from "./LyricWordSegment.module.css";
 import { SpectrogramContext } from "./SpectrogramContext.ts";

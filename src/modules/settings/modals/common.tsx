@@ -35,7 +35,7 @@ import {
 	smartFirstWordAtom,
 	smartLastWordAtom,
 	syncJudgeModeAtom,
-} from "$/states/config.ts";
+} from "$/modules/settings/states";
 
 const languageOptions: readonly string[] = Object.keys(resources);
 

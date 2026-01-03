@@ -14,7 +14,7 @@ import {
 	smartFirstWordAtom,
 	smartLastWordAtom,
 	syncJudgeModeAtom,
-} from "$/states/config.ts";
+} from "$/modules/settings/states";
 import {
 	keyMoveNextLineAtom,
 	keyMoveNextWordAndPlayAtom,

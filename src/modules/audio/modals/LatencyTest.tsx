@@ -6,7 +6,7 @@ import {
 	latencyTestBPMAtom,
 	SyncJudgeMode,
 	syncJudgeModeAtom,
-} from "$/states/config";
+} from "$/modules/settings/states";
 import { latencyTestDialogAtom } from "$/states/dialogs.ts";
 import { keySyncNextAtom } from "$/states/keybindings";
 import { useKeyBindingAtom } from "$/utils/keybindings";

@@ -21,7 +21,7 @@ import exportTTMLText from "$/modules/project/logic/ttml-writer";
 import {
 	generateNameFromMetadataAtom,
 	hideSubmitAMLLDBWarningAtom,
-} from "$/states/config.ts";
+} from "$/modules/settings/states";
 import { submitToAMLLDBDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main";
 import type { TTMLMetadata } from "$/utils/ttml-types";
