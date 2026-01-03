@@ -27,7 +27,7 @@ import {
 	saveFileNameAtom,
 } from "$/states/main.ts";
 import { log, error as logError } from "$/utils/logging.ts";
-import type { TTMLLyric } from "$/utils/ttml-types.ts";
+import type { TTMLLyric } from "$/utils/ttml-types";
 
 const LYRIC_PARSERS: Record<string, (text: string) => LyricLine[]> = {
 	lrc: parseLrc,

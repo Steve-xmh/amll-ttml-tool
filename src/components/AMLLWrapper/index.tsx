@@ -15,12 +15,12 @@ import { useAtomValue } from "jotai";
 import { memo, useEffect, useMemo, useRef } from "react";
 import { audioEngine } from "$/modules/audio/audio-engine";
 import { audioPlayingAtom, currentTimeAtom } from "$/modules/audio/states";
-import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
 import {
 	lyricWordFadeWidthAtom,
 	showRomanLinesAtom,
 	showTranslationLinesAtom,
-} from "$/states/preview.ts";
+} from "$/modules/settings/states/preview";
+import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
 import styles from "./index.module.css";
 
 export const AMLLWrapper = memo(() => {

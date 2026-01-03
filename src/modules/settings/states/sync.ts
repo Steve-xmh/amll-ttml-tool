@@ -3,11 +3,11 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
-export interface Callback<Args extends any[], Result = void> {
+export interface Callback<Args extends unknown[], Result = void> {
 	onEmit?: (...args: Args) => Result;
 }
 
-const c = <Args extends any[], Result = void>(
+const c = <Args extends unknown[], Result = void>(
 	_onEmit: (...args: Args) => Result,
 ): Callback<Args, Result> => ({});
 

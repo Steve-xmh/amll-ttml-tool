@@ -29,16 +29,16 @@ import {
 	showWordRomanizationInputAtom,
 } from "$/modules/settings/states/index.ts";
 import {
-	keySyncEndAtom,
-	keySyncNextAtom,
-	keySyncStartAtom,
-} from "$/states/keybindings.ts";
-import {
 	currentEmptyBeatAtom,
 	showTouchSyncPanelAtom,
 	syncTimeOffsetAtom,
 	visualizeTimestampUpdateAtom,
-} from "$/states/sync.ts";
+} from "$/modules/settings/states/sync.ts";
+import {
+	keySyncEndAtom,
+	keySyncNextAtom,
+	keySyncStartAtom,
+} from "$/states/keybindings.ts";
 import { KeyBinding } from "../KeyBinding/index.tsx";
 import { RibbonFrame, RibbonSection } from "./common";
 

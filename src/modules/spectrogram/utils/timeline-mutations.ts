@@ -6,7 +6,7 @@ import {
 } from "$/modules/segmentation/utils/segment-processing";
 import { lyricLinesAtom } from "$/states/main";
 import { globalStore } from "$/states/store.ts";
-import type { LyricLine, LyricWord } from "$/utils/ttml-types.ts";
+import type { LyricLine, LyricWord } from "$/utils/ttml-types";
 
 const MIN_DIVIDER_WIDTH_PX = 15;
 const MIN_WORD_DURATION_MS = 10;

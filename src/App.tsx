@@ -19,7 +19,7 @@ import {
 	Theme,
 } from "@radix-ui/themes";
 import SuspensePlaceHolder from "$/components/SuspensePlaceHolder";
-import { TouchSyncPanel } from "$/components/TouchSyncPanel";
+import { TouchSyncPanel } from "$/modules/lyric-editor/components/TouchSyncPanel/index.tsx";
 import { log, error as logError } from "$/utils/logging.ts";
 import "@radix-ui/themes/styles.css";
 import { invoke } from "@tauri-apps/api/core";
@@ -43,6 +43,7 @@ import { SyncKeyBinding } from "./modules/lyric-editor/components/sync-keybindin
 import { AutosaveManager } from "./modules/project/autosave/AutosaveManager.tsx";
 import exportTTMLText from "./modules/project/logic/ttml-writer.ts";
 import { GlobalDragOverlay } from "./modules/project/modals/GlobalDragOverlay.tsx";
+import { showTouchSyncPanelAtom } from "./modules/settings/states/sync.ts";
 import {
 	isDarkThemeAtom,
 	isGlobalFileDraggingAtom,
@@ -50,7 +51,6 @@ import {
 	ToolMode,
 	toolModeAtom,
 } from "./states/main.ts";
-import { showTouchSyncPanelAtom } from "./states/sync.ts";
 
 const LyricLinesView = lazy(() => import("./modules/lyric-editor/components"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));

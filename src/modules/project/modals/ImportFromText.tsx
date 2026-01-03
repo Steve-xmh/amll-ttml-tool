@@ -19,11 +19,7 @@ import {
 } from "$/states/dialogs.ts";
 import { isDirtyAtom, lyricLinesAtom } from "$/states/main.ts";
 import { error as logError } from "$/utils/logging.ts";
-import {
-	type LyricLine,
-	newLyricLine,
-	newLyricWord,
-} from "$/utils/ttml-types.ts";
+import { type LyricLine, newLyricLine, newLyricWord } from "$/utils/ttml-types";
 
 // import styles from "./ImportFromText.module.css";
 import error = toast.error;

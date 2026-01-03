@@ -51,7 +51,7 @@ import {
 	type LyricLine,
 	type LyricWord,
 	newLyricLine,
-} from "$/utils/ttml-types.ts";
+} from "$/utils/ttml-types";
 import { RibbonFrame, RibbonSection } from "./common";
 
 const MULTIPLE_VALUES = Symbol("multiple-values");

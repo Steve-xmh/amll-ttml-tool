@@ -45,6 +45,7 @@ import {
 	showTimestampsAtom,
 	showWordRomanizationInputAtom,
 } from "$/modules/settings/states/index.ts";
+import { visualizeTimestampUpdateAtom } from "$/modules/settings/states/sync.ts";
 import {
 	lyricLinesAtom,
 	selectedLinesAtom,
@@ -52,7 +53,6 @@ import {
 	ToolMode,
 	toolModeAtom,
 } from "$/states/main.ts";
-import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
 import { msToTimestamp } from "$/utils/timestamp.ts";
 import {
 	type LyricLine,

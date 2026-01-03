@@ -16,6 +16,11 @@ import {
 	syncJudgeModeAtom,
 } from "$/modules/settings/states";
 import {
+	currentEmptyBeatAtom,
+	smartFirstWordActiveIdAtom,
+	syncTimeOffsetAtom,
+} from "$/modules/settings/states/sync";
+import {
 	keyMoveNextLineAtom,
 	keyMoveNextWordAndPlayAtom,
 	keyMoveNextWordAtom,
@@ -31,11 +36,6 @@ import {
 	selectedLinesAtom,
 	selectedWordsAtom,
 } from "$/states/main.ts";
-import {
-	currentEmptyBeatAtom,
-	smartFirstWordActiveIdAtom,
-	syncTimeOffsetAtom,
-} from "$/states/sync.ts";
 import {
 	type KeyBindingEvent,
 	useKeyBindingAtom,

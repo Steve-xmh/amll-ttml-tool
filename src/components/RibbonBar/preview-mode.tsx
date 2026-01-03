@@ -17,7 +17,7 @@ import {
 	lyricWordFadeWidthAtom,
 	showRomanLinesAtom,
 	showTranslationLinesAtom,
-} from "$/states/preview.ts";
+} from "$/modules/settings/states/preview";
 import { RibbonFrame, RibbonSection } from "./common";
 
 export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(

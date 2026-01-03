@@ -44,6 +44,7 @@ import {
 	layoutModeAtom,
 	showTimestampsAtom,
 } from "$/modules/settings/states/index.ts";
+import { visualizeTimestampUpdateAtom } from "$/modules/settings/states/sync.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import {
 	lyricLinesAtom,
@@ -53,7 +54,6 @@ import {
 	ToolMode,
 	toolModeAtom,
 } from "$/states/main.ts";
-import { visualizeTimestampUpdateAtom } from "$/states/sync.ts";
 import { msToTimestamp, parseTimespan } from "$/utils/timestamp.ts";
 import {
 	type LyricLine,
