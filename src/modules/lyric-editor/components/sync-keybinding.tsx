@@ -3,6 +3,13 @@ import { useStore } from "jotai";
 import { type FC, useCallback } from "react";
 import { audioEngine } from "$/modules/audio/audio-engine";
 import {
+	findNextWord,
+	getCurrentLineLocation,
+	getCurrentLocation,
+	isSynchronizableLine,
+	isSynchronizableWord,
+} from "$/modules/lyric-editor/utils/lyric-states";
+import {
 	SyncJudgeMode,
 	smartFirstWordAtom,
 	smartLastWordAtom,
@@ -33,13 +40,6 @@ import {
 	type KeyBindingEvent,
 	useKeyBindingAtom,
 } from "$/utils/keybindings.ts";
-import {
-	findNextWord,
-	getCurrentLineLocation,
-	getCurrentLocation,
-	isSynchronizableLine,
-	isSynchronizableWord,
-} from "$/utils/lyric-states.ts";
 
 export const SyncKeyBinding: FC = () => {
 	const store = useStore();

@@ -60,10 +60,10 @@ import {
 	type LyricWord,
 	newLyricWord,
 } from "$/utils/ttml-types.ts";
+import { normalizeLineTime } from "../utils/normalize-line-time.ts";
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
 import { LyricWordMenu } from "./lyric-word-menu";
-import { normalizeLineTime } from "./utils.ts";
 
 const isDraggingAtom = atom(false);
 

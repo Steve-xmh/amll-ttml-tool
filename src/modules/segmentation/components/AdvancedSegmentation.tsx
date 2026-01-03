@@ -37,7 +37,7 @@ import {
 	segmentationScopeAtom,
 	segmentationSplitCJKAtom,
 	segmentationSplitEnglishAtom,
-} from "$/modules/segmentation/states/segmentation.ts";
+} from "$/modules/segmentation/states";
 import type {
 	HyphenatorFunc,
 	SegmentationConfig,

@@ -20,6 +20,7 @@ import {
 import { useAtom, useAtomValue } from "jotai";
 import { type FC, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrentLocation } from "$/modules/lyric-editor/utils/lyric-states.ts";
 import {
 	displayRomanizationInSyncAtom,
 	highlightActiveWordAtom,
@@ -38,7 +39,6 @@ import {
 	syncTimeOffsetAtom,
 	visualizeTimestampUpdateAtom,
 } from "$/states/sync.ts";
-import { useCurrentLocation } from "$/utils/lyric-states.ts";
 import { KeyBinding } from "../KeyBinding/index.tsx";
 import { RibbonFrame, RibbonSection } from "./common";
 

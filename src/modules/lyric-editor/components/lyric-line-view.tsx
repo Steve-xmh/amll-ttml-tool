@@ -39,7 +39,6 @@ import {
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { draggingIdAtom } from "$/components/LyricLinesView/lyric-line-view-states.ts";
 import {
 	showLineRomanizationAtom,
 	showLineTranslationAtom,
@@ -62,7 +61,8 @@ import {
 } from "$/utils/ttml-types.ts";
 import styles from "./index.module.css";
 import { LyricLineMenu } from "./lyric-line-menu.tsx";
-import { LyricWordView } from "./lyric-word-view";
+import { draggingIdAtom } from "./lyric-line-view-states.ts";
+import LyricWordView from "./lyric-word-view.tsx";
 import { RomanWordView } from "./roman-word-view.tsx";
 
 const isDraggingAtom = atom(false);

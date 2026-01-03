@@ -15,7 +15,7 @@ import {
 	newLyricLine,
 	newLyricWord,
 } from "$/utils/ttml-types";
-import { normalizeLineTime } from "./utils";
+import { normalizeLineTime } from "../utils/normalize-line-time";
 
 const selectedLinesSizeAtom = atom((get) => get(selectedLinesAtom).size);
 const selectedWordsSizeAtom = atom((get) => get(selectedWordsAtom).size);

@@ -5,10 +5,9 @@ import { MetadataEditor } from "$/modules/project/modals/MetadataEditor.tsx";
 import { AdvancedSegmentationDialog } from "$/modules/segmentation/components/AdvancedSegmentation.tsx";
 import { SplitWordDialog } from "$/modules/segmentation/components/split-word.tsx";
 import { LatencyTestDialog } from "../../modules/audio/modals/LatencyTest.tsx";
+import { TimeShiftDialog } from "../../modules/lyric-editor/tools/TimeShift.tsx";
 import { HistoryRestoreDialog } from "../../modules/project/modals/HistoryRestore.tsx";
 import { ConfirmationDialog } from "./confirmation.tsx";
-import { NoticeDialog } from "./notice.tsx";
-import { TimeShiftDialog } from "./TimeShift.tsx";
 
 export const Dialogs = () => {
 	return (
@@ -19,7 +18,6 @@ export const Dialogs = () => {
 			<SplitWordDialog />
 			<SubmitToAMLLDBDialog />
 			<LatencyTestDialog />
-			<NoticeDialog />
 			<ConfirmationDialog />
 			<HistoryRestoreDialog />
 			<AdvancedSegmentationDialog />
