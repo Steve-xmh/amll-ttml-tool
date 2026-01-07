@@ -2,8 +2,19 @@
 // #warning Using local Apple Music Like Lyrics, skip importing css style
 // #else
 import "@applemusic-like-lyrics/core/style.css";
+
 // #endif
 
+import { audioEngine } from "$/modules/audio/audio-engine";
+import { audioPlayingAtom, currentTimeAtom } from "$/modules/audio/states";
+import {
+	hideObsceneWordsAtom,
+	lyricWordFadeWidthAtom,
+	showRomanLinesAtom,
+	showTranslationLinesAtom,
+} from "$/modules/settings/states/preview";
+import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
+import { MaskObsceneWordsMode } from "@applemusic-like-lyrics/core";
 import {
 	LyricPlayer,
 	type LyricPlayerRef,
@@ -13,14 +24,6 @@ import structuredClone from "@ungap/structured-clone";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { memo, useEffect, useMemo, useRef } from "react";
-import { audioEngine } from "$/modules/audio/audio-engine";
-import { audioPlayingAtom, currentTimeAtom } from "$/modules/audio/states";
-import {
-	lyricWordFadeWidthAtom,
-	showRomanLinesAtom,
-	showTranslationLinesAtom,
-} from "$/modules/settings/states/preview";
-import { isDarkThemeAtom, lyricLinesAtom } from "$/states/main.ts";
 import styles from "./index.module.css";
 
 export const AMLLWrapper = memo(() => {
@@ -30,6 +33,7 @@ export const AMLLWrapper = memo(() => {
 	const darkMode = useAtomValue(isDarkThemeAtom);
 	const showTranslationLines = useAtomValue(showTranslationLinesAtom);
 	const showRomanLines = useAtomValue(showRomanLinesAtom);
+	const hideObsceneWords = useAtomValue(hideObsceneWordsAtom);
 	const wordFadeWidth = useAtomValue(lyricWordFadeWidthAtom);
 	const playerRef = useRef<LyricPlayerRef>(null);
 
@@ -63,6 +67,11 @@ export const AMLLWrapper = memo(() => {
 				lyricLines={lyricLines}
 				currentTime={currentTime}
 				playing={isPlaying}
+				maskObsceneWordsMode={
+					hideObsceneWords
+						? MaskObsceneWordsMode.FullMask
+						: MaskObsceneWordsMode.Disabled
+				}
 				wordFadeWidth={wordFadeWidth}
 				ref={playerRef}
 			/>

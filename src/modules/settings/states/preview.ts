@@ -5,6 +5,7 @@ export const showTranslationLinesAtom = atomWithStorage(
 	false,
 );
 export const showRomanLinesAtom = atomWithStorage("showRomanLines", false);
+export const hideObsceneWordsAtom = atomWithStorage("hideObsceneWords", false);
 export const lyricWordFadeWidthAtom = atomWithStorage(
 	"lyricWordFadeWidth",
 	0.5,

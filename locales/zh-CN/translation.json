@@ -60,6 +60,7 @@
 			"lyrics": "歌词",
 			"showTranslation": "显示翻译",
 			"showRoman": "显示音译",
+			"maskObsceneWords": "屏蔽不雅用语",
 			"word": "单词",
 			"fadeWidth": "过渡宽度"
 		},

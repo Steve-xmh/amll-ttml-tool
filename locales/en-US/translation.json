@@ -60,6 +60,7 @@
 			"lyrics": "Lyrics",
 			"showTranslation": "Show Translation",
 			"showRoman": "Show Romanization",
+			"maskObsceneWords": "Mask Obscene Words",
 			"word": "Word",
 			"fadeWidth": "Fade Width"
 		},

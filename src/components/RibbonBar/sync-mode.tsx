@@ -9,17 +9,6 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import {
-	Checkbox,
-	Flex,
-	Grid,
-	Slider,
-	Text,
-	TextField,
-} from "@radix-ui/themes";
-import { useAtom, useAtomValue } from "jotai";
-import { type FC, forwardRef } from "react";
-import { useTranslation } from "react-i18next";
 import { useCurrentLocation } from "$/modules/lyric-editor/utils/lyric-states.ts";
 import {
 	displayRomanizationInSyncAtom,
@@ -39,6 +28,17 @@ import {
 	keySyncNextAtom,
 	keySyncStartAtom,
 } from "$/states/keybindings.ts";
+import {
+	Checkbox,
+	Flex,
+	Grid,
+	Slider,
+	Text,
+	TextField,
+} from "@radix-ui/themes";
+import { useAtom, useAtomValue } from "jotai";
+import { type FC, forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 import { KeyBinding } from "../KeyBinding/index.tsx";
 import { RibbonFrame, RibbonSection } from "./common";
 
@@ -95,7 +95,9 @@ export const SyncModeRibbonBar: FC = forwardRef<HTMLDivElement>(
 				<RibbonSection
 					label={t("ribbonBar.syncMode.currentEmptyBeat", "当前空拍")}
 				>
-					<EmptyBeatField />
+					<Grid columns="0fr 4em" gap="4" gapY="1" flexGrow="1" align="center">
+						<EmptyBeatField />
+					</Grid>
 				</RibbonSection>
 				<RibbonSection
 					label={t("ribbonBar.syncMode.syncAdjustment", "打轴调整")}

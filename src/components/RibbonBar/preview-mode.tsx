@@ -9,15 +9,16 @@
  * https://github.com/Steve-xmh/amll-ttml-tool/blob/main/LICENSE
  */
 
-import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
-import { useAtom } from "jotai";
-import { forwardRef } from "react";
-import { useTranslation } from "react-i18next";
 import {
+	hideObsceneWordsAtom,
 	lyricWordFadeWidthAtom,
 	showRomanLinesAtom,
 	showTranslationLinesAtom,
 } from "$/modules/settings/states/preview";
+import { Checkbox, Grid, Text, TextField } from "@radix-ui/themes";
+import { useAtom } from "jotai";
+import { forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 import { RibbonFrame, RibbonSection } from "./common";
 
 export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
@@ -26,6 +27,8 @@ export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
 			showTranslationLinesAtom,
 		);
 		const [showRomanLine, setShowRomanLine] = useAtom(showRomanLinesAtom);
+		const [hideObsceneWords, setHideObsceneWords] =
+			useAtom(hideObsceneWordsAtom);
 		const [lyricWordFadeWidth, setLyricWordFadeWidth] = useAtom(
 			lyricWordFadeWidthAtom,
 		);
@@ -48,6 +51,13 @@ export const PreviewModeRibbonBar = forwardRef<HTMLDivElement>(
 						<Checkbox
 							checked={showRomanLine}
 							onCheckedChange={(v) => setShowRomanLine(!!v)}
+						/>
+						<Text wrap="nowrap" size="1">
+							{t("ribbonBar.previewMode.maskObsceneWords", "屏蔽不雅用语")}
+						</Text>
+						<Checkbox
+							checked={hideObsceneWords}
+							onCheckedChange={(v) => setHideObsceneWords(!!v)}
 						/>
 					</Grid>
 				</RibbonSection>
