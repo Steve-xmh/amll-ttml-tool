@@ -2,10 +2,9 @@ import { Card } from "@radix-ui/themes";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
-import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
-import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
 import { audioEngine } from "$/modules/audio/audio-engine";
 import {
+	audioBufferAtom,
 	audioPlayingAtom,
 	currentDurationAtom,
 	currentTimeAtom,
@@ -44,6 +43,13 @@ export const AudioSlider = () => {
 	const currentDuration = useAtomValue(currentDurationAtom);
 	const lyricLines = useAtomValue(lyricLinesAtom);
 	const selectedLines = useAtomValue(selectedLinesAtom);
+	const audioBuffer = useAtomValue(audioBufferAtom);
+	const [hoverState, setHoverState] = useState({
+		x: 0,
+		timeStr: "0:00",
+		isNearRight: false,
+		isVisible: false,
+	});
 
 	const wsContainerRef = useRef<HTMLDivElement>(null);
 	const waveSurferRef = useRef<WaveSurfer | null>(null);
@@ -67,16 +73,18 @@ export const AudioSlider = () => {
 	}, []);
 
 	const createWaveSurfer = useCallback(() => {
-		if (!wsContainerRef.current || !audioEngine.audioEl) {
+		if (!wsContainerRef.current || !audioBuffer) {
 			return null;
 		}
 		const height = wsContainerRef.current.clientHeight;
 		const canvasStyles = getComputedStyle(wsContainerRef.current);
 		const fontColor =
 			canvasStyles.getPropertyValue("--accent-a11") || "#00ffa21e";
-		const fontSize = canvasStyles.getPropertyValue("--font-size-2") || "14px";
 		const primaryFillColor =
 			canvasStyles.getPropertyValue("--accent-a4") || "#00ffa21e";
+
+		const peaks = [audioBuffer.getChannelData(0)];
+		const duration = audioBuffer.duration;
 
 		const ws = WaveSurfer.create({
 			container: wsContainerRef.current,
@@ -88,23 +96,13 @@ export const AudioSlider = () => {
 			dragToSeek: true,
 			cursorWidth: 0,
 			barHeight: 0.8,
-			plugins: [
-				RegionsPlugin.create(),
-				HoverPlugin.create({
-					formatTimeCallback: (v) => msToTimestamp(Math.round(v * 1000)),
-					lineColor: fontColor,
-					lineWidth: 1,
-					labelBackground: "#transparent",
-					labelColor: fontColor,
-					labelSize: fontSize,
-					labelPreferLeft: false,
-				}),
-			],
 			media: audioEngine.audioEl,
+			peaks: peaks,
+			duration: duration,
 		});
 		waveSurferRef.current = ws;
 		return ws;
-	}, []);
+	}, [audioBuffer]);
 
 	useEffect(() => {
 		const container = wsContainerRef.current;
@@ -122,13 +120,14 @@ export const AudioSlider = () => {
 	}, []);
 
 	useEffect(() => {
-		const handleMusicLoad = () => {
+		if (audioBuffer && audioEngine.audioEl) {
 			destroyWaveSurfer();
-			setCurrentDuration((audioEngine.musicDuration * 1000) | 0);
-			setCurrentTime((audioEngine.musicCurrentTime * 1000) | 0);
+			setCurrentDuration((audioBuffer.duration * 1000) | 0);
 			createWaveSurfer();
-		};
+		}
+	}, [audioBuffer, createWaveSurfer, destroyWaveSurfer, setCurrentDuration]);
 
+	useEffect(() => {
 		const handleMusicUnload = () => {
 			destroyWaveSurfer();
 			setCurrentDuration(0);
@@ -155,31 +154,19 @@ export const AudioSlider = () => {
 		const handleSeek = () =>
 			setCurrentTime((audioEngine.musicCurrentTime * 1000) | 0);
 
-		audioEngine.addEventListener("music-load", handleMusicLoad);
 		audioEngine.addEventListener("music-unload", handleMusicUnload);
 		audioEngine.addEventListener("music-resume", handlePlay);
 		audioEngine.addEventListener("music-pause", handlePause);
 		audioEngine.addEventListener("music-seeked", handleSeek);
 
-		if (audioEngine.audioEl && audioEngine.musicDuration > 0) {
-			handleMusicLoad();
-		}
-
 		return () => {
 			destroyWaveSurfer();
-			audioEngine.removeEventListener("music-load", handleMusicLoad);
 			audioEngine.removeEventListener("music-unload", handleMusicUnload);
 			audioEngine.removeEventListener("music-resume", handlePlay);
 			audioEngine.removeEventListener("music-pause", handlePause);
 			audioEngine.removeEventListener("music-seeked", handleSeek);
 		};
-	}, [
-		createWaveSurfer,
-		destroyWaveSurfer,
-		setCurrentDuration,
-		setCurrentTime,
-		setAudioPlaying,
-	]);
+	}, [destroyWaveSurfer, setCurrentDuration, setCurrentTime, setAudioPlaying]);
 
 	const handleDragMove = useCallback(
 		(event: MouseEvent) => {
@@ -296,6 +283,33 @@ export const AudioSlider = () => {
 		],
 	);
 
+	const handleContainerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (dragStateRef.current || currentDuration <= 0 || sliderWidthPx <= 0) {
+			setHoverState((prev) => ({ ...prev, isVisible: false }));
+			return;
+		}
+
+		const rect = e.currentTarget.getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const clampedX = Math.max(0, Math.min(x, rect.width));
+
+		const isNearRight = rect.width - clampedX < 80;
+
+		const progress = clampedX / rect.width;
+		const timeMs = progress * currentDuration;
+
+		setHoverState({
+			x: clampedX,
+			timeStr: msToTimestamp(timeMs),
+			isNearRight,
+			isVisible: true,
+		});
+	};
+
+	const handleContainerMouseLeave = () => {
+		setHoverState((prev) => ({ ...prev, isVisible: false }));
+	};
+
 	const selectedRegions = useMemo(() => {
 		if (currentDuration <= 0 || sliderWidthPx <= 0) return [];
 
@@ -340,11 +354,30 @@ export const AudioSlider = () => {
 				padding: "0",
 			}}
 		>
-			<div
+			<section
 				className={styles.waveformContainer}
+				aria-label="Audio Waveform"
 				ref={wsContainerRef}
 				style={{ width: "100%", height: "100%", overflow: "hidden" }}
+				onMouseMove={handleContainerMouseMove}
+				onMouseLeave={handleContainerMouseLeave}
 			>
+				{hoverState && (
+					<div
+						className={`${styles.hoverGuide} ${
+							hoverState.isVisible ? styles.hoverGuideVisible : ""
+						}`}
+						style={{ left: hoverState.x }}
+					>
+						<div
+							className={`${styles.timeLabel} ${
+								hoverState.isNearRight ? styles.labelRight : styles.labelLeft
+							}`}
+						>
+							{hoverState.timeStr}
+						</div>
+					</div>
+				)}
 				{selectedRegions.map((region) => (
 					<div
 						key={region.id}
@@ -398,7 +431,7 @@ export const AudioSlider = () => {
 						/>
 					</div>
 				)}
-			</div>
+			</section>
 		</Card>
 	);
 };

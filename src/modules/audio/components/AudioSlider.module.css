@@ -71,3 +71,46 @@
 	pointer-events: none;
 	z-index: 1;
 }
+
+.hoverGuide {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	pointer-events: none;
+	z-index: 10;
+
+	border-left: 1px solid var(--accent-a11, #00ffa21e);
+
+	opacity: 0;
+
+	transition: opacity 0.07s ease-out;
+
+	will-change: opacity, left;
+}
+
+.hoverGuideVisible {
+	opacity: 1;
+}
+
+.timeLabel {
+	position: absolute;
+	top: 8px;
+
+	color: var(--accent-a11, #00ffa21e);
+	font-size: var(--font-size-2, 14px);
+
+	padding: 2px 6px;
+	border-radius: 4px;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+.labelLeft {
+	left: 4px;
+	right: auto;
+}
+
+.labelRight {
+	right: 4px;
+	left: auto;
+}
