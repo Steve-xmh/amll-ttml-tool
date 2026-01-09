@@ -10,6 +10,54 @@ export interface KeyBindingEvent {
 }
 export type KeyBindingCallback = (evt: KeyBindingEvent) => void;
 
+/**
+ * 触发模式枚举
+ */
+export enum KeyBindingTriggerMode {
+	KeyDown = "keydown",
+	KeyUp = "keyup",
+}
+
+/**
+ * 用于在事件监听器中快速读取当前模式
+ */
+let currentTriggerMode: KeyBindingTriggerMode = KeyBindingTriggerMode.KeyDown;
+
+// TODO: 把这个组件变成 hook 这样就可以直接读取 atom 而不是手动解析 localStorage 了
+if (typeof localStorage !== "undefined") {
+	const raw = localStorage.getItem("keyBindingTriggerMode");
+	if (raw) {
+		try {
+			const parsed = JSON.parse(raw);
+			currentTriggerMode = parsed as KeyBindingTriggerMode;
+		} catch {
+			currentTriggerMode = raw as KeyBindingTriggerMode;
+		}
+	}
+}
+
+if (
+	currentTriggerMode !== KeyBindingTriggerMode.KeyDown &&
+	currentTriggerMode !== KeyBindingTriggerMode.KeyUp
+) {
+	currentTriggerMode = KeyBindingTriggerMode.KeyDown;
+}
+
+const internalTriggerModeAtom = atomWithStorage<KeyBindingTriggerMode>(
+	"keyBindingTriggerMode",
+	currentTriggerMode,
+	undefined,
+	{ getOnInit: true },
+);
+
+export const keyBindingTriggerModeAtom = atom(
+	(get) => get(internalTriggerModeAtom),
+	(_get, set, newValue: KeyBindingTriggerMode) => {
+		set(internalTriggerModeAtom, newValue);
+		currentTriggerMode = newValue;
+	},
+);
+
 export function formatKeyBindings(cfg: KeyBindingsConfig): string {
 	return cfg
 		.map((key) => {
@@ -85,6 +133,32 @@ function removeSideOfKeyCode(code: string) {
 const pressingKeys = new Set<string>();
 const registeredKeyBindings = new Map<string, Set<KeyBindingCallback>>();
 let downTime = 0;
+
+function triggerCallbacks(
+	joinedKey: string,
+	evt: KeyboardEvent,
+	targetTime: number,
+) {
+	const callbacks = registeredKeyBindings.get(joinedKey);
+	if (callbacks) {
+		const downTimeOffset = evt.timeStamp - targetTime;
+		const e: KeyBindingEvent = {
+			downTime: targetTime,
+			downTimeOffset,
+		};
+		for (const cb of callbacks) {
+			try {
+				cb(e);
+			} catch (err) {
+				warn("Error in key binding ", joinedKey, "callback", err);
+			}
+		}
+		evt.preventDefault();
+		evt.stopPropagation();
+		evt.stopImmediatePropagation();
+	}
+}
+
 window.addEventListener("keydown", (evt) => {
 	if (evt.repeat) return;
 	if (isEditing(evt)) {
@@ -103,32 +177,11 @@ window.addEventListener("keydown", (evt) => {
 		evt.stopPropagation();
 	}
 
-	// const joined = [...bufferedKeys].join(" + ").trim();
-	// for (const key of registeredKeyBindings.keys()) {
-	// 	if (key.startsWith(code) || (joined.length > 0 && key.startsWith(joined))) {
-	// 		evt.preventDefault();
-	// 	}
-	// }
 	pressingKeys.add(code);
-	const joined = [...pressingKeys].join(" + ").trim();
-	const callbacks = registeredKeyBindings.get(joined);
 
-	if (callbacks) {
-		const downTimeOffset = 0;
-		const e: KeyBindingEvent = {
-			downTime,
-			downTimeOffset,
-		};
-		for (const cb of callbacks) {
-			try {
-				cb(e);
-			} catch (err) {
-				warn("Error in key binding ", joined, "callback", err);
-			}
-		}
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.stopImmediatePropagation();
+	if (currentTriggerMode === KeyBindingTriggerMode.KeyDown) {
+		const joined = [...pressingKeys].join(" + ").trim();
+		triggerCallbacks(joined, evt, downTime);
 	}
 });
 
@@ -139,6 +192,12 @@ window.addEventListener("keyup", (evt) => {
 	}
 
 	const code = removeSideOfKeyCode(evt.code);
+
+	if (currentTriggerMode === KeyBindingTriggerMode.KeyUp) {
+		const joined = [...pressingKeys].join(" + ").trim();
+		triggerCallbacks(joined, evt, downTime);
+	}
+
 	pressingKeys.delete(code);
 });
 window.addEventListener("blur", () => {

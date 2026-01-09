@@ -2,6 +2,7 @@ import resources from "virtual:i18next-loader";
 import {
 	ContentView24Regular,
 	History24Regular,
+	Keyboard12324Regular,
 	LocalLanguage24Regular,
 	PaddingLeft24Regular,
 	PaddingRight24Regular,
@@ -36,12 +37,19 @@ import {
 	smartLastWordAtom,
 	syncJudgeModeAtom,
 } from "$/modules/settings/states";
+import {
+	KeyBindingTriggerMode,
+	keyBindingTriggerModeAtom,
+} from "$/utils/keybindings";
 
 const languageOptions: readonly string[] = Object.keys(resources);
 
 export const SettingsCommonTab = () => {
 	const [layoutMode, setLayoutMode] = useAtom(layoutModeAtom);
 	const [syncJudgeMode, setSyncJudgeMode] = useAtom(syncJudgeModeAtom);
+	const [keyBindingTriggerMode, setKeyBindingTriggerMode] = useAtom(
+		keyBindingTriggerModeAtom,
+	);
 	const [smartFirstWord, setSmartFirstWord] = useAtom(smartFirstWordAtom);
 	const [smartLastWord, setSmartLastWord] = useAtom(smartLastWordAtom);
 	const [volume, setVolume] = useAtom(volumeAtom);
@@ -215,6 +223,50 @@ export const SettingsCommonTab = () => {
 											{t(
 												"settings.common.syncJudgeModeOptions.firstKeyDownLegacy",
 												"首个按键按下时间（旧版）",
+											)}
+										</Select.Item>
+									</Select.Content>
+								</Select.Root>
+							</Flex>
+						</Box>
+					</Flex>
+				</Card>
+
+				<Card>
+					<Flex gap="3" align="center">
+						<Keyboard12324Regular />
+						<Box flexGrow="1">
+							<Flex align="center" justify="between" gap="4">
+								<Flex direction="column" gap="1">
+									<Text>
+										{t("settings.common.keyBindingTrigger", "快捷键触发时机")}
+									</Text>
+									<Text size="1" color="gray">
+										{t(
+											"settings.common.keyBindingTriggerDesc",
+											"快捷键是在按下时触发还是在松开时触发",
+										)}
+									</Text>
+								</Flex>
+
+								<Select.Root
+									value={keyBindingTriggerMode}
+									onValueChange={(v) =>
+										setKeyBindingTriggerMode(v as KeyBindingTriggerMode)
+									}
+								>
+									<Select.Trigger />
+									<Select.Content>
+										<Select.Item value={KeyBindingTriggerMode.KeyDown}>
+											{t(
+												"settings.common.keyBindingTriggerOptions.keyDown",
+												"按下时触发",
+											)}
+										</Select.Item>
+										<Select.Item value={KeyBindingTriggerMode.KeyUp}>
+											{t(
+												"settings.common.keyBindingTriggerOptions.keyUp",
+												"松开时触发",
 											)}
 										</Select.Item>
 									</Select.Content>

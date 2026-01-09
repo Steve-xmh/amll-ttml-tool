@@ -104,6 +104,12 @@
 				"middleKey": "取按键按下和抬起的中间值",
 				"firstKeyDownLegacy": "首个按键按下时间（旧版）"
 			},
+			"keyBindingTrigger": "快捷键触发时机",
+			"keyBindingTriggerDesc": "设置快捷键是在按下时触发还是在松开时触发。",
+			"keyBindingTriggerOptions": {
+				"keyDown": "按下时触发",
+				"keyUp": "松开时触发"
+			},
 			"smartFirstWord": "智能首字",
 			"smartFirstWordDesc": "对行首第一个音节打轴时，第一次按下“起始轴”按钮会设置其开始时间，但不会设置其结束时间。",
 			"smartLastWord": "智能尾字",

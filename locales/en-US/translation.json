@@ -104,6 +104,12 @@
 				"middleKey": "Middle of key down & up",
 				"firstKeyDownLegacy": "First key down time (legacy)"
 			},
+			"keyBindingTrigger": "Key Binding Trigger",
+			"keyBindingTriggerDesc": "Determines whether shortcuts are triggered when a key is pressed or released.",
+			"keyBindingTriggerOptions": {
+				"keyDown": "Trigger on Key Down",
+				"keyUp": "Trigger on Key Up"
+			},
 			"smartFirstWord": "Smart First Word",
 			"smartFirstWordDesc": "When syncing the first word of a line, the first key press sets its start time only, without immediately setting its end time.",
 			"smartLastWord": "Smart Last Word",
