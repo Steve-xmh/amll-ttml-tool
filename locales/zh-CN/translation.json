@@ -278,6 +278,16 @@
 		"playPause": "播放 / 暂停音乐",
 		"expandSpectrogram": "展开 / 收起频谱图"
 	},
+	"audio": {
+		"status": {
+			"transcoding": "解码失败，正在尝试转码音频...",
+			"loading": "正在加载音频...",
+			"processing": "正在处理..."
+		},
+		"error": {
+			"workerError": "处理音频时出错"
+		}
+	},
 	"lyricLineView": {
 		"translatedLabel": "翻译：",
 		"romanLabel": "音译：",

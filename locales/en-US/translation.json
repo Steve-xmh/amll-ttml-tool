@@ -278,6 +278,16 @@
 		"playPause": "Play / pause music",
 		"expandSpectrogram": "Expand / collapse spectrogram"
 	},
+	"audio": {
+		"status": {
+			"transcoding": "Decoding failed, attempting to transcode audio...",
+			"loading": "Loading audio...",
+			"processing": "Processing..."
+		},
+		"error": {
+			"workerError": "Error processing audio"
+		}
+	},
 	"lyricLineView": {
 		"translatedLabel": "Translation:",
 		"romanLabel": "Romanization:",

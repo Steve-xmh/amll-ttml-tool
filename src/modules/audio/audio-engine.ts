@@ -1,7 +1,11 @@
 import {
+	type AudioTaskType,
 	audioBufferAtom,
+	audioErrorAtom,
+	audioTaskStateAtom,
 	auditionTimeAtom,
 } from "$/modules/audio/states/index.ts";
+import { AudioWorkerClient } from "$/modules/audio/workers/audio-worker-client";
 import { globalStore } from "$/states/store.ts";
 import { log } from "$/utils/logging";
 
@@ -12,6 +16,8 @@ import { log } from "$/utils/logging";
 let auditionRafId: number | null = null;
 
 class AudioEngine extends EventTarget {
+	public workerClient: AudioWorkerClient;
+
 	//#region Audio context basics
 	private _ctx: AudioContext | null = null;
 	get ctx() {
@@ -36,6 +42,29 @@ class AudioEngine extends EventTarget {
 		return this.gainNode;
 	}
 	//#endregion
+
+	constructor() {
+		super();
+		this.workerClient = new AudioWorkerClient({
+			onTaskStart: (type: AudioTaskType) => {
+				globalStore.set(audioTaskStateAtom, { type, progress: 0 });
+			},
+			onTaskProgress: (progress: number) => {
+				const current = globalStore.get(audioTaskStateAtom);
+				if (current) {
+					globalStore.set(audioTaskStateAtom, { ...current, progress });
+				}
+			},
+			onTaskEnd: () => {
+				globalStore.set(audioTaskStateAtom, null);
+			},
+			onError: (errorMessage: string) => {
+				console.error("[AudioEngine] Worker Error:", errorMessage);
+				globalStore.set(audioTaskStateAtom, null);
+				globalStore.set(audioErrorAtom, errorMessage);
+			},
+		});
+	}
 
 	//#region Audio element
 	// Since an element is required to sync with waveform.js,
@@ -239,30 +268,92 @@ class AudioEngine extends EventTarget {
 	//#region Load sound
 	private musicBuffer: AudioBuffer | null = null;
 
-	/** Load music from a Blob source and return AudioElement */
-	async loadMusic(src: Blob): Promise<HTMLAudioElement> {
+	async loadMusic(src: Blob, isRetry = false): Promise<HTMLAudioElement> {
 		const audioEl = this.audioEl;
-		if (this.musicBuffer) {
-			this.pauseMusic();
-			this.musicBuffer = null;
-			globalStore.set(audioBufferAtom, null);
-			audioEl.src = "";
-			this.dispatchEvent(new Event("music-unload"));
+
+		if (!isRetry) {
+			if (this.musicBuffer) {
+				this.pauseMusic();
+				this.musicBuffer = null;
+				globalStore.set(audioBufferAtom, null);
+				audioEl.src = "";
+				this.dispatchEvent(new Event("music-unload"));
+			}
+			this.dispatchEvent(new Event("music-loading"));
 		}
-		this.dispatchEvent(new Event("music-loading"));
-		return new Promise((resolve) => {
-			audioEl.onloadedmetadata = async () => {
-				const audioData = await src.arrayBuffer();
-				this.musicBuffer = await this.ctx.decodeAudioData(audioData);
-				globalStore.set(audioBufferAtom, this.musicBuffer);
-				this.connectAudioToContext();
-				this.setupAudioListeners();
-				audioEl.onloadedmetadata = null;
-				this.dispatchEvent(new Event("music-load"));
-				resolve(audioEl);
+
+		return new Promise((resolve, reject) => {
+			audioEl.onloadedmetadata = null;
+			audioEl.onerror = null;
+
+			const handleError = (errorMsg: string, errorCode?: number) => {
+				console.warn(
+					`[AudioEngine] Load error. Retry: ${isRetry}. Code: ${errorCode}. Msg: ${errorMsg}`,
+				);
+
+				const canRetry =
+					!isRetry &&
+					(errorCode === MediaError.MEDIA_ERR_DECODE ||
+						errorCode === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED);
+
+				if (canRetry) {
+					this.performTranscodeFallback(src, resolve, reject);
+				} else {
+					this.dispatchEvent(new Event("music-load-error"));
+					reject(new Error(`Audio load error: ${errorMsg}`));
+				}
 			};
+
+			audioEl.onerror = (e: Event | string) => {
+				const error = audioEl.error;
+				const msg = error?.message || e.toString();
+				handleError(msg, error?.code);
+			};
+
+			audioEl.onloadedmetadata = async () => {
+				try {
+					const audioData = await src.arrayBuffer();
+					this.musicBuffer = await this.ctx.decodeAudioData(audioData);
+					globalStore.set(audioBufferAtom, this.musicBuffer);
+
+					this.connectAudioToContext();
+					this.setupAudioListeners();
+
+					audioEl.onloadedmetadata = null;
+					audioEl.onerror = null;
+
+					this.dispatchEvent(new Event("music-load"));
+					resolve(audioEl);
+				} catch (err) {
+					console.warn("[AudioEngine] decodeAudioData failed:", err);
+
+					if (!isRetry) {
+						this.performTranscodeFallback(src, resolve, reject);
+					} else {
+						reject(err);
+					}
+				}
+			};
+
 			audioEl.src = URL.createObjectURL(src);
 		});
+	}
+
+	private async performTranscodeFallback(
+		src: Blob,
+		resolve: (value: HTMLAudioElement | PromiseLike<HTMLAudioElement>) => void,
+		reject: (reason?: Error) => void,
+	) {
+		console.log("[AudioEngine] Attempting transcoding fallback...");
+		try {
+			const wavBlob = await this.workerClient.transcodeToWav(src);
+
+			const el = await this.loadMusic(wavBlob, true);
+			resolve(el);
+		} catch (error) {
+			console.error("[AudioEngine] Transcoding fallback failed:", error);
+			reject(error as Error);
+		}
 	}
 
 	playSound(

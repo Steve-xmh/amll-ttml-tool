@@ -39,6 +39,7 @@ import RibbonBar from "./components/RibbonBar";
 import { TitleBar } from "./components/TitleBar";
 import { useFileOpener } from "./hooks/useFileOpener.ts";
 import AudioControls from "./modules/audio/components/index.tsx";
+import { useAudioFeedback } from "./modules/audio/hooks/useAudioFeedback.ts";
 import { SyncKeyBinding } from "./modules/lyric-editor/components/sync-keybinding.tsx";
 import { AutosaveManager } from "./modules/project/autosave/AutosaveManager.tsx";
 import exportTTMLText from "./modules/project/logic/ttml-writer.ts";
@@ -122,6 +123,7 @@ function App() {
 
 	const setIsGlobalDragging = useSetAtom(isGlobalFileDraggingAtom);
 	const { openFile } = useFileOpener();
+	useAudioFeedback();
 
 	useEffect(() => {
 		if (!import.meta.env.TAURI_ENV_PLATFORM) {

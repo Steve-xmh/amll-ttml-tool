@@ -120,6 +120,9 @@ importers:
       '@tauri-apps/cli':
         specifier: ^2.9.6
         version: 2.9.6
+      '@types/emscripten':
+        specifier: ^1.41.5
+        version: 1.41.5
       '@types/hyphen':
         specifier: ^1.6.7
         version: 1.6.7
@@ -2239,6 +2242,9 @@ packages:
 
   '@types/earcut@2.1.4':
     resolution: {integrity: sha512-qp3m9PPz4gULB9MhjGID7wpo3gJ4bTGXm7ltNDsmOvsPduTeHp8wSW9YckBj3mljeOh4F0m2z/0JKAALRKbmLQ==}
+
+  '@types/emscripten@1.41.5':
+    resolution: {integrity: sha512-cMQm7pxu6BxtHyqJ7mQZ2kXWV5SLmugybFdHCBbJ5eHzOo6VhBckEgAT3//rP5FwPHNPeEiq4SmQ5ucBwsOo4Q==}
 
   '@types/estree@0.0.39':
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
@@ -6495,6 +6501,8 @@ snapshots:
   '@types/css-font-loading-module@0.0.12': {}
 
   '@types/earcut@2.1.4': {}
+
+  '@types/emscripten@1.41.5': {}
 
   '@types/estree@0.0.39': {}
 
