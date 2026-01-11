@@ -347,6 +347,45 @@ export const TopMenu: FC = () => {
 		setTimeShiftDialog(true);
 	}, [setTimeShiftDialog]);
 
+	const onSyncLineTimestamps = useCallback(() => {
+		const action = () => {
+			editLyricLines((draft) => {
+				for (let i = 0; i < draft.lyricLines.length; i++) {
+					const line = draft.lyricLines[i];
+					if (line.words.length === 0) continue;
+
+					let startTime = line.words[0].startTime;
+					let endTime = line.words[line.words.length - 1].endTime;
+
+					// 同步背景人声行
+					if (i + 1 < draft.lyricLines.length) {
+						const nextLine = draft.lyricLines[i + 1];
+						if (nextLine.isBG && nextLine.words.length > 0) {
+							const nextLineStart = nextLine.words[0].startTime;
+							const nextLineEnd =
+								nextLine.words[nextLine.words.length - 1].endTime;
+							startTime = Math.min(startTime, nextLineStart);
+							endTime = Math.max(endTime, nextLineEnd);
+						}
+					}
+
+					line.startTime = startTime;
+					line.endTime = endTime;
+				}
+			});
+		};
+
+		setConfirmDialog({
+			open: true,
+			title: t("confirmDialog.syncLineTimestamps.title", "确认同步行时间戳"),
+			description: t(
+				"confirmDialog.syncLineTimestamps.description",
+				"此操作将根据每行单词的时间戳自动同步所有行的起始和结束时间为第一个和最后一个音节的开始和结束时间。确定要继续吗？",
+			),
+			onConfirm: action,
+		});
+	}, [editLyricLines, setConfirmDialog, t]);
+
 	return (
 		<Flex
 			p="2"
@@ -513,6 +552,10 @@ export const TopMenu: FC = () => {
 										</DropdownMenu.Item>
 									</DropdownMenu.SubContent>
 								</DropdownMenu.Sub>
+
+								<DropdownMenu.Item onSelect={onSyncLineTimestamps}>
+									{t("topBar.menu.syncLineTimestamps", "同步行时间戳")}
+								</DropdownMenu.Item>
 
 								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
 									{t("settingsDialog.common.latencyTest", "音频/输入延迟测试")}
@@ -707,6 +750,9 @@ export const TopMenu: FC = () => {
 									</DropdownMenu.Item>
 								</DropdownMenu.SubContent>
 							</DropdownMenu.Sub>
+							<DropdownMenu.Item onSelect={onSyncLineTimestamps}>
+								{t("topBar.menu.syncLineTimestamps", "同步行时间戳")}
+							</DropdownMenu.Item>
 							<DropdownMenu.Item onSelect={onOpenLatencyTest}>
 								{t("settingsDialog.common.latencyTest", "音频/输入延迟测试")}
 							</DropdownMenu.Item>

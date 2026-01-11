@@ -20,6 +20,10 @@
 			"title": "Confirm New File",
 			"description": "You have unsaved changes. If you proceed, these changes will be lost. Are you sure you want to create a new file?"
 		},
+		"syncLineTimestamps": {
+			"title": "Confirm Sync Line Timestamps",
+			"description": "This action will automatically synchronize the start and end times of all lines based on the timestamps of each word in the line, matching the start and end times of the first and last syllables. Are you sure you want to proceed?"
+		},
 		"openFile": {
 			"title": "Confirm Open File",
 			"description": "You have unsaved changes. If you proceed, these changes will be lost. Are you sure you want to open a new file?"
@@ -164,6 +168,7 @@
 			"segmentationTools": "Segmentation Tools",
 			"autoSegment": "Auto Segment",
 			"advancedSegment": "Advanced Segment...",
+			"syncLineTimestamps": "Sync Line Timestamps",
 			"help": "Help",
 			"helpDoc": "Documentation (CN)",
 			"importLyric": {

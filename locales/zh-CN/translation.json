@@ -20,6 +20,10 @@
 			"title": "确认新建文件",
 			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要新建文件吗？"
 		},
+		"syncLineTimestamps": {
+			"title": "确认同步行时间戳",
+			"description": "此操作将根据每行单词的时间戳自动同步所有行的起始和结束时间为第一个和最后一个音节的开始和结束时间。确定要继续吗？"
+		},
 		"openFile": {
 			"title": "确认打开文件",
 			"description": "当前文件有未保存的更改。如果继续，这些更改将会丢失。确定要打开新文件吗？"
@@ -164,6 +168,7 @@
 			"segmentationTools": "分词",
 			"autoSegment": "一键分词",
 			"advancedSegment": "高级分词...",
+			"syncLineTimestamps": "同步行时间戳",
 			"help": "帮助",
 			"helpDoc": "使用说明",
 			"importLyric": {
