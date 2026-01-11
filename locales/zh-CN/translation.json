@@ -169,6 +169,7 @@
 			"importLyric": {
 				"import": "导入歌词",
 				"fromPlainText": "从纯文本导入…",
+				"fromLRCLIB": "从 LRCLIB 导入...",
 				"fromLyRiC": "从 LyRiC 文件导入…",
 				"fromESLyRiC": "从 ESLyRiC 文件导入…",
 				"fromQRC": "从 QRC 文件导入…",
@@ -288,6 +289,32 @@
 			"workerError": "处理音频时出错"
 		}
 	},
+	"lrclib": {
+		"searchError": "搜索失败，请检查网络或稍后重试",
+		"importError": "导入歌词时发生错误",
+		"title": "从 LRCLIB 导入歌词",
+		"placeholder": "歌名 歌手...",
+		"synced": "有时间轴",
+		"unsynced": "无时间轴",
+		"notFound": "未找到相关结果，请尝试更换关键词",
+		"noResult": "输入关键词开始搜索",
+		"noLyrics": "该歌曲暂无歌词内容",
+		"import": "导入歌词"
+	},
+	"common": {
+		"search": "搜索",
+		"close": "关闭",
+		"cancel": "取消",
+		"apply": "应用",
+		"success": "恢复成功",
+		"error": "数据已损坏或丢失",
+		"deleteSuccess": "删除成功",
+		"time": "时间",
+		"restore": "恢复",
+		"about": "关于",
+		"remove": "移除",
+		"clickToSet": "点击设置"
+	},
 	"lyricLineView": {
 		"translatedLabel": "翻译：",
 		"romanLabel": "音译：",
@@ -319,18 +346,6 @@
 		"fromLine": "从",
 		"toLine": "行 到",
 		"line": "行"
-	},
-	"common": {
-		"cancel": "取消",
-		"apply": "应用",
-		"success": "恢复成功",
-		"error": "数据已损坏或丢失",
-		"deleteSuccess": "删除成功",
-		"time": "时间",
-		"restore": "恢复",
-		"about": "关于",
-		"remove": "移除",
-		"clickToSet": "点击设置"
 	},
 	"globalDragOverlay": {
 		"title": "拖放到此处以加载"

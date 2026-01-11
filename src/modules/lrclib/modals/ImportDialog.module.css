@@ -1,0 +1,102 @@
+.dialogContent {
+	max-width: 800px;
+	height: 600px;
+	display: flex;
+	flex-direction: column;
+}
+
+.searchBar {
+	flex: 1;
+}
+
+.scrollArea {
+	flex: 1;
+	padding-right: 24px;
+}
+
+.resultList {
+	padding: var(--space-1);
+}
+
+.resultCard {
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		transform 0.1s ease,
+		border-color 0.15s ease,
+		box-shadow 0.15s ease;
+	border: 1px solid var(--gray-alpha-4);
+}
+
+.resultCard:hover {
+	background-color: var(--gray-3);
+	transform: translateY(-2px);
+	border-color: var(--gray-8);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resultCard:active {
+	transform: translateY(0);
+	background-color: var(--gray-4);
+	box-shadow: none;
+}
+
+.skeletonTitleBox {
+	width: 50%;
+}
+
+.skeletonArtistBox {
+	width: 35%;
+}
+
+.smallIcon {
+	width: 14px;
+	height: 14px;
+}
+
+.badgeIcon {
+	width: 12px;
+	height: 12px;
+	margin-right: 4px;
+}
+
+.emptyState {
+	height: 200px;
+	color: var(--gray-8);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.emptyStateIcon {
+	width: 48px;
+	height: 48px;
+	margin-bottom: var(--space-3);
+	opacity: 0.5;
+}
+
+.previewEmptyState {
+	height: 400px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: var(--gray-8);
+}
+
+.previewDialogContent {
+	max-width: 600px;
+}
+
+.previewContainer {
+	background-color: var(--gray-2);
+	border-radius: var(--radius-3);
+	padding: var(--space-2);
+}
+
+.previewTextArea {
+	height: 400px;
+	font-family: var(--code-font-family);
+	white-space: pre-wrap;
+}

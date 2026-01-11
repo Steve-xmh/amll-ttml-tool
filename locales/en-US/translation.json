@@ -169,6 +169,7 @@
 			"importLyric": {
 				"import": "Import lyrics",
 				"fromPlainText": "Import from plain text…",
+				"fromLRCLIB": "Import from LRCLIB...",
 				"fromLyRiC": "Import from LyRiC file…",
 				"fromESLyRiC": "Import from ESLyRiC file…",
 				"fromQRC": "Import from QRC file…",
@@ -288,6 +289,32 @@
 			"workerError": "Error processing audio"
 		}
 	},
+	"lrclib": {
+		"searchError": "Search failed, please check network or try again later",
+		"importError": "Error occurred while importing lyrics",
+		"title": "Import Lyric from LRCLIB",
+		"placeholder": "Title Artist...",
+		"synced": "Synced",
+		"unsynced": "Unsynced",
+		"notFound": "No results found, please try different keywords",
+		"noResult": "Enter keywords to start searching",
+		"noLyrics": "No lyrics content available for this track",
+		"import": "Import Lyric"
+	},
+	"common": {
+		"search": "Search",
+		"close": "Close",
+		"cancel": "Cancel",
+		"apply": "Apply",
+		"success": "Restore successful",
+		"error": "Data corrupted or lost",
+		"deleteSuccess": "Delete Success",
+		"time": "Time",
+		"restore": "Restore",
+		"about": "About",
+		"remove": "Remove",
+		"clickToSet": "Click to set "
+	},
 	"lyricLineView": {
 		"translatedLabel": "Translation:",
 		"romanLabel": "Romanization:",
@@ -319,18 +346,6 @@
 		"fromLine": "From line",
 		"toLine": "to line",
 		"line": ""
-	},
-	"common": {
-		"cancel": "Cancel",
-		"apply": "Apply",
-		"success": "Restore successful",
-		"error": "Data corrupted or lost",
-		"deleteSuccess": "Delete Success",
-		"time": "Time",
-		"restore": "Restore",
-		"about": "About",
-		"remove": "Remove",
-		"clickToSet": "Click to set "
 	},
 	"globalDragOverlay": {
 		"title": "Release to load"

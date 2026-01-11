@@ -12,13 +12,17 @@ import { useSetAtom, useStore } from "jotai";
 import { useTranslation } from "react-i18next";
 import saveFile from "save-file";
 import { useFileOpener } from "$/hooks/useFileOpener.ts";
-import { importFromTextDialogAtom } from "$/states/dialogs.ts";
+import {
+	importFromLRCLIBDialogAtom,
+	importFromTextDialogAtom,
+} from "$/states/dialogs.ts";
 import { lyricLinesAtom, saveFileNameAtom } from "$/states/main.ts";
 import { error } from "$/utils/logging.ts";
 
 export const ImportExportLyric = () => {
 	const store = useStore();
 	const setImportFromTextDialog = useSetAtom(importFromTextDialogAtom);
+	const setImportFromLRCLIBDialog = useSetAtom(importFromLRCLIBDialogAtom);
 	const { openFile } = useFileOpener();
 	const { t } = useTranslation();
 
@@ -75,6 +79,9 @@ export const ImportExportLyric = () => {
 				<DropdownMenu.SubContent>
 					<DropdownMenu.Item onClick={() => setImportFromTextDialog(true)}>
 						{t("topBar.menu.importLyric.fromPlainText", "从纯文本导入")}
+					</DropdownMenu.Item>
+					<DropdownMenu.Item onClick={() => setImportFromLRCLIBDialog(true)}>
+						{t("topBar.menu.importLyric.fromLRCLIB", "从 LRCLIB 导入...")}
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onClick={() => onImportLyric("lrc")}>
 						{t("topBar.menu.importLyric.fromLyRiC", "从 LyRiC 文件导入")}

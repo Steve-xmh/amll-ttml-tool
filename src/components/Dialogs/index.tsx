@@ -1,4 +1,5 @@
 import { LatencyTestDialog } from "$/modules/audio/modals/LatencyTest.tsx";
+import { ImportFromLRCLIB } from "$/modules/lrclib/modals/ImportDialog.tsx";
 import { TimeShiftDialog } from "$/modules/lyric-editor/tools/TimeShift.tsx";
 import { HistoryRestoreDialog } from "$/modules/project/modals/HistoryRestore.tsx";
 import { ImportFromText } from "$/modules/project/modals/ImportFromText.tsx";
@@ -13,6 +14,7 @@ export const Dialogs = () => {
 	return (
 		<>
 			<ImportFromText />
+			<ImportFromLRCLIB />
 			<MetadataEditor />
 			<SettingsDialog />
 			<SplitWordDialog />
