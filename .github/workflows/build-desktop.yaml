@@ -112,5 +112,5 @@ jobs:
           name: AMLL TTML Tools ${{matrix.name}}-${{matrix.arch}}
           path: |
             src-tauri/target/**/release/bundle/**/*
-            src-tauri/target/**/release/AMLL TTML Tool.exe
-            src-tauri/target/**/release/AMLL TTML Tool
+            src-tauri/target/**/release/amll-ttml-tool.exe
+            src-tauri/target/**/release/amll-ttml-tool
