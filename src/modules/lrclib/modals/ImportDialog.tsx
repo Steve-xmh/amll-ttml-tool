@@ -259,7 +259,7 @@ export const ImportFromLRCLIB = () => {
 													</Flex>
 
 													<Text size="1" color="gray" truncate>
-														{track.albumName}
+														{track.artistName} - {track.albumName}
 													</Text>
 												</Flex>
 											</Flex>
