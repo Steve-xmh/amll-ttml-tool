@@ -253,6 +253,17 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		isDuet = false,
 		parentItunesKey: string | null = null,
 	) {
+		const startTimeAttr = lineEl.getAttribute("begin");
+		const endTimeAttr = lineEl.getAttribute("end");
+
+		let parsedStartTime = 0;
+		let parsedEndTime = 0;
+
+		if (startTimeAttr && endTimeAttr) {
+			parsedStartTime = parseTimespan(startTimeAttr);
+			parsedEndTime = parseTimespan(endTimeAttr);
+		}
+
 		const line: LyricLine = {
 			id: uid(),
 			words: [],
@@ -263,14 +274,11 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 				? isDuet
 				: !!lineEl.getAttribute("ttm:agent") &&
 					lineEl.getAttribute("ttm:agent") !== mainAgentId,
-			startTime: 0,
-			endTime: 0,
+			startTime: parsedStartTime,
+			endTime: parsedEndTime,
 			ignoreSync: false,
 		};
 		let haveBg = false;
-
-		const startTime = lineEl.getAttribute("begin");
-		const endTime = lineEl.getAttribute("end");
 
 		const itunesKey = isBG
 			? parentItunesKey
@@ -363,10 +371,7 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 			}
 		}
 
-		if (startTime && endTime) {
-			line.startTime = parseTimespan(startTime);
-			line.endTime = parseTimespan(endTime);
-		} else {
+		if (!startTimeAttr || !endTimeAttr) {
 			line.startTime = line.words
 				.filter((w) => w.word.trim().length > 0)
 				.reduce(
