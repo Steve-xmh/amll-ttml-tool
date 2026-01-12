@@ -5,7 +5,6 @@
 import {
 	type LyricLine,
 	parseEslrc,
-	parseLrc,
 	parseLys,
 	parseQrc,
 	parseYrc,
@@ -28,6 +27,7 @@ import {
 } from "$/states/main.ts";
 import type { TTMLLyric } from "$/types/ttml";
 import { log, error as logError } from "$/utils/logging.ts";
+import { parseLrc } from "$/utils/parse-lrc";
 
 const LYRIC_PARSERS: Record<string, (text: string) => LyricLine[]> = {
 	lrc: parseLrc,
