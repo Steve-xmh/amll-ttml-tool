@@ -405,6 +405,18 @@ export const MetadataEditor = () => {
 				},
 			},
 			{
+				label: t("metadataDialog.builtinOptions.songwriter", "词曲作者"),
+				value: "songwriter",
+				icon: <Person16Regular />,
+				validation: {
+					verifier: (value: string) => !/^.+[,;&，；、].+$/.test(value),
+					message: t(
+						"metadataDialog.builtinOptions.songwriterInvalidMsg",
+						"如果有多个词曲作者，请多次添加该键值，避免使用分隔符",
+					),
+				},
+			},
+			{
 				// 歌词所匹配的专辑名
 				label: t("metadataDialog.builtinOptions.album", "歌曲的专辑名"),
 				value: "album",
@@ -531,18 +543,6 @@ export const MetadataEditor = () => {
 						"GitHub username should be alphanumeric or hyphens, up to 39 characters",
 					),
 					severe: true,
-				},
-			},
-			{
-				label: t("metadataDialog.builtinOptions.songwriter", "词曲作者"),
-				value: "songwriter",
-				icon: <Person16Regular />,
-				validation: {
-					verifier: (value: string) => !/^.+[,;&，；、].+$/.test(value),
-					message: t(
-						"metadataDialog.builtinOptions.songwriterInvalidMsg",
-						"如果有多个词曲作者，请多次添加该键值，避免使用分隔符",
-					),
 				},
 			},
 		];
