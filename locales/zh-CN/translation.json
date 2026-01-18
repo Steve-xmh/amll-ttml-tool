@@ -305,6 +305,7 @@
 		"notFound": "未找到相关结果，请尝试更换关键词",
 		"noResult": "输入关键词开始搜索",
 		"noLyrics": "该歌曲暂无歌词内容",
+		"autoSegment": "自动分词",
 		"import": "导入歌词"
 	},
 	"common": {

@@ -423,3 +423,21 @@ export function segmentWord(
 
 	return distributeTime(word, allTokens, allWeights, grandTotalWeight);
 }
+
+/**
+ * 手动分词的时间重计算
+ *
+ * 用于当已经有了手动指定的分词结果，需要重新计算时间戳时
+ *
+ * 一个典型应用是拆分单词对话框里的手动分词
+ */
+export function recalculateWordTime(
+	originalWord: LyricWord,
+	segments: string[],
+	config: SegmentationConfig,
+): LyricWord[] {
+	const weights = segments.map((token) => calculateWeight(token, config));
+	const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+	return distributeTime(originalWord, segments, weights, totalWeight);
+}

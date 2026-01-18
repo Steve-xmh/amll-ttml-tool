@@ -11,8 +11,8 @@ import { uid } from "uid";
 import { useFileOpener } from "$/hooks/useFileOpener.ts";
 import exportTTMLText from "$/modules/project/logic/ttml-writer";
 import { ImportExportLyric } from "$/modules/project/modals/ImportExportLyric";
-import type { SegmentationConfig } from "$/modules/segmentation/types";
 import { segmentWord } from "$/modules/segmentation/utils/segmentation";
+import { useSegmentationConfig } from "$/modules/segmentation/utils/useSegmentationConfig";
 import {
 	advancedSegmentationDialogAtom,
 	confirmDialogAtom,
@@ -325,23 +325,17 @@ export const TopMenu: FC = () => {
 		[onDeleteSelection],
 	);
 
-	const onAutoSegment = useCallback(() => {
-		const config: SegmentationConfig = {
-			splitCJK: true,
-			splitEnglish: true,
-			punctuationMode: "merge",
-			punctuationWeight: 0.2,
-			removeEmptySegments: true,
-			ignoreList: new Set(),
-			customRules: new Map(),
-		};
+	const { config: segmentationConfig } = useSegmentationConfig();
 
+	const onAutoSegment = useCallback(() => {
 		editLyricLines((draft) => {
 			for (const line of draft.lyricLines) {
-				line.words = line.words.flatMap((word) => segmentWord(word, config));
+				line.words = line.words.flatMap((word) =>
+					segmentWord(word, segmentationConfig),
+				);
 			}
 		});
-	}, [editLyricLines]);
+	}, [editLyricLines, segmentationConfig]);
 
 	const onOpenTimeShift = useCallback(() => {
 		setTimeShiftDialog(true);

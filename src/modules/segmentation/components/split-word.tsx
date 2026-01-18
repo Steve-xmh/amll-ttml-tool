@@ -27,10 +27,13 @@ import type {
 	SegmentationConfig,
 } from "$/modules/segmentation/types";
 import { loadHyphenator } from "$/modules/segmentation/utils/hyphen-loader.ts";
-import { segmentWord } from "$/modules/segmentation/utils/segmentation.ts";
+import {
+	recalculateWordTime,
+	segmentWord,
+} from "$/modules/segmentation/utils/segmentation.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import { editingWordStateAtom, lyricLinesAtom } from "$/states/main";
-import { type LyricWord, newLyricWord } from "$/types/ttml";
+import type { LyricWord } from "$/types/ttml";
 import { ManualWordSplitter } from "./ManualWordSplitter";
 
 export const SplitWordDialog = memo(() => {
@@ -176,26 +179,11 @@ export const SplitWordDialog = memo(() => {
 		if (splittedTextParts.length === 0) return;
 
 		const createNewWords = (targetWord: LyricWord): LyricWord[] => {
-			const { startTime, endTime } = targetWord;
-			const duration = endTime - startTime;
-
-			if (duration <= 0 || splittedTextParts.length === 0) {
-				return splittedTextParts.map((w) => ({
-					...newLyricWord(),
-					startTime,
-					endTime,
-					word: w,
-				}));
-			}
-
-			const splittedDuration = duration / splittedTextParts.length;
-
-			return splittedTextParts.map((w, i) => ({
-				...newLyricWord(),
-				startTime: (startTime + splittedDuration * i) | 0,
-				endTime: (startTime + splittedDuration * (i + 1)) | 0,
-				word: w,
-			}));
+			return recalculateWordTime(
+				targetWord,
+				splittedTextParts,
+				segmentationConfig,
+			);
 		};
 
 		editLyricLines((state) => {
@@ -236,6 +224,7 @@ export const SplitWordDialog = memo(() => {
 		ignoreCase,
 		editingState.lineIndex,
 		editingState.wordIndex,
+		segmentationConfig,
 	]);
 
 	return (

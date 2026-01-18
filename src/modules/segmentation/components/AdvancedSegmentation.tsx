@@ -23,7 +23,7 @@ import {
 } from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
 	segmentationCustomRulesAtom,
@@ -38,24 +38,20 @@ import {
 	segmentationSplitCJKAtom,
 	segmentationSplitEnglishAtom,
 } from "$/modules/segmentation/states";
-import type {
-	HyphenatorFunc,
-	SegmentationConfig,
-} from "$/modules/segmentation/types";
-import {
-	loadHyphenator,
-	SUPPORTED_LANGUAGES,
-} from "$/modules/segmentation/utils/hyphen-loader";
+import { SUPPORTED_LANGUAGES } from "$/modules/segmentation/utils/hyphen-loader";
 import { segmentWord } from "$/modules/segmentation/utils/segmentation.ts";
 import { advancedSegmentationDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
 import { type LyricWord, newLyricWord } from "$/types/ttml";
+import { useSegmentationConfig } from "../utils/useSegmentationConfig";
 import styles from "./AdvancedSegmentation.module.css";
 import { ManualWordSplitter } from "./ManualWordSplitter";
 
 export const AdvancedSegmentationDialog = memo(() => {
 	const [open, setOpen] = useAtom(advancedSegmentationDialogAtom);
 	const [scope, setScope] = useAtom(segmentationScopeAtom);
+	const { config: segmentationConfig, isLoading: isLoadingLang } =
+		useSegmentationConfig();
 	const [rangeStart, setRangeStart] = useAtom(segmentationRangeStartAtom);
 	const [rangeEnd, setRangeEnd] = useAtom(segmentationRangeEndAtom);
 	const [splitCJK, setSplitCJK] = useAtom(segmentationSplitCJKAtom);
@@ -85,10 +81,6 @@ export const AdvancedSegmentationDialog = memo(() => {
 
 	const [lang, setLang] = useAtom(segmentationLangAtom);
 
-	const [activeHyphenator, setActiveHyphenator] = useState<
-		HyphenatorFunc | undefined
-	>(undefined);
-	const [isLoadingLang, setIsLoadingLang] = useState(false);
 	const { t } = useTranslation();
 
 	const toggleSplitPoint = useCallback((index: number) => {
@@ -144,56 +136,6 @@ export const AdvancedSegmentationDialog = memo(() => {
 		}
 		setManualSplitIndices(indices);
 	}, []);
-
-	const ignoreList = useMemo(() => {
-		return new Set(
-			ignoreListText.split("\n").filter((line) => line.trim() !== ""),
-		);
-	}, [ignoreListText]);
-
-	useEffect(() => {
-		let isMounted = true;
-
-		const fetchHyphenator = async () => {
-			setIsLoadingLang(true);
-			const func = await loadHyphenator(lang);
-			if (isMounted && func) {
-				setActiveHyphenator(() => func);
-			}
-			if (isMounted) setIsLoadingLang(false);
-		};
-
-		fetchHyphenator();
-
-		return () => {
-			isMounted = false;
-		};
-	}, [lang]);
-
-	const segmentationConfig = useMemo((): SegmentationConfig => {
-		const weight = parseFloat(punctuationWeight);
-		const finalPunctuationWeight = Number.isNaN(weight) ? 0.2 : weight;
-
-		return {
-			splitCJK,
-			splitEnglish,
-			punctuationMode,
-			punctuationWeight: finalPunctuationWeight,
-			removeEmptySegments,
-			ignoreList,
-			customRules,
-			hyphenator: activeHyphenator,
-		};
-	}, [
-		splitCJK,
-		splitEnglish,
-		punctuationMode,
-		punctuationWeight,
-		removeEmptySegments,
-		ignoreList,
-		customRules,
-		activeHyphenator,
-	]);
 
 	const testPreview = useMemo(() => {
 		if (!testInput.trim()) {

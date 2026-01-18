@@ -14,6 +14,7 @@ import {
 	Box,
 	Button,
 	Card,
+	Checkbox,
 	Dialog,
 	Flex,
 	IconButton,
@@ -31,6 +32,8 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { uid } from "uid";
+import { segmentWord } from "$/modules/segmentation/utils/segmentation";
+import { useSegmentationConfig } from "$/modules/segmentation/utils/useSegmentationConfig";
 import {
 	confirmDialogAtom,
 	importFromLRCLIBDialogAtom,
@@ -45,7 +48,6 @@ import { error as logError } from "$/utils/logging";
 import { LrcLibApi } from "../api/client";
 import type { LrcLibTrack } from "../types";
 import { convertLrcLibTrackToTTML } from "../utils/converter";
-
 import styles from "./ImportDialog.module.css";
 
 const formatDuration = (seconds: number) => {
@@ -72,6 +74,9 @@ export const ImportFromLRCLIB = () => {
 
 	const [previewTrack, setPreviewTrack] = useState<LrcLibTrack | null>(null);
 
+	const [autoSegment, setAutoSegment] = useState(false);
+	const { config: segmentationConfig } = useSegmentationConfig();
+
 	const handleSearch = useCallback(async () => {
 		if (!query.trim()) return;
 		setLoading(true);
@@ -96,9 +101,23 @@ export const ImportFromLRCLIB = () => {
 	};
 
 	const performImport = useCallback(
-		(track: LrcLibTrack) => {
+		async (track: LrcLibTrack) => {
 			try {
-				const ttmlData = convertLrcLibTrackToTTML(track);
+				let ttmlData = convertLrcLibTrackToTTML(track);
+
+				if (autoSegment) {
+					ttmlData = {
+						...ttmlData,
+						lyricLines: ttmlData.lyricLines.map((line) => {
+							const newWords = line.words.flatMap((word) =>
+								segmentWord(word, segmentationConfig),
+							);
+
+							return { ...line, words: newWords };
+						}),
+					};
+				}
+
 				setLyricLines(ttmlData);
 				setProjectId(uid());
 				const safeFilename = `${track.artistName} - ${track.name}.ttml`.replace(
@@ -117,7 +136,15 @@ export const ImportFromLRCLIB = () => {
 				toast.error(t("lrclib.importError", "导入歌词时发生错误"));
 			}
 		},
-		[setLyricLines, setProjectId, setSaveFileName, setIsOpen, t],
+		[
+			setLyricLines,
+			setProjectId,
+			setSaveFileName,
+			setIsOpen,
+			t,
+			autoSegment,
+			segmentationConfig,
+		],
 	);
 
 	const onTriggerImport = useCallback(
@@ -341,7 +368,17 @@ export const ImportFromLRCLIB = () => {
 						)}
 					</Box>
 
-					<Flex justify="end" gap="3" mt="4">
+					<Flex justify="end" gap="3" mt="4" align="center">
+						<Text as="label" size="2">
+							<Flex gap="2" align="center">
+								<Checkbox
+									checked={autoSegment}
+									onCheckedChange={(c) => setAutoSegment(!!c)}
+								/>
+								{t("lrclib.autoSegment", "自动分词")}
+							</Flex>
+						</Text>
+
 						<Dialog.Close>
 							<Button variant="soft" color="gray">
 								{t("common.cancel", "取消")}
