@@ -305,6 +305,7 @@
 		"notFound": "No results found, please try different keywords",
 		"noResult": "Enter keywords to start searching",
 		"noLyrics": "No lyrics content available for this track",
+		"extractBg": "Extract parentheses as background vocals",
 		"autoSegment": "Auto Segment",
 		"import": "Import Lyric"
 	},

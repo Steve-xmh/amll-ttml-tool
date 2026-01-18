@@ -48,6 +48,7 @@ import { error as logError } from "$/utils/logging";
 import { LrcLibApi } from "../api/client";
 import type { LrcLibTrack } from "../types";
 import { convertLrcLibTrackToTTML } from "../utils/converter";
+import { extractParenthesesToBg } from "../utils/extractParenthesesToBg";
 import styles from "./ImportDialog.module.css";
 
 const formatDuration = (seconds: number) => {
@@ -76,6 +77,7 @@ export const ImportFromLRCLIB = () => {
 
 	const [autoSegment, setAutoSegment] = useState(false);
 	const { config: segmentationConfig } = useSegmentationConfig();
+	const [extractBg, setExtractBg] = useState(false);
 
 	const handleSearch = useCallback(async () => {
 		if (!query.trim()) return;
@@ -104,6 +106,15 @@ export const ImportFromLRCLIB = () => {
 		async (track: LrcLibTrack) => {
 			try {
 				let ttmlData = convertLrcLibTrackToTTML(track);
+
+				if (extractBg) {
+					ttmlData = {
+						...ttmlData,
+						lyricLines: ttmlData.lyricLines.flatMap((line) =>
+							extractParenthesesToBg(line),
+						),
+					};
+				}
 
 				if (autoSegment) {
 					ttmlData = {
@@ -144,6 +155,7 @@ export const ImportFromLRCLIB = () => {
 			t,
 			autoSegment,
 			segmentationConfig,
+			extractBg,
 		],
 	);
 
@@ -369,6 +381,16 @@ export const ImportFromLRCLIB = () => {
 					</Box>
 
 					<Flex justify="end" gap="3" mt="4" align="center">
+						<Text as="label" size="2">
+							<Flex gap="2" align="center">
+								<Checkbox
+									checked={extractBg}
+									onCheckedChange={(c) => setExtractBg(!!c)}
+								/>
+								{t("lrclib.extractBg", "提取括号内容为背景人声")}
+							</Flex>
+						</Text>
+
 						<Text as="label" size="2">
 							<Flex gap="2" align="center">
 								<Checkbox
