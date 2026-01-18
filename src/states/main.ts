@@ -95,7 +95,7 @@ export const undoLyricLinesAtom = atom(null, (_get, set) => {
 export const redoLyricLinesAtom = atom(null, (_get, set) => {
 	set(undoableLyricLinesAtom, REDO);
 });
-export const splitWordStateAtom = atom({
+export const editingWordStateAtom = atom({
 	wordIndex: -1,
 	lineIndex: -1,
 	word: "",

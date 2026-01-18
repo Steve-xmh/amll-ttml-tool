@@ -47,10 +47,10 @@ import {
 import { visualizeTimestampUpdateAtom } from "$/modules/settings/states/sync.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
 import {
+	editingWordStateAtom,
 	lyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	splitWordStateAtom,
 	ToolMode,
 	toolModeAtom,
 } from "$/states/main.ts";
@@ -366,7 +366,7 @@ const LyricWordViewEditAdvance = ({
 	const store = useStore();
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const setOpenSplitWordDialog = useSetAtom(splitWordDialogAtom);
-	const setSplitState = useSetAtom(splitWordStateAtom);
+	const setSplitState = useSetAtom(editingWordStateAtom);
 	const currentWord = useAtomValue(wordAtom);
 	const toolMode = useAtomValue(toolModeAtom);
 	const isWordSelectedAtom = useMemo(

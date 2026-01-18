@@ -2,12 +2,12 @@ import { ContextMenu } from "@radix-ui/themes";
 import { type Atom, atom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { useSetImmerAtom } from "jotai-immer";
 import { useTranslation } from "react-i18next";
-import { splitWordDialogAtom } from "$/states/dialogs";
+import { replaceWordDialogAtom, splitWordDialogAtom } from "$/states/dialogs";
 import {
+	editingWordStateAtom,
 	lyricLinesAtom,
 	selectedLinesAtom,
 	selectedWordsAtom,
-	splitWordStateAtom,
 } from "$/states/main";
 import {
 	type LyricLine,
@@ -36,7 +36,8 @@ export const LyricWordMenu = ({
 	const selectedLinesSize = useAtomValue(selectedLinesSizeAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const setOpenSplitWordDialog = useSetAtom(splitWordDialogAtom);
-	const setSplitState = useSetAtom(splitWordStateAtom);
+	const setOpenReplaceWordDialog = useSetAtom(replaceWordDialogAtom);
+	const setEditingWordState = useSetAtom(editingWordStateAtom);
 	const word = useAtomValue(wordAtom);
 
 	return (
@@ -44,7 +45,7 @@ export const LyricWordMenu = ({
 			<ContextMenu.Item
 				disabled={selectedWordsSize !== 1}
 				onSelect={() => {
-					setSplitState({
+					setEditingWordState({
 						wordIndex,
 						lineIndex,
 						word: word.word,
@@ -52,7 +53,20 @@ export const LyricWordMenu = ({
 					setOpenSplitWordDialog(true);
 				}}
 			>
-				{t("contextMenu.splitReplaceWord", "拆分或替换单词…")}
+				{t("contextMenu.splitWord", "拆分单词…")}
+			</ContextMenu.Item>
+			<ContextMenu.Item
+				disabled={selectedWordsSize !== 1}
+				onSelect={() => {
+					setEditingWordState({
+						wordIndex,
+						lineIndex,
+						word: word.word,
+					});
+					setOpenReplaceWordDialog(true);
+				}}
+			>
+				{t("contextMenu.replaceWord", "替换单词…")}
 			</ContextMenu.Item>
 			<ContextMenu.Item
 				disabled={!(selectedWordsSize > 1 && selectedLinesSize === 1)}

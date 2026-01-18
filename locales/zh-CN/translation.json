@@ -213,7 +213,8 @@
 		"copyLine": "复制行",
 		"combineLine": "合并行",
 		"deleteLine": "删除行",
-		"splitReplaceWord": "拆分或替换单词…",
+		"splitWord": "拆分单词…",
+		"replaceWord": "替换单词…",
 		"combineWords": "合并单词",
 		"moveFollowingWordToNewLine": "此后单词拆至新行",
 		"moveWordToNewLine": "选中单词拆至新行"
@@ -310,6 +311,7 @@
 		"search": "搜索",
 		"close": "关闭",
 		"cancel": "取消",
+		"confirm": "确认",
 		"apply": "应用",
 		"success": "恢复成功",
 		"error": "数据已损坏或丢失",
@@ -334,6 +336,13 @@
 	"touchSyncPanel": {
 		"prevWord": "跳上词",
 		"nextWord": "跳下词"
+	},
+	"replaceWordDialog": {
+		"title": "替换单词",
+		"description": "新的单词内容:",
+		"placeholder": "新单词",
+		"applyToAll": "将此替换规则应用于所有相同的单词",
+		"ignoreCase": "忽略大小写"
 	},
 	"timeShiftDialog": {
 		"title": "平移时间",
@@ -418,6 +427,8 @@
 			"musicName": "歌曲名称",
 			"artists": "歌曲的艺术家",
 			"artistsInvalidMsg": "如果有多个艺术家，请多次添加该键值，避免使用分隔符号；若艺术家名本身包含分隔符号，请忽略此提示",
+			"songwriter": "词曲作者",
+			"songwriterInvalidMsg": "如果有多个词曲作者，请多次添加该键值，避免使用分隔符",
 			"album": "歌曲的专辑名",
 			"ncmMusicId": "网易云音乐 ID",
 			"ncmMusicIdInvalidMsg": "网易云音乐 ID 应为纯数字",
@@ -432,9 +443,7 @@
 			"ttmlAuthorGithub": "歌词作者 GitHub ID",
 			"ttmlAuthorGithubInvalidMsg": "GitHub ID 应为纯数字",
 			"ttmlAuthorGithubLogin": "歌词作者 GitHub 用户名",
-			"ttmlAuthorGithubLoginInvalidMsg": "GitHub 用户名应为不长于 39 字符的字母、数字或短横线",
-			"songwriter": "词曲作者",
-			"songwriterInvalidMsg": "如果有多个词曲作者，请多次添加该键值，避免使用分隔符"
+			"ttmlAuthorGithubLoginInvalidMsg": "GitHub 用户名应为不长于 39 字符的字母、数字或短横线"
 		},
 		"title": "元数据编辑器",
 		"key": "元数据类型",
@@ -481,9 +490,10 @@
 	"splitWordDialog": {
 		"spaceCount": "空格x{count}",
 		"empty": "空白",
-		"title": "拆分/替换单词",
+		"title": "拆分单词",
 		"tip": "拆分后新单词将会按自身单词字符平均分配原单词的始末时间，如有空拍则会被清除",
-		"applyToAll": "将此拆分/替换规则应用于所有相同的单词",
+		"applyToAll": "将此拆分规则应用于所有相同的单词",
+		"ignoreCase": "忽略大小写",
 		"actionButton": "确认"
 	},
 	"advancedSegmentDialog": {

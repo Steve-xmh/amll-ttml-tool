@@ -213,7 +213,8 @@
 		"copyLine": "Duplicate {count, plural, one {line} other {lines}}",
 		"combineLine": "Combine lines",
 		"deleteLine": "Delete {count, plural, one {line} other {lines}}",
-		"splitReplaceWord": "Split or replace word…",
+		"splitWord": "Split word…",
+		"replaceWord": "Replace word…",
 		"combineWords": "Combine words",
 		"moveFollowingWordToNewLine": "Move followings to new line",
 		"moveWordToNewLine": "Move {count, plural, one {word} other {words}} to new line"
@@ -310,6 +311,7 @@
 		"search": "Search",
 		"close": "Close",
 		"cancel": "Cancel",
+		"confirm": "Confirm",
 		"apply": "Apply",
 		"success": "Restore successful",
 		"error": "Data corrupted or lost",
@@ -334,6 +336,13 @@
 	"touchSyncPanel": {
 		"prevWord": "Jump Previous Word",
 		"nextWord": "Jump Next Word"
+	},
+	"replaceWordDialog": {
+		"title": "Replace Word",
+		"description": "New word:",
+		"placeholder": "New word",
+		"applyToAll": "Apply this replacing to all identical words",
+		"ignoreCase": "Ignore case"
 	},
 	"timeShiftDialog": {
 		"title": "Time Shift",
@@ -418,6 +427,8 @@
 			"musicName": "Track Name",
 			"artists": "Track Artists",
 			"artistsInvalidMsg": "If there are multiple artists, please add this key multiple times instead of using delimiters; if an artist name contains delimiters, please ignore this message",
+			"songwriter": "Songwriter",
+			"songwriterInvalidMsg": "If there are multiple songwriters, please add this key multiple times instead of using delimiters",
 			"album": "Album Name",
 			"ncmMusicId": "NetEase Music ID",
 			"ncmMusicIdInvalidMsg": "NetEase Music ID should be numeric",
@@ -432,9 +443,7 @@
 			"ttmlAuthorGithub": "Lyrics Author GitHub ID",
 			"ttmlAuthorGithubInvalidMsg": "GitHub ID should be numeric",
 			"ttmlAuthorGithubLogin": "Lyrics Author GitHub Username",
-			"ttmlAuthorGithubLoginInvalidMsg": "GitHub username should be alphanumeric or hyphens, up to 39 characters",
-			"songwriter": "Songwriter",
-			"songwriterInvalidMsg": "If there are multiple songwriters, please add this key multiple times instead of using delimiters"
+			"ttmlAuthorGithubLoginInvalidMsg": "GitHub username should be alphanumeric or hyphens, up to 39 characters"
 		},
 		"title": "Metadata Editor",
 		"key": "Key",
@@ -481,9 +490,10 @@
 	"splitWordDialog": {
 		"spaceCount": "Space x{count}",
 		"empty": "Empty",
-		"title": "Split/Replace Word",
+		"title": "Split Word",
 		"tip": "After splitting, new words will evenly divide the original word's start/end time. Empty beats will be cleared.",
-		"applyToAll": "Apply this splitting/replacing to all identical words",
+		"applyToAll": "Apply this splitting to all identical words",
+		"ignoreCase": "Ignore case",
 		"actionButton": "Confirm"
 	},
 	"advancedSegmentDialog": {

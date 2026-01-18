@@ -7,10 +7,9 @@ import {
 	Dialog,
 	Flex,
 	Text,
-	TextField,
 } from "@radix-ui/themes";
 import { useAtom, useAtomValue } from "jotai";
-import { useImmerAtom, useSetImmerAtom } from "jotai-immer";
+import { useSetImmerAtom } from "jotai-immer";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -30,20 +29,22 @@ import type {
 import { loadHyphenator } from "$/modules/segmentation/utils/hyphen-loader.ts";
 import { segmentWord } from "$/modules/segmentation/utils/segmentation.ts";
 import { splitWordDialogAtom } from "$/states/dialogs.ts";
-import { lyricLinesAtom, splitWordStateAtom } from "$/states/main";
+import { editingWordStateAtom, lyricLinesAtom } from "$/states/main";
 import { type LyricWord, newLyricWord } from "$/types/ttml";
 import { ManualWordSplitter } from "./ManualWordSplitter";
 
 export const SplitWordDialog = memo(() => {
 	const [splitWordDialog, splitWordDialogOpen] = useAtom(splitWordDialogAtom);
-	const [splitState, setSplitState] = useImmerAtom(splitWordStateAtom);
+	const editingState = useAtomValue(editingWordStateAtom);
 	const lyricLines = useAtomValue(lyricLinesAtom);
 	const editLyricLines = useSetImmerAtom(lyricLinesAtom);
 	const { t } = useTranslation();
 
 	const [splitIndices, setSplitIndices] = useState(new Set<number>());
-	const [originalWord, setOriginalWord] = useState("");
+	const [targetWordText, setTargetWordText] = useState("");
+
 	const [applyToAll, setApplyToAll] = useState(false);
+	const [ignoreCase, setIgnoreCase] = useState(true);
 
 	const splitCJK = useAtomValue(segmentationSplitCJKAtom);
 	const splitEnglish = useAtomValue(segmentationSplitEnglishAtom);
@@ -109,14 +110,15 @@ export const SplitWordDialog = memo(() => {
 		if (!splitWordDialog) {
 			return;
 		}
-		const line = lyricLines.lyricLines[splitState.lineIndex];
-		const word = line?.words[splitState.wordIndex];
+
+		setApplyToAll(false);
+		setIgnoreCase(true);
+
+		const line = lyricLines.lyricLines[editingState.lineIndex];
+		const word = line?.words[editingState.wordIndex];
 
 		if (word) {
-			setOriginalWord(word.word);
-			setSplitState((state) => {
-				state.word = word.word;
-			});
+			setTargetWordText(word.word);
 
 			const resultWords = segmentWord(word, segmentationConfig);
 			if (resultWords.length > 1) {
@@ -131,20 +133,14 @@ export const SplitWordDialog = memo(() => {
 				setSplitIndices(new Set());
 			}
 		} else {
-			setOriginalWord("");
-			setSplitState((state) => {
-				state.word = "";
-			});
+			setTargetWordText("");
 			setSplitIndices(new Set());
 		}
-
-		setApplyToAll(false);
 	}, [
 		splitWordDialog,
-		splitState.lineIndex,
-		splitState.wordIndex,
+		editingState.lineIndex,
+		editingState.wordIndex,
 		lyricLines,
-		setSplitState,
 		segmentationConfig,
 	]);
 
@@ -160,12 +156,92 @@ export const SplitWordDialog = memo(() => {
 		});
 	}, []);
 
+	const handleSplit = useCallback(() => {
+		if (!targetWordText) return;
+
+		const parts: string[] = [];
+		let lastIndex = 0;
+		const sortedIndices = Array.from(splitIndices).sort((a, b) => a - b);
+
+		for (const index of sortedIndices) {
+			parts.push(targetWordText.slice(lastIndex, index));
+			lastIndex = index;
+		}
+		parts.push(targetWordText.slice(lastIndex));
+
+		const splittedTextParts = parts
+			.filter((p) => p.trim() !== "")
+			.map((p) => p.trim());
+
+		if (splittedTextParts.length === 0) return;
+
+		const createNewWords = (targetWord: LyricWord): LyricWord[] => {
+			const { startTime, endTime } = targetWord;
+			const duration = endTime - startTime;
+
+			if (duration <= 0 || splittedTextParts.length === 0) {
+				return splittedTextParts.map((w) => ({
+					...newLyricWord(),
+					startTime,
+					endTime,
+					word: w,
+				}));
+			}
+
+			const splittedDuration = duration / splittedTextParts.length;
+
+			return splittedTextParts.map((w, i) => ({
+				...newLyricWord(),
+				startTime: (startTime + splittedDuration * i) | 0,
+				endTime: (startTime + splittedDuration * (i + 1)) | 0,
+				word: w,
+			}));
+		};
+
+		editLyricLines((state) => {
+			if (applyToAll) {
+				const targetLower = targetWordText.toLowerCase();
+
+				for (const line of state.lyricLines) {
+					line.words = line.words.flatMap((word) => {
+						const isMatch = ignoreCase
+							? word.word.toLowerCase() === targetLower
+							: word.word === targetWordText;
+
+						if (isMatch) {
+							return createNewWords(word);
+						}
+						return word;
+					});
+				}
+			} else {
+				const line = state.lyricLines[editingState.lineIndex];
+				if (line) {
+					const word = line.words[editingState.wordIndex];
+					if (word && word.word === targetWordText) {
+						line.words.splice(
+							editingState.wordIndex,
+							1,
+							...createNewWords(word),
+						);
+					}
+				}
+			}
+		});
+	}, [
+		targetWordText,
+		splitIndices,
+		editLyricLines,
+		applyToAll,
+		ignoreCase,
+		editingState.lineIndex,
+		editingState.wordIndex,
+	]);
+
 	return (
 		<Dialog.Root open={splitWordDialog} onOpenChange={splitWordDialogOpen}>
 			<Dialog.Content>
-				<Dialog.Title>
-					{t("splitWordDialog.title", "拆分/替换单词")}
-				</Dialog.Title>
+				<Dialog.Title>{t("splitWordDialog.title", "拆分单词")}</Dialog.Title>
 				<Flex direction="column" gap="2">
 					<Callout.Root color="blue">
 						<Callout.Icon>
@@ -178,114 +254,49 @@ export const SplitWordDialog = memo(() => {
 							)}
 						</Callout.Text>
 					</Callout.Root>
-					<TextField.Root
-						value={splitState.word}
-						onChange={(evt) => {
-							setSplitState((state) => {
-								state.word = evt.target.value;
-							});
-							setSplitIndices(new Set());
-						}}
-					/>
+
 					<Box my="3">
 						<ManualWordSplitter
-							word={splitState.word}
+							word={targetWordText}
 							splitIndices={splitIndices}
 							onSplitIndexToggle={toggleSplitPoint}
 						/>
 					</Box>
-					<Text as="label" size="2">
-						<Flex gap="2" align="center">
-							<Checkbox
-								checked={applyToAll}
-								onCheckedChange={(c) => setApplyToAll(c as boolean)}
-							/>
-							{t(
-								"splitWordDialog.applyToAll",
-								"将此拆分/替换规则应用于所有相同的单词",
-								{
-									word: originalWord,
-								},
-							)}
-						</Flex>
-					</Text>
+
+					<Flex direction="column" gap="2">
+						<Text as="label" size="2">
+							<Flex gap="2" align="center">
+								<Checkbox
+									checked={applyToAll}
+									onCheckedChange={(c) => setApplyToAll(c as boolean)}
+								/>
+								{t(
+									"splitWordDialog.applyToAll",
+									"将此拆分规则应用于所有相同的单词",
+								)}
+							</Flex>
+						</Text>
+
+						<Text as="label" size="2">
+							<Flex
+								gap="2"
+								align="center"
+								style={{ opacity: applyToAll ? 1 : 0.5 }}
+							>
+								<Checkbox
+									disabled={!applyToAll}
+									checked={ignoreCase}
+									onCheckedChange={(c) => setIgnoreCase(c as boolean)}
+								/>
+								{t("splitWordDialog.ignoreCase", "忽略大小写")}
+							</Flex>
+						</Text>
+					</Flex>
 				</Flex>
+
 				<Flex justify="end" mt="4">
 					<Dialog.Close>
-						<Button
-							onClick={() => {
-								const editedWord = splitState.word;
-
-								const parts: string[] = [];
-								let lastIndex = 0;
-								const sortedIndices = Array.from(splitIndices).sort(
-									(a, b) => a - b,
-								);
-
-								for (const index of sortedIndices) {
-									parts.push(editedWord.slice(lastIndex, index));
-									lastIndex = index;
-								}
-								parts.push(editedWord.slice(lastIndex));
-
-								const splittedWords = parts
-									.filter((p) => p.trim() !== "")
-									.map((p) => p.trim());
-
-								if (splittedWords.length === 0 && editedWord) {
-									splittedWords.push(editedWord);
-								}
-
-								const createNewWords = (targetWord: LyricWord): LyricWord[] => {
-									const { startTime, endTime } = targetWord;
-									const duration = endTime - startTime;
-
-									if (duration <= 0 || splittedWords.length === 0) {
-										return splittedWords.map((w) => ({
-											...newLyricWord(),
-											startTime,
-											endTime,
-											word: w,
-										}));
-									}
-
-									const splittedDuration = duration / splittedWords.length;
-
-									return splittedWords.map((w, i) => ({
-										...newLyricWord(),
-										startTime: (startTime + splittedDuration * i) | 0,
-										endTime: (startTime + splittedDuration * (i + 1)) | 0,
-										word: w,
-									}));
-								};
-
-								editLyricLines((state) => {
-									if (applyToAll) {
-										const originalWordLower = originalWord.toLowerCase();
-										for (const line of state.lyricLines) {
-											line.words = line.words.flatMap((word) => {
-												if (word.word.toLowerCase() === originalWordLower) {
-													return createNewWords(word);
-												}
-												return word;
-											});
-										}
-									} else {
-										const line = state.lyricLines[splitState.lineIndex];
-										if (line) {
-											const word = line.words[splitState.wordIndex];
-											if (word && word.word === originalWord) {
-												line.words.splice(
-													splitState.wordIndex,
-													1,
-													...createNewWords(word),
-												);
-											}
-										}
-									}
-								});
-							}}
-						>
+						<Button onClick={handleSplit}>
 							{t("splitWordDialog.actionButton", "执行")}
 						</Button>
 					</Dialog.Close>
