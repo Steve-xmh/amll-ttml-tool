@@ -3,6 +3,9 @@ on:
   - push
   - workflow_dispatch
 
+permissions:
+  contents: write
+
 jobs:
   clean-pre-release:
     name: 删除预发布版本的构建产物
