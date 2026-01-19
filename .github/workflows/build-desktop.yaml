@@ -94,17 +94,12 @@ jobs:
       - name: 构建 AMLL TTML Tools 程序并发布自动构建
         uses: tauri-apps/tauri-action@v0
         with:
-          tagName: ${{ github.ref_name }}-dev
+          tagName: ${{ github.ref_name }}
           includeUpdaterJson: true
-          releaseName: AMLL TTML Tools ${{ github.ref_name }} branch development build
+          releaseName: AMLL TTML Tools ${{ github.ref_name }} branch build
           releaseBody: |
             Latest ${{ github.ref_name }} branch development build.
-            最新 ${{ github.ref_name }} 分支开发调试构建。
-            Development version may be unstable and may not work properly, please only for test purpose.
-            开发版本可能不稳定且可能无法正常工作，请仅用于测试目的。
-
-            Latest commits (最新提交): ${{ github.event.head_commit.message }}
-          prerelease: true
+            最新 ${{ github.ref_name }} 分支构建。
           args: ${{ matrix.args }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -112,7 +107,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
       - name: 上传产物到 Action Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: AMLL TTML Tools ${{matrix.name}}-${{matrix.arch}}
           path: |
