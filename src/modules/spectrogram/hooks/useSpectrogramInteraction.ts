@@ -131,6 +131,14 @@ export function useSpectrogramInteraction(
 		}
 	}, [zoom]);
 
+	useEffect(() => {
+		if (audioBuffer) {
+			setScrollLeft(0);
+			targetScrollLeftRef.current = 0;
+			currentScrollLeftRef.current = 0;
+		}
+	}, [audioBuffer, setScrollLeft]);
+
 	return {
 		zoom,
 		scrollLeft,
