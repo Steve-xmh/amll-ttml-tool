@@ -6,8 +6,7 @@ import { type LyricWord, newLyricWord } from "$/types/ttml";
 import { CharType, type SegmentationConfig } from "../types";
 
 const RE_WHITESPACE = /[\s\n\t]/;
-const RE_LATIN =
-	/[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{M}'-]/u;
+const RE_LATIN = /[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{M}']/u;
 const RE_NUMERIC = /[0-9]/;
 
 /**
