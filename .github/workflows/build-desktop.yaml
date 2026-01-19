@@ -94,7 +94,7 @@ jobs:
       - name: 构建 AMLL TTML Tools 程序并发布自动构建
         uses: tauri-apps/tauri-action@v0
         with:
-          tagName: ${{ github.ref_name }}
+          tagName: ${{ github.ref_name }}-release
           includeUpdaterJson: true
           releaseName: AMLL TTML Tools ${{ github.ref_name }} branch build
           releaseBody: |
