@@ -8,6 +8,10 @@
 			"tryRestart": "Try reloading the app",
 			"details": "Approximate error info:"
 		},
+		"update": {
+			"updateAvailable": "Update available: {version}",
+			"installError": "Error when installing update"
+		},
 		"empty": {
 			"title": "No lyric lines",
 			"description": "Add new lyric lines in the top panel or open/import existing lyrics from the menu"
@@ -125,6 +129,14 @@
 				"interval": "Save Interval (minutes)",
 				"limit": "Snapshots to keep"
 			}
+		},
+		"about": {
+			"update": "Update",
+			"newVersion": "New version",
+			"updateNow": "Update now",
+			"downloading": "Downloading update...",
+			"ready": "Update is ready. Restart the application for it to take effect.",
+			"restart": "Restart"
 		},
 		"group": {
 			"display": "Display",

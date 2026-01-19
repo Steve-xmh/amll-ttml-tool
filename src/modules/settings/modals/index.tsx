@@ -2,7 +2,7 @@ import { Box, Dialog, Tabs } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { settingsDialogAtom } from "$/states/dialogs.ts";
+import { settingsDialogAtom, settingsTabAtom } from "$/states/dialogs.ts";
 import { SettingsAboutTab } from "./about";
 import { SettingsCommonTab } from "./common";
 import { SettingsKeyBindingsDialog } from "./keybindings";
@@ -11,13 +11,14 @@ import { SettingsSpectrogramTab } from "./spectrogram";
 export const SettingsDialog = memo(() => {
 	const [settingsDialogOpen, setSettingsDialogOpen] =
 		useAtom(settingsDialogAtom);
+	const [activeTab, setActiveTab] = useAtom(settingsTabAtom);
 	const { t } = useTranslation();
 
 	return (
 		<Dialog.Root open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
 			<Dialog.Content maxWidth="600px">
 				<Dialog.Title>{t("settingsDialog.title", "首选项")}</Dialog.Title>
-				<Tabs.Root>
+				<Tabs.Root value={activeTab} onValueChange={setActiveTab}>
 					<Tabs.List>
 						<Tabs.Trigger value="common">
 							{t("settingsDialog.tab.common", "常规")}

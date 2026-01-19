@@ -8,6 +8,10 @@
 			"tryRestart": "尝试重新进入程序",
 			"details": "大致错误信息："
 		},
+		"update": {
+			"updateAvailable": "发现新版本: {version}",
+			"installError": "安装更新失败"
+		},
 		"empty": {
 			"title": "没有歌词行",
 			"description": "在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词"
@@ -125,6 +129,14 @@
 				"interval": "保存间隔 (分钟)",
 				"limit": "保留快照数量"
 			}
+		},
+		"about": {
+			"update": "软件更新",
+			"newVersion": "新版本",
+			"updateNow": "立即更新",
+			"downloading": "正在下载更新...",
+			"ready": "更新已准备就绪，重启应用以生效。",
+			"restart": "重启应用"
 		},
 		"group": {
 			"display": "显示",

@@ -27,10 +27,10 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { platform, version } from "@tauri-apps/plugin-os";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useSetAtom, useStore } from "jotai";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import saveFile from "save-file";
 import semverGt from "semver/functions/gt";
 import styles from "./App.module.css";
@@ -45,6 +45,7 @@ import { AutosaveManager } from "./modules/project/autosave/AutosaveManager.tsx"
 import exportTTMLText from "./modules/project/logic/ttml-writer.ts";
 import { GlobalDragOverlay } from "./modules/project/modals/GlobalDragOverlay.tsx";
 import { showTouchSyncPanelAtom } from "./modules/settings/states/sync.ts";
+import { settingsDialogAtom, settingsTabAtom } from "./states/dialogs.ts";
 import {
 	isDarkThemeAtom,
 	isGlobalFileDraggingAtom,
@@ -52,6 +53,7 @@ import {
 	ToolMode,
 	toolModeAtom,
 } from "./states/main.ts";
+import { useAppUpdate } from "./utils/useAppUpdate.ts";
 
 const LyricLinesView = lazy(() => import("./modules/lyric-editor/components"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
@@ -119,7 +121,41 @@ function App() {
 	const toolMode = useAtomValue(toolModeAtom);
 	const showTouchSyncPanel = useAtomValue(showTouchSyncPanelAtom);
 	const [hasBackground, setHasBackground] = useState(false);
+	const { checkUpdate, status, update } = useAppUpdate();
+	const hasNotifiedRef = useRef(false);
+	const setSettingsOpen = useSetAtom(settingsDialogAtom);
+	const setSettingsTab = useSetAtom(settingsTabAtom);
+	const { t } = useTranslation();
 	const store = useStore();
+
+	useEffect(() => {
+		if (import.meta.env.TAURI_ENV_PLATFORM) {
+			checkUpdate(true);
+		}
+	}, [checkUpdate]);
+
+	useEffect(() => {
+		if (status === "available" && update && !hasNotifiedRef.current) {
+			hasNotifiedRef.current = true;
+
+			toast.info(
+				<div>
+					<div style={{ fontWeight: "bold" }}>
+						{t("app.update.updateAvailable", "发现新版本: {version}", {
+							version: update.version,
+						})}
+					</div>
+				</div>,
+				{
+					autoClose: 5000,
+					onClick: () => {
+						setSettingsTab("about");
+						setSettingsOpen(true);
+					},
+				},
+			);
+		}
+	}, [status, update, t, setSettingsOpen, setSettingsTab]);
 
 	const setIsGlobalDragging = useSetAtom(isGlobalFileDraggingAtom);
 	const { openFile } = useFileOpener();
