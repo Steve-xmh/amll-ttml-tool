@@ -1,5 +1,10 @@
 import { type LyricLine, newLyricWord } from "$/types/ttml";
 
+const capitalizeFirstLetter = (str: string) => {
+	if (!str) return "";
+	return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 /**
  * 将一行歌词中的括号内容提取到新的背景人声行中
  *
@@ -28,7 +33,8 @@ export function extractParenthesesToBg(line: LyricLine): LyricLine[] {
 
 	const mainText = fullText.replace(regex, "").replace(/\s+/g, " ").trim();
 
-	const bgText = matches.map((m) => m[2].trim()).join(" ");
+	const rawBgText = matches.map((m) => m[2].trim()).join(" ");
+	const bgText = capitalizeFirstLetter(rawBgText);
 
 	if (!mainText) {
 		return [
