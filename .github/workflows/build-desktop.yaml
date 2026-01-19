@@ -17,7 +17,7 @@ jobs:
           token: ${{ github.token }}
           assets: |
             *.*
-          tag: ${{ github.ref_name }}-dev
+          tag: ${{ github.ref_name }}-release
           fail-if-no-assets: false
           fail-if-no-release: false
   build-tauri-desktop:
