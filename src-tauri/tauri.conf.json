@@ -40,6 +40,15 @@
 			"icons/128x128@2x.png",
 			"icons/icon.icns",
 			"icons/icon.ico"
-		]
+		],
+		"createUpdaterArtifacts": true
+	},
+	"plugins": {
+		"updater": {
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZCMTA0MTJFNjg1NTIyMTcKUldRWElsVm9Ma0VRKzRRUW05VlkvWXlVQTAxQ2VzTitZNlJvNkFiNzhoRW9jQTBEVEhUeVhqMFMK",
+			"endpoints": [
+				"https://github.com/amll-dev/amll-ttml-tool/releases/latest/download/latest.json"
+			]
+		}
 	}
 }

@@ -33,3 +33,9 @@ identifier = "core:window:allow-set-effects"
 identifier = "decorum:allow-show-snap-overlay"
 [[permissions]]
 identifier = "shell:allow-open"
+
+[[permissions]]
+identifier = "updater:default"
+
+[[permissions]]
+identifier = "log:default"

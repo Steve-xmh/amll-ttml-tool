@@ -22,8 +22,11 @@ serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.9.1", features = ["devtools"] }
 tao = "*"
-tauri-plugin-log = "2.7.0"
+tauri-plugin-log = "2.8.0"
 window-vibrancy = "0.7"
 tauri-plugin-os = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-decorum = "1"
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-updater = "2.9.0"
