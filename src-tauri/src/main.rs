@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    app_lib::run();
+    amll_ttml_tool_lib::run();
 }

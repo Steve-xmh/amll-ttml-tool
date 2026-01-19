@@ -1,27 +1,26 @@
 [package]
 name = "amll-ttml-tool"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "A brand-new syllable lyric editor for Apple Music-like lyrics"
+license = "GPL-3.0"
+repository = "https://github.com/amll-dev/amll-ttml-tool"
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "app_lib"
+name = "amll_ttml_tool_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.5.1", features = [] }
+tauri-build = { version = "2.5.3", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.9.1", features = ["devtools"] }
-tao = "*"
+tauri = { version = "2.9.5", features = ["devtools"] }
+tao = "0.34"
 tauri-plugin-log = "2.8.0"
 window-vibrancy = "0.7"
 tauri-plugin-os = "2"
