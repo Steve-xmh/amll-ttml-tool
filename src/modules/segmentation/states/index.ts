@@ -28,7 +28,7 @@ export const segmentationSplitCJKAtom = atomWithStorage(
 );
 export const segmentationSplitEnglishAtom = atomWithStorage(
 	"segmentation.splitEnglish",
-	true,
+	false,
 );
 export const segmentationPunctuationModeAtom = atomWithStorage<PunctuationMode>(
 	"segmentation.punctuationMode",
