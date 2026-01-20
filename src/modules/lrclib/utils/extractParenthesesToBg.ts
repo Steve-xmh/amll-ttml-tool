@@ -32,7 +32,8 @@ export function extractParenthesesToBg(line: LyricLine): LyricLine[] {
 		return [line];
 	}
 
-	const mainText = fullText.replace(regex, "").replace(/\s+/g, " ").trim();
+	const rawMainText = fullText.replace(regex, "").replace(/\s+/g, " ").trim();
+	const mainText = capitalizeFirstLetter(rawMainText);
 
 	const rawBgText = matches.map((m) => m[2].trim()).join(" ");
 	const bgText = capitalizeFirstLetter(rawBgText);
