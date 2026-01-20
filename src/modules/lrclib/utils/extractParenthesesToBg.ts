@@ -1,3 +1,4 @@
+import { uid } from "uid";
 import { type LyricLine, newLyricWord } from "$/types/ttml";
 
 const capitalizeFirstLetter = (str: string) => {
@@ -66,6 +67,7 @@ export function extractParenthesesToBg(line: LyricLine): LyricLine[] {
 
 	const bgLine: LyricLine = {
 		...line,
+		id: uid(),
 		isBG: true,
 		words: [
 			{
