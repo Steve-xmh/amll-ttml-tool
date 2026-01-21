@@ -39,7 +39,9 @@ import {
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { predictLineRomanization } from "$/modules/segmentation/utils/Transliteration/distributor";
 import {
+	enableAutoRomanizationPredictionAtom,
 	showLineRomanizationAtom,
 	showLineTranslationAtom,
 	showTimestampsAtom,
@@ -249,6 +251,7 @@ export const LyricLineView: FC<{
 		() => atom<number | null>(null),
 		[],
 	);
+	const enablePrediction = useAtomValue(enableAutoRomanizationPredictionAtom);
 
 	const startTimeRef = useRef<HTMLDivElement>(null);
 	const endTimeRef = useRef<HTMLDivElement>(null);
@@ -303,6 +306,14 @@ export const LyricLineView: FC<{
 			animation?.cancel();
 		};
 	}, [line.endTime, visualizeTimestampUpdate]);
+
+	const suggestedRomans = useMemo(() => {
+		if (!enablePrediction) {
+			return [];
+		}
+
+		return predictLineRomanization(line.words, line.romanLyric || "");
+	}, [line.romanLyric, line.words, enablePrediction]);
 
 	return (
 		<>
@@ -535,6 +546,7 @@ export const LyricLineView: FC<{
 																wordAtom={wordAtom}
 																wordIndex={wi}
 																editingIndexAtom={editingRomanWordIndexAtom}
+																suggestedRoman={suggestedRomans[wi]}
 															/>
 														)}
 												</Flex>

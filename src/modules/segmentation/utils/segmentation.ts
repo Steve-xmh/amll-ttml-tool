@@ -4,35 +4,12 @@
 
 import { type LyricWord, newLyricWord } from "$/types/ttml";
 import { CharType, type SegmentationConfig } from "../types";
-
-const RE_WHITESPACE = /[\s\n\t]/;
-const RE_LATIN = /[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{M}']/u;
-const RE_NUMERIC = /[0-9]/;
-
-/**
- * @description 判断单个字符的类型
- */
-function getCharType(c: string): CharType {
-	if (!c || c.trim() === "") {
-		return CharType.Whitespace;
-	}
-	const code = c.charCodeAt(0);
-
-	if (RE_WHITESPACE.test(c)) return CharType.Whitespace;
-	if (RE_LATIN.test(c)) return CharType.Latin;
-	if (RE_NUMERIC.test(c)) return CharType.Numeric;
-
-	if (
-		(code >= 0x4e00 && code <= 0x9fff) || // CJK
-		(code >= 0x3040 && code <= 0x309f) || // 日语平假名
-		(code >= 0x30a0 && code <= 0x30ff) || // 日语片假名
-		(code >= 0xac00 && code <= 0xd7af) // 韩语
-	) {
-		return CharType.Cjk;
-	}
-	// 标点符号和emoji等
-	return CharType.Other;
-}
+import {
+	escapeRegExp,
+	getCharType,
+	getMergeDirection,
+	MergeDirection,
+} from "./charUtils";
 
 /**
  * @description 判断两个相邻字符是否应该合并
@@ -145,44 +122,6 @@ function calculateWeight(token: string, config: SegmentationConfig): number {
 		default:
 			return 0.0;
 	}
-}
-
-/**
- * @description 标点符号的结合方向
- */
-enum MergeDirection {
-	Left,
-	Right,
-}
-
-const rightAssociativeChars = new Set([
-	"(",
-	"[",
-	"{",
-	"<",
-	"（",
-	"【",
-	"《",
-	"「",
-	"『",
-	"“",
-	"‘",
-	"¿",
-	"¡",
-]);
-
-/**
- * @description 判断标点符号应该向哪个方向合并
- */
-function getMergeDirection(text: string): MergeDirection {
-	const firstChar = text.trim().charAt(0);
-
-	if (rightAssociativeChars.has(firstChar)) {
-		return MergeDirection.Right;
-	}
-
-	// 句号、逗号、右括号等其他所有标点向左合并
-	return MergeDirection.Left;
 }
 
 /**
@@ -335,15 +274,6 @@ function distributeTime(
 	}
 
 	return newWords;
-}
-
-/**
- * @description 转义正则特殊字符
- *
- * 防治字符串里的特殊符号搞崩正则
- */
-function escapeRegExp(string: string): string {
-	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**

@@ -181,6 +181,7 @@
 			"autoSegment": "Auto Segment",
 			"advancedSegment": "Advanced Segment...",
 			"syncLineTimestamps": "Sync Line Timestamps",
+			"distributeRomanization": "Distribute Romanization...",
 			"help": "Help",
 			"helpDoc": "Documentation (CN)",
 			"importLyric": {
@@ -327,6 +328,16 @@
 		"cancel": "Cancel",
 		"confirm": "Confirm",
 		"apply": "Apply",
+		"applyScope": "Scope",
+		"scope": {
+			"all": "All lyric lines",
+			"selected": "Selected lyric lines",
+			"selectedFollowing": "Selected and followings",
+			"custom": "Custom Range"
+		},
+		"fromLine": "From line",
+		"toLine": "to line",
+		"line": "",
 		"success": "Restore successful",
 		"error": "Data corrupted or lost",
 		"deleteSuccess": "Delete Success",
@@ -374,6 +385,10 @@
 		"fromLine": "From line",
 		"toLine": "to line",
 		"line": ""
+	},
+	"distributeRomanDialog": {
+		"title": "Distribute Line Romanization to Words",
+		"warning": "This action reads the line-level transliteration and distributes it to individual words. The algorithm is optimized for Japanese Romaji and may not work as expected for other languages."
 	},
 	"globalDragOverlay": {
 		"title": "Release to load"

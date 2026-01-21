@@ -181,6 +181,7 @@
 			"autoSegment": "一键分词",
 			"advancedSegment": "高级分词...",
 			"syncLineTimestamps": "同步行时间戳",
+			"distributeRomanization": "自动分配罗马音...",
 			"help": "帮助",
 			"helpDoc": "使用说明",
 			"importLyric": {
@@ -327,6 +328,16 @@
 		"cancel": "取消",
 		"confirm": "确认",
 		"apply": "应用",
+		"applyScope": "应用于",
+		"scope": {
+			"all": "所有行",
+			"selected": "所选行",
+			"selectedFollowing": "所选行及其后续",
+			"custom": "自定义范围"
+		},
+		"fromLine": "从",
+		"toLine": "行 到",
+		"line": "行",
 		"success": "恢复成功",
 		"error": "数据已损坏或丢失",
 		"deleteSuccess": "删除成功",
@@ -374,6 +385,10 @@
 		"fromLine": "从",
 		"toLine": "行 到",
 		"line": "行"
+	},
+	"distributeRomanDialog": {
+		"title": "应用逐行音译到逐字",
+		"warning": "此功能将读取整行音译并自动分配给每个单词。算法专为日语罗马音设计，对其他语言可能效果不佳。"
 	},
 	"globalDragOverlay": {
 		"title": "拖放到此处以加载"

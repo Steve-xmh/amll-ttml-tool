@@ -16,6 +16,7 @@ import { useSegmentationConfig } from "$/modules/segmentation/utils/useSegmentat
 import {
 	advancedSegmentationDialogAtom,
 	confirmDialogAtom,
+	distributeRomanizationDialogAtom,
 	historyRestoreDialogAtom,
 	latencyTestDialogAtom,
 	metadataEditorDialogAtom,
@@ -91,6 +92,9 @@ export const TopMenu: FC = () => {
 	const setTimeShiftDialog = useSetAtom(timeShiftDialogAtom);
 	const { openFile } = useFileOpener();
 	const setProjectId = useSetAtom(projectIdAtom);
+	const setDistributeRomanizationDialog = useSetAtom(
+		distributeRomanizationDialogAtom,
+	);
 
 	const onNewFile = useCallback(() => {
 		const action = () => {
@@ -380,6 +384,10 @@ export const TopMenu: FC = () => {
 		});
 	}, [editLyricLines, setConfirmDialog, t]);
 
+	const onOpenDistributeRomanization = useCallback(() => {
+		setDistributeRomanizationDialog(true);
+	}, [setDistributeRomanizationDialog]);
+
 	return (
 		<Flex
 			p="2"
@@ -549,6 +557,10 @@ export const TopMenu: FC = () => {
 
 								<DropdownMenu.Item onSelect={onSyncLineTimestamps}>
 									{t("topBar.menu.syncLineTimestamps", "同步行时间戳")}
+								</DropdownMenu.Item>
+
+								<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
+									{t("topBar.menu.distributeRomanization", "自动分配罗马音...")}
 								</DropdownMenu.Item>
 
 								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
@@ -746,6 +758,9 @@ export const TopMenu: FC = () => {
 							</DropdownMenu.Sub>
 							<DropdownMenu.Item onSelect={onSyncLineTimestamps}>
 								{t("topBar.menu.syncLineTimestamps", "同步行时间戳")}
+							</DropdownMenu.Item>
+							<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
+								{t("topBar.menu.distributeRomanization", "自动分配罗马音...")}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item onSelect={onOpenLatencyTest}>
 								{t("settingsDialog.common.latencyTest", "音频/输入延迟测试")}

@@ -2,6 +2,7 @@ import { LatencyTestDialog } from "$/modules/audio/modals/LatencyTest.tsx";
 import { ImportFromLRCLIB } from "$/modules/lrclib/modals/ImportDialog.tsx";
 import { ReplaceWordDialog } from "$/modules/lyric-editor/tools/ReplaceWordDialog.tsx";
 import { TimeShiftDialog } from "$/modules/lyric-editor/tools/TimeShift.tsx";
+import { DistributeRomanizationDialog } from "$/modules/project/modals/DistributeRomanization.tsx";
 import { HistoryRestoreDialog } from "$/modules/project/modals/HistoryRestore.tsx";
 import { ImportFromText } from "$/modules/project/modals/ImportFromText.tsx";
 import { MetadataEditor } from "$/modules/project/modals/MetadataEditor.tsx";
@@ -26,6 +27,7 @@ export const Dialogs = () => {
 			<HistoryRestoreDialog />
 			<AdvancedSegmentationDialog />
 			<TimeShiftDialog />
+			<DistributeRomanizationDialog />
 		</>
 	);
 };

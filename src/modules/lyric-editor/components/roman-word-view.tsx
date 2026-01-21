@@ -17,12 +17,14 @@ interface RomanWordViewProps {
 	wordAtom: Atom<LyricWord>;
 	wordIndex: number;
 	editingIndexAtom: WritableAtom<number | null, [number | null], void>;
+	suggestedRoman?: string;
 }
 
 export const RomanWordView = ({
 	wordAtom,
 	wordIndex,
 	editingIndexAtom,
+	suggestedRoman,
 }: RomanWordViewProps) => {
 	const word = useAtomValue(wordAtom);
 	const [editingIndex, setEditingIndex] = useAtom(editingIndexAtom);
@@ -52,9 +54,9 @@ export const RomanWordView = ({
 
 	useEffect(() => {
 		if (isEditing) {
-			setInputValue(word.romanWord);
+			setInputValue(word.romanWord || suggestedRoman || "");
 		}
-	}, [isEditing, word.romanWord]);
+	}, [isEditing, word.romanWord, suggestedRoman]);
 
 	useEffect(() => {
 		if (isEditing) {
@@ -116,7 +118,7 @@ export const RomanWordView = ({
 				setEditingIndex(wordIndex);
 			}}
 		>
-			{word.romanWord || "..."}
+			{word.romanWord || ""}
 		</Button>
 	);
 };
