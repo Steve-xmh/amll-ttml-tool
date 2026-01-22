@@ -4,7 +4,7 @@
 			"title": "Ups, wystąpił błąd!",
 			"description": "Wystąpił błąd podczas działania AMLL TTML Tools",
 			"checkDevTools": "Szczegóły można znaleźć w Narzędziach deweloperskich",
-			"saveLyrics": "Spróbuj zapisać aktualne teksty",
+			"saveLyrics": "Spróbuj zapisać aktualny tekst",
 			"tryRestart": "Spróbuj ponownie załadować aplikację",
 			"details": "Przybliżone informacje o błędzie:"
 		},
@@ -13,8 +13,8 @@
 			"installError": "Błąd podczas instalacji aktualizacji"
 		},
 		"empty": {
-			"title": "Brak wierszy tekstu",
-			"description": "Dodaj nowe wiersze tekstu w górnym panelu lub otwórz/importuj istniejące teksty z menu"
+			"title": "Brak linii tekstu",
+			"description": "Dodaj nowe linie tekstu w górnym panelu lub otwórz/importuj istniejący tekst z menu"
 		}
 	},
 	"confirmDialog": {
@@ -22,7 +22,7 @@
 		"confirm": "Potwierdź",
 		"newFile": {
 			"title": "Potwierdź nowy plik",
-			"description": "Masz niezapisane zmiany. Jeśli będziesz kontynuować, te zmiany zostaną utracone. Czy na pewno chcesz utworzyć nowy plik?"
+			"description": "Masz niezapisane zmiany. Jeśli kontynuujesz, te zmiany zostaną utracone. Czy na pewno chcesz utworzyć nowy plik?"
 		},
 		"syncLineTimestamps": {
 			"title": "Potwierdź synchronizację znaczników czasu",
@@ -30,34 +30,34 @@
 		},
 		"openFile": {
 			"title": "Potwierdź otwarcie pliku",
-			"description": "Masz niezapisane zmiany. Jeśli będziesz kontynuować, te zmiany zostaną utracone. Czy na pewno chcesz otworzyć nowy plik?"
+			"description": "Masz niezapisane zmiany. Jeśli kontynuujesz, te zmiany zostaną utracone. Czy na pewno chcesz otworzyć nowy plik?"
 		},
 		"importFile": {
-			"title": "Potwierdź import tekstów",
-			"description": "Masz niezapisane zmiany. Jeśli będziesz kontynuować, te zmiany zostaną utracone. Czy na pewno chcesz zaimportować nowe teksty?"
+			"title": "Potwierdź import tekstu",
+			"description": "Masz niezapisane zmiany. Jeśli kontynuujesz, te zmiany zostaną utracone. Czy na pewno chcesz zaimportować nowy tekst?"
 		}
 	},
 	"ribbonBar": {
 		"editMode": {
 			"multipleValues": "Wiele wartości…",
-			"showTranslation": "Pokaż wiersz tłumaczenia",
-			"showRomanization": "Pokaż wiersz romanizacji",
+			"showTranslation": "Pokaż linię tłumaczenia",
+			"showRomanization": "Pokaż linię romanizacji",
 			"showWordRomanizationInput": "Pokaż romanizację po słowach",
 			"new": "Nowy",
-			"lyricLine": "Wiersz tekstu",
-			"lineTiming": "Synchronizacja wiersza",
-			"startTime": "Czas początkowy",
-			"endTime": "Czas końcowy",
-			"lineProperties": "Właściwości wiersza",
-			"bgLyric": "Wokal tła",
-			"duetLyric": "Wokal duetu",
+			"lyricLine": "Linia tekstu",
+			"lineTiming": "Synchronizacja linii",
+			"startTime": "Początek",
+			"endTime": "Koniec",
+			"lineProperties": "Właściwości linii",
+			"bgLyric": "Linia w tle",
+			"duetLyric": "Linia w duecie",
 			"ignoreSync": "Ignoruj synchronizację",
 			"wordTiming": "Synchronizacja słowa",
 			"emptyBeatCount": "Liczba pustych taktów",
 			"wordProperties": "Właściwości słowa",
 			"wordContent": "Zawartość słowa",
 			"romanWord": "Romanizacja słowa",
-			"obscene": "Obsceniczne",
+			"obscene": "Niecenzuralne",
 			"secondaryContent": "Zawartość drugorzędna",
 			"translatedLyric": "Tłumaczenie",
 			"romanLyric": "Romanizacja",
@@ -65,10 +65,10 @@
 			"auxiliaryLineDisplay": "Wyświetlanie linii pomocniczej"
 		},
 		"previewMode": {
-			"lyrics": "Teksty",
+			"lyrics": "Tekst",
 			"showTranslation": "Pokaż tłumaczenie",
 			"showRoman": "Pokaż romanizację",
-			"maskObsceneWords": "Ukryj obsceniczne słowa",
+			"maskObsceneWords": "Ukryj niecenzuralne słowa",
 			"word": "Słowo",
 			"fadeWidth": "Szerokość zanikania"
 		},
@@ -76,7 +76,7 @@
 			"currentEmptyBeat": "Pusty takt",
 			"syncAdjustment": "Korekta synchronizacji",
 			"timeOffset": "Przesunięcie czasowe",
-			"assistSettings": "Ustawienia asystenta",
+			"assistSettings": "Ustawienia asysty",
 			"showTimestampUpdate": "Pokaż aktualizacje znaczników czasu",
 			"touchSyncPanel": "Panel synchronizacji dotykowej",
 			"displayOptions": "Opcje wyświetlania",
@@ -86,7 +86,7 @@
 			"showPerWordRomanization": "Pokaż romanizację po słowach",
 			"keyBindingReference": "Skróty klawiszowe",
 			"startSync": "Oznacz początek",
-			"continuousSync": "Zatwierdź",
+			"continuousSync": "Przejdź dalej",
 			"endSync": "Oznacz koniec"
 		},
 		"loading": "Ładowanie panelu…"
@@ -113,7 +113,7 @@
 				"firstKeyDownLegacy": "Czas pierwszego naciśnięcia klawisza (przestarzałe)"
 			},
 			"keyBindingTrigger": "Wyzwalanie skrótów klawiszowych",
-			"keyBindingTriggerDesc": "Określa, czy skróty są wyzwalane przy naciśnięciu czy zwolnieniu klawisza.",
+			"keyBindingTriggerDesc": "Określa, czy skróty są wyzwalane przy naciśnięciu lub zwolnieniu klawisza.",
 			"keyBindingTriggerOptions": {
 				"keyDown": "Wyzwól przy naciśnięciu",
 				"keyUp": "Wyzwól przy zwolnieniu"
@@ -123,7 +123,7 @@
 			"smartLastWord": "Inteligentne ostatnie słowo",
 			"smartLastWordDesc": "Podczas synchronizacji ostatniego słowa wiersza, naciśnięcie ustawia czas końcowy bez automatycznego ustawiania czasu początkowego pierwszego słowa następnego wiersza.",
 			"volume": "Głośność muzyki",
-			"playbackRate": "Szybkość odtwarzania",
+			"playbackRate": "Prędkość odtwarzania",
 			"autosave": {
 				"enable": "Włącz automatyczny zapis",
 				"interval": "Interwał zapisu (minuty)",
@@ -154,7 +154,7 @@
 	"topBar": {
 		"modeBtns": {
 			"edit": "Edycja",
-			"sync": "Czas",
+			"sync": "Synchronizacja",
 			"preview": "Podgląd"
 		},
 		"appName": "Narzędzie TTML dla tekstów w stylu Apple Music",
@@ -166,13 +166,13 @@
 			"saveLyric": "Zapisz tekst",
 			"restoreFromHistory": "Przywróć z historii…",
 			"saveLyricToClipboard": "Zapisz TTML do schowka",
-			"uploadToAMLLDB": "Wyślij do bazy danych (tylko ChRL)",
+			"uploadToAMLLDB": "Wyślij do bazy danych (tylko CN)",
 			"edit": "Edycja",
 			"undo": "Cofnij",
 			"redo": "Ponów",
-			"selectAllLines": "Zaznacz wszystkie wiersze",
-			"unselectAllLines": "Odznacz wszystkie wiersze",
-			"invertSelectAllLines": "Odwróć zaznaczenie wierszy",
+			"selectAllLines": "Zaznacz wszystkie linie",
+			"unselectAllLines": "Odznacz wszystkie linie",
+			"invertSelectAllLines": "Odwróć zaznaczenie linii",
 			"selectWordsOfMatchedSelection": "Zaznacz pasujące słowa",
 			"timeShift": "Przesunięcie czasowe...",
 			"editMetadata": "Edytuj metadane tekstu…",
@@ -183,10 +183,10 @@
 			"syncLineTimestamps": "Synchronizuj znaczniki czasu wierszy",
 			"distributeRomanization": "Dystrybuuj romanizację...",
 			"help": "Pomoc",
-			"helpDoc": "Dokumentacja (ChRL)",
+			"helpDoc": "Dokumentacja (CN)",
 			"importLyric": {
-				"import": "Importuj teksty",
-				"fromPlainText": "Importuj z tekstu zwykłego…",
+				"import": "Importuj tekst",
+				"fromPlainText": "Importuj z tekstu nieformatowanego…",
 				"fromLRCLIB": "Importuj z LRCLIB...",
 				"fromLyRiC": "Importuj z pliku LyRiC…",
 				"fromESLyRiC": "Importuj z pliku ESLyRiC…",
@@ -195,7 +195,7 @@
 				"fromLrcfySylb": "Importuj z pliku Lyricify Syllable…"
 			},
 			"exportLyric": {
-				"export": "Eksportuj teksty",
+				"export": "Eksportuj tekst",
 				"toLyRiC": "Eksportuj do LyRiC",
 				"toESLyRiC": "Eksportuj do ESLyRiC",
 				"toQRC": "Eksportuj do QRC",
@@ -219,17 +219,17 @@
 	},
 	"contextMenu": {
 		"deleteWords": "Usuń {count, plural, one {słowo} few {słowa} many {słów} other {słów}}",
-		"bgLyric": "Wiersz tła",
-		"duetLyric": "Wiersz duetu",
-		"insertLineBefore": "Wstaw nowy wiersz przed",
-		"insertLineAfter": "Wstaw nowy wiersz po",
-		"copyLine": "Duplikuj {count, plural, one {wiersz} few {wiersze} many {wierszy} other {wierszy}}",
-		"combineLine": "Połącz wiersze",
-		"deleteLine": "Usuń {count, plural, one {wiersz} few {wiersze} many {wierszy} other {wierszy}}",
+		"bgLyric": "Linia w tle",
+		"duetLyric": "Linia w duecie",
+		"insertLineBefore": "Wstaw nową linię przed",
+		"insertLineAfter": "Wstaw nową linię po",
+		"copyLine": "Duplikuj {count, plural, one {ľinię} few {linie} many {linii} other {linii}}",
+		"combineLine": "Połącz linie",
+		"deleteLine": "Usuń {count, plural, one {linię} few {linie} many {linii} other {linii}}",
 		"splitWord": "Podziel słowo…",
 		"replaceWord": "Zamień słowo…",
 		"combineWords": "Połącz słowa",
-		"moveFollowingWordToNewLine": "Przenieś następne do nowego wiersza",
+		"moveFollowingWordToNewLine": "Przenieś następne do nowej linii",
 		"moveWordToNewLine": "Przenieś {count, plural, one {słowo} few {słowa} many {słów} other {słów}} do nowego wiersza"
 	},
 	"settingsDialog": {
@@ -254,21 +254,21 @@
 			"switchPreviewMode": "Przełączanie trybu - Przełącz na tryb podglądu",
 			"moveNextWord": "Synchronizacja - Przejdź do następnego słowa",
 			"movePrevWord": "Synchronizacja - Przejdź do poprzedniego słowa",
-			"moveNextLine": "Synchronizacja - Przejdź do początku następnego wiersza",
-			"movePrevLine": "Synchronizacja - Przejdź do początku poprzedniego wiersza",
+			"moveNextLine": "Synchronizacja - Przejdź do początku następnej linii",
+			"movePrevLine": "Synchronizacja - Przejdź do początku poprzedniej linii",
 			"movePrevWordAndPlay": "Synchronizacja - Przejdź do poprzedniego słowa i odtwórz",
 			"moveNextWordAndPlay": "Synchronizacja - Przejdź do następnego słowa i odtwórz",
 			"syncStart": "Synchronizacja - Oznacz początek",
 			"syncNext": "Synchronizacja - Zatwierdź",
 			"syncEnd": "Synchronizacja - Oznacz koniec",
 			"playPause": "Odtwarzanie - Odtwórz/Pauza",
-			"seekForward": "Odtwarzanie - Przewiń do przodu 5s",
-			"seekBackward": "Odtwarzanie - Przewiń do tyłu 5s",
+			"seekForward": "Odtwarzanie - Przewiń 5s do przodu",
+			"seekBackward": "Odtwarzanie - Przewiń 5s do tyłu",
 			"volumeUp": "Odtwarzanie - Zwiększ głośność",
 			"volumeDown": "Odtwarzanie - Zmniejsz głośność",
-			"playbackRateUp": "Odtwarzanie - Zwiększ szybkość",
-			"playbackRateDown": "Odtwarzanie - Zmniejsz szybkość",
-			"playbackRateReset": "Odtwarzanie - Resetuj szybkość",
+			"playbackRateUp": "Odtwarzanie - Zwiększ prędkość",
+			"playbackRateDown": "Odtwarzanie - Zmniejsz prędkość",
+			"playbackRateReset": "Odtwarzanie - Resetuj prędkość",
 			"auditionSelectionBefore": "Spektrogram - Odsłuchaj zaznaczenie (500ms przed)",
 			"auditionSelection": "Spektrogram - Odsłuchaj zaznaczenie",
 			"auditionSelectionAfter": "Spektrogram - Odsłuchaj zaznaczenie (500ms po)",
@@ -293,7 +293,7 @@
 	},
 	"audioPanel": {
 		"volume": "Głośność",
-		"playbackRate": "Szybkość odtwarzania",
+		"playbackRate": "Prędkość odtwarzania",
 		"clickToLoadMusic": "Kliknij ikonę, aby załadować muzykę",
 		"playPause": "Odtwórz / wstrzymaj muzykę",
 		"expandSpectrogram": "Rozwiń / zwiń spektrogram"
@@ -312,13 +312,13 @@
 		"searchError": "Wyszukiwanie nie powiodło się, sprawdź sieć lub spróbuj później",
 		"importError": "Wystąpił błąd podczas importowania tekstów",
 		"title": "Importuj tekst z LRCLIB",
-		"placeholder": "Tytuł Artysta...",
+		"placeholder": "Tytułowy Artysta...",
 		"synced": "Zsynchronizowany",
 		"unsynced": "Niezsynchronizowany",
 		"notFound": "Nie znaleziono wyników, spróbuj innych słów kluczowych",
 		"noResult": "Wprowadź słowa kluczowe, aby rozpocząć wyszukiwanie",
-		"noLyrics": "Brak dostępnych treści tekstów dla tego utworu",
-		"extractBg": "Wyodrębnij nawiasy jako wokal tła",
+		"noLyrics": "Brak dostępnych treści tekstu dla tego utworu",
+		"extractBg": "Wyodrębnij nawiasy jako linia w tle",
 		"autoSegment": "Automatyczna segmentacja",
 		"import": "Importuj tekst"
 	},
@@ -330,13 +330,13 @@
 		"apply": "Zastosuj",
 		"applyScope": "Zakres",
 		"scope": {
-			"all": "Wszystkie wiersze tekstów",
-			"selected": "Zaznaczone wiersze tekstów",
+			"all": "Wszystkie linie tekstu",
+			"selected": "Zaznaczone linie tekstu",
 			"selectedFollowing": "Zaznaczone i następne",
 			"custom": "Zakres niestandardowy"
 		},
-		"fromLine": "Od wiersza",
-		"toLine": "do wiersza",
+		"fromLine": "Od linii",
+		"toLine": "do linii",
 		"line": "",
 		"success": "Przywracanie powiodło się",
 		"error": "Dane uszkodzone lub utracone",
@@ -351,7 +351,7 @@
 		"translatedLabel": "Tłumaczenie:",
 		"romanLabel": "Romanizacja:",
 		"empty": "Brak",
-		"insertLine": "Wstaw nowy wiersz tutaj",
+		"insertLine": "Wstaw nową linię tutaj",
 		"insertWord": "Wstaw słowo tutaj…"
 	},
 	"lyricWordView": {
@@ -377,18 +377,18 @@
 		"delay": "Opóźnienie (+)",
 		"scopeLabel": "Zakres",
 		"scope": {
-			"all": "Wszystkie wiersze tekstów",
-			"selected": "Zaznaczone wiersze tekstów",
+			"all": "Wszystkie linie tekstu",
+			"selected": "Zaznaczone linie tekstu",
 			"selectedFollowing": "Zaznaczone i następne",
 			"custom": "Zakres niestandardowy"
 		},
-		"fromLine": "Od wiersza",
-		"toLine": "do wiersza",
+		"fromLine": "Od linii",
+		"toLine": "do linii",
 		"line": ""
 	},
 	"distributeRomanDialog": {
-		"title": "Dystrybuuj romanizację wiersza do słów",
-		"warning": "Ta akcja odczytuje transliterację na poziomie wiersza i dystrybuuje ją do poszczególnych słów. Algorytm jest zoptymalizowany dla japońskiego romaji i może nie działać zgodnie z oczekiwaniami dla innych języków."
+		"title": "Dystrybuuj romanizację linii do słów",
+		"warning": "Ta akcja odczytuje transliterację na poziomie linii i dystrybuuje ją do poszczególnych słów. Algorytm jest zoptymalizowany dla japońskiego romaji i może nie działać zgodnie z oczekiwaniami dla innych języków."
 	},
 	"globalDragOverlay": {
 		"title": "Upuść, aby załadować"
@@ -419,32 +419,32 @@
 		"daysAgo": "{count} dni temu",
 		"hoursAgo": "{count} godzin temu",
 		"minutesAgo": "{count} minut temu",
-		"justNow": "Właśnie teraz"
+		"justNow": "Przed chwilą"
 	},
 	"metadata": {
 		"title": "Metadane"
 	},
 	"textImportDialog": {
-		"title": "Importuj teksty z tekstu zwykłego",
+		"title": "Importuj tekst z tekstu nieformatowanego",
 		"actionButton": "Importuj",
 		"contentMode": {
 			"caption": "Zawartość tekstu",
-			"lyric": "Tylko teksty",
-			"withTranslation": "Teksty z tłumaczeniem",
-			"withRoman": "Teksty z romanizacją",
-			"withBoth": "Teksty z oboma"
+			"lyric": "Tylko tekst",
+			"withTranslation": "Tekst z tłumaczeniem",
+			"withRoman": "Tekst z romanizacją",
+			"withBoth": "Tekst z oboma"
 		},
 		"separationMode": {
 			"caption": "Format tłumaczenia/romanizacji",
-			"multipleLine": "Przeplatane wiele wierszy",
-			"sameLine": "Separacja w tym samym wierszu"
+			"multipleLine": "Przeplatane wiele linii",
+			"sameLine": "Separacja w tej samej linii"
 		},
-		"separator": "Separator wierszy",
-		"swapTransAndRoman": "Zamień wiersze tłumaczenia i romanizacji",
+		"separator": "Separator linii",
+		"swapTransAndRoman": "Zamień linie tłumaczenia i romanizacji",
 		"wordSeparator": "Separator słów",
 		"enableSpecialPrefix": "Włącz specjalny prefiks",
-		"bgLyricPrefix": "Prefiks tekstu tła",
-		"duetLyricPrefix": "Prefiks tekstu duetu",
+		"bgLyricPrefix": "Prefiks linii w tle",
+		"duetLyricPrefix": "Prefiks lnii w duecie",
 		"enableEmptyBeat": "Włącz pusty takt",
 		"emptyBeatSymbol": "Symbol pustego taktu"
 	},
@@ -454,7 +454,7 @@
 		"addValue": "Dodaj",
 		"builtinOptions": {
 			"musicName": "Nazwa utworu",
-			"artists": "Artyści utworu",
+			"artists": "Artyści",
 			"artistsInvalidMsg": "Jeśli jest wielu artystów, dodaj ten klucz wielokrotnie zamiast używać separatorów; jeśli nazwa artysty zawiera separatory, zignoruj tę wiadomość",
 			"songwriter": "Autor tekstu",
 			"songwriterInvalidMsg": "Jeśli jest wielu autorów, dodaj ten klucz wielokrotnie zamiast używać separatorów",
@@ -529,7 +529,7 @@
 		"test": {
 			"outputError": "Błąd podglądu podziału",
 			"title": "Test podziału",
-			"input": "Wprowadź wiersz tekstu lub słowo do przetestowania...",
+			"input": "Wprowadź linię tekstu lub słowo do przetestowania...",
 			"output": "Podgląd wyniku:"
 		},
 		"title": "Zaawansowana segmentacja",
@@ -537,8 +537,8 @@
 			"title": "Zakres zastosowania",
 			"all": "Wszystkie wiersze tekstów",
 			"range": {
-				"from": "Od wiersza",
-				"to": "do wiersza",
+				"from": "Od linii",
+				"to": "do linii",
 				"end": ""
 			}
 		},
