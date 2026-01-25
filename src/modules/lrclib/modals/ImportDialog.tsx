@@ -32,7 +32,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { uid } from "uid";
-import { segmentWord } from "$/modules/segmentation/utils/segmentation";
+import { segmentLyricLines } from "$/modules/segmentation/utils/segmentation";
 import { useSegmentationConfig } from "$/modules/segmentation/utils/useSegmentationConfig";
 import {
 	confirmDialogAtom,
@@ -119,13 +119,10 @@ export const ImportFromLRCLIB = () => {
 				if (autoSegment) {
 					ttmlData = {
 						...ttmlData,
-						lyricLines: ttmlData.lyricLines.map((line) => {
-							const newWords = line.words.flatMap((word) =>
-								segmentWord(word, segmentationConfig),
-							);
-
-							return { ...line, words: newWords };
-						}),
+						lyricLines: segmentLyricLines(
+							ttmlData.lyricLines,
+							segmentationConfig,
+						),
 					};
 				}
 

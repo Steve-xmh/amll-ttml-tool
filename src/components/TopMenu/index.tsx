@@ -11,7 +11,7 @@ import { uid } from "uid";
 import { useFileOpener } from "$/hooks/useFileOpener.ts";
 import exportTTMLText from "$/modules/project/logic/ttml-writer";
 import { ImportExportLyric } from "$/modules/project/modals/ImportExportLyric";
-import { segmentWord } from "$/modules/segmentation/utils/segmentation";
+import { segmentLyricLines } from "$/modules/segmentation/utils/segmentation";
 import { useSegmentationConfig } from "$/modules/segmentation/utils/useSegmentationConfig";
 import {
 	advancedSegmentationDialogAtom,
@@ -333,11 +333,10 @@ export const TopMenu: FC = () => {
 
 	const onAutoSegment = useCallback(() => {
 		editLyricLines((draft) => {
-			for (const line of draft.lyricLines) {
-				line.words = line.words.flatMap((word) =>
-					segmentWord(word, segmentationConfig),
-				);
-			}
+			draft.lyricLines = segmentLyricLines(
+				draft.lyricLines,
+				segmentationConfig,
+			);
 		});
 	}, [editLyricLines, segmentationConfig]);
 

@@ -39,10 +39,10 @@ import {
 	segmentationSplitEnglishAtom,
 } from "$/modules/segmentation/states";
 import { SUPPORTED_LANGUAGES } from "$/modules/segmentation/utils/hyphen-loader";
-import { segmentWord } from "$/modules/segmentation/utils/segmentation.ts";
+import { segmentLyricLines } from "$/modules/segmentation/utils/segmentation.ts";
 import { advancedSegmentationDialogAtom } from "$/states/dialogs.ts";
 import { lyricLinesAtom } from "$/states/main.ts";
-import { type LyricWord, newLyricWord } from "$/types/ttml";
+import { type LyricWord, newLyricLine, newLyricWord } from "$/types/ttml";
 import { useSegmentationConfig } from "../utils/useSegmentationConfig";
 import styles from "./AdvancedSegmentation.module.css";
 import { ManualWordSplitter } from "./ManualWordSplitter";
@@ -150,7 +150,9 @@ export const AdvancedSegmentationDialog = memo(() => {
 		};
 
 		try {
-			const resultWords = segmentWord(testWord, segmentationConfig);
+			const tempLine = { ...newLyricLine(), words: [testWord] };
+			const processedLines = segmentLyricLines([tempLine], segmentationConfig);
+			const resultWords = processedLines[0].words;
 
 			if (resultWords.length === 0) return;
 
@@ -199,14 +201,16 @@ export const AdvancedSegmentationDialog = memo(() => {
 		}
 
 		editLyricLines((draft) => {
-			for (let i = startIndex; i < endIndex; i++) {
-				const line = draft.lyricLines[i];
-				if (line) {
-					line.words = line.words.flatMap((word) =>
-						segmentWord(word, segmentationConfig),
-					);
-				}
-			}
+			const linesToProcess = draft.lyricLines.slice(startIndex, endIndex);
+			const processedLines = segmentLyricLines(
+				linesToProcess,
+				segmentationConfig,
+			);
+			draft.lyricLines.splice(
+				startIndex,
+				processedLines.length,
+				...processedLines,
+			);
 		});
 
 		setOpen(false);

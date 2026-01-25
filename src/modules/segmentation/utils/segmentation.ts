@@ -2,14 +2,22 @@
  * @description 分词引擎
  */
 
-import { type LyricWord, newLyricWord } from "$/types/ttml";
+import { type LyricLine, type LyricWord, newLyricWord } from "$/types/ttml";
 import { CharType, type SegmentationConfig } from "../types";
 import {
 	escapeRegExp,
 	getCharType,
 	getMergeDirection,
 	MergeDirection,
+	PUNCT_AMBIGUOUS_QUOTES,
 } from "./charUtils";
+
+export interface SegmentationContext {
+	/**
+	 * true 表示当前处于引号内部（下一个引号是闭引号）
+	 */
+	isQuoteOpen: boolean;
+}
 
 /**
  * @description 判断两个相邻字符是否应该合并
@@ -133,6 +141,7 @@ function calculateWeight(token: string, config: SegmentationConfig): number {
 function postProcess(
 	tokens: string[],
 	config: SegmentationConfig,
+	context?: SegmentationContext,
 ): { finalTokens: string[]; finalWeights: number[]; totalWeight: number } {
 	const processedTokens: string[] = [];
 	const tokenWeights: number[] = [];
@@ -149,7 +158,17 @@ function postProcess(
 		const charType = getCharType(firstChar);
 
 		if (config.punctuationMode === "merge" && charType === CharType.Other) {
-			const direction = getMergeDirection(token);
+			let direction = getMergeDirection(token);
+
+			if (context && PUNCT_AMBIGUOUS_QUOTES.has(token)) {
+				if (context.isQuoteOpen) {
+					direction = MergeDirection.Left;
+					context.isQuoteOpen = false;
+				} else {
+					direction = MergeDirection.Right;
+					context.isQuoteOpen = true;
+				}
+			}
 
 			if (direction === MergeDirection.Right) {
 				// 向右合并
@@ -282,11 +301,13 @@ function distributeTime(
 export function segmentWord(
 	word: LyricWord,
 	config: SegmentationConfig,
+	context?: SegmentationContext,
 ): LyricWord[] {
 	const protectedWords = new Set([
 		...config.ignoreList,
 		...config.customRules.keys(),
 	]);
+	const ctx = context || { isQuoteOpen: false };
 
 	if (protectedWords.size === 0) {
 		const tokens = autoTokenize(word.word, config);
@@ -294,6 +315,7 @@ export function segmentWord(
 		const { finalTokens, finalWeights, totalWeight } = postProcess(
 			tokens,
 			config,
+			ctx,
 		);
 		return distributeTime(word, finalTokens, finalWeights, totalWeight);
 	}
@@ -309,6 +331,7 @@ export function segmentWord(
 		const { finalTokens, finalWeights, totalWeight } = postProcess(
 			tokens,
 			config,
+			ctx,
 		);
 		return distributeTime(word, finalTokens, finalWeights, totalWeight);
 	}
@@ -343,6 +366,7 @@ export function segmentWord(
 			const { finalTokens, finalWeights, totalWeight } = postProcess(
 				tokens,
 				config,
+				ctx,
 			);
 			allTokens.push(...finalTokens);
 			allWeights.push(...finalWeights);
@@ -351,6 +375,39 @@ export function segmentWord(
 	}
 
 	return distributeTime(word, allTokens, allWeights, grandTotalWeight);
+}
+
+/**
+ * 批量处理歌词行，支持跨词的上下文状态（如引号合并方向）
+ *
+ * 一般推荐优先使用这个函数而不是 segmentWord，因为这个函数可以处理英文双引号的方向
+ * @param lines 歌词行数组
+ * @param config 分词配置
+ * @param resetStatePerLine 是否每行重置上下文状态。默认 false 以支持跨行引号，设为 true 可以防止上一行未闭合的引号影响下一行
+ */
+export function segmentLyricLines(
+	lines: LyricLine[],
+	config: SegmentationConfig,
+	resetStatePerLine = true,
+): LyricLine[] {
+	const context: SegmentationContext = { isQuoteOpen: false };
+
+	return lines.map((line) => {
+		if (resetStatePerLine) {
+			context.isQuoteOpen = false;
+		}
+
+		const newWords: LyricWord[] = [];
+		for (const word of line.words) {
+			const segments = segmentWord(word, config, context);
+			newWords.push(...segments);
+		}
+
+		return {
+			...line,
+			words: newWords,
+		};
+	});
 }
 
 /**
