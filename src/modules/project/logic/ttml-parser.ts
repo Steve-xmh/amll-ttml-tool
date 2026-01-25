@@ -287,7 +287,8 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 		const romanWordData = itunesKey
 			? itunesWordRomanizations.get(itunesKey)
 			: undefined;
-		const romanWords = isBG ? romanWordData?.bg : romanWordData?.main;
+		const sourceRomanList = isBG ? romanWordData?.bg : romanWordData?.main;
+		const availableRomanWords = sourceRomanList ? [...sourceRomanList] : [];
 
 		if (itunesKey) {
 			const timedTrans = itunesTimedTranslations.get(itunesKey);
@@ -357,12 +358,14 @@ export function parseLyric(ttmlText: string): TTMLLyric {
 					const obscene = wordEl.getAttribute("amll:obscene");
 					if (obscene === "true") word.obscene = true;
 
-					if (romanWords) {
-						const matchingRoman = romanWords.find(
+					if (availableRomanWords.length > 0) {
+						const matchIndex = availableRomanWords.findIndex(
 							(r) => r.startTime === wordStartTime && r.endTime === wordEndTime,
 						);
-						if (matchingRoman) {
-							word.romanWord = matchingRoman.text;
+
+						if (matchIndex !== -1) {
+							word.romanWord = availableRomanWords[matchIndex].text;
+							availableRomanWords.splice(matchIndex, 1);
 						}
 					}
 
