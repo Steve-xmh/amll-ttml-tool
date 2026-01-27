@@ -21,3 +21,7 @@
 	text-align: left;
 	font-size: var(--font-size-1);
 }
+
+.warning {
+	background-color: var(--orange-a3);
+}

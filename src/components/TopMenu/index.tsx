@@ -11,6 +11,7 @@ import { uid } from "uid";
 import { useFileOpener } from "$/hooks/useFileOpener.ts";
 import exportTTMLText from "$/modules/project/logic/ttml-writer";
 import { ImportExportLyric } from "$/modules/project/modals/ImportExportLyric";
+import { applyRomanizationWarnings } from "$/modules/segmentation/utils/Transliteration/roman-warning";
 import { segmentLyricLines } from "$/modules/segmentation/utils/segmentation";
 import { useSegmentationConfig } from "$/modules/segmentation/utils/useSegmentationConfig";
 import {
@@ -387,6 +388,14 @@ export const TopMenu: FC = () => {
 		setDistributeRomanizationDialog(true);
 	}, [setDistributeRomanizationDialog]);
 
+	const onCheckRomanizationWarnings = useCallback(() => {
+		editLyricLines((draft) => {
+			for (const line of draft.lyricLines) {
+				applyRomanizationWarnings(line.words);
+			}
+		});
+	}, [editLyricLines]);
+
 	return (
 		<Flex
 			p="2"
@@ -558,9 +567,19 @@ export const TopMenu: FC = () => {
 									{t("topBar.menu.syncLineTimestamps", "同步行时间戳")}
 								</DropdownMenu.Item>
 
-								<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
-									{t("topBar.menu.distributeRomanization", "自动分配罗马音...")}
-								</DropdownMenu.Item>
+								<DropdownMenu.Sub>
+									<DropdownMenu.SubTrigger>
+										{t("topBar.menu.perWordRomanization", "逐字音译")}
+									</DropdownMenu.SubTrigger>
+									<DropdownMenu.SubContent>
+										<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
+											{t("topBar.menu.distributeRomanization", "自动分配")}
+										</DropdownMenu.Item>
+										<DropdownMenu.Item onSelect={onCheckRomanizationWarnings}>
+											{t("topBar.menu.checkRomanizationWarnings", "检查")}
+										</DropdownMenu.Item>
+									</DropdownMenu.SubContent>
+								</DropdownMenu.Sub>
 
 								<DropdownMenu.Item onSelect={onOpenLatencyTest}>
 									{t("settingsDialog.common.latencyTest", "音频/输入延迟测试")}
@@ -758,9 +777,19 @@ export const TopMenu: FC = () => {
 							<DropdownMenu.Item onSelect={onSyncLineTimestamps}>
 								{t("topBar.menu.syncLineTimestamps", "同步行时间戳")}
 							</DropdownMenu.Item>
-							<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
-								{t("topBar.menu.distributeRomanization", "自动分配罗马音...")}
-							</DropdownMenu.Item>
+							<DropdownMenu.Sub>
+								<DropdownMenu.SubTrigger>
+									{t("topBar.menu.perWordRomanization", "逐字音译")}
+								</DropdownMenu.SubTrigger>
+								<DropdownMenu.SubContent>
+									<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
+										{t("topBar.menu.distributeRomanization", "自动分配")}
+									</DropdownMenu.Item>
+									<DropdownMenu.Item onSelect={onCheckRomanizationWarnings}>
+										{t("topBar.menu.checkRomanizationWarnings", "检查")}
+									</DropdownMenu.Item>
+								</DropdownMenu.SubContent>
+							</DropdownMenu.Sub>
 							<DropdownMenu.Item onSelect={onOpenLatencyTest}>
 								{t("settingsDialog.common.latencyTest", "音频/输入延迟测试")}
 							</DropdownMenu.Item>
