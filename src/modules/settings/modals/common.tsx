@@ -1,5 +1,6 @@
 import resources from "virtual:i18next-loader";
 import {
+	ArrowHookUpLeft24Regular,
 	ContentView24Regular,
 	Dismiss24Regular,
 	History24Regular,
@@ -184,9 +185,20 @@ export const SettingsCommonTab = () => {
 					<Flex direction="column" gap="2">
 						<Flex align="center" justify="between">
 							<Text>{t("settings.common.customBackgroundOpacity", "透明度")}</Text>
-							<Text wrap="nowrap" color="gray" size="1">
-								{Math.round(customBackgroundOpacity * 100)}%
-							</Text>
+							<Flex align="center" gap="2">
+								<Text wrap="nowrap" color="gray" size="1">
+									{Math.round(customBackgroundOpacity * 100)}%
+								</Text>
+								{customBackgroundOpacity !== 0.4 && (
+									<IconButton
+										variant="ghost"
+										size="1"
+										onClick={() => setCustomBackgroundOpacity(0.4)}
+									>
+										<ArrowHookUpLeft24Regular />
+									</IconButton>
+								)}
+							</Flex>
 						</Flex>
 						<Slider
 							min={0}
@@ -195,6 +207,14 @@ export const SettingsCommonTab = () => {
 							value={[customBackgroundOpacity]}
 							onValueChange={(v) => setCustomBackgroundOpacity(v[0])}
 						/>
+						{customBackgroundOpacity >= 0.5 && (
+							<Text size="1" color="orange">
+								{t(
+									"settings.common.customBackgroundOpacityWarning",
+									"如果这个数值太高可能让你看不清页面上的内容。",
+								)}
+							</Text>
+						)}
 					</Flex>
 				</Card>
 
@@ -202,9 +222,20 @@ export const SettingsCommonTab = () => {
 					<Flex direction="column" gap="2">
 						<Flex align="center" justify="between">
 							<Text>{t("settings.common.customBackgroundMask", "遮罩")}</Text>
-							<Text wrap="nowrap" color="gray" size="1">
-								{Math.round(customBackgroundMask * 100)}%
-							</Text>
+							<Flex align="center" gap="2">
+								<Text wrap="nowrap" color="gray" size="1">
+									{Math.round(customBackgroundMask * 100)}%
+								</Text>
+								{customBackgroundMask !== 0.2 && (
+									<IconButton
+										variant="ghost"
+										size="1"
+										onClick={() => setCustomBackgroundMask(0.2)}
+									>
+										<ArrowHookUpLeft24Regular />
+									</IconButton>
+								)}
+							</Flex>
 						</Flex>
 						<Slider
 							min={0}
@@ -213,14 +244,6 @@ export const SettingsCommonTab = () => {
 							value={[customBackgroundMask]}
 							onValueChange={(v) => setCustomBackgroundMask(v[0])}
 						/>
-						{customBackgroundMask >= 0.5 && (
-							<Text size="1" color="orange">
-								{t(
-									"settings.common.customBackgroundMaskWarning",
-									"如果这个数值太高可能让你看不清页面上的内容。",
-								)}
-							</Text>
-						)}
 					</Flex>
 				</Card>
 
@@ -228,9 +251,20 @@ export const SettingsCommonTab = () => {
 					<Flex direction="column" gap="2">
 						<Flex align="center" justify="between">
 							<Text>{t("settings.common.customBackgroundBlur", "模糊半径")}</Text>
-							<Text wrap="nowrap" color="gray" size="1">
-								{customBackgroundBlur.toFixed(0)}px
-							</Text>
+							<Flex align="center" gap="2">
+								<Text wrap="nowrap" color="gray" size="1">
+									{customBackgroundBlur.toFixed(0)}px
+								</Text>
+								{customBackgroundBlur !== 0 && (
+									<IconButton
+										variant="ghost"
+										size="1"
+										onClick={() => setCustomBackgroundBlur(0)}
+									>
+										<ArrowHookUpLeft24Regular />
+									</IconButton>
+								)}
+							</Flex>
 						</Flex>
 						<Slider
 							min={0}
@@ -246,9 +280,20 @@ export const SettingsCommonTab = () => {
 					<Flex direction="column" gap="2">
 						<Flex align="center" justify="between">
 							<Text>{t("settings.common.customBackgroundBrightness", "亮度")}</Text>
-							<Text wrap="nowrap" color="gray" size="1">
-								{Math.round(customBackgroundBrightness * 100)}%
-							</Text>
+							<Flex align="center" gap="2">
+								<Text wrap="nowrap" color="gray" size="1">
+									{Math.round(customBackgroundBrightness * 100)}%
+								</Text>
+								{customBackgroundBrightness !== 1 && (
+									<IconButton
+										variant="ghost"
+										size="1"
+										onClick={() => setCustomBackgroundBrightness(1)}
+									>
+										<ArrowHookUpLeft24Regular />
+									</IconButton>
+								)}
+							</Flex>
 						</Flex>
 						<Slider
 							min={0.5}

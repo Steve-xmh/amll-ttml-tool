@@ -78,7 +78,7 @@ export const customBackgroundImageAtom = atomWithStorage<string | null>(
 
 export const customBackgroundOpacityAtom = atomWithStorage(
 	"customBackgroundOpacity",
-	1,
+	0.4,
 );
 
 export const customBackgroundMaskAtom = atomWithStorage(
