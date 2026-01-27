@@ -95,7 +95,10 @@ export const RomanWordView = ({
 			<TextField.Root
 				ref={inputRef}
 				size="1"
-				className={styles.romanWordView}
+				className={classNames(
+					styles.romanWordView,
+					word.romanWarning && styles.warning,
+				)}
 				value={inputValue}
 				onChange={(e) => setInputValue(e.currentTarget.value)}
 				onBlur={(e) => saveAndStopEditing(e.currentTarget.value)}
@@ -112,6 +115,7 @@ export const RomanWordView = ({
 			className={classNames(
 				styles.romanWordView,
 				!word.romanWord && styles.placeholder,
+				word.romanWarning && styles.warning,
 			)}
 			onClick={(e) => {
 				e.stopPropagation();
