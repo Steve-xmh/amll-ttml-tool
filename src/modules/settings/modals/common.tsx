@@ -1,7 +1,9 @@
 import resources from "virtual:i18next-loader";
 import {
 	ContentView24Regular,
+	Dismiss24Regular,
 	History24Regular,
+	Image24Regular,
 	Keyboard12324Regular,
 	LocalLanguage24Regular,
 	PaddingLeft24Regular,
@@ -14,9 +16,11 @@ import {
 } from "@fluentui/react-icons";
 import {
 	Box,
+	Button,
 	Card,
 	Flex,
 	Heading,
+	IconButton,
 	Select,
 	Slider,
 	Switch,
@@ -24,12 +28,18 @@ import {
 	TextField,
 } from "@radix-ui/themes";
 import { useAtom } from "jotai";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { playbackRateAtom, volumeAtom } from "$/modules/audio/states";
 import {
 	autosaveEnabledAtom,
 	autosaveIntervalAtom,
 	autosaveLimitAtom,
+	customBackgroundBlurAtom,
+	customBackgroundBrightnessAtom,
+	customBackgroundImageAtom,
+	customBackgroundMaskAtom,
+	customBackgroundOpacityAtom,
 	LayoutMode,
 	layoutModeAtom,
 	SyncJudgeMode,
@@ -50,6 +60,21 @@ export const SettingsCommonTab = () => {
 	const [keyBindingTriggerMode, setKeyBindingTriggerMode] = useAtom(
 		keyBindingTriggerModeAtom,
 	);
+	const [customBackgroundImage, setCustomBackgroundImage] = useAtom(
+		customBackgroundImageAtom,
+	);
+	const [customBackgroundOpacity, setCustomBackgroundOpacity] = useAtom(
+		customBackgroundOpacityAtom,
+	);
+	const [customBackgroundMask, setCustomBackgroundMask] = useAtom(
+		customBackgroundMaskAtom,
+	);
+	const [customBackgroundBlur, setCustomBackgroundBlur] = useAtom(
+		customBackgroundBlurAtom,
+	);
+	const [customBackgroundBrightness, setCustomBackgroundBrightness] = useAtom(
+		customBackgroundBrightnessAtom,
+	);
 	const [smartFirstWord, setSmartFirstWord] = useAtom(smartFirstWordAtom);
 	const [smartLastWord, setSmartLastWord] = useAtom(smartLastWordAtom);
 	const [volume, setVolume] = useAtom(volumeAtom);
@@ -59,6 +84,8 @@ export const SettingsCommonTab = () => {
 	const [autosaveLimit, setAutosaveLimit] = useAtom(autosaveLimitAtom);
 	const { t, i18n } = useTranslation();
 	const currentLanguage = i18n.resolvedLanguage || i18n.language;
+	const backgroundFileInputRef = useRef<HTMLInputElement>(null);
+	const [showBackgroundSettings, setShowBackgroundSettings] = useState(false);
 
 	const getLanguageName = (code: string, locale: string) => {
 		try {
@@ -89,6 +116,152 @@ export const SettingsCommonTab = () => {
 		}
 		return code;
 	};
+
+	const onSelectBackgroundFile = useCallback((file: File) => {
+		const reader = new FileReader();
+		reader.onload = () => {
+			if (typeof reader.result === "string") {
+				setCustomBackgroundImage(reader.result);
+			}
+		};
+		reader.readAsDataURL(file);
+	}, [setCustomBackgroundImage]);
+
+	if (showBackgroundSettings) {
+		return (
+			<Flex direction="column" gap="4">
+				<Flex align="center" justify="between">
+					<Heading size="4">
+						{t("settings.common.customBackground", "自定义背景")}
+					</Heading>
+					<IconButton
+						variant="ghost"
+						onClick={() => setShowBackgroundSettings(false)}
+					>
+						<Dismiss24Regular />
+					</IconButton>
+				</Flex>
+
+				<Card>
+					<Flex direction="column" gap="3">
+						<Text size="1" color="gray">
+							{t(
+								"settings.common.customBackgroundDesc",
+								"选择一张图片作为背景。",
+							)}
+						</Text>
+						<input
+							ref={backgroundFileInputRef}
+							type="file"
+							accept="image/*"
+							style={{ display: "none" }}
+							onChange={(event) => {
+								const file = event.target.files?.[0];
+								if (!file) return;
+								onSelectBackgroundFile(file);
+								event.target.value = "";
+							}}
+						/>
+						<Flex gap="2" align="center">
+							<Button
+								variant="soft"
+								onClick={() => backgroundFileInputRef.current?.click()}
+							>
+								{t("settings.common.customBackgroundPick", "选择图片")}
+							</Button>
+							<Button
+								variant="ghost"
+								disabled={!customBackgroundImage}
+								onClick={() => setCustomBackgroundImage(null)}
+							>
+								{t("settings.common.customBackgroundClear", "清除")}
+							</Button>
+						</Flex>
+					</Flex>
+				</Card>
+
+				<Card>
+					<Flex direction="column" gap="2">
+						<Flex align="center" justify="between">
+							<Text>{t("settings.common.customBackgroundOpacity", "透明度")}</Text>
+							<Text wrap="nowrap" color="gray" size="1">
+								{Math.round(customBackgroundOpacity * 100)}%
+							</Text>
+						</Flex>
+						<Slider
+							min={0}
+							max={1}
+							step={0.01}
+							value={[customBackgroundOpacity]}
+							onValueChange={(v) => setCustomBackgroundOpacity(v[0])}
+						/>
+					</Flex>
+				</Card>
+
+				<Card style={{ marginBottom: "var(--space-1)" }}>
+					<Flex direction="column" gap="2">
+						<Flex align="center" justify="between">
+							<Text>{t("settings.common.customBackgroundMask", "遮罩")}</Text>
+							<Text wrap="nowrap" color="gray" size="1">
+								{Math.round(customBackgroundMask * 100)}%
+							</Text>
+						</Flex>
+						<Slider
+							min={0}
+							max={1}
+							step={0.01}
+							value={[customBackgroundMask]}
+							onValueChange={(v) => setCustomBackgroundMask(v[0])}
+						/>
+						{customBackgroundMask >= 0.5 && (
+							<Text size="1" color="orange">
+								{t(
+									"settings.common.customBackgroundMaskWarning",
+									"如果这个数值太高可能让你看不清页面上的内容。",
+								)}
+							</Text>
+						)}
+					</Flex>
+				</Card>
+
+				<Card>
+					<Flex direction="column" gap="2">
+						<Flex align="center" justify="between">
+							<Text>{t("settings.common.customBackgroundBlur", "模糊半径")}</Text>
+							<Text wrap="nowrap" color="gray" size="1">
+								{customBackgroundBlur.toFixed(0)}px
+							</Text>
+						</Flex>
+						<Slider
+							min={0}
+							max={30}
+							step={1}
+							value={[customBackgroundBlur]}
+							onValueChange={(v) => setCustomBackgroundBlur(v[0])}
+						/>
+					</Flex>
+				</Card>
+
+				<Card>
+					<Flex direction="column" gap="2">
+						<Flex align="center" justify="between">
+							<Text>{t("settings.common.customBackgroundBrightness", "亮度")}</Text>
+							<Text wrap="nowrap" color="gray" size="1">
+								{Math.round(customBackgroundBrightness * 100)}%
+							</Text>
+						</Flex>
+						<Slider
+							min={0.5}
+							max={1.5}
+							step={0.01}
+							value={[customBackgroundBrightness]}
+							onValueChange={(v) => setCustomBackgroundBrightness(v[0])}
+						/>
+					</Flex>
+				</Card>
+			</Flex>
+		);
+	}
 
 	return (
 		<Flex direction="column" gap="4">
@@ -169,6 +342,38 @@ export const SettingsCommonTab = () => {
 										</Select.Item>
 									</Select.Content>
 								</Select.Root>
+							</Flex>
+						</Box>
+					</Flex>
+				</Card>
+
+				<Card style={{ width: "100%", marginBottom: "var(--space-1)" }}>
+					<Flex gap="3" align="center">
+						<Image24Regular />
+						<Box flexGrow="1">
+							<Flex align="center" justify="between" gap="4">
+								<Flex direction="column" gap="1">
+									<Text>
+										{t("settings.common.customBackground", "自定义背景")}
+									</Text>
+									<Text size="1" color="gray">
+										{customBackgroundImage
+											? t(
+													"settings.common.customBackgroundEnabled",
+													"已设置背景",
+												)
+											: t(
+													"settings.common.customBackgroundDesc",
+													"选择一张图片作为背景。",
+												)}
+									</Text>
+								</Flex>
+								<Button
+									variant="soft"
+									onClick={() => setShowBackgroundSettings(true)}
+								>
+									{t("settings.common.customBackgroundManage", "设置")}
+								</Button>
 							</Flex>
 						</Box>
 					</Flex>
