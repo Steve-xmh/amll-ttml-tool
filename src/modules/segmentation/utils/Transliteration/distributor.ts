@@ -279,7 +279,7 @@ class RomanDistributor {
 					currentTokenIndex,
 					currentTokenIndex + takeCount,
 				);
-				this.results[this.pendingWords[i].index] = chunk.join("");
+				this.results[this.pendingWords[i].index] = chunk.join(" ");
 				currentTokenIndex += takeCount;
 			} else {
 				this.results[this.pendingWords[i].index] = "";
