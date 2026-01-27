@@ -46,10 +46,11 @@ interface MetadataEntryProps {
 	index: number;
 	setLyricLines: (args: (prev: TTMLLyric) => void) => void;
 	option: SelectOption | null;
+	focusAddKeyButton: () => void;
 }
 
 const MetadataEntry = memo(
-	({ entry, index, setLyricLines, option }: MetadataEntryProps) => {
+	({ entry, index, setLyricLines, option, focusAddKeyButton }: MetadataEntryProps) => {
 		const validation = option?.validation;
 		const rowHasError = validation
 			? entry.value.some(
@@ -188,6 +189,7 @@ const MetadataEntry = memo(
 							<td>
 								<Flex gap="1" ml="2" mt="1">
 									<TextField.Root
+										data-metadata-input="true"
 										ref={(el) => {
 											inputRefs.current[ii] = el;
 										}}
@@ -218,6 +220,26 @@ const MetadataEntry = memo(
 															prev.metadata.splice(index, 1);
 														}
 													});
+												}
+											} else if (e.key === "Tab" && !e.shiftKey) {
+												const allInputs = Array.from(
+													document.querySelectorAll<HTMLInputElement>(
+														'[data-metadata-input="true"]',
+													),
+												);
+												const currentIndex = allInputs.indexOf(e.currentTarget);
+												const nextInput =
+													currentIndex >= 0
+														? allInputs[currentIndex + 1]
+														: null;
+
+												e.preventDefault();
+												if (nextInput) {
+													nextInput.focus();
+													const len = nextInput.value.length;
+													nextInput.setSelectionRange(len, len);
+												} else {
+													focusAddKeyButton();
 												}
 											}
 										}}
@@ -357,6 +379,7 @@ export const MetadataEditor = () => {
 	);
 	const [customKey, setCustomKey] = useState("");
 	const [lyricLines, setLyricLines] = useImmerAtom(lyricLinesAtom);
+	const addKeyButtonRef = useRef<HTMLButtonElement | null>(null);
 
 	const { t } = useTranslation();
 
@@ -555,6 +578,10 @@ export const MetadataEditor = () => {
 		[builtinOptions],
 	);
 
+	const focusAddKeyButton = useCallback(() => {
+		addKeyButtonRef.current?.focus();
+	}, []);
+
 	return (
 		<Dialog.Root
 			open={metadataEditorDialog}
@@ -596,6 +623,7 @@ export const MetadataEditor = () => {
 								index={i}
 								setLyricLines={setLyricLines}
 								option={findOptionByKey(v.key)}
+								focusAddKeyButton={focusAddKeyButton}
 							/>
 						))}
 					</table>
@@ -614,7 +642,7 @@ export const MetadataEditor = () => {
 								flex: "1 0 auto",
 							}}
 						>
-							<Button variant="soft">
+							<Button variant="soft" ref={addKeyButtonRef}>
 								{t("metadataDialog.addKeyValue", "添加新键值")}
 								<DropdownMenu.TriggerIcon />
 							</Button>
