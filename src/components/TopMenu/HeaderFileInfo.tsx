@@ -1,12 +1,11 @@
 import {
-	ChevronDown16Regular,
 	CloudCheckmarkRegular,
 	CloudSyncRegular,
 	HistoryRegular,
 } from "@fluentui/react-icons";
-import { Box, Button, Flex, Popover, Text, TextField } from "@radix-ui/themes";
+import { Box, Button, Flex, Text, TextField } from "@radix-ui/themes";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { historyRestoreDialogAtom } from "$/states/dialogs";
 import {
@@ -22,7 +21,18 @@ export const HeaderFileInfo = () => {
 	const saveStatus = useAtomValue(saveStatusAtom);
 	const lastSavedTime = useAtomValue(lastSavedTimeAtom);
 	const setHistoryDialogOpen = useSetAtom(historyRestoreDialogAtom);
-	const [open, setOpen] = useState(false);
+	const [isEditing, setIsEditing] = useState(false);
+	const [draftName, setDraftName] = useState("");
+	const inputRef = useRef<HTMLInputElement>(null);
+	const suffix = ".ttml";
+
+	const getBaseName = useCallback(
+		(value: string) =>
+			value.toLowerCase().endsWith(suffix)
+				? value.slice(0, -suffix.length)
+				: value,
+		[suffix],
+	);
 
 	const getStatusDisplay = () => {
 		switch (saveStatus) {
@@ -58,95 +68,125 @@ export const HeaderFileInfo = () => {
 
 	const status = getStatusDisplay();
 
+	const finishEditing = useCallback(
+		({ commit }: { commit: boolean }) => {
+			if (commit) {
+				const trimmed = draftName.trim();
+				if (trimmed.length > 0) {
+					setFilename(`${trimmed}${suffix}`);
+				} else {
+					setDraftName(getBaseName(filename));
+				}
+			}
+			setIsEditing(false);
+		},
+		[draftName, filename, getBaseName, setFilename, suffix],
+	);
+
+	useEffect(() => {
+		if (!isEditing) return;
+		setDraftName(getBaseName(filename));
+		inputRef.current?.focus();
+		inputRef.current?.select();
+	}, [filename, getBaseName, isEditing]);
+
 	return (
-		<Popover.Root open={open} onOpenChange={setOpen}>
-			<Popover.Trigger>
-				<Button
-					variant="ghost"
-					color="gray"
-					style={{
-						height: "auto",
-						padding: "6px 10px",
-						fontWeight: "normal",
-						color: "var(--gray-12)",
-						maxWidth: "100%",
-					}}
-				>
-					<Flex align="center" gap="2" style={{ maxWidth: "100%" }}>
-						<Text
-							weight="bold"
-							size="2"
-							style={{
-								maxWidth: "10rem",
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-								whiteSpace: "nowrap",
-							}}
-						>
-							{filename}
-						</Text>
+		<Flex align="center" gap="2" style={{ maxWidth: "100%" }}>
+			<Button
+				variant="soft"
+				onClick={() => setHistoryDialogOpen(true)}
+				style={{ justifyContent: "start" }}
+			>
+				<HistoryRegular />
+				{t("header.popover.versionHistory", "版本历史记录...")}
+			</Button>
 
-						<Box
-							style={{
-								width: 4,
-								height: 4,
-								borderRadius: "50%",
-								backgroundColor: "var(--gray-8)",
-								flexShrink: 0,
-							}}
-						/>
-
-						<Flex
-							align="center"
-							gap="1"
-							style={{
-								color: status.color,
-								opacity: 0.8,
-								transition: "color 0.2s",
-								flexShrink: 0,
-							}}
-						>
-							<Text size="1" style={{ display: "flex" }}>
-								{status.icon}
-							</Text>
-							<Text size="1">{status.text}</Text>
-						</Flex>
-
-						<ChevronDown16Regular
-							fontSize={10}
-							style={{ opacity: 0.4, marginLeft: 4, flexShrink: 0 }}
-						/>
-					</Flex>
-				</Button>
-			</Popover.Trigger>
-			<Popover.Content style={{ width: 320 }}>
-				<Flex direction="column" gap="3">
-					<Box>
-						<Text size="2" weight="bold" as="div" mb="1">
-							{t("header.popover.filename", "文件名")}
-						</Text>
+			<Box>
+				{isEditing ? (
+					<Flex align="center" gap="1">
 						<TextField.Root
-							value={filename}
-							onChange={(e) => setFilename(e.target.value)}
-							placeholder="example.ttml"
-						/>
-					</Box>
-
-					<Box>
-						<Button
-							variant="soft"
-							style={{ width: "100%", justifyContent: "start" }}
-							onClick={() => {
-								setOpen(false);
-								setHistoryDialogOpen(true);
+							ref={inputRef}
+							size="1"
+							value={draftName}
+							onChange={(e) => setDraftName(e.target.value)}
+							placeholder="example"
+							style={{ width: "10rem" }}
+							onBlur={() => finishEditing({ commit: true })}
+							onKeyDown={(event) => {
+								if (event.key === "Enter") {
+									finishEditing({ commit: true });
+								}
+								if (event.key === "Escape") {
+									finishEditing({ commit: false });
+								}
 							}}
-						>
-							<HistoryRegular />
-							{t("header.popover.versionHistory", "版本历史记录...")}
-						</Button>
-					</Box>
-				</Flex>
-			</Popover.Content>
-		</Popover.Root>
+						/>
+						<Text size="2">{suffix}</Text>
+					</Flex>
+				) : (
+					<Button
+						variant="ghost"
+						color="gray"
+						style={{
+							height: "auto",
+							padding: "6px 10px",
+							fontWeight: "normal",
+							color: "var(--gray-12)",
+							maxWidth: "100%",
+						}}
+						onClick={() => setIsEditing(true)}
+					>
+						<Flex align="center" gap="2" style={{ maxWidth: "100%" }}>
+							<Flex
+								align="center"
+								style={{
+									maxWidth: "10rem",
+									overflow: "hidden",
+									whiteSpace: "nowrap",
+								}}
+							>
+								<Text
+									weight="bold"
+									size="2"
+									style={{
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+									}}
+								>
+									{getBaseName(filename)}
+								</Text>
+								<Text size="2">{suffix}</Text>
+							</Flex>
+
+							<Box
+								style={{
+									width: 4,
+									height: 4,
+									borderRadius: "50%",
+									backgroundColor: "var(--gray-8)",
+									flexShrink: 0,
+								}}
+							/>
+
+							<Flex
+								align="center"
+								gap="1"
+								style={{
+									color: status.color,
+									opacity: 0.8,
+									transition: "color 0.2s",
+									flexShrink: 0,
+								}}
+							>
+								<Text size="1" style={{ display: "flex" }}>
+									{status.icon}
+								</Text>
+								<Text size="1">{status.text}</Text>
+							</Flex>
+						</Flex>
+					</Button>
+				)}
+			</Box>
+		</Flex>
 	);
 };
