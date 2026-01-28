@@ -13,6 +13,7 @@ import { useSetImmerAtom } from "jotai-immer";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { predictLineRomanization } from "$/modules/segmentation/utils/Transliteration/distributor";
+import { applyRomanizationWarnings } from "$/modules/segmentation/utils/Transliteration/roman-warning";
 import { distributeRomanizationDialogAtom } from "$/states/dialogs";
 import { lyricLinesAtom, selectedLinesAtom } from "$/states/main";
 
@@ -95,6 +96,7 @@ export const DistributeRomanizationDialog = () => {
 									word.romanWord = results[wordIndex];
 								}
 							});
+							applyRomanizationWarnings(line.words);
 						} catch (e) {
 							console.error(
 								`Failed to distribute romanization for line ${index + 1}`,

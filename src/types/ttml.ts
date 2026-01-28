@@ -31,6 +31,7 @@ export interface LyricWord extends AMLLLyricWord {
 	id: string;
 	obscene: boolean;
 	emptyBeat: number;
+	romanWarning?: boolean;
 }
 
 export const newLyricWord = (): LyricWord => ({
