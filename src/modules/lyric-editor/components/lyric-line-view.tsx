@@ -87,9 +87,11 @@ const lineDisplayNumbersAtom = atom((get) => {
 const LyricLineScroller = ({
 	lineAtom,
 	wordsContainer,
+	editingRomanWordIndex,
 }: {
 	lineAtom: Atom<LyricLine>;
 	wordsContainer: HTMLDivElement | null;
+	editingRomanWordIndex: number | null;
 }) => {
 	const scrollToIndexAtom = useMemo(
 		() =>
@@ -113,17 +115,37 @@ const LyricLineScroller = ({
 	const scrollToIndex = useAtomValue(scrollToIndexAtom);
 
 	useEffect(() => {
-		if (Number.isNaN(scrollToIndex)) return;
+		const targetIndex =
+			!Number.isNaN(scrollToIndex) ? scrollToIndex : editingRomanWordIndex;
+		if (targetIndex === null || Number.isNaN(targetIndex)) return;
 		// console.log({ scrollToIndex, wordsContainer });
 		if (!wordsContainer) return;
-		const wordEl = wordsContainer.children[scrollToIndex] as HTMLElement;
+		const wordEl = wordsContainer.children[targetIndex] as HTMLElement;
 		// console.log({ wordEl, wordsContainer });
 		if (!wordEl) return;
 		wordsContainer.scrollTo({
 			left: wordEl.offsetLeft - wordsContainer.clientWidth / 2,
 			behavior: "auto",
 		});
-	}, [scrollToIndex, wordsContainer]);
+	}, [scrollToIndex, editingRomanWordIndex, wordsContainer]);
+
+	useEffect(() => {
+		if (!wordsContainer) return;
+		const handleFocusIn = (evt: FocusEvent) => {
+			const target = evt.target as HTMLElement | null;
+			if (!target) return;
+			const wordGroup = target.closest<HTMLElement>("[data-word-index]");
+			if (!wordGroup || !wordsContainer.contains(wordGroup)) return;
+			wordsContainer.scrollTo({
+				left: wordGroup.offsetLeft - wordsContainer.clientWidth / 2,
+				behavior: "auto",
+			});
+		};
+		wordsContainer.addEventListener("focusin", handleFocusIn);
+		return () => {
+			wordsContainer.removeEventListener("focusin", handleFocusIn);
+		};
+	}, [wordsContainer]);
 
 	return null;
 };
@@ -251,6 +273,7 @@ export const LyricLineView: FC<{
 		() => atom<number | null>(null),
 		[],
 	);
+	const editingRomanWordIndex = useAtomValue(editingRomanWordIndexAtom);
 	const enablePrediction = useAtomValue(enableAutoRomanizationPredictionAtom);
 
 	const startTimeRef = useRef<HTMLDivElement>(null);
@@ -320,6 +343,7 @@ export const LyricLineView: FC<{
 			<LyricLineScroller
 				lineAtom={lineAtom}
 				wordsContainer={wordsContainerRef.current}
+				editingRomanWordIndex={editingRomanWordIndex}
 			/>
 			{enableInsert && (
 				<Button
@@ -532,6 +556,7 @@ export const LyricLineView: FC<{
 													direction="column"
 													align="stretch"
 													gap="3"
+													data-word-index={wi}
 													className={styles.wordGroup}
 												>
 													<LyricWordView
