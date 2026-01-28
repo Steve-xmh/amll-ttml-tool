@@ -33,7 +33,14 @@ export const SettingsDialog = memo(() => {
 							{t("common.about", "关于")}
 						</Tabs.Trigger>
 					</Tabs.List>
-					<Box pt="3" style={{ height: "630px", overflowY: "auto" }}>
+					<Box
+						style={{
+							height: "630px",
+							overflowY: "auto",
+							padding: "var(--space-3)",
+							paddingBottom: "var(--space-4)",
+						}}
+					>
 						<Tabs.Content value="common">
 							<SettingsCommonTab />
 						</Tabs.Content>

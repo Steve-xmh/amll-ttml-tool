@@ -1,3 +1,25 @@
 .radixTheme {
 	--color-panel: var(--gray-a2);
 }
+
+.appContent {
+	position: relative;
+	z-index: 1;
+	height: 100%;
+}
+
+.customBackgroundLayer {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.customBackgroundImage {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	transform: scale(1.02);
+}
