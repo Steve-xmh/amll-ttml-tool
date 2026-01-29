@@ -35,6 +35,10 @@
 		"importFile": {
 			"title": "Confirm Import Lyrics",
 			"description": "You have unsaved changes. If you proceed, these changes will be lost. Are you sure you want to import new lyrics?"
+		},
+		"useMetadataName": {
+			"title": "Use metadata name?",
+			"description": "Use \"{name}\" as the file name?"
 		}
 	},
 	"ribbonBar": {
@@ -192,7 +196,12 @@
 			"autoSegment": "Auto Segment",
 			"advancedSegment": "Advanced Segment...",
 			"syncLineTimestamps": "Sync Line Timestamps",
-			"distributeRomanization": "Distribute Romanization...",
+			"perWordRomanization":
+			{
+				"index": "Per-Word Romanization",
+				"check": "Check Per-Word Romanization",
+				"distribute": "Distribute Romanization..."
+			},
 			"help": "Help",
 			"helpDoc": "Documentation (CN)",
 			"importLyric": {

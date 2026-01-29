@@ -15,6 +15,10 @@
 		"empty": {
 			"title": "没有歌词行",
 			"description": "在顶部面板中添加新歌词行或从菜单栏打开 / 导入已有歌词"
+		},
+		"useMetadataName": {
+			"title": "使用元数据命名？",
+			"description": "是否使用\"{name}\"作为文件名？"
 		}
 	},
 	"confirmDialog": {
@@ -192,7 +196,12 @@
 			"autoSegment": "一键分词",
 			"advancedSegment": "高级分词...",
 			"syncLineTimestamps": "同步行时间戳",
-			"distributeRomanization": "自动分配罗马音...",
+			"perWordRomanization": 
+			{
+				"index": "逐字音译",
+				"check": "检查逐字音译一致性",
+				"distribute": "自动分配罗马音..."
+			},
 			"help": "帮助",
 			"helpDoc": "使用说明",
 			"importLyric": {
