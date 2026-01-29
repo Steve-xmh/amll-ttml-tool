@@ -18,6 +18,7 @@ import { audioEngine } from "$/modules/audio/audio-engine";
 import { getProjectList } from "$/modules/project/autosave/autosave";
 import { isProjectMatch } from "$/modules/project/logic/project-match";
 import { parseLyric as parseTTML } from "$/modules/project/logic/ttml-parser";
+import { getSuggestedTtmlFileName } from "$/modules/project/logic/metadata-filename";
 import { confirmDialogAtom } from "$/states/dialogs.ts";
 import {
 	isDirtyAtom,
@@ -136,7 +137,8 @@ export const useFileOpener = () => {
 
 				setProjectId(resolvedProjectId);
 				setNewLyricLines(lyricData);
-				setSaveFileName(file.name);
+				const suggestedFile = getSuggestedTtmlFileName(lyricData.metadata);
+				setSaveFileName(suggestedFile?.fileName ?? file.name);
 			} catch (e) {
 				logError(`Failed to open file: ${file.name}`, e);
 				toast.error(t("error.openFileFailed", "打开文件失败"));

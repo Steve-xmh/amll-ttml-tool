@@ -569,14 +569,14 @@ export const TopMenu: FC = () => {
 
 								<DropdownMenu.Sub>
 									<DropdownMenu.SubTrigger>
-										{t("topBar.menu.perWordRomanization", "逐字音译")}
+										{t("topBar.menu.perWordRomanization.index", "逐字音译")}
 									</DropdownMenu.SubTrigger>
 									<DropdownMenu.SubContent>
 										<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
-											{t("topBar.menu.distributeRomanization", "自动分配")}
+											{t("topBar.menu.perWordRomanization.distribute", "自动分配罗马音...")}
 										</DropdownMenu.Item>
 										<DropdownMenu.Item onSelect={onCheckRomanizationWarnings}>
-											{t("topBar.menu.checkRomanizationWarnings", "检查")}
+											{t("topBar.menu.perWordRomanization.check", "检查")}
 										</DropdownMenu.Item>
 									</DropdownMenu.SubContent>
 								</DropdownMenu.Sub>
@@ -779,14 +779,14 @@ export const TopMenu: FC = () => {
 							</DropdownMenu.Item>
 							<DropdownMenu.Sub>
 								<DropdownMenu.SubTrigger>
-									{t("topBar.menu.perWordRomanization", "逐字音译")}
+									{t("topBar.menu.perWordRomanization.index", "逐字音译")}
 								</DropdownMenu.SubTrigger>
 								<DropdownMenu.SubContent>
 									<DropdownMenu.Item onSelect={onOpenDistributeRomanization}>
-										{t("topBar.menu.distributeRomanization", "自动分配")}
+										{t("topBar.menu.perWordRomanization.distribute", "自动分配罗马音...")}
 									</DropdownMenu.Item>
 									<DropdownMenu.Item onSelect={onCheckRomanizationWarnings}>
-										{t("topBar.menu.checkRomanizationWarnings", "检查")}
+										{t("topBar.menu.perWordRomanization.check", "检查")}
 									</DropdownMenu.Item>
 								</DropdownMenu.SubContent>
 							</DropdownMenu.Sub>
