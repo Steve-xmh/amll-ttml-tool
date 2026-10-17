@@ -2,6 +2,7 @@ import {
 	TranslationOutputMode,
 	translationOutputModeAtom,
 } from "$/modules/settings/states";
+import { isPunctuationOnly } from "$/modules/segmentation/utils/Transliteration/TransliterationUtils";
 import { globalStore } from "$/states/store.ts";
 import type {
 	LyricLine as AppLyricLine,
@@ -164,6 +165,11 @@ export function ttmlToAmll(
  * 会丢弃 `id`、`romanWarning` 等编辑器专用字段
  */
 function normalizeExportWord(word: AppLyricWord): AmllLyricWord {
+	const validRuby = word.ruby?.filter((rubyWord) => {
+		const text = rubyWord.word.trim();
+		return text.length > 0 && !isPunctuationOnly(text);
+	});
+
 	return {
 		startTime: word.startTime,
 		endTime: word.endTime,
@@ -171,7 +177,7 @@ function normalizeExportWord(word: AppLyricWord): AmllLyricWord {
 		romanWord: word.romanWord,
 		obscene: word.obscene,
 		emptyBeat: word.emptyBeat,
-		ruby: word.ruby,
+		ruby: validRuby?.length ? validRuby : undefined,
 	};
 }
 

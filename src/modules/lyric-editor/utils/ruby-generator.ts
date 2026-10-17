@@ -1,6 +1,6 @@
-import type { LyricWord, LyricWordBase } from "$/types/ttml";
 import * as wanakana from "wanakana";
 import { isKanaOnly } from "$/modules/segmentation/utils/Transliteration/TransliterationUtils";
+import type { LyricWord, LyricWordBase } from "$/types/ttml";
 
 const EXCLUDED_KANA_COMBOS = new Set([
 	"きゃ",
@@ -53,6 +53,10 @@ const buildRubyEntries = (word: LyricWord, tokens: string[]): LyricWordBase[] =>
 	}));
 
 const toKanaToken = (token: string) => wanakana.toKana(token).trim();
+
+// Avoid interpreting English lyrics as Japanese romaji.
+const containsLatinText = (text: string) => /\p{Script=Latin}/u.test(text);
+
 const normalizeSokuon = (token: string) => {
 	const lower = token.toLowerCase();
 	if (lower === "t" || lower === "s") return "っ";
@@ -64,12 +68,12 @@ export const generateRubyFromRomanWord = (
 ): LyricWordBase[] | undefined => {
 	const romanWord = (word.romanWord ?? "").trim();
 	if (!romanWord) return;
-	const kanaWord = toKanaToken(romanWord);
-	if (!kanaWord) return;
 
-	if (isKanaOnly(word.word)) {
+	if (isKanaOnly(word.word) || containsLatinText(word.word)) {
 		return;
 	}
+	const kanaWord = toKanaToken(romanWord);
+	if (!kanaWord) return;
 
 	const compactKana = kanaWord.replace(/\s+/g, "");
 	if (!compactKana) return;

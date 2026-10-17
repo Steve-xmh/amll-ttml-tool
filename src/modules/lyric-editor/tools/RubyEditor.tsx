@@ -143,6 +143,7 @@ export const RubyEditor = ({
 						if (word.id !== currentWord.id) continue;
 						if (!word.ruby || !word.ruby[index]) return;
 						word.ruby.splice(index, 1);
+						if (word.ruby.length === 0) word.ruby = undefined;
 						break;
 					}
 				}
