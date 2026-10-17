@@ -72,6 +72,14 @@ export function isChoonpu(char: string): boolean {
  */
 export function isKanaOnly(text: string): boolean {
 	if (!text) return false;
-	const cleanText = text.replace(/[、，。！？\s]/g, "");
+	const cleanText = Array.from(text)
+		.filter(
+			(char) =>
+				char.trim() !== "" &&
+				!isPunctuationChar(char) &&
+				!/^\p{P}$/u.test(char),
+		)
+		.join("");
+	if (!cleanText) return false;
 	return wanakana.isKana(cleanText);
 }
